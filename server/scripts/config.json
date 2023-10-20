@@ -1,0 +1,197 @@
+{
+  "log": null,
+  "routing": {
+    "rules": [
+      {
+        "inboundTag": [
+          "api"
+        ],
+        "outboundTag": "api",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "blocked",
+        "type": "field"
+      },
+      {
+        "outboundTag": "blocked",
+        "protocol": [
+          "bittorrent"
+        ],
+        "type": "field"
+      }
+    ]
+  },
+  "dns": null,
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 62789,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1"
+      },
+      "streamSettings": null,
+      "tag": "api",
+      "sniffing": null
+    },
+    {
+      "listen": null,
+      "port": 15994,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "02627c94-c8f1-4ad4-9d61-631c191f17aa",
+            "email": "AjHn.love@xray.com",
+            "flow": "xtls-rprx-vision"
+          },
+          {
+            "id": "fd7d905e-b44b-456e-ea5f-8d9bdd423d35",
+            "email": "XTpl.love@xray.com",
+            "flow": ""
+          }
+        ],
+        "decryption": "none",
+        "fallbacks": []
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "dest": "addons.mozilla.org:443",
+          "xver": 0,
+          "serverNames": [
+            "addons.mozilla.org"
+          ],
+          "privateKey": "uCDvXj-LVmgJa3IoR-VQkInucVyZO0AtF0IYUPLgPUY",
+          "publicKey": "UK7qxWWGfRQcQfwaGpHnqmmqqJBut4jxve8AeDDJ2UI",
+          "minClient": "",
+          "maxClient": "",
+          "maxTimediff": 0,
+          "shortIds": [
+            "",
+            "56",
+            "e0a5",
+            "540192",
+            "df14e3cd"
+          ]
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          },
+          "acceptProxyProtocol": false
+        }
+      },
+      "tag": "inbound-15994",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    },
+    {
+      "listen": null,
+      "port": 18085,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "d91da639-c639-48b1-86d7-cdc7caae7c74",
+            "email": "Pm5Y.love@xray.com",
+            "flow": "xtls-rprx-vision"
+          }
+        ],
+        "decryption": "none",
+        "fallbacks": []
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "dest": "www.speedtest.org:443",
+          "xver": 0,
+          "serverNames": [
+            "www.speedtest.org"
+          ],
+          "privateKey": "oKVwj79wHXjWIFUq0qkmdHXusmr4fQYPNeNM--6f03g",
+          "publicKey": "rYH4wPTVzSwtpXgI3U7YxppIP6oudD-425vT7pyhj1w",
+          "minClient": "",
+          "maxClient": "",
+          "maxTimediff": 0,
+          "shortIds": [
+            "",
+            "4a",
+            "7cad",
+            "aa5823",
+            "4df6e567"
+          ]
+        },
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          },
+          "acceptProxyProtocol": false
+        }
+      },
+      "tag": "inbound-18085",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "settings": {}
+    },
+    {
+      "protocol": "blackhole",
+      "settings": {},
+      "tag": "blocked"
+    }
+  ],
+  "transport": null,
+  "policy": {
+    "levels": {
+      "0": {
+        "handshake": 10,
+        "connIdle": 100,
+        "uplinkOnly": 2,
+        "downlinkOnly": 3,
+        "statsUserUplink": true,
+        "statsUserDownlink": true,
+        "bufferSize": 10240
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true
+    }
+  },
+  "api": {
+    "services": [
+      "HandlerService",
+      "LoggerService",
+      "StatsService"
+    ],
+    "tag": "api"
+  },
+  "stats": {},
+  "reverse": null,
+  "fakeDns": null
+}

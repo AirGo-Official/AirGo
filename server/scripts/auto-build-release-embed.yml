@@ -1,0 +1,104 @@
+name: auto build release
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+jobs:
+  build-go-binary:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [amd64, arm64, arm]
+#        exclude:
+#          - goarch: arm
+#            goos: darwin
+#          - goarch: arm
+#            goos: windows
+#          - goarch: arm64
+#            goos: windows
+
+#        include:
+#          - goarch: amd64
+#            goos: linux
+#          - goarch: arm
+#            goos: linux
+#          - goarch: amd64
+#            goos: darwin
+#          - goarch: arm64
+#            goos: darwin
+#          - goarch: amd64
+#            goos: windows
+        node-version: [18.16.0]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Build web
+        run: |
+          cd web
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./src/layout/footer/index.vue
+          npm install
+          npm run build
+          rm -rf ../server/web/web
+          mv web ../server/web/
+      - name: Build Go
+        run: |
+          cd server
+          sudo apt update -y
+#          go env -w GO111MODULE=on
+          go env -w CGO_ENABLED=1
+          go env -w GOOS=${{matrix.goos}} 
+          go env -w GOARCH=${{matrix.goarch}}
+          case ${{matrix.goarch}} in
+          arm64)
+              sudo apt install gcc-aarch64-linux-gnu -y
+              go env -w CC=aarch64-linux-gnu-gcc
+            ;;
+          arm)
+             sudo apt-get install gcc-arm-linux-gnueabihf -y
+             go env -w CC=arm-linux-gnueabihf-gcc
+            ;;
+          esac
+          go build -o AirGo -ldflags='-s -w --extldflags "-static -fpic"' main.go
+      - name: Package
+        run: |
+          cd server
+          zip  AirGo-${{ matrix.goos }}-${{ matrix.goarch }}-${{ steps.get_version.outputs.VERSION }}.zip AirGo config.yaml LICENSE
+      - name: Upload to release
+        uses: svenstaro/upload-release-action@v2
+        if: github.event_name == 'release'
+        with:
+          repo_token: ${{ secrets.Action_Token }}
+          file: server/AirGo-${{ matrix.goos }}-${{ matrix.goarch }}-${{ steps.get_version.outputs.VERSION }}.zip
+          tag: ${{ github.ref }}
+          file_glob: true
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build production image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: server/scripts/Dockerfile
+          platforms: linux/arm,linux/arm64,linux/amd64
+          push: true
+          tags: |
+            ${{ steps.info.outputs.image }}:${{ steps.info.outputs.tag }}
+            ${{ steps.info.outputs.image }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

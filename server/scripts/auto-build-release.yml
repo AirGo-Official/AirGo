@@ -1,0 +1,117 @@
+#执行本action脚本，需要注意以下几点：
+#1、github右上角头像--->Settings--->Developer Settings--->Personal access token--->fine-grained tokens--->generate new token
+#注意，该密钥只显示一次，务必保存！！！！
+#修改密钥权限：1、Repository permissions 全部设为 非 No access（里边选项太多，懒得一一研究，索性全允许了）
+#           2、Account permissions 中 Codespaces user secrets设为 非 No access，可能你用 github Codespaces 编译时用到
+#2、项目-Settings--->Secrets and variables ---> Actions--->New repository secret,名称随意，
+#但是要和脚本中【 repo_token: ${{ secrets.ACTION_TOKEN }} 】保持一致，密钥值填步骤1申请的值。
+#该密钥用来提交release。
+#3、项目-Settings--->Secrets and variables ---> Actions--->New repository secret，新建 DOCKERHUB_USERNAME，DOCKERHUB_TOKEN 两个令牌，名字可以自定义，但是要和下面的保持一致。
+#  DOCKERHUB_USERNAME=你的hub.docker.com用户名
+#  DOCKERHUB_TOKEN=你的hub.docker.com toekn，可在hub.docker.com toekn获得
+name: auto build release
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+jobs:
+  build-go-binary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.16.0'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+      - name: Get version
+        id: get_version
+        run: |
+#          echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+          version=$(echo ${GITHUB_REF/refs\/tags\//})
+          image="ppoiuty/airgo"
+          echo IMAGE=${IMAGE} >> $GITHUB_OUTPUT
+          echo VERSION=${TAG} >> $GITHUB_OUTPUT
+
+      - name: Build web
+        run: |
+          cd web
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./src/layout/footer/index.vue
+          npm install
+          npm run build
+          rm -rf ../server/web/web
+          mv web ../server/web/
+
+      - name: Build Go
+        run: |
+          cd server
+          sudo apt update -y
+          go env -w GO111MODULE=on
+          go env -w CGO_ENABLED=1
+          
+          # amd64
+          go build -o AirGo-linux-amd64 -ldflags='-s -w --extldflags "-static -fpic"' main.go
+          
+          
+          # arm64
+          sudo apt install gcc-aarch64-linux-gnu -y
+          go env -w GOARCH=arm64
+          go env -w CC=aarch64-linux-gnu-gcc
+          go build -o AirGo-linux-arm64 -ldflags='-s -w --extldflags "-static -fpic"' main.go
+          
+          
+          # arm
+          sudo apt-get install gcc-arm-linux-gnueabihf -y
+          go env -w CC=arm-linux-gnueabihf-gcc
+          go env -w GOARCH=arm
+          go build -o AirGo-linux-arm -ldflags='-s -w --extldflags "-static -fpic"' main.go
+          
+
+      - name: Package
+        run: |
+          cd server
+          # amd64
+          zip  AirGo-linux-amd64-${{ steps.get_version.outputs.VERSION }}.zip AirGo-linux-amd64 config.yaml LICENSE
+          
+          # arm64
+          zip  AirGo-linux-arm64-${{ steps.get_version.outputs.VERSION }}.zip AirGo-linux-arm64 config.yaml LICENSE
+          
+          # arm
+          zip  AirGo-linux-arm-${{ steps.get_version.outputs.VERSION }}.zip AirGo-linux-arm config.yaml LICENSE
+
+      - name: Upload to release
+        uses: svenstaro/upload-release-action@v2
+        if: github.event_name == 'release'
+        with:
+          repo_token: ${{ secrets.Action_Token }}
+          file: server/*-${{ steps.get_version.outputs.VERSION }}.zip
+          tag: ${{ github.ref }}
+          file_glob: true
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: server/scripts/Dockerfile
+          platforms: linux/arm,linux/arm64,linux/amd64
+          push: true
+          tags: |
+            ppoiuty/airgo:${{ steps.get_version.outputs.VERSION }}
+            ppoiuty/airgo:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
