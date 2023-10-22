@@ -84,6 +84,7 @@ func InitRouter() {
 	}
 
 	// 路由组
+	// user
 	RouterGroup := Router.Group(global.Server.System.ApiPrefix) //使用前缀，默认为 /api
 	//user
 	userRouter := RouterGroup.Group("/user").Use(middleware.RateLimitIP(), middleware.ParseJwt(), middleware.Casbin(), middleware.RateLimitVisit())

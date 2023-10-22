@@ -59,7 +59,7 @@
         <el-table-column prop="subscribe_info.subscribe_url" label="通用订阅url" show-overflow-tooltip width="400">
           <template #default="scope">
             <el-tag type="info">
-              {{ serverStore.publicServerConfig.backend_url }}user/getSub?link={{
+              {{ serverStore.publicServerConfig.backend_url }}/user/getSub?link={{
                 scope.row.subscribe_info.subscribe_url
               }}&type=v2ray
             </el-tag>

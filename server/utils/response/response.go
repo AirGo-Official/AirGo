@@ -35,30 +35,3 @@ func OK(message string, data interface{}, c *gin.Context) {
 func Fail(message string, data interface{}, c *gin.Context) {
 	Result(ERROR, message, data, c)
 }
-
-// sspanel  /mod_mu/users 响应
-type SSReP struct {
-	Ret  int         `json:"ret"`
-	Data interface{} `json:"data"`
-}
-
-func SSUsersOK(data interface{}, c *gin.Context) {
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"ret":  1,
-	// 	"data": data,
-	// })
-	c.JSON(http.StatusOK, SSReP{
-		Ret:  1,
-		Data: data,
-	})
-}
-func SSUsersFail(c *gin.Context) {
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"ret":  0,
-	// 	"data": nil,
-	// })
-	c.JSON(http.StatusOK, SSReP{
-		Ret:  0,
-		Data: nil,
-	})
-}

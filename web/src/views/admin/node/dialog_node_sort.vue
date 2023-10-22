@@ -2,7 +2,7 @@
   <el-dialog
       v-model="state.isShowDialog"
       :title="state.title"
-      width="550px" destroy-on-close
+      width="80%" destroy-on-close
       align-center
   >
     <el-table class="nodeSort" :data="state.node_list" row-key="id" height="100%" style="width: 100%;flex: 1;">

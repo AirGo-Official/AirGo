@@ -47,16 +47,13 @@ func AGReportNodeStatus(ctx *gin.Context) {
 		global.Logrus.Error("error", err.Error())
 		return
 	}
-	//fmt.Println("AGNodeStatus:", AGNodeStatus)
 	cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(AGNodeStatus.ID, 10) + "status")
 	if ok && cacheStatus != nil {
 		oldStatus := cacheStatus.(model.NodeStatus)
-		//fmt.Println("old status:", oldStatus)
 		oldStatus.CPU = AGNodeStatus.CPU
 		oldStatus.Mem = AGNodeStatus.Mem
 		oldStatus.Disk = AGNodeStatus.Disk
 		//oldStatus.Uptime=AGNodeStatus.Uptime
-		//fmt.Println("new status:", oldStatus)
 		global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+"status", oldStatus, 2*time.Minute) //2分钟后过期
 	}
 	ctx.String(200, "success")
@@ -118,7 +115,6 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	if global.Server.System.MuKey != ctx.Query("key") {
 		return
 	}
-
 	var AGUserTraffic model.AGUserTraffic
 	err := ctx.ShouldBind(&AGUserTraffic)
 	if err != nil {
@@ -126,8 +122,8 @@ func AGReportUserTraffic(ctx *gin.Context) {
 		return
 	}
 	//查询节点倍率
-	node, _, _ := service.CommonSqlFind[model.Node, string, model.Node]("id = " + fmt.Sprintf("%d", AGUserTraffic.ID))
-	if node.TrafficRate <= 0 {
+	node, _, err := service.CommonSqlFind[model.Node, string, model.Node]("id = " + fmt.Sprintf("%d", AGUserTraffic.ID))
+	if node.TrafficRate < 0 || err != nil {
 		node.TrafficRate = 1
 	}
 	// 处理流量统计

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="state.isShowDialog" :title="state.title" width="769px" destroy-on-close align-center>
+  <el-dialog v-model="state.isShowDialog" :title="state.title" width="80%" destroy-on-close align-center>
     <el-card shadow="hover" class="layout-padding-auto" style="height: 800px">
       <el-row :gutter="10" style="width: 768px">
         <el-col :span="18">
@@ -15,7 +15,7 @@
           </el-button>
         </el-col>
       </el-row>
-      <div style="color: #9b9da1">*支持订阅，单个节点，多个节点，支持base64编码，仅解析vmess,vless,trojan</div>
+      <div style="color: #9b9da1">*支持通用订阅、单个节点、多个节点、base64编码解析（仅vmess，vless，trojan，shadowsocks）</div>
       <el-table :data="nodeStore.nodeSharedData.nodeList" height="100%" stripe style="width: 100%;flex: 1;">
         <el-table-column prop="id" label="ID" show-overflow-tooltip width="40"></el-table-column>
         <el-table-column prop="node_type" label="类型" show-overflow-tooltip width="80"></el-table-column>

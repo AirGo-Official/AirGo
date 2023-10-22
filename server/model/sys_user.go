@@ -96,14 +96,3 @@ type UsersWithTotal struct {
 	Total    int64  `json:"total"`
 	UserList []User `json:"user_list"`
 }
-
-// 获取当前节点可连接的用户 响应
-type SSUsers struct {
-	ID             int64  `json:"id"`
-	UUID           string `json:"uuid"`
-	U              int64  `json:"u"`
-	D              int64  `json:"d"`
-	NodeSpeedLimit int64  `json:"node_speedlimit"`
-	NodeConnector  int64  `json:"node_connector"`
-	// IsMultiUser    int64    `json:"is_multi_user"` //用不到
-}

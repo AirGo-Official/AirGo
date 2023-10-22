@@ -17,7 +17,7 @@ func NewNodeShared(ctx *gin.Context) {
 		response.Fail("NewNodeShared"+err.Error(), nil, ctx)
 		return
 	}
-	nodeArr := service.ParseUrl(url.Url)
+	nodeArr := service.ParseSubUrl(url.Url)
 	if nodeArr != nil {
 		err = service.CommonSqlCreate[[]model.NodeShared](*nodeArr)
 		if err != nil {

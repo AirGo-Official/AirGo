@@ -10,15 +10,15 @@ plain='\033[0m'
 arch=$(uname -m)
 system=$(uname)
 country=''
+appName='AirGo'
+currentVersion=''
 latestVersion=''
 downloadPrefix='https://github.com/ppoonk/AirGo/releases/download/'
 githubApi="https://api.github.com/repos/ppoonk/AirGo/releases/latest"
-installScript="https://raw.githubusercontent.com/ppoonk/AirGo/v2/server/scripts/install.sh"
+manageScript="https://raw.githubusercontent.com/ppoonk/AirGo/main/server/scripts/install.sh"
 acmeGit="https://github.com/acmesh-official/acme.sh.git"
 yamlFile="/usr/local/AirGo/config.yaml"
-
 ipv4=""
-#ipv6=""
 ipv4_local=""
 
 
@@ -35,7 +35,7 @@ get_arch(){
   elif [[ $arch == "aarch64" || $arch == "arm64" || $arch == "armv8" || $arch == "armv8l" ]]; then
       arch="arm64"
   elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv7l" || $arch == "armv6" ]];then
-      arch="arm-7"
+      arch="arm"
   else
       echo -e ${red}"不支持的arch，请自行编译\n"${plain}
       exit 1
@@ -46,7 +46,7 @@ get_region() {
     if [ "$country" == "CN" ]; then
       acmeGit="https://gitee.com/neilpang/acme.sh.git"
       downloadPrefix="https://ghproxy.com/${downloadPrefix}"
-      installScript="https://ghproxy.com/${installScript}"
+      manageScript="https://ghproxy.com/${manageScript}"
     fi
 }
 open_ports(){
@@ -86,22 +86,25 @@ get_latest_version() {
               exit 1
           fi
 }
+get_current_version(){
+  currentVersion=$(/usr/local/AirGo/AirGo -version)
+}
 initialize(){
   get_arch
   get_system_type
   set_dependences
   get_region
   get_latest_version
-
+  get_current_version
  ipv4=$(curl -4 -s --max-time 5 http://icanhazip.com/ || '你的ip' )
  #ipv6=$(curl -6 -s --max-time 5 http://icanhazip.com/)
  ipv4_local=$( ip addr | awk '/^[0-9]+: / {}; /inet.*global.*eth/ {print gensub(/(.*)\/(.*)/, "\\1", "g", $2)}' || '你的内网ip')
 
 }
-
+# example:  confirm_msg "确定要卸载吗?" "n"
 confirm_msg() {
     if [[ $# -gt 1 ]]; then
-        echo && read -p "$1 [默认$2]: " temp
+        echo && read -p "$1 [y/n 默认$2]: " temp
         if [[ "${temp}x" == ""x ]]; then
             temp=$2
         fi
@@ -114,7 +117,7 @@ confirm_msg() {
         return 1
     fi
 }
-
+# example：read_yaml $yamlFile "http-port"
 read_yaml(){
     cat $1 | while read LINE
     do
@@ -125,6 +128,7 @@ read_yaml(){
       fi
     done
 }
+# 安装检测，1：未安装 0：已安装
 installation_status(){
       if [[ ! -f /etc/systemd/system/$1.service ]] || [[ ! -f /usr/local/$1/$1 ]]; then
         return 1
@@ -132,6 +136,7 @@ installation_status(){
         return 0
       fi
 }
+# 运行检测，1：未启动 0：已启动
 run_status() {
       temp=$(systemctl is-active $1)
       if [[ x"${temp}" == x"active" ]]; then
@@ -139,32 +144,31 @@ run_status() {
       else
           count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
           if [[ count -ne 0 ]]; then
-              return 0
-          else
               return 1
+          else
+              return 0
           fi
       fi
 }
 
-
 download(){
   echo -e "开始下载核心，版本：${latestVersion}"
-  rm -rf /usr/local/AirGo
-  mkdir /usr/local/AirGo
+  rm -rf /usr/local/${appName}
+  mkdir /usr/local/${appName}
 
-  wget -N --no-check-certificate -O /usr/bin/AirGo ${installScript}
-  chmod 777 /usr/bin/AirGo
+  wget -N --no-check-certificate -O /usr/bin/${appName} ${manageScript}
+  chmod 777 /usr/bin/${appName}
 
-  wget -N --no-check-certificate -O /usr/local/AirGo/AirGo.zip ${downloadPrefix}${latestVersion}/AirGo-${latestVersion}-${system}-${arch}.zip
+  wget -N --no-check-certificate -O /usr/local/${appName}/${appName}.zip ${downloadPrefix}${latestVersion}/${appName}-${system}-${arch}-${latestVersion}.zip
   if [[ $? -ne 0 ]]; then
       echo -e "${red}下载失败，请重试${plain}"
       exit 1
   fi
   echo -e "开始解压..."
-  cd /usr/local/AirGo/
-  unzip AirGo.zip
-  chmod 777 -R /usr/local/AirGo
-  mv /usr/local/AirGo/AirGo-${latestVersion}-${system}-${arch} /usr/local/AirGo/AirGo
+  cd /usr/local/${appName}/
+  unzip ${appName}.zip
+  chmod 777 -R /usr/local/${appName}
+  mv /usr/local/${appName}/${appName}-${latestVersion}-${system}-${arch} /usr/local/${appName}/${appName}
 
 }
 add_service(){
@@ -188,28 +192,23 @@ EOF
 
 }
 install(){
-  installation_status 'AirGo'
+  installation_status ${appName}
   if [[ $? -eq 0 ]]; then
-      echo -e "${red}AirGo已安装${plain}"
+      echo -e "${red}${appName}已安装${plain}"
       echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
       main
   fi
-
-  run_status "AirGo"
+  run_status ${appName}
   if [[ $? -eq 0 ]]; then
-   echo -e "${red}AirGo正在运行${plain}"
+   echo -e "${red}${appName}正在运行${plain}"
    echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
    main
   fi
-
   download
-  add_service "AirGo"
+  add_service ${appName}
   systemctl daemon-reload
-  systemctl enable AirGo
-#  systemctl start AirGo
-
+  systemctl enable ${appName}
   echo -e "${green}安装完成，版本：${latestVersion}${plain}"
-
   echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
   main
 }
@@ -219,11 +218,11 @@ uninstall(){
           return 0
       fi
   echo -e "开始卸载"
-      systemctl stop $1
-      systemctl disable $1
+      systemctl stop ${appName}
+      systemctl disable ${appName}
       systemctl daemon-reload
       systemctl reset-failed
-      rm -rf /etc/systemd/system/$1.service /usr/local/$1
+      rm -rf /etc/systemd/system/${appName}.service /usr/local/${appName}
 
   echo -e "${green}卸载完成${plain}"
   echo
@@ -232,31 +231,30 @@ uninstall(){
 }
 
 start(){
-
-  installation_status 'AirGo'
+  installation_status ${appName}
   if [[ $? -eq 1 ]]; then
-      echo -e "${red}AirGo未安装${plain}"
+      echo -e "${red}${appName}未安装${plain}"
       echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
       main
   fi
 
-  run_status "AirGo"
+  run_status ${appName}
   if [[ $? -eq 0 ]]; then
-   echo -e "${red}AirGo正在运行${plain}"
+   echo -e "${red}${appName}正在运行${plain}"
    echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
    main
   fi
 
   httpPort=$(read_yaml $yamlFile "http-port")
   name=$(lsof -i:$httpPort | awk '{print $1}')
-  if [[ ! $name == "AirGo" && ！$name == "" ]]; then
-    echo -e "${red}端口被占用，请检查端口，或者修改 /usr/local/AirGo/config.yaml 配置文件${plain}"
+  if [[ ! $name == ${appName} && ！$name == "" ]]; then
+    echo -e "${red}端口被占用，请检查端口，或者修改 /usr/local/${appName}/config.yaml 配置文件${plain}"
     echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
     main
   fi
 
-  systemctl start AirGo
-  systemctl is-active AirGo
+  systemctl start ${appName}
+  systemctl is-active ${appName}
 
   echo -e "${green}操作完成${plain}"
   echo -e "${green}公网访问：${ipv4}:${httpPort}${plain}"
@@ -267,60 +265,96 @@ start(){
   main
 }
 stop(){
-    installation_status 'AirGo'
+    installation_status ${appName}
     if [[ $? -eq 1 ]]; then
-        echo -e "${red}AirGo未安装${plain}"
+        echo -e "${red}${appName}未安装${plain}"
         echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
         main
     fi
 
-    run_status "AirGo"
+    run_status ${appName}
     if [[ $? -eq 1 ]]; then
-     echo -e "${red}AirGo未运行${plain}"
+     echo -e "${red}${appName}未运行${plain}"
      echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
      main
     fi
 
-  systemctl stop AirGo
-  systemctl is-active AirGo
+  systemctl stop ${appName}
+  systemctl is-active ${appName}
   echo -e "${green}操作完成${plain}"
   echo
   echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
   main
 }
+update(){
+  confirm_msg "请务必做好数据备份！！！是否下载最新核心？" "n"
+  if [[ $? != 0 ]]; then
+      return 0
+  fi
+  cd /usr/local/${appName}
+  echo -e "${yellow}为防止关键数据丢失，正在备份原文件夹...${plain}"
+  date=$(date +%Y_%m_%d_%H_%M)
+  zip -rq AirGo_${date}.zip /usr/local/${appName}
+  echo -e "${yellow}原文件夹已备份为：${plain}AirGo_${date}.zip"
+  echo -e "${yellow}正在下载版本：${plain}${latestVersion}"
+
+  mkdir temp
+  cd temp
+  wget -N --no-check-certificate -O ${appName}.zip ${downloadPrefix}${latestVersion}/${appName}-${system}-${arch}-${latestVersion}.zip
+  if [[ $? -ne 0 ]]; then
+      echo -e "${red}下载失败，请重试${plain}"
+      exit 1
+  fi
+  echo -e "开始解压..."
+  unzip ${appName}.zip
+  chmod 777 *
+  rm -rf /usr/local/${appName}/${appName}
+  mv ${appName}-${system}-${arch} /usr/local/${appName}/${appName}
+  chmod 777 /usr/local/${appName}
+  cd ..
+  rm -rf temp
+
+  echo -e "${yellow}正在更新管理脚本...${plain}"
+  rm -rf /usr/bin/${appName}
+  wget -N --no-check-certificate -O /usr/bin/${appName} ${manageScript}
+  chmod 777 /usr/bin/${appName}
+  confirm_msg "是否立即重启服务？" "n"
+  if [[ $? != 0 ]]; then
+      return 0
+  fi
+  systemctl restart ${appName}
+}
 
 reset_admin(){
-  installation_status 'AirGo'
+  installation_status ${appName}
   if [[ $? -eq 1 ]]; then
-      echo -e "${red}AirGo未安装${plain}"
+      echo -e "${red}${appName}未安装${plain}"
       echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
       main
   fi
 
-  cd /usr/local/AirGo/
-  ./AirGo -resetAdmin
+  cd /usr/local/${appName}/
+  ./${appName} -resetAdmin
   echo -e "${green}完成${plain}"
   echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
   main
 }
 
 acme(){
-  installation_status 'AirGo'
+  installation_status ${appName}
   if [[ $? -eq 1 ]]; then
-      echo -e "${red}AirGo未安装${plain}"
+      echo -e "${red}${appName}未安装${plain}"
       echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
       main
   fi
 
-  installation_status "AirGo"
+  installation_status ${appName}
   if [[ $? -ne 0 ]]; then
-   echo -e "${red}AirGo未安装,脚本退出${plain}"
+   echo -e "${red}${appName}未安装,脚本退出${plain}"
    exit 1
   fi
-  cd /usr/local/AirGo
-
-
-  if [[ ! -f /usr/local/AirGo/acme.sh/acme.sh ]];then
+  cd /usr/local/${appName}
+  if [[ ! -f /usr/local/${appName}/acme.sh/acme.sh ]];then
     git clone ${acmeGit}
     chmod 777 -R acme.sh
   fi
@@ -366,13 +400,13 @@ acme(){
         exit 1
     fi
   echo -e "${green}申请成功,证书文件在/root/.acme.sh/${domain}文件夹下${plain}"
-  echo -e "${green}正在将证书复制到/usr/local/AirGo/${plain}"
+  echo -e "${green}正在将证书复制到/usr/local/${appName}/${plain}"
 
-  cp /root/.acme.sh/${domain}*/${domain}.cer /usr/local/AirGo/air.cer
-  cp /root/.acme.sh/${domain}*/${domain}.key /usr/local/AirGo/air.key
+  cp /root/.acme.sh/${domain}*/${domain}.cer /usr/local/${appName}/air.cer
+  cp /root/.acme.sh/${domain}*/${domain}.key /usr/local/${appName}/air.key
 
-  systemctl stop AirGo
-  systemctl start AirGo
+  systemctl stop ${appName}
+  systemctl start ${appName}
 
   httpPort=$(read_yaml $yamlFile "http-port")
   httpsPort=$(read_yaml $yamlFile "https-port")
@@ -390,17 +424,19 @@ main(){
   clear
   installationStatus='未安装'
   runStatus='未运行'
-  installation_status 'AirGo'
+  installation_status ${appName}
   if [[ $? -eq 0 ]]; then
     installationStatus='已安装'
   fi
-  run_status 'AirGo'
+  run_status ${appName}
     if [[ $? -eq 0 ]]; then
       runStatus='已运行'
     fi
 
   echo -e "
-  ${green}AirGo-panel 管理脚本${plain}
+  ${green}${appName}-panel 管理脚本${plain}
+  当前版本：${currentVersion}
+  最新版本：${latestVersion}
 
   状态： ${green}${installationStatus}${plain}    ${green}${runStatus}${plain}
   ${yellow}-------------------------${plain}
@@ -411,11 +447,12 @@ main(){
   ${green}4.${plain} 停止
   ${yellow}-------------------------${plain}
   ${green}5.${plain} 重置管理员密码
+  ${green}6.${plain} 升级最新核心
   ${yellow}-------------------------${plain}
-  ${green}6.${plain} 使用Acme脚本申请ssl证书
+  ${green}7.${plain} 使用Acme脚本申请ssl证书
   (dns手动模式，无80和443端口也可申请证书)
   ${yellow}-------------------------${plain}
-  ${green}7.${plain} 开放所有端口
+  ${green}8.${plain} 开放所有端口
   ${yellow}-------------------------${plain}
   ${green}0.${plain} 退出
  "
@@ -423,12 +460,13 @@ main(){
   echo && read -p "请输入序号: " tem
   case "${tem}" in
   1) install;;
-  2) uninstall "AirGo";;
+  2) uninstall;;
   3) start;;
   4) stop;;
   5) reset_admin;;
-  6) acme;;
-  7) open_ports;;
+  6) update;;
+  7) acme;;
+  8) open_ports;;
   *) exit 0;;
 
   esac

@@ -1,6 +1,8 @@
 package format_plugin
 
 import (
+	"bytes"
+	"encoding/json"
 	"strings"
 	"unicode"
 )
@@ -70,4 +72,15 @@ func ArrayDeduplication(slice []int64) []int64 {
 		j++
 	}
 	return slice[:j]
+}
+
+// JsonMarshal
+func JsonMarshal(data any) (string, error) {
+	bf := bytes.NewBuffer([]byte{})
+	jsonEncoder := json.NewEncoder(bf)
+	err := jsonEncoder.Encode(data)
+	if err != nil {
+		return "", err
+	}
+	return bf.String(), nil
 }

@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="state.isShowDialog" :title="state.title" width="80%" destroy-on-close align-center>
-    <div>
+    <div v-if="state.title==='新建节点'">
       <el-divider content-position="left">节点类型</el-divider>
       <el-form label-width="100px">
         <el-form-item label="节点类型">

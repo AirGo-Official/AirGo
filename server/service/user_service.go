@@ -16,9 +16,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// 注册,角色对应如下
-// {ID: 1, RoleName: "admin", Description: "超级管理员"},
-// {ID: 2, RoleName: "普通用户", Description: "普通用户"},
+// 注册
 func Register(u *model.User) error {
 	//判断是否存在
 	var user model.User
@@ -31,7 +29,7 @@ func Register(u *model.User) error {
 			UserName:       u.UserName,
 			NickName:       u.UserName,
 			Password:       encrypt_plugin.BcryptEncode(u.Password),
-			RoleGroup:      []model.Role{{ID: 2}}, //默认角色
+			RoleGroup:      []model.Role{{ID: 2}}, //默认角色,普通用户
 			InvitationCode: encrypt_plugin.RandomString(8),
 			ReferrerCode:   u.ReferrerCode,
 		}
@@ -99,25 +97,6 @@ func Login(u *model.UserLogin) (*model.User, error) {
 		return &user, err
 	}
 	return &user, err
-}
-
-// 获取当前请求节点（根据 node_id 参数判断）可连接的用户
-func FindUsersByGoods(goods *[]model.Goods) (*[]model.SSUsers, error) {
-	var goodsArr []int64
-	for _, v := range *goods {
-		goodsArr = append(goodsArr, v.ID)
-	}
-	var users []model.SSUsers
-	//err := global.DB.Model(&model.User{}).Where("goods_id in (?)", goodsArr).Find(&users).Error
-	err := global.DB.Model(&model.User{}).Where("goods_id in (?) and sub_status = ?", goodsArr, true).Find(&users).Error
-	return &users, err
-}
-
-// 查询订单属于哪个用户
-func FindUsersByOrderID(outTradeNo string) (*model.User, error) {
-	var order model.Orders
-	err := global.DB.Where("out_trade_no = ?", outTradeNo).Preload("User").Find(&order).Error
-	return &order.User, err
 }
 
 // 查用户 by user_id

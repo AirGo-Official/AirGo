@@ -1,6 +1,7 @@
 package service
 
 import (
+	"AirGo/global"
 	"AirGo/model"
 	"AirGo/utils/encrypt_plugin"
 	"AirGo/utils/net_plugin"
@@ -245,7 +246,27 @@ func ParseTrojanLink(link string) *model.NodeShared {
 	return node
 }
 
-func ParseUrl(urlStr string) *[]model.NodeShared {
+func ParseSSLink(link string) *model.NodeShared {
+	ss, err := url.Parse(link)
+	var node model.NodeShared
+	if err != nil {
+		global.Logrus.Error(err.Error())
+		return nil
+	}
+	node.NodeType = "shadowsocks"
+	node.Remarks = ss.Fragment
+	node.Address = ss.Hostname()
+	node.Port, err = strconv.ParseInt(ss.Port(), 10, 64)
+
+	p, _ := SubBase64Decode(ss.User.String())
+	arr := strings.SplitN(p, ":", 2)
+	node.Scy = arr[0]
+	node.UUID = arr[1] //Passwd存到uuid字段
+
+	return &node
+}
+
+func ParseSubUrl(urlStr string) *[]model.NodeShared {
 	//去掉前后空格
 	urlStr = strings.TrimSpace(urlStr)
 	//订阅url
@@ -267,17 +288,10 @@ func ParseUrl(urlStr string) *[]model.NodeShared {
 	if urlStrBase64Decode, err := SubBase64Decode(urlStr); err == nil {
 		urlStr = urlStrBase64Decode
 	}
-	s := strings.ReplaceAll(urlStr, "\r\n", "")
-	s = strings.ReplaceAll(s, "\r", "")
-	s = strings.ReplaceAll(s, "\n", "")
-	s = strings.ReplaceAll(s, "\t", "")
-	s = strings.ReplaceAll(s, "vless", "\nvless")
-	s = strings.ReplaceAll(s, "vmess", "\nvmess")
-	s = strings.ReplaceAll(s, "trojan", "\ntrojan")
-	list := strings.Split(strings.TrimRight(s, "\n"), "\n")
+	list := strings.Fields(urlStr) //节点url数组
 	var Nodes []model.NodeShared
 	for _, v := range list {
-		data := ParseLink(v)
+		data := ParseOne(v)
 		if data == nil {
 			continue
 		}
@@ -287,7 +301,7 @@ func ParseUrl(urlStr string) *[]model.NodeShared {
 }
 
 // 解析一条节点,vmess vless trojan
-func ParseLink(link string) *model.NodeShared {
+func ParseOne(link string) *model.NodeShared {
 	//fmt.Println("解析一条链接", link)
 	u, err := url.Parse(link)
 	if err != nil {
@@ -304,6 +318,10 @@ func ParseLink(link string) *model.NodeShared {
 		}
 	case "trojan":
 		if obj := ParseTrojanLink(link); obj != nil {
+			return obj
+		}
+	case "ss":
+		if obj := ParseSSLink(link); obj != nil {
 			return obj
 		}
 	}

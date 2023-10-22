@@ -18,13 +18,9 @@ export const useNodeStore = defineStore("nodeStore", {
         //弹窗页数据
         dialogData: {
             vlessInfo: {
-                // created_at: string;
-                // updated_at: string;
-                // id: 0,
                 node_speedlimit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
                 node_type: 'vless',
-                // type: string;//显示与隐藏
                 uuid: '',
                 //基础参数
                 remarks: '',//别名
@@ -36,25 +32,20 @@ export const useNodeStore = defineStore("nodeStore", {
                 enable_transfer: false,//是否启用中转
                 transfer_address: '',//中转ip
                 transfer_port: 0,   //中转port
-                //
                 total_up: 0,
                 total_down: 0,
                 goods: [],//多对多,关联商品
-                //vmess参数
                 v: '2',
-                scy: 'none',//加密方式 vless需要填 "none"，不能留空。
+                scy: 'none',
                 aid: 0,//额外ID
-                //vless参数
                 flow: '',//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
-                encryption: '',//加密方式 none
-
+                encryption: 'none',//加密方式 vless:none
                 network: 'ws',//传输协议 tcp,kcp,ws,h2,quic,grpc
                 type: '',   //伪装类型 ws,h2：无    tcp,kcp：none，http    quic：none，srtp，utp，wechat-video，dtls，wireguard
                 host: '',   //伪装域名
                 path: '/',   //path
                 mode: 'multi',   //grpc传输模式 gun，multi
                 service_name: 'www.10010.com',
-
                 security: 'none',//传输层安全类型 none,tls,reality
                 sni: '',
                 fp: 'chrome',
@@ -67,13 +58,9 @@ export const useNodeStore = defineStore("nodeStore", {
                 spx: '',
             } as NodeInfo,
             vmessInfo: {
-                // created_at: string;
-                // updated_at: string;
-                // id: 0,
                 node_speedlimit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
                 node_type: 'vmess',
-                // type: string;//显示与隐藏
                 uuid: '',
                 //基础参数
                 remarks: '',//别名
@@ -88,7 +75,6 @@ export const useNodeStore = defineStore("nodeStore", {
                 //
                 total_up: 0,
                 total_down: 0,
-
                 goods: [],//多对多,关联商品
                 //vmess参数
                 v: '2',
@@ -97,14 +83,12 @@ export const useNodeStore = defineStore("nodeStore", {
                 //vless参数
                 flow: '',//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
                 encryption: '',//加密方式 none
-
                 network: '',//传输协议 tcp,kcp,ws,h2,quic,grpc
                 type: '',   //伪装类型 ws,h2：无    tcp,kcp：none，http    quic：none，srtp，utp，wechat-video，dtls，wireguard
                 host: '',   //伪装域名
                 path: '/',   //path
                 mode: 'multi',   //grpc传输模式 gun，multi
                 service_name: 'www.10010.com',
-
                 security: 'none',//传输层安全类型 none,tls,reality
                 sni: '',
                 fp: 'chrome',
@@ -117,13 +101,9 @@ export const useNodeStore = defineStore("nodeStore", {
                 spx: '',
             } as NodeInfo,
             shadowsocksInfo: {
-                // created_at: string;
-                // updated_at: string;
-                // id: 0,
                 node_speedlimit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
                 node_type: 'shadowsocks',
-                // type: string;//显示与隐藏
                 uuid: '',
                 //基础参数
                 remarks: '',//别名
@@ -138,7 +118,6 @@ export const useNodeStore = defineStore("nodeStore", {
                 //
                 total_up: 0,
                 total_down: 0,
-
                 goods: [],//多对多,关联商品
                 //vmess参数
                 v: '2',
@@ -147,14 +126,12 @@ export const useNodeStore = defineStore("nodeStore", {
                 //vless参数
                 flow: '',//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
                 encryption: '',//加密方式 none
-
                 network: '',//传输协议 tcp,kcp,ws,h2,quic,grpc
                 type: '',   //伪装类型 ws,h2：无    tcp,kcp：none，http    quic：none，srtp，utp，wechat-video，dtls，wireguard
                 host: '',   //伪装域名
                 path: '/',   //path
                 mode: 'multi',   //grpc传输模式 gun，multi
                 service_name: '/',
-
                 security: 'none',//传输层安全类型 none,tls,reality
                 sni: '',
                 fp: 'chrome',
