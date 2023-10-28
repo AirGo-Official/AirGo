@@ -54,10 +54,11 @@ type AGNodeInfo struct {
 	SpiderX     string `json:"spx"`
 }
 type AGUserInfo struct {
-	ID       int64     `json:"id"`
-	UUID     uuid.UUID `json:"uuid"`
-	Passwd   string    `json:"passwd"`
-	UserName string    `json:"user_name"`
+	ID            int64     `json:"id"`
+	UUID          uuid.UUID `json:"uuid"`
+	Passwd        string    `json:"passwd"`
+	UserName      string    `json:"user_name"`
+	NodeConnector int64     `json:"node_connector"` //连接客户端数
 }
 
 type AGUserTraffic struct {

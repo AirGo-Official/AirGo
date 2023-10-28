@@ -6,12 +6,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// gorm 创建/更新时间追踪（纳秒、毫秒、秒、Time）
-// CreatedAt time.Time // 在创建时，如果该字段值为零值，则使用当前时间填充
-// UpdatedAt int64       // 在创建时该字段值为零值或者在更新时，使用当前时间戳秒数填充
-// Updated   int64 `gorm:"autoUpdateTime:nano"` // 使用时间戳纳秒数填充更新时间
-// Updated   int64 `gorm:"autoUpdateTime:milli"` // 使用时间戳毫秒数填充更新时间
-// Created   int64 `gorm:"autoCreateTime"`      // 使用时间戳秒数填充创建时间
 // 用户
 type User struct {
 	CreatedAt time.Time  `json:"created_at"`

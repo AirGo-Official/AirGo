@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"log"
 )
 
 // 获取监控
@@ -200,7 +201,7 @@ func QueryPackage(ctx *gin.Context) {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	//log.Println("token解析后 claims.ID：", claims.ID)
+	log.Println("token解析后 claims.ID：", claims.UserID)
 	//设置user id
 	uID := claims.UserID
 	//查询monitor
@@ -211,6 +212,7 @@ func QueryPackage(ctx *gin.Context) {
 		})
 		return
 	}
+	Show(isp)
 	//查询套餐
 	var resp string
 	switch isp.ISPType {

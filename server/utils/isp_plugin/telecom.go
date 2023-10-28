@@ -132,6 +132,7 @@ func TelecomLogin(isp *model.ISP) (string, error) {
 
 // 电信查询套餐详情
 func TelecomQueryPackage(isp *model.ISP) (string, error) {
+
 	client := net_plugin.ClientWithDNS("114.114.114.114", 10*time.Second)
 	timestamp := time.Now().Format("20060102150405")
 	var jsonMap = map[string]interface{}{
@@ -208,7 +209,7 @@ func TelecomQueryTrafficHandler(resp, mobile string) (string, error) {
 	//流量包列表
 	ratableResourcePackages := respMap["responseData"].(map[string]interface{})["data"].(map[string]interface{})["productOFFRatable"].(map[string]interface{})["ratableResourcePackages"].([]interface{})
 
-	//国内通用流量,判断是否为空!!!!!!!!!!!!!!!!!
+	//国内通用流量，（下次判断是否为空）
 	var generic string
 	genericUse := ratableResourcePackages[0].(map[string]interface{})["leftStructure"].(map[string]interface{})["title"].(string) + "---" + ratableResourcePackages[0].(map[string]interface{})["leftStructure"].(map[string]interface{})["num"].(string) + ratableResourcePackages[0].(map[string]interface{})["leftStructure"].(map[string]interface{})["unit"].(string)
 	genericRemainRightStructure, ok := ratableResourcePackages[0].(map[string]interface{})["rightStructure"].(map[string]interface{})
@@ -243,47 +244,42 @@ func TelecomQueryTrafficHandler(resp, mobile string) (string, error) {
 
 	}
 
-	//专用流量,判断是否为空!!!!!!!!!!!!!!!!!
+	//专用流量
 	var special, specialUse string
-	//specialUse := ratableResourcePackages[1].(map[string]interface{})["leftStructure"].(map[string]interface{})["num"].(string) + ratableResourcePackages[0].(map[string]interface{})["leftStructure"].(map[string]interface{})["unit"].(string) + "[" + ratableResourcePackages[0].(map[string]interface{})["leftStructure"].(map[string]interface{})["title"].(string) + "]\n"
-
-	specialUseLeftStructure, ok := ratableResourcePackages[1].(map[string]interface{})["leftStructure"].(map[string]interface{})
-	if ok {
-		specialUse = specialUseLeftStructure["title"].(string) + specialUseLeftStructure["num"].(string) + specialUseLeftStructure["unit"].(string)
-	}
-	//
-	//specialRemainRightStructure, ok := ratableResourcePackages[1].(map[string]interface{})["rightStructure"].(map[string]interface{})
-	//if ok {
-	//	specialRemain = specialRemainRightStructure["title"].(string) + specialRemainRightStructure["num"].(string) + specialRemainRightStructure["unit"].(string)
-	//}
-	special = "【" + specialUse + "】"
-
-	//专用流量详情
 	var specialInfo string
-	specialProductInfos, ok := ratableResourcePackages[1].(map[string]interface{})["productInfos"].([]interface{})
-	if ok {
-		for _, v := range specialProductInfos {
-			var name, use, remain, total string
+	if len(ratableResourcePackages) > 1 {
+		fmt.Println("不为空")
+		specialUseLeftStructure, ok1 := ratableResourcePackages[1].(map[string]interface{})["leftStructure"].(map[string]interface{})
+		if ok1 {
+			fmt.Println(55)
+			specialUse = specialUseLeftStructure["title"].(string) + specialUseLeftStructure["num"].(string) + specialUseLeftStructure["unit"].(string)
+		}
+		special = "【" + specialUse + "】"
+		//专用流量详情
+		specialProductInfos, ok := ratableResourcePackages[1].(map[string]interface{})["productInfos"].([]interface{})
+		if ok {
+			for _, v := range specialProductInfos {
+				var name, use, remain, total string
 
-			switch v.(map[string]interface{})["isInfiniteAmount"] {
-			case "0": //限量
-				name = v.(map[string]interface{})["title"].(string)
-				use = v.(map[string]interface{})["leftTitle"].(string) + v.(map[string]interface{})["leftHighlight"].(string)
-				remain = v.(map[string]interface{})["rightTitle"].(string) + v.(map[string]interface{})["rightHighlight"].(string)
-				total = v.(map[string]interface{})["rightCommon"].(string)
-				item := name + "\n" + "[" + use + "]" + "[" + remain + "]" + "[" + total + "]\n" + "--------------------------------------------------------------------------------\n"
-				specialInfo += item
-			case "1": //不限量
-				name = v.(map[string]interface{})["title"].(string) + "【不限量】"
-				use = v.(map[string]interface{})["infiniteTitle"].(string) + v.(map[string]interface{})["infiniteValue"].(string) + v.(map[string]interface{})["infiniteUnit"].(string)
-				item := name + "\n" + "[" + use + "]" + "\n" + "--------------------------------------------------------------------------------\n"
-				specialInfo += item
+				switch v.(map[string]interface{})["isInfiniteAmount"] {
+				case "0": //限量
+					name = v.(map[string]interface{})["title"].(string)
+					use = v.(map[string]interface{})["leftTitle"].(string) + v.(map[string]interface{})["leftHighlight"].(string)
+					remain = v.(map[string]interface{})["rightTitle"].(string) + v.(map[string]interface{})["rightHighlight"].(string)
+					total = v.(map[string]interface{})["rightCommon"].(string)
+					item := name + "\n" + "[" + use + "]" + "[" + remain + "]" + "[" + total + "]\n" + "--------------------------------------------------------------------------------\n"
+					specialInfo += item
+				case "1": //不限量
+					name = v.(map[string]interface{})["title"].(string) + "【不限量】"
+					use = v.(map[string]interface{})["infiniteTitle"].(string) + v.(map[string]interface{})["infiniteValue"].(string) + v.(map[string]interface{})["infiniteUnit"].(string)
+					item := name + "\n" + "[" + use + "]" + "\n" + "--------------------------------------------------------------------------------\n"
+					specialInfo += item
+
+				}
 
 			}
-
 		}
 	}
-
 	var result = map[string]interface{}{
 		"ispType":     "telecom",
 		"packageName": packageName,
