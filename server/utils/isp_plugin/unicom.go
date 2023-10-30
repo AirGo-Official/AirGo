@@ -18,7 +18,7 @@ const (
 	UnicomCodeUrl         = "https://m.client.10010.com/mobileService/sendRadomNum.htm"
 	UnicomLoginUrl        = "https://m.client.10010.com/mobileService/radomLogin.htm"
 	UnicomQueryTrafficUrl = "https://m.client.10010.com/servicequerybusiness/operationservice/queryOcsPackageFlowLeftContentRevisedInJune"
-	Version               = "iphone_c@10.5"
+	Version               = "iphone_c@15.6"
 	UnicomPublicKey       = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDc+CZK9bBA9IU+gZUOc6FUGu7yO9WpTNB0PzmgFBh96Mg1WrovD1oqZ+eIF4LjvxKXGOdI79JRdve9NPhQo07+uqGQgE4imwNnRx7PFtCRryiIEcUoavuNtuRVoBAm6qdB0SrctgaqGfLgKvZHOnwTjyNqjBUxzMeQlEC2czEMSwIDAQAB"
 )
 
