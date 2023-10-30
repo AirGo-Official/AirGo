@@ -7,6 +7,7 @@ import (
 	"AirGo/utils/encrypt_plugin"
 	"AirGo/utils/response"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -14,6 +15,10 @@ import (
 	"time"
 )
 
+func Show(data any) {
+	b, _ := json.Marshal(data)
+	fmt.Println(string(b))
+}
 func AGGetNodeInfo(ctx *gin.Context) {
 	//验证key
 	if global.Server.System.MuKey != ctx.Query("key") {

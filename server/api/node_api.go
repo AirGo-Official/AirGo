@@ -6,15 +6,8 @@ import (
 	"AirGo/service"
 	"AirGo/utils/encrypt_plugin"
 	"AirGo/utils/response"
-	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
-
-func Show(data any) {
-	b, _ := json.Marshal(data)
-	fmt.Println(string(b))
-}
 
 // 获取全部节点
 func GetAllNode(ctx *gin.Context) {

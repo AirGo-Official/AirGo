@@ -23,8 +23,8 @@ func GetMonitorByUserID(ctx *gin.Context) {
 		response.Fail("获取信息,uID参数错误", nil, ctx)
 		return
 	}
-	isp, _, err := service.CommonSqlFind[model.ISP, string, model.ISP]("user_id = " + fmt.Sprintf("%d", uIDInt))
-
+	isp, _, err := service.CommonSqlFirst[model.ISP, string, model.ISP]("user_id = " + fmt.Sprintf("%d", uIDInt))
+	Show(isp)
 	if err == gorm.ErrRecordNotFound {
 		//创建新的
 		var ispNew = model.ISP{

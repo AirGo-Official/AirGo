@@ -16,10 +16,23 @@ func CommonSqlFind[T1, T2, T3 any](params T2) (T3, int64, error) {
 	var modelType T1
 	var total int64
 	if reflect.TypeOf(params).String() == reflect.String.String() {
-		err = global.DB.Model(&modelType).Where(params).Count(&total).Find(&res).Error
+		err = global.DB.Model(&modelType).Where(params).Find(&res).Error
 
 	} else {
 		err = global.DB.Model(&modelType).Where(&params).Count(&total).Find(&res).Error
+	}
+	return res, total, err
+}
+func CommonSqlFirst[T1, T2, T3 any](params T2) (T3, int64, error) {
+	var res T3
+	var err error
+	var modelType T1
+	var total int64
+	if reflect.TypeOf(params).String() == reflect.String.String() {
+		err = global.DB.Model(&modelType).Where(params).First(&res).Error
+
+	} else {
+		err = global.DB.Model(&modelType).Where(&params).Count(&total).First(&res).Error
 	}
 	return res, total, err
 }

@@ -13,6 +13,11 @@ import (
 	"strings"
 )
 
+func Show(data any) {
+	b, _ := json.Marshal(data)
+	fmt.Println(string(b))
+}
+
 func Casbin() *casbin.CachedEnforcer {
 	//sub角色id，obj请求的路径，act请求的方法
 	text := `
