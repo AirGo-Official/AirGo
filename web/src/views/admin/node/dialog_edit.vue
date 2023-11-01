@@ -188,7 +188,7 @@
             <el-input v-model="dialogData.vlessInfo.transfer_address" placeholder=""/>
           </el-form-item>
           <el-form-item label="中转端口" v-if="dialogData.vlessInfo.enable_transfer">
-            <el-input v-model="dialogData.vlessInfo.transfer_port" placeholder=""/>
+            <el-input v-model.number="dialogData.vlessInfo.transfer_port" placeholder=""/>
           </el-form-item>
         </el-form>
       </el-form>
@@ -327,7 +327,7 @@
             <el-input v-model="dialogData.vmessInfo.transfer_address" placeholder=""/>
           </el-form-item>
           <el-form-item label="中转端口" v-if="dialogData.vmessInfo.enable_transfer">
-            <el-input v-model="dialogData.vmessInfo.transfer_port" placeholder=""/>
+            <el-input v-model.number="dialogData.vmessInfo.transfer_port" placeholder=""/>
           </el-form-item>
         </el-form>
       </el-form>
@@ -410,7 +410,7 @@
           <el-input v-model="dialogData.shadowsocksInfo.transfer_address" placeholder=""/>
         </el-form-item>
         <el-form-item label="中转端口" v-if="dialogData.shadowsocksInfo.enable_transfer">
-          <el-input v-model="dialogData.shadowsocksInfo.transfer_port" placeholder=""/>
+          <el-input v-model.number="dialogData.shadowsocksInfo.transfer_port" placeholder=""/>
         </el-form-item>
       </el-form>
     </div>

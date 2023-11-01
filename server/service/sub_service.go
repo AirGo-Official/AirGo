@@ -137,6 +137,12 @@ func V2rayNGVmess(node model.Node, user model.User) string {
 		Fp:           "",
 		Sni:          "",
 	}
+	//是否中转
+	if node.EnableTransfer {
+		vmess.Address = node.TransferAddress
+		vmess.Port = fmt.Sprintf("%d", node.TransferPort)
+	}
+
 	switch node.Network {
 	case "ws":
 		vmess.Disguisetype = node.Type
@@ -172,7 +178,14 @@ func V2rayNGVlessTrojan(node model.Node, user model.User) string {
 		vlessUrl.Scheme = "trojan"
 	}
 	vlessUrl.User = url.UserPassword(user.UUID.String(), "")
-	vlessUrl.Host = node.Address + ":" + strconv.FormatInt(node.Port, 10)
+
+	//是否中转
+	if node.EnableTransfer {
+		vlessUrl.Host = node.TransferAddress + ":" + strconv.FormatInt(node.TransferPort, 10)
+	} else {
+		vlessUrl.Host = node.Address + ":" + strconv.FormatInt(node.Port, 10)
+	}
+
 	values := url.Values{}
 	switch vlessUrl.Scheme {
 	case "vless":
@@ -242,7 +255,13 @@ func V2rayNGShadowsocks(n model.Node, user model.User) string {
 		ss.User = url.UserPassword(p, "")
 	}
 
-	ss.Host = n.Address + ":" + fmt.Sprintf("%d", n.Port)
+	//是否中转
+	if n.EnableTransfer {
+		ss.Host = n.TransferAddress + ":" + fmt.Sprintf("%d", n.TransferPort)
+	} else {
+		ss.Host = n.Address + ":" + fmt.Sprintf("%d", n.Port)
+	}
+
 	ss.Fragment = n.Remarks
 	return strings.ReplaceAll(ss.String(), ":@", "@")
 

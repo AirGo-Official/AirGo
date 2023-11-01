@@ -19,15 +19,15 @@ type Server struct {
 }
 
 type Email struct {
-	EmailFrom      string `json:"email_from"`                          // 发件人
-	EmailFromAlias string `json:"email_from_alias"`                    // 发件人别名
-	EmailSecret    string `json:"email_secret"`                        // 密钥
-	EmailHost      string `json:"email_host"`                          // 服务器地址
-	EmailPort      int64  `json:"email_port"`                          // 端口
-	EmailIsSSL     bool   `json:"email_is_ssl"`                        // 是否SSL
-	EmailNickname  string `json:"email_nickname"`                      // 昵称
-	EmailSubject   string `json:"email_subject" gorm:"default:hello!"` // 邮件主题
-	EmailContent   string `json:"email_content" gorm:"size:5000"`      //邮件内容
+	EmailFrom      string `json:"email_from"`                               // 发件人
+	EmailFromAlias string `json:"email_from_alias"`                         // 发件人别名
+	EmailSecret    string `json:"email_secret"`                             // 密钥
+	EmailHost      string `json:"email_host"`                               // 服务器地址
+	EmailPort      int64  `json:"email_port"`                               // 端口
+	EmailIsSSL     bool   `json:"email_is_ssl"`                             // 是否SSL
+	EmailNickname  string `json:"email_nickname"`                           // 昵称
+	EmailSubject   string `json:"email_subject" gorm:"default:hello!"`      // 邮件主题
+	EmailContent   string `json:"email_content" gorm:"size:5000;type:text"` //邮件内容
 }
 
 type Captcha struct {
@@ -65,8 +65,8 @@ type System struct {
 type AliPaySetting struct {
 	ReturnURL    string `json:"return_url"`
 	AppID        string `json:"app_id"`
-	PrivateKey   string `json:"private_key"    gorm:"size:3000"`
-	AliPublicKey string `json:"ali_public_key" gorm:"size:3000"`
+	PrivateKey   string `json:"private_key"    gorm:"size:3000;type:text"`
+	AliPublicKey string `json:"ali_public_key" gorm:"size:3000;type:text"`
 	EncryptKey   string `json:"encrypt_key"`
 }
 

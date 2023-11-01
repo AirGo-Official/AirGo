@@ -12,7 +12,7 @@ type Goods struct {
 	//基础参数
 	GoodsOrder  int64  `json:"goods_order"` //排序
 	Subject     string `json:"subject"   gorm:"comment:商品标题"`
-	Des         string `json:"des"       gorm:"comment:描述;size:30000"`
+	Des         string `json:"des"       gorm:"comment:描述;size:30000;type:text"`
 	TotalAmount string `json:"total_amount"  gorm:"comment:金额，单位为元，精确到小数点后两位"`
 
 	CheckedNodes []int64  `json:"checked_nodes" gorm:"-"` //前端套餐编辑时选中的节点

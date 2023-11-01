@@ -454,8 +454,8 @@ func InsertInto(db *gorm.DB) error {
 	}
 	//文章
 	articleData := []model.Article{
-		{Type: "home", Title: "首页自定义显示内容", Introduction: "首页自定义显示内容，可编辑，可显示与隐藏，不可删除！", Content: text3},
-		{Type: "home", Title: "首页弹窗内容", Introduction: "首页弹窗，可编辑，可显示与隐藏，不可删除！", Content: text4},
+		{Type: "home", Title: "首页自定义显示内容", Introduction: "首页自定义显示内容，可编辑，可显示与隐藏，不可删除！", Content: text3, Status: true},
+		{Type: "home", Title: "首页弹窗内容", Introduction: "首页弹窗，可编辑，可显示与隐藏，不可删除！", Content: text4, Status: true},
 	}
 	if err := global.DB.Create(&articleData).Error; err != nil {
 		return errors.New("article表数据初始化失败!")
