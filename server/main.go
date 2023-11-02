@@ -10,7 +10,7 @@ import (
 	"runtime"
 )
 
-const v = "0.0.2"
+const v = "0.0.3"
 
 var start = flag.Bool("start", false, "启动")
 var stop = flag.Bool("stop", false, "停止")

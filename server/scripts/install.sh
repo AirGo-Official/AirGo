@@ -143,7 +143,7 @@ run_status() {
           return 0
       else
           count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
-          if [[ count -ne 0 ]]; then
+          if [[ count -eq 0 ]]; then
               return 1
           else
               return 0
@@ -168,7 +168,7 @@ download(){
   cd /usr/local/${appName}/
   unzip ${appName}.zip
   chmod 777 -R /usr/local/${appName}
-  mv /usr/local/${appName}/${appName}-${latestVersion}-${system}-${arch} /usr/local/${appName}/${appName}
+  mv /usr/local/${appName}/${appName}-${system}-${arch} /usr/local/${appName}/${appName}
 
 }
 add_service(){
