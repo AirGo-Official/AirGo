@@ -27,6 +27,7 @@ export const useApiStore = defineStore("apiStore", {
             user_getUserInfo: {path: apiPre + "/user/getUserInfo", method: "get"} as ApiItem,
             user_changeUserPassword: {path: apiPre + "/user/changeUserPassword", method: "post"} as ApiItem,
             user_resetSub: {path: apiPre + "/user/resetSub", method: "get"} as ApiItem,
+            user_clockin: {path: apiPre + "/user/clockin", method: "get"} as ApiItem,
 
             user_getUserList: {path: apiPre + "/user/getUserList", method: "post"} as ApiItem,
             user_newUser: {path: apiPre + "/user/newUser", method: "post"} as ApiItem,
@@ -125,6 +126,11 @@ export const useApiStore = defineStore("apiStore", {
             isp_ispLogin: {path: apiPre + "/isp/ispLogin", method: "post"} as ApiItem,
             isp_getMonitorByUserID: {path: apiPre + "/isp/getMonitorByUserID", method: "post"} as ApiItem,
 
+            //access
+            access_newRoutes: {path: apiPre + "/access/newRoutes", method: "post"} as ApiItem,
+            access_updateRoutes: {path: apiPre + "/access/updateRoutes", method: "post"} as ApiItem,
+            access_deleteRoutes: {path: apiPre + "/access/deleteRoutes", method: "post"} as ApiItem,
+            access_getRoutesList: {path: apiPre + "/access/getRoutesList", method: "post"} as ApiItem,
 
         },
 

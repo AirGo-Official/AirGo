@@ -112,10 +112,10 @@ func Sha256Encode(str string) string {
 // 随机数，n为 位数
 func RandomString(n int) string {
 	var defaultLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	rand.Seed(time.Now().UnixNano())
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	randomStr := make([]rune, n)
 	for i := range randomStr {
-		randomStr[i] = defaultLetters[rand.Intn(len(defaultLetters))]
+		randomStr[i] = defaultLetters[r.Intn(len(defaultLetters))]
 	}
 	return string(randomStr)
 }
@@ -123,12 +123,18 @@ func RandomString(n int) string {
 // 随机数，n为 位数,去除大写字母和0
 func RandomString2(n int) string {
 	var defaultLetters = []rune("abcdefghijklmnopqrstuvwxyz123456789")
-	rand.Seed(time.Now().UnixNano())
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	randomStr := make([]rune, n)
 	for i := range randomStr {
-		randomStr[i] = defaultLetters[rand.Intn(len(defaultLetters))]
+		randomStr[i] = defaultLetters[r.Intn(len(defaultLetters))]
 	}
 	return string(randomStr)
+}
+
+// 随机数字
+func RandomNumber(start, end int) int {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return r.Intn(end-start) + start
 }
 
 func StrToUnicode(str string) string {

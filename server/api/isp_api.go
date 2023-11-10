@@ -20,11 +20,10 @@ import (
 func GetMonitorByUserID(ctx *gin.Context) {
 	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
 	if !ok {
-		response.Fail("获取信息,uID参数错误", nil, ctx)
+		response.Fail("GetMonitorByUserID error:user id error", nil, ctx)
 		return
 	}
 	isp, _, err := service.CommonSqlFirst[model.ISP, string, model.ISP]("user_id = " + fmt.Sprintf("%d", uIDInt))
-	Show(isp)
 	if err == gorm.ErrRecordNotFound {
 		//创建新的
 		var ispNew = model.ISP{
@@ -39,7 +38,7 @@ func GetMonitorByUserID(ctx *gin.Context) {
 		service.CommonSqlCreate[model.ISP](ispNew)
 		isp, _, _ = service.CommonSqlFind[model.ISP, string, model.ISP]("user_id = " + fmt.Sprintf("%d", uIDInt))
 	}
-	response.OK("获取成功", isp, ctx)
+	response.OK("GetMonitorByUserID success", isp, ctx)
 
 }
 
@@ -48,8 +47,8 @@ func SendCode(ctx *gin.Context) {
 	var isp model.ISP
 	err := ctx.ShouldBind(&isp)
 	if err != nil {
-		global.Logrus.Error("运营商参数错误:", err)
-		response.Fail("运营商参数错误", nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("SendCode error:"+err.Error(), nil, ctx)
 		return
 	}
 	//处理mobile
@@ -65,16 +64,16 @@ func SendCode(ctx *gin.Context) {
 		resp, err = isp_plugin.TelecomCode(&isp)
 	}
 	if err != nil {
-		global.Logrus.Error("发送验证码错误:", err)
-		response.Fail("发送验证码错误", nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("SendCode error:"+err.Error(), nil, ctx)
 		return
 	}
 	//判断是否为空
 	respMap := make(map[string]interface{})
 	err = json.Unmarshal([]byte(resp), &respMap)
 	if err != nil {
-		global.Logrus.Error("resp解析错误:", err)
-		response.Fail("resp解析错误", nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("SendCode error:"+err.Error(), nil, ctx)
 		return
 	}
 	switch isp.ISPType {
@@ -107,18 +106,17 @@ func SendCode(ctx *gin.Context) {
 func ISPLogin(ctx *gin.Context) {
 	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
 	if !ok {
-		response.Fail("获取信息,uID参数错误", nil, ctx)
+		response.Fail("ISPLogin error:user id error", nil, ctx)
 		return
 	}
 
 	var isp model.ISP
 	err := ctx.ShouldBind(&isp)
 	if err != nil {
-		global.Logrus.Error("运营商参数错误:", err)
-		response.Fail("运营商参数错误", nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("ISPLogin error:"+err.Error(), nil, ctx)
 		return
 	}
-	//fmt.Println("登录：", isp)
 	if isp.ISPType == "loginAgain" {
 		//清空手机号信息，重新登录
 		isp1, _, _ := service.CommonSqlFind[model.ISP, string, model.ISP]("user_id = " + fmt.Sprintf("%d", uIDInt))
@@ -143,7 +141,7 @@ func ISPLogin(ctx *gin.Context) {
 		isp.UnicomConfig.Password = pw
 		resp, cookie, err = isp_plugin.UnicomCodeLogin(isp.UnicomConfig.Password, isp.UnicomConfig.UnicomMobile, isp.UnicomConfig.APPID)
 		if err != nil {
-			global.Logrus.Error("尝试登录错误:", err)
+			global.Logrus.Error(err.Error())
 			response.Fail("尝试登录错误", nil, ctx)
 			return
 		}
@@ -157,7 +155,7 @@ func ISPLogin(ctx *gin.Context) {
 		err = json.Unmarshal([]byte(resp), &respMap)
 
 		if err != nil {
-			global.Logrus.Error("resp解析错误:", err)
+			global.Logrus.Error(err.Error())
 			response.Fail("resp解析错误", nil, ctx)
 			return
 		}
@@ -170,7 +168,6 @@ func ISPLogin(ctx *gin.Context) {
 		isp.UnicomConfig.Cookie = cookie
 		isp.Status = true
 		service.CommonSqlSave[model.ISP](isp)
-		//response.OK("登录成功", resp, ctx)
 		response.OK("登录成功", string(json.RawMessage(resp)), ctx)
 	case "telecom":
 		resp, err = isp_plugin.TelecomLogin(&isp)
@@ -212,7 +209,6 @@ func QueryPackage(ctx *gin.Context) {
 		})
 		return
 	}
-	Show(isp)
 	//查询套餐
 	var resp string
 	switch isp.ISPType {

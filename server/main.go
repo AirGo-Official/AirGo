@@ -10,7 +10,7 @@ import (
 	"runtime"
 )
 
-const v = "0.0.3"
+const v = "old-version"
 
 var start = flag.Bool("start", false, "启动")
 var stop = flag.Bool("stop", false, "停止")
@@ -22,9 +22,11 @@ func main() {
 	switch runtime.GOOS {
 	case "darwin":
 		initialize.InitializeAll() //初始化系统资源并启动路由
+
 		//global.VP = initialize.InitViper() //初始化Viper
 		//global.DB = initialize.Gorm()      //gorm连接数据库
 		//initialize.InitServer()            //加载全局系统配置
+
 	default:
 		flag.Parse()
 		if *start {

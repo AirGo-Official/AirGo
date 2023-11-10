@@ -74,7 +74,6 @@ const opDeleteCoupon = (row: Coupon) => {
   })
       .then(() => {
         request(apiStoreData.api.value.coupon_deleteCoupon, row).then((res) => {
-          ElMessage.success(res.msg);
         })
         setTimeout(() => {
           getCoupon()

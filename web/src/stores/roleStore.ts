@@ -49,7 +49,6 @@ export const useRoleStore = defineStore("roleStore", {
         async getRoleList(params?: object) {
             const res: any = await request(apiStoreData.api.value.role_getRoleList, params)
             this.roleManageData.roles = res.data
-            ElMessage.success(res.msg)
         },
 
         //获取当前角色的权限
@@ -68,12 +67,10 @@ export const useRoleStore = defineStore("roleStore", {
         async getAllPolicy() {
             const res = await request(apiStoreData.api.value.casbin_getAllPolicy)
             this.dialogEditApi.allCasbinInfo = res.data
-            ElMessage.success(res.msg)
         },
         //更新角色权限
         async updateCasbinPolicy(params?: object) {
             const res = await request(apiStoreData.api.value.casbin_updateCasbinPolicy, params)
-            ElMessage.success(res.msg)
         }
     }
 })

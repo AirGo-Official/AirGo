@@ -28,7 +28,7 @@ func GetUserSub(url string, subType string) string {
 	err = global.DB.Where("id = ?", u.SubscribeInfo.GoodsID).Preload("Nodes", func(db *gorm.DB) *gorm.DB { return db.Order("node_order") }).Find(&goods).Error
 	// 计算剩余天数，流量
 	expiredTime := u.SubscribeInfo.ExpiredAt.Format("2006-01-02")
-	expiredBd1 := (float64(u.SubscribeInfo.T - u.SubscribeInfo.U - u.SubscribeInfo.D)) / 1024 / 1024 / 1024
+	expiredBd1 := (float64(u.SubscribeInfo.T - u.SubscribeInfo.U - u.SubscribeInfo.D)) / 1024 / 1024 / 1024 //B->KB->MB->GB
 	expiredBd2 := strconv.FormatFloat(expiredBd1, 'f', 2, 64)
 
 	var firstNode = model.Node{

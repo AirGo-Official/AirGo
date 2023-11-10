@@ -7,7 +7,6 @@ import (
 	"AirGo/utils/other_plugin"
 	"AirGo/utils/response"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"strconv"
 )
 
@@ -15,7 +14,7 @@ import (
 func Purchase(ctx *gin.Context) {
 	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
 	if !ok {
-		response.Fail("获取信息,uID参数错误", nil, ctx)
+		response.Fail("Purchase error:user id error", nil, ctx)
 		return
 	}
 	// 前端传的订单信息，前端下次优化：只传订单id和支付方式id
@@ -29,14 +28,9 @@ func Purchase(ctx *gin.Context) {
 	receiveOrder.UserID = uIDInt //确认user id
 	sysOrder, _, err := service.CommonSqlFind[model.Orders, model.Orders, model.Orders](model.Orders{UserID: receiveOrder.UserID, OutTradeNo: receiveOrder.OutTradeNo})
 	if err != nil {
-		global.Logrus.Error("根据订单号查询订单error:", err.Error())
-		if err == gorm.ErrRecordNotFound {
-			response.Fail("订单不存在"+err.Error(), nil, ctx)
-			return
-		} else {
-			response.Fail("订单查询错误"+err.Error(), nil, ctx)
-			return
-		}
+		global.Logrus.Error(err.Error())
+		response.Fail("Purchase error:"+err.Error(), nil, ctx)
+		return
 	}
 	//0元购，跳过支付
 	totalAmountFloat64, _ := strconv.ParseFloat(sysOrder.TotalAmount, 10)
@@ -47,7 +41,7 @@ func Purchase(ctx *gin.Context) {
 		go service.UpdateOrder(&sysOrder)                               //更新数据库状态
 		go service.UpdateUserSubscribe(&sysOrder)                       //更新用户订阅信息
 		go service.RemainHandle(sysOrder.UserID, sysOrder.RemainAmount) //处理用户余额
-		response.OK("购买成功", nil, ctx)
+		response.OK("Purchase success", nil, ctx)
 		return
 	}
 	//根据支付id查询支付参数
@@ -169,7 +163,7 @@ func GetEnabledPayList(ctx *gin.Context) {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	response.OK("获取已激活支付列表成功", list, ctx)
+	response.OK("GetEnabledPayList success", list, ctx)
 }
 
 // 获取全部支付列表
@@ -180,7 +174,7 @@ func GetPayList(ctx *gin.Context) {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	response.OK("获取支付列表成功", list, ctx)
+	response.OK("GetPayList success", list, ctx)
 
 }
 
@@ -199,7 +193,7 @@ func NewPay(ctx *gin.Context) {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	response.OK("新建支付成功", nil, ctx)
+	response.OK("NewPay success", nil, ctx)
 
 }
 
@@ -212,14 +206,13 @@ func DeletePay(ctx *gin.Context) {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	//fmt.Println("删除：", receivePay)
-	err = service.CommonSqlDelete[model.Pay, model.Pay](model.Pay{}, receivePay)
+	err = service.CommonSqlDelete[model.Pay, model.Pay](receivePay)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	response.OK("删除支付成功", nil, ctx)
+	response.OK("DeletePay success", nil, ctx)
 
 }
 
@@ -238,6 +231,6 @@ func UpdatePay(ctx *gin.Context) {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	response.OK("修改支付成功", nil, ctx)
+	response.OK("UpdatePay success", nil, ctx)
 
 }

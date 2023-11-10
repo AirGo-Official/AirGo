@@ -21,8 +21,7 @@ export const useReportStore = defineStore("reportStore", {
         reportTable: {
             table_name: '',
             field_params_list: [] as FieldTable[],    //搜索条件列表 {field: '', field_chinese_name: '', field_type: '', condition: '=', condition_value: '',}
-            pagination_params: {},//分页参数
-
+            pagination_params: {} as Pagination ,//分页参数
         },
 
         //字段信息

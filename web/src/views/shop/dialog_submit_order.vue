@@ -76,7 +76,6 @@ const state = reactive({
 //获取订单详情
 const getOrderInfo = (params: object) => {
   orderStore.getOrderInfo(params).then((res) => {
-    ElMessage.success(res.msg)
     shopData.value.currentOrder = {} as Order
     shopData.value.currentOrder = res.data
   }).catch()

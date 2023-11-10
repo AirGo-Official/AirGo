@@ -94,13 +94,11 @@ const onSubmit = (params: object) => {
   switch (state.type) {
     case "add":
       request(apiStoreData.api.value.coupon_newCoupon, params).then((res) => {
-        ElMessage.success(res.msg)
         emits('refresh')
       })
       break
     case "edit":
       request(apiStoreData.api.value.coupon_updateCoupon, params).then((res) => {
-        ElMessage.success(res.msg)
         emits('refresh')
       })
       break

@@ -52,7 +52,6 @@ const state = reactive({
 const openDialog = () => {
   state.isShowDialog = true
   request(apiStoreData.api.value.node_getAllNode).then((res) => {
-    ElMessage.success(res.msg)
     state.node_list = res.data
   })
   nextTick(() => {
@@ -74,7 +73,6 @@ const nodeSortHandler = (data: Array<any>) => {
 const onSubmit = () => {
   state.isShowDialog = false
   request(apiStoreData.api.value.node_nodeSort, nodeSortHandler(state.node_list)).then((res) => {
-    ElMessage.success(res.msg)
     nodeStore.getNodeWithTraffic({search: '', page_num: 1, page_size: 30, date: [],})
   })
 }

@@ -185,10 +185,22 @@
             />
           </el-form-item>
           <el-form-item label="中转ip" v-if="dialogData.vlessInfo.enable_transfer">
-            <el-input v-model="dialogData.vlessInfo.transfer_address" placeholder=""/>
+            <el-input v-model="dialogData.vlessInfo.transfer_address"/>
           </el-form-item>
           <el-form-item label="中转端口" v-if="dialogData.vlessInfo.enable_transfer">
-            <el-input v-model.number="dialogData.vlessInfo.transfer_port" placeholder=""/>
+            <el-input v-model.number="dialogData.vlessInfo.transfer_port"/>
+          </el-form-item>
+          <el-form-item label="访问控制">
+            <el-transfer
+                :data="accessStoreData.routes_list.value.data"
+                v-model="dialogData.vlessInfo.access_ids"
+                :right-default-checked="dialogData.vlessInfo.access_ids"
+                :props="{
+                  key: 'id',
+                  label: 'name',
+                  }"
+                :titles="['全部', '选中']"
+            />
           </el-form-item>
         </el-form>
       </el-form>
@@ -324,10 +336,22 @@
             />
           </el-form-item>
           <el-form-item label="中转ip" v-if="dialogData.vmessInfo.enable_transfer">
-            <el-input v-model="dialogData.vmessInfo.transfer_address" placeholder=""/>
+            <el-input v-model="dialogData.vmessInfo.transfer_address"/>
           </el-form-item>
           <el-form-item label="中转端口" v-if="dialogData.vmessInfo.enable_transfer">
-            <el-input v-model.number="dialogData.vmessInfo.transfer_port" placeholder=""/>
+            <el-input v-model.number="dialogData.vmessInfo.transfer_port"/>
+          </el-form-item>
+          <el-form-item label="访问控制">
+            <el-transfer
+                :data="accessStoreData.routes_list.value.data"
+                v-model="dialogData.vmessInfo.access_ids"
+                :right-default-checked="dialogData.vmessInfo.access_ids"
+                :props="{
+                  key: 'id',
+                  label: 'name',
+                  }"
+                :titles="['全部', '选中']"
+            />
           </el-form-item>
         </el-form>
       </el-form>
@@ -407,10 +431,22 @@
           />
         </el-form-item>
         <el-form-item label="中转ip" v-if="dialogData.shadowsocksInfo.enable_transfer">
-          <el-input v-model="dialogData.shadowsocksInfo.transfer_address" placeholder=""/>
+          <el-input v-model="dialogData.shadowsocksInfo.transfer_address" />
         </el-form-item>
         <el-form-item label="中转端口" v-if="dialogData.shadowsocksInfo.enable_transfer">
-          <el-input v-model.number="dialogData.shadowsocksInfo.transfer_port" placeholder=""/>
+          <el-input v-model.number="dialogData.shadowsocksInfo.transfer_port"/>
+        </el-form-item>
+        <el-form-item label="访问控制">
+          <el-transfer
+              :data="accessStoreData.routes_list.value.data"
+              v-model="dialogData.shadowsocksInfo.access_ids"
+              :right-default-checked="dialogData.shadowsocksInfo.access_ids"
+              :props="{
+                  key: 'id',
+                  label: 'name',
+                  }"
+              :titles="['全部', '选中']"
+          />
         </el-form-item>
       </el-form>
     </div>
@@ -430,7 +466,9 @@ import {reactive, watch} from "vue";
 import {useApiStore} from "/@/stores/apiStore";
 import {request} from "/@/utils/request";
 import {deepClone} from "/@/utils/other";
-
+import {useAccessStore} from "/@/stores/accessStore";
+const accessStore = useAccessStore()
+const accessStoreData = storeToRefs(accessStore)
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
 
@@ -460,7 +498,6 @@ const state = reactive({
 
 // 打开弹窗
 const openDialog = (title: string, row?: NodeInfo) => {
-
   if (title === '新建节点') {
     dialogData.value.vlessInfo.id = 0 //编辑和添加公用一个store，清空id,否则服务器无法插入
     dialogData.value.vmessInfo.id = 0 //编辑和添加公用一个store，清空id,否则服务器无法插入
@@ -494,8 +531,6 @@ const closeDialog = () => {
 //确认提交
 function onSubmit() {
   if (state.title === '新建节点') {
-    // let n = nodeStore.returnNodeInfo(state.noteType)
-    // console.log("确认提交n:",n)
     nodeStore.newNode(nodeStore.returnNodeInfo(state.noteType))
     setTimeout(() => {
       emit('refresh');
@@ -512,7 +547,6 @@ function onSubmit() {
 //
 const setReality = (nodeType: string) => {
   request(apiStoreData.api.value.system_createx25519).then((res) => {
-    // console.log("res:",res)
     switch (nodeType) {
       case "vless":
         dialogData.value.vlessInfo.pbk = res.data.public_key

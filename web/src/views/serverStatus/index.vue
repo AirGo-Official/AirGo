@@ -6,7 +6,7 @@
           <el-card>
             <el-row :gutter="10" justify="space-around" align="middle">
               <el-col :xs="12" :sm="12" :md="4" :lg="4" :xl="4" style="margin: auto">
-                <el-tag type="warning">{{ v.name }}</el-tag>
+                <el-text style="color: #F9A43D;font-size: 15px;font-weight: bolder">{{ v.name }}</el-text>
               </el-col>
               <el-col :xs="12" :sm="12" :md="4" :lg="4" :xl="4" style="margin: auto">
                 <el-icon v-if="v.status" color="#90ee90" :size="20">
@@ -17,10 +17,10 @@
                 </el-icon>
               </el-col>
               <el-col :xs="12" :sm="12" :md="4" :lg="4" :xl="4" style="margin-top: 10px;margin-bottom: 10px">
-                倍率：{{ v.traffic_rate }}
+                rate：{{ v.traffic_rate }}
               </el-col>
               <el-col :xs="12" :sm="12" :md="4" :lg="4" :xl="4" style="margin-top: 10px;margin-bottom: 10px">
-                在线：{{ v.user_amount }}
+                online：{{ v.user_amount }}
               </el-col>
               <el-col :xs="12" :sm="12" :md="4" :lg="4" :xl="4" style="margin: auto">
                 <el-icon color="#409EFC">
@@ -35,8 +35,34 @@
                 <span>{{ v.d }}Mbps</span>
               </el-col>
             </el-row>
-          </el-card>
 
+            <el-row :gutter="10">
+              <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8" style="margin-top: 5px;margin-bottom: 5px">
+                <el-progress :text-inside="true" :stroke-width="20" :percentage="v.cpu.toFixed(0)" striped striped-flow :color="customColors">
+                  <template #default="{ percentage }">
+                    <span class="percentage-label">cpu：</span>
+                    <span class="percentage-value">{{ percentage }}%</span>
+                  </template>
+                </el-progress>
+              </el-col>
+              <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8" style="margin-top: 5px;margin-bottom: 5px">
+                <el-progress :text-inside="true" :stroke-width="20" :percentage="v.mem.toFixed(0)" striped striped-flow :color="customColors">
+                  <template #default="{ percentage }">
+                    <span class="percentage-label">memory：</span>
+                    <span class="percentage-value">{{ percentage }}%</span>
+                  </template>
+                </el-progress>
+              </el-col>
+              <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8" style="margin-top: 5px;margin-bottom: 5px">
+                <el-progress :text-inside="true" :stroke-width="20" :percentage="(100-v.disk.toFixed(0))" striped striped-flow :color="customColors">
+                  <template #default="{ percentage }">
+                    <span class="percentage-label">disk：</span>
+                    <span class="percentage-value">{{ percentage }}%</span>
+                  </template>
+                </el-progress>
+              </el-col>
+            </el-row>
+          </el-card>
         </div>
       </el-col>
     </el-row>
@@ -56,6 +82,14 @@ const {serverStatusData} = storeToRefs(nodeStore)
 const token = Local.get('token')
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
+const customColors = [
+  { color: '#5cb87a', percentage: 1 },
+  { color: '#19befa', percentage: 40 },
+  { color: '#f1d85f', percentage: 60 },
+  { color: '#ef8b41', percentage: 70 },
+  { color: '#f56c6c', percentage: 80 },
+  { color: '#000000', percentage: 100 },
+]
 
 
 function getWsUrl(): string {
@@ -67,9 +101,9 @@ function getWsUrl(): string {
   const pre_url = apiUrl.slice(0, apiUrl.indexOf('//') + 2)
   // console.log(`pre_url:${pre_url} url:${url}`)
   if (pre_url === 'https://') {
-    return "wss://" + url  + apiStoreData.api.value.websocket_msg.path
+    return "wss://" + url + apiStoreData.api.value.websocket_msg.path
   } else {
-    return "ws://" + url  + apiStoreData.api.value.websocket_msg.path
+    return "ws://" + url + apiStoreData.api.value.websocket_msg.path
   }
 }
 

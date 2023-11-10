@@ -161,12 +161,10 @@ function getMonthOrder(params?: object) {
 function getMonthNodeInfo(params?: object) {
   request(apiStoreData.api.value.node_getTraffic, state.monthOptions.dateCurrent).then((res) => {
     state.statisticsData.monthNodeCurrent = res.data
-    //ElMessage.success(res.msg)
 
   })
   request(apiStoreData.api.value.node_getTraffic, state.monthOptions.dateLast).then((res) => {
     state.statisticsData.monthNodeLast = res.data
-    // ElMessage.success(res.msg)
   })
 }
 

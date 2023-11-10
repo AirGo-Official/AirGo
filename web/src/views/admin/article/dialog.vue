@@ -19,7 +19,7 @@
           <el-radio label="knowledge">知识库</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="文章内容---使用markdown语法">
+      <el-form-item label="文章内容，使用markdown语法">
         <v-md-editor v-model="articleStoreData.currentArticle.value.content" height="400px"></v-md-editor>
       </el-form-item>
     </el-form>

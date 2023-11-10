@@ -17,7 +17,7 @@
           新建文章
         </el-button>
       </div>
-      <el-table :data="articleStoreData.articleDate.value.article_list" stripe height="100%" style="width: 100%;flex: 1;">
+      <el-table :data="articleStoreData.articleDate.value.article_list" stripe height="100%">
         <el-table-column fixed type="index" label="序号" width="60"/>
         <el-table-column prop="title" label="标题" show-overflow-tooltip width="200"></el-table-column>
         <el-table-column prop="id" label="ID" show-overflow-tooltip width="60"></el-table-column>
@@ -27,14 +27,14 @@
             <el-button v-else type="info">隐藏</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="类型" show-overflow-tooltip width="80">
+        <el-table-column prop="status" label="类型" show-overflow-tooltip width="100">
           <template #default="{ row }">
             <el-button v-if="row.type==='notice'" type="primary">公告</el-button>
             <el-button v-else-if="row.type==='knowledge'" type="primary">知识库</el-button>
             <el-button v-else type="info">系统保留</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="introduction" label="简介" show-overflow-tooltip width="200"></el-table-column>
+        <el-table-column prop="introduction" label="简介" show-overflow-tooltip></el-table-column>
         <el-table-column label="操作" width="100">
           <template #default="scope">
             <el-button size="small" text type="primary"

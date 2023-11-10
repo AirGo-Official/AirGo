@@ -14,18 +14,35 @@
                          inactive-text="关闭"
                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
             </el-form-item>
+            <el-form-item label="是否开启打卡">
+              <el-switch v-model="serverConfig.system.enabled_clock_in" inline-prompt active-text="开启"
+                         inactive-text="关闭"
+                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+            </el-form-item>
+            <el-form-item label="打卡流量范围">
+              <el-col :span="2">
+                <el-input-number v-model="serverConfig.system.clock_in_min_traffic" :precision="0" :step="10" :min="0" :max="10000000" />
+              </el-col>
+              <el-col :span="2" style="text-align: center">
+                <span>-</span>
+              </el-col>
+              <el-col :span="3">
+                <el-input-number v-model="serverConfig.system.clock_in_max_traffic" :precision="0" :step="10" :min="0" :max="10000000" />
+              </el-col>
+              <el-col :span="10">
+                <span>MB</span>
+              </el-col>
+            </el-form-item>
             <!--            <el-form-item label="登录邮箱验证码">-->
             <!--              <el-switch v-model="serverConfig.system.enable_login_email_code" inline-prompt active-text="开启"-->
             <!--                         inactive-text="关闭"-->
             <!--                         style="&#45;&#45;el-switch-on-color: #13ce66; &#45;&#45;el-switch-off-color: #ff4949"></el-switch>-->
             <!--              <el-tag type="info" style="margin-left: 10px">最好不要开启，配置不正确你自己都登录不上</el-tag>-->
             <!--            </el-form-item>-->
-
-
             <el-divider></el-divider>
             <el-form-item label="IP限流">
-              <el-col :span="4">
-                <el-input v-model.number="serverConfig.rate_limit_params.ip_role_param" type="number"/>
+              <el-col :span="2">
+                <el-input-number v-model="serverConfig.rate_limit_params.ip_role_param" :precision="0" :step="10" :min="0" :max="10000000" />
               </el-col>
               <el-col :span="2" style="text-align: center">
                 <span>-</span>
@@ -36,8 +53,8 @@
             </el-form-item>
 
             <el-form-item label="用户限流">
-              <el-col :span="4">
-                <el-input v-model.number="serverConfig.rate_limit_params.visit_param" type="number"/>
+              <el-col :span="2">
+                <el-input-number v-model="serverConfig.rate_limit_params.visit_param" :precision="0" :step="10" :min="0" :max="10000000" />
               </el-col>
               <el-col :span="2" style="text-align: center">
                 <span>-</span>
@@ -48,8 +65,8 @@
             </el-form-item>
             <el-divider></el-divider>
             <el-form-item label="通信密钥">
-              <el-input v-model="serverConfig.system.muKey" placeholder="务必前后端保持一致！"/>
-              <div style="color: #9b9da1;display:block">XrayR等配置的密钥</div>
+              <el-input v-model="serverConfig.system.tek" placeholder="务必前后端保持一致！"/>
+              <div style="color: #9b9da1;display:block">前后端通信密钥</div>
             </el-form-item>
             <el-form-item label="订阅名称">
               <el-input v-model="serverConfig.system.sub_name"/>
@@ -79,7 +96,7 @@
                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
             </el-form-item>
             <el-form-item label="返利率">
-              <el-input v-model.number="serverConfig.system.rebate_rate" type="number"></el-input>
+              <el-input-number v-model="serverConfig.system.rebate_rate" :precision="1" :step="0.1" :min="0" :max="1" />
               <div style="color: #9b9da1">(范围0~1)邀请收入=其他用户套餐实际支付价格*返利率</div>
             </el-form-item>
             <el-form-item label="旧套餐抵扣">
@@ -88,7 +105,7 @@
                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
             </el-form-item>
             <el-form-item label="旧套餐抵扣阈值">
-              <el-input v-model.number="serverConfig.system.deduction_threshold" type="number"></el-input>
+              <el-input-number v-model="serverConfig.system.deduction_threshold" :precision="1" :step="0.1" :min="0" :max="1" />
               <div style="color: #9b9da1">
                 (范围0~1)原套餐100G，用50G，剩余比例0.5，小于该阈值，则不会进行抵扣；原套餐实际付款为0也不抵扣
               </div>
@@ -264,13 +281,13 @@ const onSubmit = () => {
   serverStore.updateServerConfig(serverConfig.value)
   setTimeout(() => {
     serverStore.getServerConfig()
+    serverStore.getPublicServerConfig()
   }, 500)
 }
 //删除支付
 const deletePay = (data: PayInfo) => {
   // payApi.deletePayApi(data).then((res) => {
   request(apiStoreData.api.value.pay_deletePay, data).then((res) => {
-    ElMessage.success(res.msg)
     setTimeout(() => {
       payStore.getPayList(); //获取支付列表
     }, 500);

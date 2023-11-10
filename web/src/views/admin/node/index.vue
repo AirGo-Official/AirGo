@@ -94,7 +94,7 @@
         <el-table-column label="操作" width="100">
           <template #default="scope">
             <el-button :disabled="userInfos.id !== 1" size="small" text type="primary"
-                       @click="onOpenEditNode('edit', scope.row)">修改
+                       @click="onOpenEditNode('编辑节点', scope.row)">编辑
             </el-button>
             <el-button :disabled="userInfos.id !== 1" size="small" text type="primary"
                        @click="onRowDel(scope.row)">删除
@@ -119,13 +119,14 @@
   </div>
 </template>
 
-<script setup lang="ts" name="NodeManage">
+<script setup lang="ts">
 
 import {defineAsyncComponent, onMounted, reactive, ref} from "vue";
 import {storeToRefs} from "pinia";
 import {useNodeStore} from "/@/stores/nodeStore";
 import {useUserStore} from "/@/stores/userStore";
 import {ElMessageBox} from "element-plus";
+import {useAccessStore} from "/@/stores/accessStore";
 
 const NodeDialog = defineAsyncComponent(() => import('/@/views/admin/node/dialog_edit.vue'))
 const NodeSortDialog = defineAsyncComponent(() => import('/@/views/admin/node/dialog_node_sort.vue'))
@@ -133,7 +134,8 @@ const NodeSharedDialog = defineAsyncComponent(() => import('/@/views/admin/node/
 const nodeDialogRef = ref()
 const nodeSortDialogRef = ref()
 const nodeSharedDialogRef = ref()
-
+const accessStore = useAccessStore()
+const accessStoreData = storeToRefs(accessStore)
 const nodeStore = useNodeStore()
 const {nodeManageData} = storeToRefs(nodeStore)
 
@@ -181,8 +183,8 @@ const state = reactive({
 })
 
 //打开新建节点，修改节点弹窗
-function onOpenEditNode(title: string, nodeType: string, row?: NodeInfo) {
-  nodeDialogRef.value.openDialog(title, nodeType, row)
+function onOpenEditNode(title: string, row?: NodeInfo) {
+  nodeDialogRef.value.openDialog(title, row)
 }
 
 //打开节点排序弹窗
@@ -230,11 +232,14 @@ const onHandleCurrentChange = (val: number) => {
 };
 
 onMounted(() => {
-  onGetNode(state.params)
+  onGetNode(state.params) //获取全部节点
+  accessStore.getRoutesList(accessStoreData.params.value)//获取全部access
 });
 
 </script>
 <style scoped lang="scss">
+
+
 .container {
   :deep(.el-card__body) {
     display: flex;
@@ -247,4 +252,6 @@ onMounted(() => {
     }
   }
 }
+
+
 </style>

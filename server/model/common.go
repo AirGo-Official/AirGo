@@ -1,6 +1,10 @@
 package model
 
-import gormadapter "github.com/casbin/gorm-adapter/v3"
+import (
+	"database/sql/driver"
+	"encoding/json"
+	gormadapter "github.com/casbin/gorm-adapter/v3"
+)
 
 // 分页参数
 type PaginationParams struct {
@@ -30,6 +34,7 @@ var (
 		"node_shared":   NodeShared{},
 		"node":          Node{},
 		"pay":           Pay{},
+		"access":        Access{},
 	}
 	StringAndSlice = map[string]any{
 		"user":          []User{},
@@ -48,5 +53,17 @@ var (
 		"node_shared":   []NodeShared{},
 		"node":          []Node{},
 		"pay":           []Pay{},
+		"access":        []Access{},
 	}
 )
+
+// gorm 字符串切片类型
+type SliceForGorm []string
+
+func (s *SliceForGorm) Scan(value interface{}) error {
+	bytesValue, _ := value.([]byte)
+	return json.Unmarshal(bytesValue, s)
+}
+func (s SliceForGorm) Value() (driver.Value, error) {
+	return json.Marshal(s)
+}

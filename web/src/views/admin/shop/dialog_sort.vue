@@ -53,7 +53,6 @@ const openDialog = () => {
   state.isShowDialog = true
   // shopApi.getAllGoodsApi().then((res) => {
   request(apiStoreData.api.value.shop_getAllGoods).then((res) => {
-    ElMessage.success(res.msg)
     state.list = res.data
   })
   nextTick(() => {
@@ -76,7 +75,6 @@ const onSubmit = () => {
   state.isShowDialog = false
   // shopApi.goodsSortApi(nodeSortHandler(state.list)).then((res) => {
   request(apiStoreData.api.value.shop_goodsSort, nodeSortHandler(state.list)).then((res) => {
-        ElMessage.success(res.msg)
         shopStore.getAllGoods() //获取全部商品
       }
   )

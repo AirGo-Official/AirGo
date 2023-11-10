@@ -160,7 +160,6 @@ export const useUserStore = defineStore('userInfo', {
         async changeHost(data?: object) {
             const apiStore = useApiStore()
             const res = await request(apiStore.api.user_changeSubHost, data)
-            ElMessage.success(res.msg)
             await this.getUserInfo()
         },
         //获取自身信息
@@ -174,32 +173,27 @@ export const useUserStore = defineStore('userInfo', {
         async getUserList(data?: object) {
             const apiStore = useApiStore()
             const res = await request(apiStore.api.user_getUserList, data)
-            ElMessage.success(res.msg)
             this.userManageData.users = res.data
         },
         //新建用户
         async newUser(data?: object) {
             const apiStore = useApiStore()
             const res = await request(apiStore.api.user_newUser, data)
-            ElMessage.success(res.msg)
         },
         //修改用户
         async updateUser(data?: object) {
             const apiStore = useApiStore()
             const res = await request(apiStore.api.user_updateUser, data)
-            ElMessage.success(res.msg)
         },
         //删除用户
         async deleteUser(data?: object) {
             const apiStore = useApiStore()
             const res = await request(apiStore.api.user_deleteUser, data)
-            ElMessage.success(res.msg)
         },
         //修改密码
         async changePassword(data?: object) {
             const apiStore = useApiStore()
             const res = await request(apiStore.api.user_changeUserPassword, data)
-            ElMessage.success(res.msg)
         },
         //确认重置密码
         async submitResetPassword() {

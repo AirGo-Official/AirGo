@@ -59,24 +59,23 @@
         <el-table-column prop="subscribe_info.subscribe_url" label="通用订阅url" show-overflow-tooltip width="400">
           <template #default="scope">
             <el-tag type="info">
-              {{ serverStore.publicServerConfig.backend_url }}/user/getSub?link={{
+              {{ serverStore.publicServerConfig.backend_url }}/api/user/getSub?link={{
                 scope.row.subscribe_info.subscribe_url
               }}&type=v2ray
             </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column prop="subscribe_info.goods_id" label="商品ID" show-overflow-tooltip
-                         width="60"></el-table-column>
-        <el-table-column prop="subscribe_info.t" label="总流量(GB)" show-overflow-tooltip>
+        <el-table-column prop="subscribe_info.goods_id" label="商品ID" show-overflow-tooltip width="60"></el-table-column>
+        <el-table-column prop="subscribe_info.t" label="总流量(GB)" show-overflow-tooltip width="100">
           <template #default="scope">
-            <el-tag type="info">{{ scope.row.subscribe_info.t / 1024 / 1024 / 1024 }}</el-tag>
+            <el-tag type="info">{{ (scope.row.subscribe_info.t / 1024 / 1024 / 1024).toFixed(2) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="已用流量(GB)" show-overflow-tooltip width="100px">
           <template #default="scope">
             <el-tag type="info">
-              {{ (scope.row.subscribe_info.d + scope.row.subscribe_info.u) / 1024 / 1024 / 1024 }}
+              {{ ((scope.row.subscribe_info.d + scope.row.subscribe_info.u) / 1024 / 1024 / 1024).toFixed(2) }}
             </el-tag>
           </template>
         </el-table-column>

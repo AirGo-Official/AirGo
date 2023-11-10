@@ -11,6 +11,11 @@
               </div>
             </template>
             <div class="card-text">
+              <el-tag class="card-text-left" type="info">订阅状态:</el-tag>
+              <el-button type="primary" class="card-text-right" style="font-size:20px" v-if="userInfos.subscribe_info.sub_status">有效</el-button>
+              <el-button type="info" class="card-text-right" style="font-size:20px"  v-else>已过期</el-button>
+            </div>
+            <div class="card-text">
               <el-tag class="card-text-left" type="info">剩余流量:</el-tag>
               <span class="card-text-right">{{
                   ((userInfos.subscribe_info.t - userInfos.subscribe_info.d - userInfos.subscribe_info.u) / 1024 / 1024 / 1024).toFixed(2)

@@ -20,11 +20,11 @@ func GetAllOrder(ctx *gin.Context) {
 	err := ctx.ShouldBind(&params)
 	res, err := service.GetAllOrder(&params)
 	if err != nil {
-		global.Logrus.Error("订单获取错误" + err.Error())
-		response.Fail("订单获取错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("GetAllOrder error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("全部订单获取成功", res, ctx)
+	response.OK("GetAllOrder success", res, ctx)
 }
 
 // 获取订单统计
@@ -33,30 +33,28 @@ func GetMonthOrderStatistics(ctx *gin.Context) {
 	err := ctx.ShouldBind(&params)
 	res, err := service.GetMonthOrderStatistics(&params)
 	if err != nil {
-		global.Logrus.Error("获取订单统计错误" + err.Error())
-		response.Fail("获取订单统计错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("GetMonthOrderStatistics error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("获取订单统计成功", res, ctx)
+	response.OK("GetMonthOrderStatistics success", res, ctx)
 }
 
 // 获取用户订单by user id，显示用户最近10条订单
 func GetOrderByUserID(ctx *gin.Context) {
 	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
 	if !ok {
-		response.Fail("获取信息,uID参数错误", nil, ctx)
+		response.Fail("GetOrderByUserID error:user id error", nil, ctx)
 		return
 	}
 	var params = model.PaginationParams{PageSize: 10} //显示用户最近10条订单
-	//err := ctx.ShouldBind(&params)
-	//res, err := service.GetOrderByUserID(uIDInt, &params)
 	res, _, err := service.CommonSqlFindWithPagination[model.Orders, string, []model.Orders]("user_id = "+strconv.FormatInt(uIDInt, 10)+" ORDER BY id desc", params)
 	if err != nil {
-		global.Logrus.Error("获取订单 error:", err)
-		response.Fail("订单获取错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("GetOrderByUserID error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("订单获取成功", res, ctx)
+	response.OK("GetOrderByUserID success", res, ctx)
 }
 
 // 完成未支付订单
@@ -64,24 +62,24 @@ func CompletedOrder(ctx *gin.Context) {
 	var order model.Orders
 	err := ctx.ShouldBind(&order)
 	if err != nil {
-		global.Logrus.Error("完成未支付订单参数错误:", err)
-		response.Fail("完成未支付订单参数错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("CompletedOrder error:"+err.Error(), nil, ctx)
 		return
 	}
 	order.TradeStatus = model.OrderCompleted //更新数据库订单状态,自定义结束状态Completed
 	err = service.UpdateOrder(&order)        //更新数据库状态
 	if err != nil {
-		global.Logrus.Error("更新数据库状态错误:", err)
-		response.Fail("更新数据库状态错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("CompletedOrder error:"+err.Error(), nil, ctx)
 		return
 	}
 	err = service.UpdateUserSubscribe(&order) //更新用户订阅信息
 	if err != nil {
-		global.Logrus.Error("更新用户订阅信息错误:", err)
-		response.Fail("更新用户订阅信息错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("CompletedOrder error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("完成未支付订单成功", nil, ctx)
+	response.OK("CompletedOrder success", nil, ctx)
 
 }
 
@@ -89,11 +87,11 @@ func CompletedOrder(ctx *gin.Context) {
 func GetOrderInfo(ctx *gin.Context) {
 	order, msg := PreHandleOrder(ctx)
 	if order == nil {
-		response.Fail("获取订单详情错误", nil, ctx)
+		response.Fail("GetOrderInfo error:order is null", nil, ctx)
 		return
 	}
 	if msg == "" {
-		msg = "订单详情"
+		msg = "GetOrderInfo success"
 	}
 	response.OK(msg, order, ctx)
 }
@@ -102,18 +100,18 @@ func GetOrderInfo(ctx *gin.Context) {
 func PreCreateOrder(ctx *gin.Context) {
 	order, _ := PreHandleOrder(ctx)
 	if order == nil {
-		response.Fail("获取订单错误", nil, ctx)
+		response.Fail("PreCreateOrder error:order is null", nil, ctx)
 		return
 	}
 	//创建系统订单
 	order.TradeStatus = model.OrderCreated
 	err := service.CommonSqlCreate[model.Orders](*order)
 	if err != nil {
-		global.Logrus.Error("创建系统订单error:", err.Error())
-		response.Fail("创建系统订单error:"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("PreCreateOrder error::"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("创建系统订单成功", order, ctx)
+	response.OK("PreCreateOrder success", order, ctx)
 }
 
 // 订单预处理，计算价格
@@ -128,14 +126,14 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 	var receiveOrder model.Orders
 	err := ctx.ShouldBind(&receiveOrder) //前端传过来 goods_id,coupon_name
 	if err != nil {
-		global.Logrus.Error("订单预处理参数错误", err.Error())
-		response.Fail("订单预处理参数错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("PreHandleOrder error:"+err.Error(), nil, ctx)
 		return nil, ""
 	}
 	//通过商品id查找商品
 	goods, err := service.FindGoodsByGoodsID(receiveOrder.GoodsID)
 	if err != nil {
-		global.Logrus.Error("通过商品id查找商品error:", err.Error())
+		global.Logrus.Error(err.Error())
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ""
 		}
@@ -156,7 +154,7 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 	if receiveOrder.CouponName != "" {
 		coupon, err := service.VerifyCoupon(&receiveOrder)
 		if err != nil {
-			global.Logrus.Info("折扣码处理", err.Error())
+			global.Logrus.Error(err.Error())
 			msg = err.Error()
 		}
 		if coupon.DiscountRate != 0 {
@@ -169,7 +167,7 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 	if global.Server.System.EnabledDeduction {
 		//计算剩余率
 		if user.SubscribeInfo.SubStatus {
-			rate, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", float64((user.SubscribeInfo.T-user.SubscribeInfo.U-user.SubscribeInfo.D))/float64(user.SubscribeInfo.T)), 64)
+			rate, err := strconv.ParseFloat(fmt.Sprintf("%.2f", float64((user.SubscribeInfo.T-user.SubscribeInfo.U-user.SubscribeInfo.D))/float64(user.SubscribeInfo.T)), 64)
 			//if math.IsNaN(rate) {
 			if err != nil {
 				rate = 0 //

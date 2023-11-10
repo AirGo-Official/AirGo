@@ -22,7 +22,7 @@ func Register(u *model.User) error {
 	var user model.User
 	err := global.DB.Where(&model.User{UserName: u.UserName}).First(&user).Error
 	if err == nil {
-		return errors.New("用户已存在")
+		return errors.New("User already exists")
 	} else if err == gorm.ErrRecordNotFound {
 		var newUser = model.User{
 			UUID:           uuid.NewV4(),
@@ -45,7 +45,7 @@ func NewUser(u model.User) error {
 	var user model.User
 	err := global.DB.Where(&model.User{UserName: u.UserName}).First(&user).Error
 	if err == nil {
-		return errors.New("用户已存在")
+		return errors.New("User already exists")
 	} else {
 		//处理角色
 		var roleArr []string
@@ -87,12 +87,12 @@ func Login(u *model.UserLogin) (*model.User, error) {
 	var user model.User
 	err := global.DB.Where("user_name = ?", u.UserName).First(&user).Error
 	if err == gorm.ErrRecordNotFound {
-		return nil, errors.New("用户不存在")
+		return nil, errors.New("User does not exist")
 	} else if !user.Enable {
-		return nil, errors.New("用户已冻结")
+		return nil, errors.New("User frozen")
 	} else {
 		if err := encrypt_plugin.BcryptDecode(u.Password, user.Password); err != nil {
-			return nil, errors.New("密码错误")
+			return nil, errors.New("Password error")
 		}
 		return &user, err
 	}
@@ -120,12 +120,7 @@ func UpdateUserSubscribe(order *model.Orders) error {
 
 // 处理用户订阅信息
 func HandleUserSubscribe(u *model.User, goods *model.Goods) *model.User {
-	u.SubscribeInfo.T = goods.TotalBandwidth * 1024 * 1024 * 1024 // TotalBandwidth单位：GB。总流量单位：B
-	u.SubscribeInfo.U = 0
-	u.SubscribeInfo.D = 0
-	if u.SubscribeInfo.SubscribeUrl == "" {
-		u.SubscribeInfo.SubscribeUrl = encrypt_plugin.RandomString(8) //随机字符串订阅url
-	}
+
 	u.SubscribeInfo.GoodsID = goods.ID           //当前订购的套餐
 	u.SubscribeInfo.GoodsSubject = goods.Subject //套餐标题
 	u.SubscribeInfo.SubStatus = true             //订阅状态
@@ -134,6 +129,18 @@ func HandleUserSubscribe(u *model.User, goods *model.Goods) *model.User {
 	if goods.NodeConnector != 0 {
 		u.SubscribeInfo.NodeConnector = goods.NodeConnector //连接客户端数
 	}
+	if u.SubscribeInfo.SubscribeUrl == "" {
+		u.SubscribeInfo.SubscribeUrl = encrypt_plugin.RandomString(8) //随机字符串订阅url
+	}
+	switch goods.TrafficResetMethod {
+	case "Stack":
+		u.SubscribeInfo.T = u.SubscribeInfo.T + goods.TotalBandwidth*1024*1024*1024 // GB->MB->KB->B
+	default:
+		u.SubscribeInfo.T = goods.TotalBandwidth * 1024 * 1024 * 1024 // GB->MB->KB->B
+		u.SubscribeInfo.U = 0
+		u.SubscribeInfo.D = 0
+	}
+
 	return u
 }
 
@@ -282,4 +289,23 @@ func RemainHandle(uid int64, remain string) {
 	user, _ := FindUserByID(uid)
 	user.Remain = user.Remain - remainFloat64
 	SaveUser(user)
+}
+
+// 打卡
+func ClockIn(uID int64) (int, error) {
+	//查询用户信息
+	user, err := GetUserInfo(uID)
+	if err != nil {
+		return 0, err
+	}
+	//判断订阅是否有效
+	if !user.SubscribeInfo.SubStatus {
+		return 0, errors.New("subscribe is expired")
+	}
+	//随机
+	t := encrypt_plugin.RandomNumber(int(global.Server.System.ClockInMinTraffic), int(global.Server.System.ClockInMaxTraffic)) //MB
+	user.SubscribeInfo.T = int64(t)*1024*1024 + user.SubscribeInfo.T
+	err = SaveUser(user)
+	return t, err
+
 }

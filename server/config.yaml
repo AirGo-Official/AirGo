@@ -8,8 +8,8 @@ mysql:
   address: mysql.sql.com
   port: 3306
   config: charset=utf8mb4&parseTime=True&loc=Local
-  db-name: imdemo
-  username: imdemo
+  db-name: xxxxxx
+  username: xxxxxx
   password: xxxxxx
   max-idle-conns: 10
   max-open-conns: 100

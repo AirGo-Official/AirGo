@@ -56,6 +56,8 @@ export const useNodeStore = defineStore("nodeStore", {
                 pbk: '',
                 sid: '',
                 spx: '',
+                access:[],
+                access_ids:[],
             } as NodeInfo,
             vmessInfo: {
                 node_speedlimit: 0, //节点限速/Mbps
@@ -99,6 +101,8 @@ export const useNodeStore = defineStore("nodeStore", {
                 pbk: '',
                 sid: '',
                 spx: '',
+                access:[],
+                access_ids:[],
             } as NodeInfo,
             shadowsocksInfo: {
                 node_speedlimit: 0, //节点限速/Mbps
@@ -142,6 +146,8 @@ export const useNodeStore = defineStore("nodeStore", {
                 pbk: '',
                 sid: '',
                 spx: '',
+                access:[],
+                access_ids:[],
             } as NodeInfo,
         },
         //节点状态页面数据
@@ -161,13 +167,11 @@ export const useNodeStore = defineStore("nodeStore", {
         //获取全部节点
         async getAllNode(data?: object) {
             const res = await request(apiStoreData.api.value.node_getAllNode)
-            ElMessage.success(res.msg)
             this.nodeManageData.nodes.node_list = res.data
         },
         //获取全部节点 with Traffic,分页
         async getNodeWithTraffic(data?: object) {
             const res = await request(apiStoreData.api.value.node_getTraffic, data)
-            ElMessage.success(res.msg)
             this.nodeManageData.nodes = res.data
         },
         //获取节点 with Traffic(营收概览)
@@ -178,17 +182,14 @@ export const useNodeStore = defineStore("nodeStore", {
         //更新节点
         async updateNode(data?: object) {
             const res = await request(apiStoreData.api.value.node_updateNode, data)
-            ElMessage.success(res.msg)
         },
         //删除节点
         async deleteNode(data: object) {
             const res = await request(apiStoreData.api.value.node_deleteNode, data)
-            ElMessage.success(res.msg)
         },
         //新建节点
         async newNode(data?: object) {
             const res = await request(apiStoreData.api.value.node_newNode, data)
-            ElMessage.success("新建节点成功")
         },
         //新建共享节点
         async newNodeShared(data: object) {

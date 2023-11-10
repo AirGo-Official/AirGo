@@ -2,7 +2,7 @@
   <div class="personal layout-pd">
     <el-row>
       <!-- 个人信息 -->
-      <el-col :xs="24" :sm="16">
+      <el-col :xs="24" :sm="24">
         <el-card shadow="hover" header="个人信息">
           <div class="personal-user">
             <div class="personal-user-left">
@@ -16,14 +16,10 @@
                 <el-col :span="24" class="personal-title mb18">{{ currentTime }}</el-col>
                 <el-col :span="24">
                   <el-row>
-                    <el-col :xs="24" :sm="12" class="personal-item mb6">
+                    <el-col :xs="24" :sm="24" class="personal-item mb6">
                       <div class="personal-item-label">昵称：</div>
                       <span>{{ userInfos.nick_name }}</span>
                     </el-col>
-<!--                    <el-col :xs="24" :sm="12" class="personal-item mb6">-->
-<!--                      <div class="personal-item-label">身份：</div>-->
-<!--                      <span>{{ userInfos.nick_name }}</span>-->
-<!--                    </el-col>-->
                   </el-row>
                 </el-col>
               </el-row>
@@ -34,7 +30,7 @@
 
       <!-- 更新信息 -->
       <el-col :span="24">
-        <el-card shadow="hover" class="mt15 personal-edit" header="更新信息">
+        <el-card shadow="hover" class="mt15 personal-edit" header="个人信息">
           <div class="personal-edit-title">基本信息</div>
           <div class="personal-edit-safe-box">
             <div class="personal-edit-safe-item">
@@ -43,21 +39,10 @@
                 <!--                <div class="personal-edit-safe-item-left-value">当前密码强度：强</div>-->
               </div>
               <div class="personal-edit-safe-item-right">
-                <el-button text type="primary" @click="onOpenPWDialog">立即修改</el-button>
+                <el-button type="primary" @click="onOpenPWDialog">立即修改</el-button>
               </div>
             </div>
           </div>
-          <!--          <div class="personal-edit-safe-box">-->
-          <!--            <div class="personal-edit-safe-item">-->
-          <!--              <div class="personal-edit-safe-item-left">-->
-          <!--                <div class="personal-edit-safe-item-left-label">邮箱</div>-->
-          <!--                <div class="personal-edit-safe-item-left-value">已绑定邮箱：</div>-->
-          <!--              </div>-->
-          <!--              <div class="personal-edit-safe-item-right">-->
-          <!--                <el-button text type="primary">立即修改</el-button>-->
-          <!--              </div>-->
-          <!--            </div>-->
-          <!--          </div>-->
           <div class="personal-edit-title">
             我的邀请（佣金率：{{ serverConfig.publicServerConfig.value.rebate_rate * 100 }}%）
           </div>
@@ -69,20 +54,28 @@
                   {{ state.url }}/#/login?i={{ userInfos.invitation_code }}
                 </div>
               </div>
-              <!--              <div class="personal-edit-safe-item-right">-->
-              <!--                <el-button text type="primary" @click="onOpenPWDialog">复制</el-button>-->
-              <!--              </div>-->
             </div>
+          </div>
+          <div class="personal-edit-title">
+            余额
           </div>
           <div class="personal-edit-safe-box">
             <div class="personal-edit-safe-item">
               <div class="personal-edit-safe-item-left">
-                <div class="personal-edit-safe-item-left-label">余额</div>
                 <div class="personal-edit-safe-item-left-value">¥{{ userInfos.remain }}</div>
               </div>
-              <!--              <div class="personal-edit-safe-item-right">-->
-              <!--                <el-button text type="primary" @click="onOpenPWDialog">复制</el-button>-->
-              <!--              </div>-->
+            </div>
+          </div>
+          <div class="personal-edit-title">
+            打卡
+          </div>
+          <div class="personal-edit-safe-box">
+            <div class="personal-edit-safe-item">
+              <div class="personal-edit-safe-item-left">
+                <div class="personal-edit-safe-item-left-value">
+                  <el-button type="primary" @click="clockin()">立即打卡</el-button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -100,6 +93,9 @@ import * as imageConversion from 'image-conversion'
 import {useUserStore} from "/@/stores/userStore";
 import {storeToRefs} from 'pinia';
 import {useServerStore} from "/@/stores/serverStore";
+import {useApiStore} from "/@/stores/apiStore";
+import {request} from "/@/utils/request";
+import {ElMessage} from "element-plus";
 
 const userInfo = useUserStore()
 const {userInfos} = storeToRefs(userInfo)
@@ -107,6 +103,7 @@ const serverStore = useServerStore()
 const serverConfig = storeToRefs(serverStore)
 const ChangePasswordDialog = defineAsyncComponent(() => import('/@/views/personal/change_password_dialog.vue'));
 const changePasswordDialogRef = ref()
+const apiStore = useApiStore()
 
 const state = reactive({
   url: '',
@@ -141,9 +138,28 @@ const currentTime = computed(() => {
   return formatAxis(new Date());
 });
 
+//打卡
+const clockin = () => {
+  //是否开启打卡
+  if (!serverConfig.publicServerConfig.value.enabled_clock_in){
+    ElMessage.error("打卡已关闭")
+    return
+  }
+
+  //判断订阅是否有效
+  if (!userInfo.userInfos.subscribe_info.sub_status){
+    ElMessage.error("订阅已失效，请购买订阅后重试")
+    return
+  }
+  request(apiStore.api.user_clockin).then((res)=>{
+    ElMessage.success("打卡获得流量："+res.data+"MB")
+    userInfo.getUserInfo()//刷新用户信息
+  })
+}
+
 onMounted(() => {
   getUrl(); //获取专属邀请url
-  // userInfo.getUserInfo()//获取用户信息
+
 });
 </script>
 

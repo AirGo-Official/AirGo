@@ -22,14 +22,17 @@ export const useServerStore = defineStore("serverStore", {
                 enable_login_email_code: false,
                 is_multipoint: true,
                 sub_name: '',
-                backend_url:'',
+                backend_url: '',
                 api_prefix: '',
-                muKey: '',
+                tek: '',
                 default_goods: '',
                 enabled_rebate: true,    //是否开启返利
                 rebate_rate: 0,          //返利率
                 enabled_deduction: true, //是否开启旧套餐抵扣
                 deduction_threshold: 0,  //旧套餐抵扣阈值,大于该值则抵扣
+                enabled_clock_in: true,
+                clock_in_min_traffic: 100,
+                clock_in_max_traffic: 1000,
             },
             captcha: {
                 key_long: 0,
@@ -66,6 +69,7 @@ export const useServerStore = defineStore("serverStore", {
             enable_login_email_code: false, //是否开启登录邮箱验证码
             rebate_rate: 0,                  //佣金率
             backend_url: '',                 //
+            enabled_clock_in:true,           //是否开启打卡
 
         },
 
@@ -77,7 +81,6 @@ export const useServerStore = defineStore("serverStore", {
             const apiStoreData = storeToRefs(apiStore)
             const res = await request(apiStoreData.api.value.system_getSetting)
             this.serverConfig = res.data
-            ElMessage.success(res.msg)
         },
         //获取公共系统设置
         async getPublicServerConfig() {
@@ -90,8 +93,7 @@ export const useServerStore = defineStore("serverStore", {
         async updateServerConfig(data?: object) {
             const apiStore = useApiStore()
             const apiStoreData = storeToRefs(apiStore)
-            const res = await request(apiStoreData.api.value.system_updateSetting,data)
-            ElMessage.success(res.msg)
+            const res = await request(apiStoreData.api.value.system_updateSetting, data)
         }
     }
 })

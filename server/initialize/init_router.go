@@ -93,6 +93,7 @@ func InitRouter() {
 		userRouter.GET("/getUserInfo", api.GetUserInfo)                //获取自身信息
 		userRouter.POST("/changeUserPassword", api.ChangeUserPassword) //修改密码
 		userRouter.GET("/resetSub", api.ResetSub)                      //重置订阅
+		userRouter.GET("/clockin", api.ClockIn)                        //打卡
 	}
 	userAdminRouter := RouterGroup.Group("/user").Use(middleware.ParseJwt(), middleware.Casbin())
 	{
@@ -216,7 +217,7 @@ func InitRouter() {
 	{
 		reportRouter.GET("/getDB", api.GetDB)
 		reportRouter.POST("/getTables", api.GetTables)
-		reportRouter.POST("/getColumn", api.GetColumnNew)
+		reportRouter.POST("/getColumn", api.GetColumn)
 		reportRouter.POST("/reportSubmit", api.ReportSubmit)
 
 	}
@@ -244,14 +245,14 @@ func InitRouter() {
 		ispRouter.POST("/getMonitorByUserID", api.GetMonitorByUserID)
 
 	}
-
-	//gin 获取全部路由
-	//var pathList []string
-	//RoutesInfo := Router.Routes()
-	//for _, v := range RoutesInfo {
-	//	pathList = append(pathList, v.Path)
-	//}
-	//fmt.Println("pathList:", len(pathList)) //87个
+	//access
+	accessRouter := RouterGroup.Group("/access").Use(middleware.ParseJwt(), middleware.Casbin())
+	{
+		accessRouter.POST("/newRoutes", api.NewRoutes)
+		accessRouter.POST("/updateRoutes", api.UpdateRoutes)
+		accessRouter.POST("/deleteRoutes", api.DeleteRoutes)
+		accessRouter.POST("/getRoutesList", api.GetRoutesList)
+	}
 
 	srv := &http.Server{
 		Addr:    ":" + strconv.Itoa(global.Config.SystemParams.HTTPPort),

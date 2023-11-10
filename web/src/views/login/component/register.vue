@@ -146,7 +146,6 @@ const onGetEmailCode = () => {
   if (registerData.value.user_name === '') {
     return
   }
-  // publicApi.getEmailCodeApi(userStore.registerData).then((res) => {
   request(apiStoreData.staticApi.value.public_getEmailCode, userStore.registerData).then((res) => {
     state.isCountDown = true
     ElMessage.success(res.msg)

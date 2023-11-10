@@ -49,6 +49,7 @@
 import {computed, defineAsyncComponent, onMounted, reactive} from 'vue';
 import {storeToRefs} from 'pinia';
 
+
 import {useThemeConfig} from '/@/stores/themeConfig';
 import {NextLoading} from '/@/utils/loading';
 import loginMain from '/@/assets/bgc/login-main.svg';
@@ -61,6 +62,7 @@ const Account = defineAsyncComponent(() => import('/@/views/login/component/acco
 const Register = defineAsyncComponent(() => import('/@/views/login/component/register.vue'));
 const Scan = defineAsyncComponent(() => import('/@/views/login/component/scan.vue'));
 const LayoutFooter = defineAsyncComponent(() => import('/@/layout/footer/index.vue'));
+
 
 // 定义变量内容
 const storesThemeConfig = useThemeConfig();

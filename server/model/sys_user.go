@@ -18,7 +18,7 @@ type User struct {
 	Password       string    `json:"password"     gorm:"comment:用户登录密码"`
 	Passwd         string    `json:"passwd"       gorm:"comment:用户密码"`
 	NickName       string    `json:"nick_name"    gorm:"default:系统用户;comment:用户昵称"`
-	Avatar         string    `json:"avatar"       gorm:"default:/src/assets/icon/avatar.jpeg;comment:用户头像"`
+	Avatar         string    `json:"avatar"       gorm:"default:https://telegraph-image.pages.dev/file/6d9cefe5db40118aa2829.jpg;comment:用户头像"`
 	Phone          string    `json:"phone"        gorm:"comment:用户手机号"`
 	Enable         bool      `json:"enable"       gorm:"default:true;comment:用户是否被启用 true正常 false冻结"`
 	InvitationCode string    `json:"invitation_code" gorm:"comment:我的邀请码"`
@@ -41,9 +41,9 @@ type SubscribeInfo struct {
 	GoodsID        int64      `json:"goods_id"          gorm:"comment:商品ID"`
 	GoodsSubject   string     `json:"goods_subject"     gorm:"comment:商品标题"`
 	ExpiredAt      *time.Time `json:"expired_at"        gorm:"comment:过期时间"`
-	T              int64      `json:"t"                 gorm:"default:0;comment:总流量（Byte）"`
-	U              int64      `json:"u"                 gorm:"default:0;comment:上行流量"`
-	D              int64      `json:"d"                 gorm:"default:0;comment:下行流量"`
+	T              int64      `json:"t"                 gorm:"default:0;comment:总流量(Byte）"`
+	U              int64      `json:"u"                 gorm:"default:0;comment:上行流量(Byte)"`
+	D              int64      `json:"d"                 gorm:"default:0;comment:下行流量(Byte)"`
 	ResetDay       int64      `json:"reset_day"         gorm:"comment:流量重置日"`
 	NodeSpeedLimit int64      `json:"node_speedlimit"   gorm:"default:0;comment:限速Mbps（Mbps）"`
 	NodeConnector  int64      `json:"node_connector"    gorm:"default:3;comment:连接客户端数"`

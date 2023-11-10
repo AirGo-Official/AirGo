@@ -42,7 +42,7 @@ type Theme struct {
 
 	//界面显示
 	IsShowLogo         bool   `json:"isShowLogo"         gorm:"default:true;comment:是否开启侧边栏 Logo"`
-	LogoLink           string `json:"logo_link"          gorm:"default:/src/assets/icon/logo.png;comment:logo链接"`
+	LogoLink           string `json:"logo_link"          gorm:"default:https://telegraph-image.pages.dev/file/c48a2f45ebf102dd66131.png;comment:logo链接"`
 	IsShowLogoChange   bool   `json:"isShowLogoChange"   gorm:"default:false;comment:初始化变量，用于 el-scrollbar 的高度更新，请勿删除"`
 	IsBreadcrumb       bool   `json:"isBreadcrumb"        gorm:"default:true;comment:是否开启 Breadcrumb 强制经典、横向布局不显示"`
 	IsTagsview         bool   `json:"isTagsview"          gorm:"default:false;comment:是否开启 Tagsview"`

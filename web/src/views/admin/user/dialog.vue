@@ -37,11 +37,15 @@
             </el-form-item>
           </el-col>
 
-          <!--          <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">-->
-          <!--            <el-form-item label="订阅url">-->
-          <!--              <el-input v-model="userManageData.dialog.user.subscribe_info.subscribe_url"></el-input>-->
-          <!--            </el-form-item>-->
-          <!--          </el-col>-->
+          <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
+            <el-form-item label="订阅密钥">
+              <el-input v-model="userManageData.dialog.user.subscribe_info.subscribe_url">
+                <template #append>
+                  <el-button @click="resetSubKey">重置</el-button>
+                </template>
+              </el-input>
+            </el-form-item>
+          </el-col>
 
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
             <el-form-item label="分配套餐">
@@ -69,11 +73,37 @@
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
             <el-form-item label="总流量">
               <el-row :gutter="0">
-                <el-col :span="12">
+                <el-col :span="20">
                   <el-input v-model.number="state.subParams.t" type="number"/>
                 </el-col>
                 <el-col :span="2" style="text-align: center"><span>-</span></el-col>
-                <el-col :span="10">
+                <el-col :span="2">
+                  <span>GB</span>
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
+            <el-form-item label="上行流量">
+              <el-row :gutter="0">
+                <el-col :span="20">
+                  <el-input v-model.number="state.subParams.u" type="number"/>
+                </el-col>
+                <el-col :span="2" style="text-align: center"><span>-</span></el-col>
+                <el-col :span="2">
+                  <span>GB</span>
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
+            <el-form-item label="下行流量">
+              <el-row :gutter="0">
+                <el-col :span="20">
+                  <el-input v-model.number="state.subParams.d" type="number"/>
+                </el-col>
+                <el-col :span="2" style="text-align: center"><span>-</span></el-col>
+                <el-col :span="2">
                   <span>GB</span>
                 </el-col>
               </el-row>
@@ -82,11 +112,11 @@
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
             <el-form-item label="限速">
               <el-row :gutter="0">
-                <el-col :span="12">
+                <el-col :span="20">
                   <el-input v-model.number="userManageData.dialog.user.subscribe_info.node_speedlimit" type="number"/>
                 </el-col>
                 <el-col :span="2" style="text-align: center"><span>-</span></el-col>
-                <el-col :span="10">
+                <el-col :span="2">
                   <span>Mbps</span>
                 </el-col>
               </el-row>
@@ -96,24 +126,28 @@
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
             <el-form-item label="连接数">
               <el-row :gutter="0">
-                <el-col :span="12">
+                <el-col :span="20">
                   <el-input v-model.number="userManageData.dialog.user.subscribe_info.node_connector" type="number"/>
                 </el-col>
                 <el-col :span="2" style="text-align: center"><span>-</span></el-col>
-                <el-col :span="10">
+                <el-col :span="2">
                   <span>个</span>
                 </el-col>
               </el-row>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-            <el-form-item label="我的邀请人">
+            <el-form-item label="我的推荐人">
               <el-input v-model="userManageData.dialog.user.referrer_code"></el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
             <el-form-item label="我的邀请码">
-              <el-input v-model="userManageData.dialog.user.invitation_code"></el-input>
+              <el-input v-model="userManageData.dialog.user.invitation_code">
+                <template #append>
+                  <el-button @click="resetInvitationCode">重置</el-button>
+                </template>
+              </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
@@ -166,6 +200,7 @@ const roleStore = useRoleStore()
 const {roleManageData} = storeToRefs(roleStore)
 const shopStore = useShopStore()
 const {goodsList} = storeToRefs(shopStore)
+import {randomStringNew} from "/@/utils/encrypt"
 
 // 定义子组件向父组件传值/事件
 const emit = defineEmits(['refresh']);
@@ -181,6 +216,8 @@ const openDialog = (type: string, row: SysUser) => {
     userManageData.value.dialog.user = JSON.parse(JSON.stringify(row)) //深拷贝,防止修改时间报错
     //计算流量
     state.subParams.t = userManageData.value.dialog.user.subscribe_info.t / 1024 / 1024 / 1024
+    state.subParams.u = userManageData.value.dialog.user.subscribe_info.u / 1024 / 1024 / 1024
+    state.subParams.d = userManageData.value.dialog.user.subscribe_info.d / 1024 / 1024 / 1024
     //计算用户的角色
     let currentUserRoleIds: string[] = []
     userManageData.value.dialog.user.role_group.forEach((item: any) => {
@@ -212,6 +249,8 @@ const onSubmit = () => {
   //处理流量
   if (state.subParams.t !== 0) {     //计算流量
     userManageData.value.dialog.user.subscribe_info.t = state.subParams.t * 1024 * 1024 * 1024
+    userManageData.value.dialog.user.subscribe_info.u = state.subParams.u * 1024 * 1024 * 1024
+    userManageData.value.dialog.user.subscribe_info.d = state.subParams.d * 1024 * 1024 * 1024
   }
   if (state.title === '新增用户') {
     userStore.newUser(userManageData.value.dialog.user)
@@ -223,6 +262,14 @@ const onSubmit = () => {
   }, 500)
   closeDialog();
 };
+//重置订阅密钥
+const resetSubKey=()=>{
+  userManageData.value.dialog.user.subscribe_info.subscribe_url=  randomStringNew(8)
+}
+//重置邀请码
+const resetInvitationCode=()=>{
+  userManageData.value.dialog.user.invitation_code=  randomStringNew(8)
+}
 // 暴露变量
 defineExpose({
   openDialog,

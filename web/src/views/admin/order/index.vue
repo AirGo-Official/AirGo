@@ -79,6 +79,7 @@ import {DateStrtoTime} from "/@/utils/formatTime"
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 const orderStore = useOrderStore()
 const {orderManageData} = storeToRefs(orderStore)
@@ -107,9 +108,22 @@ onMounted(() => {
   onSearch(state.params)
 })
 //完成未支付订单
-const onCompleteOrder = (row: Order) => {
-  orderStore.completedOrder(row)
+const onCompleteOrder=(row: Order)=> {
+  ElMessageBox.confirm(`此操作将永久完成用户未支付订单（${row.subject}），并使之有效，, 是否继续?`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+      .then(() => {
+        orderStore.completedOrder(row)
+        setTimeout(()=>{
+          onSearch(state.params)
+        },500)
+      })
+      .catch(() => {
+      });
 }
+
 // 分页改变
 const onHandleSizeChange = (val: number) => {
   if (state.isShowCollapse) {

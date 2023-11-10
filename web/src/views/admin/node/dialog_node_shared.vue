@@ -61,7 +61,6 @@ const openDialog = () => {
 //新建共享节点
 const newNodeShared = () => {
   nodeStore.newNodeShared(nodeStore.nodeSharedData.newNodeSharedUrl).then((res) => {
-    ElMessage.success(res.msg)
     getNodeSharedList()
   })
 
@@ -73,7 +72,6 @@ const getNodeSharedList = () => {
 //删除共享节点
 const deleteNodeShared = (raw: NodeSharedInfo) => {
   nodeStore.deleteNodeShared(raw).then((res) => {
-    ElMessage.success(res.msg)
     getNodeSharedList()
   })
 }

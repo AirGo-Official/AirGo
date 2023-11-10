@@ -27,7 +27,17 @@ declare interface FieldTable {
     condition: string;
     condition_value: string;
 }
-
-declare interface FieldType {
-
+declare interface FieldTableNew {
+    field: string;
+    condition: string;
+    condition_value: string;
 }
+//分页条件
+declare interface Pagination {
+    search: string
+    page_num: number
+    page_size: number
+    date: [],
+}
+
+

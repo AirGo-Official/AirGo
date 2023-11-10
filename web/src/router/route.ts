@@ -105,6 +105,14 @@ export const staticRoutes: Array<RouteRecordRaw> = [
                     title: '详情',
                 },
             },
+            {
+                path: 'test',
+                name: 'test',
+                component: () => import('/@/views/aaaDemo/index.vue'),
+                meta: {
+                    title: '详情',
+                },
+            },
         ],
     },
 

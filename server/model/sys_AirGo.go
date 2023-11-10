@@ -52,6 +52,13 @@ type AGNodeInfo struct {
 	PublicKey   string `json:"pbk"`
 	ShortId     string `json:"sid"`
 	SpiderX     string `json:"spx"`
+	//关联
+	Access []AGAccess `json:"access" gorm:"-"` //禁用gorm查询
+}
+type AGAccess struct {
+	ID    int64  `json:"id"`
+	Name  string `json:"name"`
+	Route string `json:"route"`
 }
 type AGUserInfo struct {
 	ID            int64     `json:"id"`
@@ -69,8 +76,8 @@ type AGUserTraffic struct {
 type AGUserTrafficItem struct {
 	UID      int64
 	Email    string
-	Upload   int64
-	Download int64
+	Upload   int64 //Byte
+	Download int64 //Byte
 }
 
 type AGREALITYConfig struct {

@@ -210,7 +210,7 @@
         <div>
           <div class="layout-breadcrumb-seting-bar-flex-label">logo 链接</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-input>logo 链接</el-input>
+            <el-input v-model="getThemeConfig.logo_link">logo 链接</el-input>
           </div>
         </div>
         <div

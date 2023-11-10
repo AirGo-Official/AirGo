@@ -22,7 +22,6 @@ declare interface NodeInfo {
     total_up: number;
     total_down: number;
 
-    goods: [];//多对多,关联商品
     //vmess参数
     v: string;
     scy: string;//加密方式 auto,none,chacha20-poly1305,aes-128-gcm,zero
@@ -36,18 +35,22 @@ declare interface NodeInfo {
     host: string;   //伪装域名
     path: string;   //path
     mode: string;   //grpc传输模式 gun，multi
-    service_name:string;
+    service_name: string;
 
     allowInsecure: boolean;//tls 跳过证书验证
     security: string;//传输层安全类型 none,tls,reality
     sni: string;
     fp: string;
     alpn: string;
-    dest:string;
-    private_key:string;
+    dest: string;
+    private_key: string;
     pbk: string;
     sid: string;
     spx: string;
+    //关联参数
+    goods: [];//多对多,关联商品
+    access: [];
+    access_ids: [];
 }
 
 declare interface ServerStatusInfo {
@@ -59,9 +62,12 @@ declare interface ServerStatusInfo {
     traffic_rate: number;
     u: number;
     d: number;
+    cpu: number;
+    mem: number;
+    disk: number;
 }
 
-declare interface NodeSharedInfo{
+declare interface NodeSharedInfo {
     id: number;
     created_at: string;
     updated_at: string;
@@ -100,7 +106,8 @@ declare interface NodeSharedInfo{
     sid: string;             //reality
     spx: string;             //reality
 }
-declare interface RealityItem{
-    dest:string
-    sni:string
+
+declare interface RealityItem {
+    dest: string
+    sni: string
 }

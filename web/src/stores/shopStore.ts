@@ -1,5 +1,4 @@
 import {defineStore, storeToRefs} from "pinia";
-
 import {ElMessage} from "element-plus";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
@@ -18,6 +17,7 @@ export const useShopStore = defineStore("shopStore", {
                 total_amount: "0.00",
                 total_bandwidth: 0,
                 expiration_date: 0,
+                traffic_reset_method:'NotStack',
                 // checked_nodes: [0], //套餐编辑时选中的节点
                 // nodes: [],
                 des: '<h3 style="color:#00BFFF">究竟什么样的终点，才配得上这一路的颠沛流离---管泽元</h3>\n<h3 style="color:#DDA0DD">世界聚焦于你---管泽元</h3>',
@@ -92,7 +92,6 @@ export const useShopStore = defineStore("shopStore", {
         async getAllEnabledGoods() {
             const res = await request(apiStoreData.api.value.shop_getAllEnabledGoods)
             this.goodsList = res.data
-            ElMessage.success(res.msg)
         },
         //获取全部订阅商品
         async getAllGoods() {
@@ -102,17 +101,14 @@ export const useShopStore = defineStore("shopStore", {
         //添加商品
         async newGoods(data?: object) {
             const res = await request(apiStoreData.api.value.shop_newGoods,data)
-            ElMessage.success(res.msg)
         },
         //修改商品
         async updateGoods(data?: object) {
             const res = await request(apiStoreData.api.value.shop_updateGoods,data)
-            ElMessage.success(res.msg)
         },
         //删除商品
         async deleteGoods(data?: object) {
             const res = await request(apiStoreData.api.value.shop_deleteGoods,data)
-            ElMessage.success(res.msg)
         },
     }
 })

@@ -80,8 +80,8 @@ const onPurchase = (params?: object) => {
     out_trade_no: shopData.value.currentOrder.out_trade_no,
     pay_id: shopData.value.currentOrder.pay_id
   }).then((res) => {
-    if (res.msg === "购买成功") { //0元购
-      ElMessage.success("购买成功")
+    if (res.msg === "Purchase success") { //0元购
+      ElMessage.success(res.msg)
       state.isShowPurchaseDialog = false
       return
     } else {

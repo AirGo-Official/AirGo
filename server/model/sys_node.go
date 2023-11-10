@@ -53,7 +53,8 @@ type Node struct {
 	//关联参数
 	Goods       []Goods      `json:"goods"         gorm:"many2many:goods_and_nodes"`       //多对多,关联商品
 	TrafficLogs []TrafficLog `json:"-"             gorm:"foreignKey:NodeID;references:ID"` //has many
-
+	Access      []Access     `json:"access"        gorm:"many2many:node_and_access"`       //访问控制
+	AccessIds   []int64      `json:"access_ids"    gorm:"-"`
 }
 
 // vmess 格式
@@ -235,4 +236,10 @@ type SubHost struct {
 type NodesWithTotal struct {
 	NodeList []Node `json:"node_list"`
 	Total    int64  `json:"total"`
+}
+
+// node access 多对多
+type NodeAndAccess struct {
+	NodeID   int64
+	AccessID int64
 }

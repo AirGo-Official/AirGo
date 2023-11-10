@@ -52,7 +52,7 @@ func CommonSqlFindWithPagination[T1, T2, T3 any](params T2, paginationParams mod
 	return res, total, err
 }
 
-// 通用查询,支持更多字段参数
+// 通用查询
 func CommonSqlFindWithFieldParams(fieldParams model.FieldParamsReq) (any, int64, error) {
 	var sqlArr []string
 	for _, v := range fieldParams.FieldParamsList {
@@ -80,12 +80,36 @@ func CommonSqlFindWithFieldParams(fieldParams model.FieldParamsReq) (any, int64,
 	err = global.DB.Raw(dataSql).Scan(&data).Error
 	return data, total, err
 }
+func CommonSqlFindWithFieldParamsNew(fieldParams model.FieldParamsReq) (any, int64, error) {
+	var sqlArr []string
+	for _, v := range fieldParams.FieldParamsList {
+		switch v.Condition {
+		case "like":
+			sqlArr = append(sqlArr, v.Operator+" "+v.Field+"  "+v.Condition+" '%"+v.ConditionValue+"%'")
+		default:
+			sqlArr = append(sqlArr, v.Operator+" "+v.Field+" "+v.Condition+" '"+v.ConditionValue+"'")
+		}
+
+	}
+	totalSql := "select count(id) from " + fieldParams.TableName + " where " + strings.Join(sqlArr, "")
+	dataSql := "select * from " + fieldParams.TableName + " where " + strings.Join(sqlArr, "") + " limit " + fmt.Sprintf("%d", fieldParams.PaginationParams.PageSize) + " offset " + fmt.Sprintf("%d", fieldParams.PaginationParams.PageNum-1)
+	var data any
+	data = model.StringAndSlice[fieldParams.TableName]
+	//fmt.Println("totalSql:", totalSql)
+	//fmt.Println("dataSql:", dataSql)
+
+	var total int64
+	err := global.DB.Raw(totalSql).Scan(&total).Error
+	err = global.DB.Raw(dataSql).Scan(&data).Error
+	return data, total, err
+}
 
 // 通用删除
-func CommonSqlDelete[T1, T2 any](modelType T1, params T2) error {
+func CommonSqlDelete[T1, T2 any](params T2) error {
 	var err error
+	var m T1
 	if reflect.TypeOf(params).String() == reflect.String.String() {
-		err = global.DB.Where(params).Delete(&modelType).Error
+		err = global.DB.Where(params).Delete(&m).Error
 	} else {
 		err = global.DB.Delete(&params).Error
 	}
@@ -99,10 +123,11 @@ func CommonSqlSave[T1 any](data T1) error {
 }
 
 // 通用更新 update
-func CommonSqlUpdate[T1, T2 any](modelType T1, data T2, params string) error {
+func CommonSqlUpdate[T1, T2 any](data T2, params string) error {
 	var err error
+	var m T1
 	//保存多列
-	err = global.DB.Model(&modelType).Where(params).Updates(&data).Error
+	err = global.DB.Model(&m).Where(params).Updates(&data).Error
 	return err
 }
 

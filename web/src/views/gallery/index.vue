@@ -83,7 +83,6 @@ const state = reactive({
 
 function savePicture() {
   request(apiStoreData.api.value.upload_newPictureUrl, state.galleryData).then((res) => {
-    ElMessage.success(res.msg)
     state.galleryData.picture_url = '' //清空输入框
     state.galleryData.subject = '' //清空输入框
   }).catch()
@@ -97,7 +96,6 @@ function openDialog() {
 
 function getPictureList(params?: object) {
   request(apiStoreData.api.value.upload_getPictureList, params).then((res) => {
-    ElMessage.success(res.msg)
     state.galleryDialogData.galleryList = res.data
   }).catch()
 

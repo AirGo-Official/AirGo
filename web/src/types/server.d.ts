@@ -27,12 +27,16 @@ declare interface System {
     api_prefix: string;
 
     sub_name: string;
-    muKey: string;
+    tek: string;
     default_goods: string;
     enabled_rebate: boolean;    //是否开启返利
     rebate_rate: number;        //返利率
     enabled_deduction: boolean; //是否开启旧套餐抵扣
     deduction_threshold: number;//旧套餐抵扣阈值,大于该值则抵扣
+
+    enabled_clock_in: boolean
+    clock_in_min_traffic: number
+    clock_in_max_traffic: number
 }
 
 declare interface Captcha {

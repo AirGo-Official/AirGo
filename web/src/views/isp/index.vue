@@ -1,5 +1,11 @@
 <template>
   <div class="container layout-padding">
+
+    <el-card shadow="hover" style="margin-bottom: 10px">
+      <div>
+        <el-button type="primary" @click="openUsageDialog">如何使用</el-button>
+      </div>
+    </el-card>
     <!--    登录卡片-->
     <el-card shadow="hover" class="layout-padding-auto"
              v-if="ispStoreData.isp.value.unicom_config.cookie==='' && ispStoreData.isp.value.telecom_config.telecomToken===''">
@@ -69,17 +75,22 @@
         <el-button class="card-text-left" type="warning" @click="copyUrl()">复制url</el-button>
       </div>
     </el-card>
+    <el-dialog v-model="state.isShowUsage" :title="state.title" width="80%" destroy-on-close center>
+      <v-md-preview :text="usageMD"></v-md-preview>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import {useISPStore} from "/@/stores/ispStore";
 import {storeToRefs} from "pinia";
-import {onMounted} from "vue";
+import {onMounted, reactive} from "vue";
 import {TelecomMobileHandler, TelecomRSAEncrypt} from "/@/utils/encrypt"
 import commonFunction from '/@/utils/commonFunction';
 import {Local} from "/@/utils/storage";
-import {getFormatDate, randomString} from "/@/utils/formatTime";
+import {getFormatDate} from "/@/utils/formatTime";
+import {randomString} from "/@/utils/encrypt"
+import usageMD from "/@/views/isp/usage.md?raw"
 
 const {copyText} = commonFunction();
 const ispStore = useISPStore()
@@ -87,6 +98,15 @@ const ispStoreData = storeToRefs(ispStore)
 import {useApiStore} from "/@/stores/apiStore";
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
+
+const state = reactive({
+  isShowUsage:false,
+})
+
+//打开用法弹窗
+const openUsageDialog =()=>{
+  state.isShowUsage=true
+}
 
 //获取验证码
 const sendCode = (params: Isp, isp_type: string) => {

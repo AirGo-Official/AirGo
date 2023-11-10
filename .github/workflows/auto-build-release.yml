@@ -33,6 +33,7 @@ jobs:
       - name: Build Go
         run: |
           cd server
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./main.go
           sudo apt update -y
           go env -w GO111MODULE=on
           go env -w CGO_ENABLED=1

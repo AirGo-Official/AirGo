@@ -1,11 +1,8 @@
 <template>
   <el-dialog v-model="state.isShowDialog" :title="state.title" width="769px" destroy-on-close>
-    <el-form :model="goodsManageData.currentGoods" label-width="80px">
+    <el-form :model="goodsManageData.currentGoods" label-width="80px" label-position="top">
       <el-form-item label="商品标题">
         <el-input v-model="goodsManageData.currentGoods.subject"/>
-      </el-form-item>
-      <el-form-item label="描述">
-        <v-md-editor v-model="goodsManageData.currentGoods.des" height="400px"></v-md-editor>
       </el-form-item>
       <el-form-item label="价格">
         <el-col :span="4">
@@ -46,6 +43,16 @@
                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
         </el-col>
       </el-form-item>
+      <el-form-item label="流量重置方式">
+        <el-radio-group v-model="goodsManageData.currentGoods.traffic_reset_method" class="ml-4">
+          <el-radio label="Stack" >叠加</el-radio>
+          <el-radio label="NotStack" >不叠加</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="描述">
+        <v-md-editor v-model="goodsManageData.currentGoods.des" height="400px"></v-md-editor>
+      </el-form-item>
+
       <el-form-item label="关联节点">
         <el-transfer
             :data="nodeManageData.nodes.node_list"

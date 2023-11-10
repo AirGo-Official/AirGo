@@ -24,20 +24,19 @@ import (
 // 用户注册
 func Register(ctx *gin.Context) {
 	if !global.Server.System.EnableRegister {
-		response.Fail("已关闭注册", nil, ctx)
+		response.Fail("Registration closed", nil, ctx)
 		return
 	}
 	var u model.UserRegister
 	err := ctx.ShouldBind(&u)
 	if err != nil {
-		global.Logrus.Error("注册参数错误:", err.Error())
-		response.Fail("注册参数错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("Register error:"+err.Error(), nil, ctx)
 		return
 	}
-	//fmt.Println("注册", u)
 	//处理base64Captcha
 	if !global.Base64CaptchaStore.Verify(u.Base64Captcha.ID, u.Base64Captcha.B64s, true) {
-		response.Fail("验证码错误", nil, ctx) //验证错误会清除store中的value，需要前端重新获取
+		response.Fail("Verification code error", nil, ctx) //验证错校验失败会清除store中的value，需要前端重新获取
 		return
 	}
 	//校验邮箱验证码
@@ -45,12 +44,12 @@ func Register(ctx *gin.Context) {
 		cacheEmail, ok := global.LocalCache.Get(u.UserName + "emailcode")
 		if ok {
 			if cacheEmail != u.EmailCode {
-				response.Fail("邮箱验证码校验错误", nil, ctx)
+				response.Fail("Email verification code verification error", nil, ctx)
 				return
 			}
 		} else {
 			//cache获取验证码失败,原因：1超时 2系统错误
-			response.Fail("邮箱验证码超时，请重新获取", nil, ctx)
+			response.Fail("Email verification code timeout, please obtain it again", nil, ctx)
 			return
 		}
 	}
@@ -61,12 +60,12 @@ func Register(ctx *gin.Context) {
 		ReferrerCode: u.ReferrerCode,
 	})
 	if err != nil {
-		global.Logrus.Error("注册错误:", err.Error())
-		response.Fail("注册错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("Register error:"+err.Error(), nil, ctx)
 		return
 	}
 	global.LocalCache.Delete(u.UserName + "emailcode")
-	response.OK("注册成功", nil, ctx)
+	response.OK("Register success", nil, ctx)
 }
 
 // 用户登录
@@ -76,8 +75,8 @@ func Login(c *gin.Context) {
 	//key := c.ClientIP()
 
 	if err != nil {
-		global.Logrus.Error("用户登录参数错误:", err.Error())
-		response.Fail("用户登录参数错误"+err.Error(), nil, c)
+		global.Logrus.Error(err.Error())
+		response.Fail("Login error:"+err.Error(), nil, c)
 		return
 	}
 	//校验邮箱验证码
@@ -86,27 +85,26 @@ func Login(c *gin.Context) {
 		global.LocalCache.Delete(l.UserName + "emailcode")
 		if ok {
 			if cacheEmail != l.EmailCode {
-				response.Fail("邮箱验证码校验错误", nil, c)
+				response.Fail("Email verification code verification error", nil, c)
 				return
 			}
 		} else {
 			//cache获取验证码失败,原因：1超时 2系统错误
-			response.Fail("邮箱验证码超时，请重新获取", nil, c)
+			response.Fail("Email verification code timeout, please obtain it again", nil, c)
 			return
 		}
 	}
 	//查询用户
 	user, err := service.Login(&l)
 	if err != nil {
-		response.Fail("查询用户"+err.Error(), nil, c)
-		global.Logrus.Error("查询用户", err.Error())
+		global.Logrus.Error(err.Error())
+		response.Fail("Login error:"+err.Error(), nil, c)
 		return
 	}
 	//登录以后签发jwt，先查询是否有token缓存
 	var token string
 	cacheToken, ok := global.LocalCache.Get(l.UserName + "token")
 	if ok {
-		fmt.Println("cacheToken:", cacheToken)
 		token = cacheToken.(string)
 	} else {
 		myCustomClaimsPrefix := jwt_plugin.MyCustomClaimsPrefix{
@@ -121,18 +119,16 @@ func Login(c *gin.Context) {
 		}
 		tokenNew, err := jwt_plugin.GenerateTokenUsingHs256(myCustomClaimsPrefix, registeredClaims, global.Server.JWT.SigningKey)
 		if err != nil {
-			global.Logrus.Error("生成token err", err.Error())
+			global.Logrus.Error(err.Error())
 			return
 		} else {
 			token = tokenNew
-			//fmt.Println("tokenNew:", tokenNew)
 			go func(l *model.UserLogin, token string) {
 				global.LocalCache.Set(l.UserName+"token", token, ep)
 			}(&l, token)
 		}
 	}
-	//fmt.Println("生成token :", token)
-	response.OK("登录成功", gin.H{
+	response.OK("Login success", gin.H{
 		"user":  user,
 		"token": token,
 	}, c)
@@ -142,40 +138,39 @@ func Login(c *gin.Context) {
 func ChangeSubHost(ctx *gin.Context) {
 	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
 	if !ok {
-		response.Fail("获取信息,uID参数错误", nil, ctx)
+		response.Fail("user id error", nil, ctx)
 		return
 	}
 	var host model.SubHost
 	err := ctx.ShouldBind(&host)
 	if err != nil || len(host.Host) > 100 {
-		global.Logrus.Error("修改混淆参数错误:", err.Error())
-		response.Fail("修改混淆参数错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("ChangeSubHost error:"+err.Error(), nil, ctx)
 		return
 	}
 	err = service.ChangeSubHost(uIDInt, host.Host)
 	if err != nil {
-		global.Logrus.Error("修改混淆错误:", err.Error())
-		response.Fail("修改混淆错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("ChangeSubHost error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("修改混淆成功", nil, ctx)
+	response.OK("ChangeSubHost success", nil, ctx)
 }
 
 // 获取自身信息
 func GetUserInfo(ctx *gin.Context) {
 	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
 	if !ok {
-		response.Fail("获取信息,uID参数错误", nil, ctx)
+		response.Fail("user id error", nil, ctx)
 		return
 	}
-
 	u, err := service.GetUserInfo(uIDInt)
 	if err != nil {
-		global.Logrus.Error("获取自身信息:", err.Error())
-		response.Fail("获取自身信息"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("GetUserInfo error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("获取信息成功", u, ctx)
+	response.OK("GetUserInfo success", u, ctx)
 
 }
 
@@ -184,16 +179,16 @@ func GetUserlist(ctx *gin.Context) {
 	var params model.PaginationParams
 	err := ctx.ShouldBind(&params)
 	if err != nil {
-		global.Logrus.Error("获取用户列表参数错误:", err.Error())
-		response.Fail("获取用户列表参数错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("GetUserlist error:"+err.Error(), nil, ctx)
 	}
 	userList, err := service.GetUserlist(&params)
 	if err != nil {
-		global.Logrus.Error("获取用户列表错误:", err.Error())
-		response.Fail("获取用户列表错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("GetUserlist error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("获取用户列表成功", userList, ctx)
+	response.OK("GetUserlist success", userList, ctx)
 }
 
 // 新建用户
@@ -201,18 +196,17 @@ func NewUser(ctx *gin.Context) {
 	var u model.User
 	err := ctx.ShouldBind(&u)
 	if err != nil {
-		global.Logrus.Error("新建用户参数错误:", err.Error())
-		response.Fail("新建用户参数错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("NewUser error:"+err.Error(), nil, ctx)
 		return
 	}
-	//fmt.Println("新建用户:", u.RoleGroup)
 	err = service.NewUser(u)
 	if err != nil {
-		global.Logrus.Error("新建用户错误:", err.Error())
-		response.Fail("新建用户错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("NewUser error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("新建用户成功", nil, ctx)
+	response.OK("NewUser success", nil, ctx)
 }
 
 // 编辑用户信息
@@ -220,11 +214,10 @@ func UpdateUser(ctx *gin.Context) {
 	var u model.User
 	err := ctx.ShouldBind(&u)
 	if err != nil {
-		global.Logrus.Error("修改用户参数错误:", err.Error())
-		response.Fail("修改用户参数错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err.Error())
+		response.Fail("UpdateUser error:"+err.Error(), nil, ctx)
 		return
 	}
-	fmt.Println("编辑用户信息:", u.SubscribeInfo.ExpiredAt)
 	//处理角色
 	service.DeleteUserRoleGroup(&u)
 	var roleArr []string
@@ -236,11 +229,11 @@ func UpdateUser(ctx *gin.Context) {
 
 	err = service.SaveUser(&u)
 	if err != nil {
-		global.Logrus.Error("修改用户错误 error:", err)
-		response.Fail("修改用户错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("UpdateUser error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("修改用户成功", nil, ctx)
+	response.OK("UpdateUser success", nil, ctx)
 }
 
 // 删除用户
@@ -248,44 +241,42 @@ func DeleteUser(ctx *gin.Context) {
 	var u model.User
 	err := ctx.ShouldBind(&u)
 	if err != nil {
-		global.Logrus.Error("删除用户参数错误 error:", err)
-		response.Fail("删除用户参数错误"+err.Error(), err.Error(), ctx)
+		global.Logrus.Error(err)
+		response.Fail("DeleteUser error:"+err.Error(), err.Error(), ctx)
 		return
 	}
 	//删除用户关联的角色
 	service.DeleteUserRoleGroup(&u)
 	if err != nil {
-		global.Logrus.Error("删除用户角色错误 error:", err)
-		response.Fail("删除用户角色错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("DeleteUser error:"+err.Error(), nil, ctx)
 		return
 	}
 	// 删除用户
 	err = service.DeleteUser(&u)
 	if err != nil {
-		global.Logrus.Error("删除用户错误 error:", err)
-		response.Fail("删除用户错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("DeleteUser error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("删除用户成功", nil, ctx)
+	response.OK("DeleteUser success", nil, ctx)
 
 }
 
 // 修改密码
 func ChangeUserPassword(ctx *gin.Context) {
-
 	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
 	if !ok {
-		response.Fail("获取信息,uID参数错误", nil, ctx)
+		response.Fail("user id error", nil, ctx)
 		return
 	}
 	var u model.UserChangePassword
 	err := ctx.ShouldBind(&u)
 	if err != nil {
-		global.Logrus.Error("修改密码参数错误 error:", err)
-		response.Fail("修改密码参数错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("ChangeUserPassword error:"+err.Error(), nil, ctx)
 		return
 	}
-	//
 	var user = model.User{
 		ID:       uIDInt,
 		Password: encrypt_plugin.BcryptEncode(u.Password),
@@ -293,11 +284,11 @@ func ChangeUserPassword(ctx *gin.Context) {
 	//
 	err = service.UpdateUser(&user)
 	if err != nil {
-		global.Logrus.Error("修改密码错误 error:", err)
-		response.Fail("修改密码错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("ChangeUserPassword error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("修改密码成功", nil, ctx)
+	response.OK("ChangeUserPassword success", nil, ctx)
 }
 
 // 重置密码
@@ -305,29 +296,27 @@ func ResetUserPassword(ctx *gin.Context) {
 	var u model.UserLogin
 	err := ctx.ShouldBind(&u)
 	if err != nil {
-		global.Logrus.Error("重置密码参数错误 error:", err)
-		response.Fail("重置密码参数错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("ResetUserPassword error:"+err.Error(), nil, ctx)
 		return
 	}
 	//校验邮箱验证码
 	emailcode, _ := global.LocalCache.Get(u.UserName + "emailcode")
 	if emailcode != u.EmailCode {
-		response.Fail("邮箱验证码错误", nil, ctx)
+		response.Fail("Email verification code error", nil, ctx)
 		return
 	}
 	var user = model.User{
 		UserName: u.UserName,
 		Password: encrypt_plugin.BcryptEncode(u.Password),
 	}
-	//
 	err = service.ResetUserPassword(&user)
 	if err != nil {
-		global.Logrus.Error("重置密码错误 error:", err)
-		response.Fail("重置密码错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("ResetUserPassword error:"+err.Error(), nil, ctx)
 		return
 	}
-	//global.LocalCache.Delete(u.UserName + "emailcode")
-	response.OK("重置密码成功", nil, ctx)
+	response.OK("ResetUserPassword success", nil, ctx)
 
 }
 
@@ -349,7 +338,7 @@ func GetSub(ctx *gin.Context) {
 func ResetSub(ctx *gin.Context) {
 	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
 	if !ok {
-		response.Fail("获取信息,uID参数错误", nil, ctx)
+		response.Fail("user id error", nil, ctx)
 		return
 	}
 	var u = model.User{
@@ -359,9 +348,35 @@ func ResetSub(ctx *gin.Context) {
 	}
 	err := service.UpdateUser(&u)
 	if err != nil {
-		global.Logrus.Error("重置订阅错误 error:", err)
-		response.Fail("重置订阅错误"+err.Error(), nil, ctx)
+		global.Logrus.Error(err)
+		response.Fail("ResetSub error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("重置订阅成功", nil, ctx)
+	response.OK("ResetSub success", nil, ctx)
+}
+
+// 打卡
+func ClockIn(ctx *gin.Context) {
+	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	if !ok {
+		response.Fail("user id error", nil, ctx)
+		return
+	}
+	//判断是否已打卡
+	_, ok = global.LocalCache.Get(fmt.Sprintf("%d", uIDInt) + "clockin")
+	if ok { //已打卡
+		response.Fail("You have already checked in ", nil, ctx)
+		return
+	}
+
+	msg, err := service.ClockIn(uIDInt)
+	if err != nil {
+		global.Logrus.Error(err)
+		response.Fail("ClockIn error:"+err.Error(), nil, ctx)
+		return
+	}
+	now := time.Now()
+	zeroTime := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
+	global.LocalCache.Set(fmt.Sprintf("%d", uIDInt)+"clockin", nil, zeroTime.Sub(now))
+	response.OK("ClockIn success", msg, ctx)
 }
