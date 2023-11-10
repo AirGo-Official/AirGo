@@ -45,8 +45,8 @@ get_region() {
     country=$( curl -4 "https://ipinfo.io/country" 2> /dev/null )
     if [ "$country" == "CN" ]; then
       acmeGit="https://gitee.com/neilpang/acme.sh.git"
-      downloadPrefix="https://ghproxy.com/${downloadPrefix}"
-      manageScript="https://ghproxy.com/${manageScript}"
+      downloadPrefix="https://gh-proxy.com/${downloadPrefix}"
+      manageScript="https://gh-proxy.com/${manageScript}"
     fi
 }
 open_ports(){
