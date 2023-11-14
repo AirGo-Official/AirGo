@@ -546,7 +546,7 @@ function onSubmit() {
 
 //
 const setReality = (nodeType: string) => {
-  request(apiStoreData.api.value.system_createx25519).then((res) => {
+  request(apiStoreData.api.value.node_createx25519).then((res) => {
     switch (nodeType) {
       case "vless":
         dialogData.value.vlessInfo.pbk = res.data.public_key

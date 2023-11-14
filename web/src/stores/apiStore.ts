@@ -50,10 +50,9 @@ export const useApiStore = defineStore("apiStore", {
             role_addRole: {path: apiPre + "/role/addRole", method: "post"} as ApiItem,
             role_delRole: {path: apiPre + "/role/delRole", method: "post"} as ApiItem,
             //系统设置
-            system_updateThemeConfig: {path: apiPre + "/system/updateThemeConfig", method: "post"} as ApiItem,
-            system_getSetting: {path: apiPre + "/system/getSetting", method: "get"} as ApiItem,
-            system_updateSetting: {path: apiPre + "/system/updateSetting", method: "post"} as ApiItem,
-            system_createx25519: {path: apiPre + "/system/createx25519", method: "get"} as ApiItem,
+            server_updateThemeConfig: {path: apiPre + "/server/updateThemeConfig", method: "post"} as ApiItem,
+            server_getSetting: {path: apiPre + "/server/getSetting", method: "get"} as ApiItem,
+            server_updateSetting: {path: apiPre + "/server/updateSetting", method: "post"} as ApiItem,
 
             //节点
             node_getAllNode: {path: apiPre + "/node/getAllNode", method: "get"} as ApiItem,
@@ -62,6 +61,7 @@ export const useApiStore = defineStore("apiStore", {
             node_updateNode: {path: apiPre + "/node/updateNode", method: "post"} as ApiItem,
             node_getTraffic: {path: apiPre + "/node/getTraffic", method: "post"} as ApiItem,
             node_nodeSort: {path: apiPre + "/node/nodeSort", method: "post"} as ApiItem,
+            node_createx25519: {path: apiPre + "/node/createx25519", method: "get"} as ApiItem,
             node_newNodeShared: {path: apiPre + "/node/newNodeShared", method: "post"} as ApiItem,
             node_getNodeSharedList: {path: apiPre + "/node/getNodeSharedList", method: "get"} as ApiItem,
             node_deleteNodeShared: {path: apiPre + "/node/deleteNodeShared", method: "post"} as ApiItem,

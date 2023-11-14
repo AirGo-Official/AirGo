@@ -2,12 +2,16 @@ declare interface Server {
     created_at: string;
     updated_at: string;
     id: number;
-    jwt: Jwt;
-    system: System;
-    captcha: Captcha;
-    pay: Pay;
+
+    subscribe: Subscribe;
     email: Email;
-    rate_limit_params: RateLimitParams;
+    security: Security;
+}
+
+declare interface Security {
+    captcha: Captcha
+    jwt: Jwt
+    rate_limit_params: RateLimitParams
 }
 
 declare interface Jwt {
@@ -17,10 +21,11 @@ declare interface Jwt {
     issuer: string;
 }
 
-declare interface System {
+declare interface Subscribe {
     enable_register: boolean;
     enable_email_code: boolean;
     enable_login_email_code: boolean;
+    acceptable_email_suffixes: string;
     is_multipoint: boolean;
 
     backend_url: string;

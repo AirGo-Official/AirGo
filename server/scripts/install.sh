@@ -247,7 +247,7 @@ start(){
 
   httpPort=$(read_yaml $yamlFile "http-port")
   name=$(lsof -i:$httpPort | awk '{print $1}')
-  if [[ ! $name == ${appName} && ！$name == "" ]]; then
+  if [[ ! $name == ${appName} && ! $name == "" ]]; then
     echo -e "${red}端口被占用，请检查端口，或者修改 /usr/local/${appName}/config.yaml 配置文件${plain}"
     echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
     main
@@ -292,10 +292,12 @@ update(){
       return 0
   fi
   cd /usr/local/${appName}
-  echo -e "${yellow}为防止关键数据丢失，正在备份原文件夹...${plain}"
-  date=$(date +%Y_%m_%d_%H_%M)
-  zip -rq AirGo_${date}.zip /usr/local/${appName}
-  echo -e "${yellow}原文件夹已备份为：${plain}AirGo_${date}.zip"
+#  echo -e "${yellow}为防止关键数据丢失，正在备份原文件夹...${plain}"
+#  date=$(date +%Y_%m_%d_%H_%M)
+#  zip -rq AirGo_${date}.zip /usr/local/${appName}
+#  echo -e "${yellow}原文件夹已备份为：${plain}AirGo_${date}.zip"
+
+
   echo -e "${yellow}正在下载版本：${plain}${latestVersion}"
 
   mkdir temp
@@ -318,11 +320,21 @@ update(){
   rm -rf /usr/bin/${appName}
   wget -N --no-check-certificate -O /usr/bin/${appName} ${manageScript}
   chmod 777 /usr/bin/${appName}
-  confirm_msg "是否立即重启服务？" "n"
-  if [[ $? != 0 ]]; then
-      return 0
-  fi
+
+#  confirm_msg "是否立即重启服务？" "n"
+#  if [[ $? != 0 ]]; then
+#      return 0
+#  fi
+
+  systemctl stop ${appName}
+
+  echo -e "${yellow}正在更新相关数据...${plain}"
+  /usr/local/${appName}/${appName} -update
+  echo -e "${yellow}完成${plain}"
+
+  echo -e "${yellow}正在重启核心...${plain}"
   systemctl restart ${appName}
+  systemctl status ${appName}
 }
 
 reset_admin(){

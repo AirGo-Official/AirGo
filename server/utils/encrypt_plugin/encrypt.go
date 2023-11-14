@@ -1,6 +1,7 @@
 package encrypt_plugin
 
 import (
+	"bytes"
 	"crypto/md5"
 	crypt_rand "crypto/rand"
 	"crypto/rsa"
@@ -8,6 +9,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -238,4 +240,14 @@ func RandomBase64(n int) string {
 	b := make([]byte, n)
 	rand.Read(b)
 	return base64.StdEncoding.EncodeToString(b)
+}
+
+func JsonMarshal(data any) (string, error) {
+	bf := bytes.NewBuffer([]byte{})
+	jsonEncoder := json.NewEncoder(bf)
+	err := jsonEncoder.Encode(data)
+	if err != nil {
+		return "", err
+	}
+	return bf.String(), nil
 }

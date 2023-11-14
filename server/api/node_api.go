@@ -172,3 +172,14 @@ func DeleteNodeShared(ctx *gin.Context) {
 	}
 	response.OK("DeleteNodeShared success", nil, ctx)
 }
+
+// reality x25519
+func Createx25519(ctx *gin.Context) {
+	str := encrypt_plugin.RandomString(43)
+	pub, pri, err := encrypt_plugin.ExecuteX25519(str)
+	if err != nil {
+		global.Logrus.Error(err.Error())
+		return
+	}
+	response.OK("Createx25519 success", model.AGREALITYx25519{PublicKey: pub, PrivateKey: pri}, ctx)
+}

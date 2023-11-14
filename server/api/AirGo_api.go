@@ -7,36 +7,24 @@ import (
 	"AirGo/utils/encrypt_plugin"
 	"AirGo/utils/response"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"io"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func Show(data any) {
-	b, _ := json.Marshal(data)
-	fmt.Println(string(b))
-}
-func ShowBody(ctx *gin.Context) {
-	b, _ := io.ReadAll(ctx.Request.Body)
-	fmt.Println(string(b))
-}
 func AGGetNodeInfo(ctx *gin.Context) {
 	//验证key
-	if global.Server.System.TEK != ctx.Query("key") {
+	if global.Server.System.MuKey != ctx.Query("key") {
 		return
 	}
 	id := ctx.Query("id")
 	node, _, err := service.CommonSqlFind[model.Node, string, model.AGNodeInfo]("id = " + id)
-
 	if err != nil {
 		global.Logrus.Error("AGGetNodeInfo error,id="+id, err.Error())
 		return
 	}
-	//处理ss
 	if node.NodeType == "shadowsocks" {
 		switch node.Scy {
 		case "2022-blake3-aes-128-gcm":
@@ -45,31 +33,12 @@ func AGGetNodeInfo(ctx *gin.Context) {
 			node.ServerKey = base64.StdEncoding.EncodeToString([]byte(node.ServerKey))
 		}
 	}
-	//处理关联
-	var accessIds []int64
-	acc, _, _ := service.CommonSqlFind[model.NodeAndAccess, string, []model.NodeAndAccess]("node_id = " + id)
-	for k, _ := range acc {
-		accessIds = append(accessIds, acc[k].AccessID)
-	}
-	if len(accessIds) > 0 {
-		global.DB.Model(&model.Access{}).Where("id in ?", accessIds).Find(&node.Access)
-	}
-	//处理Etags
-	b, _ := json.Marshal(node)
-	newMd5 := encrypt_plugin.Md5Encode(string(b), false)
-	oldMd5 := ctx.Request.Header.Get("If-None-Match")
-	if newMd5 == oldMd5 {
-		ctx.JSON(304, nil)
-	} else {
-		ctx.Request.Header.Del("If-Modified-Since")
-		ctx.Writer.Header().Set("Etag", newMd5)
-		ctx.JSON(200, node)
-	}
+	ctx.JSON(200, node)
 
 }
 func AGReportNodeStatus(ctx *gin.Context) {
 	//验证key
-	if global.Server.System.TEK != ctx.Query("key") {
+	if global.Server.System.MuKey != ctx.Query("key") {
 		return
 	}
 	var AGNodeStatus model.AGNodeStatus
@@ -84,23 +53,15 @@ func AGReportNodeStatus(ctx *gin.Context) {
 		oldStatus.CPU = AGNodeStatus.CPU
 		oldStatus.Mem = AGNodeStatus.Mem
 		oldStatus.Disk = AGNodeStatus.Disk
-		oldStatus.Status = true
+		//oldStatus.Uptime=AGNodeStatus.Uptime
 		global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+"status", oldStatus, 2*time.Minute) //2分钟后过期
-	} else {
-		var status model.NodeStatus
-		status.CPU = AGNodeStatus.CPU
-		status.Mem = AGNodeStatus.Mem
-		status.Disk = AGNodeStatus.Disk
-		status.Status = true
-		global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+"status", status, 2*time.Minute) //2分钟后过期
 	}
-
 	ctx.String(200, "success")
 }
 
 func AGGetUserlist(ctx *gin.Context) {
 	//验证key
-	if global.Server.System.TEK != ctx.Query("key") {
+	if global.Server.System.MuKey != ctx.Query("key") {
 		return
 	}
 	id := ctx.Query("id")
@@ -145,22 +106,13 @@ func AGGetUserlist(ctx *gin.Context) {
 		}
 	default:
 	}
-	//处理Etags
-	b, _ := json.Marshal(node)
-	newMd5 := encrypt_plugin.Md5Encode(string(b), false)
-	oldMd5 := ctx.Request.Header.Get("If-None-Match")
-	if newMd5 == oldMd5 {
-		ctx.JSON(304, nil)
-	} else {
-		ctx.Request.Header.Del("If-Modified-Since")
-		ctx.Writer.Header().Set("Etag", newMd5)
-		ctx.JSON(200, users)
-	}
+	ctx.JSON(200, users)
+
 }
 
 func AGReportUserTraffic(ctx *gin.Context) {
 	//验证key
-	if global.Server.System.TEK != ctx.Query("key") {
+	if global.Server.System.MuKey != ctx.Query("key") {
 		return
 	}
 	var AGUserTraffic model.AGUserTraffic
@@ -203,7 +155,6 @@ func AGReportUserTraffic(ctx *gin.Context) {
 			LastTime:   time.Now(),
 			Status:     true,
 		}
-		//处理时间间隔
 		var duration float64 = 60
 		cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(id, 10) + "status")
 		if ok && cacheStatus != nil {
@@ -216,24 +167,21 @@ func AGReportUserTraffic(ctx *gin.Context) {
 
 	}(AGUserTraffic.ID, int64(len(userIds)), trafficLog.U, trafficLog.D)
 	//插入流量统计统计
-	go func() {
-		err = service.CommonSqlCreate[model.TrafficLog](trafficLog)
-		if err != nil {
-			global.Logrus.Error(err)
-			return
-		}
-	}()
+	err = service.CommonSqlCreate[model.TrafficLog](trafficLog)
 
+	if err != nil {
+		global.Logrus.Error("插入流量统计统计error:", err)
+		return
+	}
 	//更新用户流量信息
-	go func() {
-		if len(userArr) > 0 {
-			err = service.UpdateUserTrafficInfo(userArr, userIds)
-			if err != nil {
-				global.Logrus.Error(err)
-			}
-		}
-	}()
-
+	if len(userArr) == 0 {
+		return
+	}
+	err = service.UpdateUserTrafficInfo(userArr, userIds)
+	if err != nil {
+		global.Logrus.Error("更新用户流量信息error:", err)
+		return
+	}
 	ctx.String(200, "success")
 
 }

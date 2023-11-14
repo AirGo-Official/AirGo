@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"reflect"
+	"sort"
 	"strings"
 )
 
@@ -201,4 +202,30 @@ func GetUserIDFromGinContext(ctx *gin.Context) (int64, bool) {
 func GetUserNameFromGinContext(ctx *gin.Context) (string, bool) {
 	userName, ok := ctx.Get("uName")
 	return userName.(string), ok
+}
+
+// 数组去重
+func ArrayDeduplication(slice []int64) []int64 {
+	tempMap := make(map[int64]struct{}, len(slice))
+	j := 0
+	for _, v := range slice {
+		_, ok := tempMap[v]
+		if ok {
+			continue
+		}
+		tempMap[v] = struct{}{}
+		slice[j] = v
+		j++
+	}
+	return slice[:j]
+}
+
+// 判断字符串是否在一个数组中
+func In(target string, str_array []string) bool {
+	sort.Strings(str_array)
+	index := sort.SearchStrings(str_array, target)
+	if index < len(str_array) && str_array[index] == target {
+		return true
+	}
+	return false
 }

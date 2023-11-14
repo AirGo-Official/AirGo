@@ -9,12 +9,9 @@ type Server struct {
 	DeletedAt *time.Time `json:"-" gorm:"index"`
 	ID        int64      `json:"id"   gorm:"primary_key"`
 
-	JWT             JWT             `json:"jwt"      gorm:"embedded"`
-	System          System          `json:"system"   gorm:"embedded"`
-	Captcha         Captcha         `json:"captcha"  gorm:"embedded"` //验证码
-	Email           Email           `json:"email"    gorm:"embedded"`
-	RateLimitParams RateLimitParams `json:"rate_limit_params"  gorm:"embedded"`
-	//Mysql   Mysql   `json:"mysql"    gorm:"embedded"` // gorm
+	Subscribe Subscribe `json:"subscribe"   gorm:"embedded"`
+	Email     Email     `json:"email"    gorm:"embedded"`
+	Security  Security  `json:"security" gorm:"embedded"`
 }
 
 type Email struct {
@@ -27,6 +24,11 @@ type Email struct {
 	EmailNickname  string `json:"email_nickname"`                           // 昵称
 	EmailSubject   string `json:"email_subject" gorm:"default:hello!"`      // 邮件主题
 	EmailContent   string `json:"email_content" gorm:"size:5000;type:text"` //邮件内容
+}
+type Security struct {
+	Captcha         Captcha         `json:"captcha" gorm:"embedded"`
+	JWT             JWT             `json:"jwt"     gorm:"embedded"`
+	RateLimitParams RateLimitParams `json:"rate_limit_params"gorm:"embedded"`
 }
 
 type Captcha struct {
@@ -42,37 +44,39 @@ type JWT struct {
 	BufferTime  string `json:"buffer_time"  gorm:"default:1d;comment:缓冲时间"`
 	Issuer      string `json:"issuer"       gorm:"default:AirGo;comment:签发者"`
 }
-type System struct {
-	EnableRegister       bool    `json:"enable_register"         gorm:"default:true;comment:是否开启注册"`
-	EnableEmailCode      bool    `json:"enable_email_code"       gorm:"default:false;comment:是否开启注册email 验证码"`
-	EnableLoginEmailCode bool    `json:"enable_login_email_code" gorm:"default:false;comment:是否开启登录email 验证码"`
-	IsMultipoint         bool    `json:"is_multipoint"     gorm:"default:true;comment:是否多点登录"`
-	BackendUrl           string  `json:"backend_url"       gorm:"comment:后端地址"`
-	ApiPrefix            string  `json:"api_prefix"        gorm:"default:/api;comment:api前缀"`
-	SubName              string  `json:"sub_name"          gorm:"default:AirGo;comment:订阅名称"`
-	TEK                  string  `json:"tek"               gorm:"default:airgo;comment:前后端通信密钥"`
-	DefaultGoods         string  `json:"default_goods"     gorm:"comment:新用户默认套餐"`
-	EnabledRebate        bool    `json:"enabled_rebate"    gorm:"default:false;comment:是否开启返利"`
-	RebateRate           float64 `json:"rebate_rate"       gorm:"default:0.1;comment:返利率"`
-	EnabledDeduction     bool    `json:"enabled_deduction" gorm:"default:false;comment:是否开启旧套餐抵扣"`
-	DeductionThreshold   float64 `json:"deduction_threshold" gorm:"default:0.8;comment:旧套餐抵扣阈值,大于该值则抵扣"`
-	EnabledClockIn       bool    `json:"enabled_clock_in" gorm:"default:true;comment:是否开启打卡"`
-	ClockInMinTraffic    int64   `json:"clock_in_min_traffic" gorm:"default:100;comment:打卡最小流量(MB)"`
-	ClockInMaxTraffic    int64   `json:"clock_in_max_traffic" gorm:"default:1000;comment:打卡最大流量(MB)"`
-}
 
 // RateLimitParams 限流参数
 type RateLimitParams struct {
 	IPRoleParam int64 `json:"ip_role_param" gorm:"default:600"`
 	VisitParam  int64 `json:"visit_param"   gorm:"default:60"`
 }
+type Subscribe struct {
+	EnableRegister          bool    `json:"enable_register"           gorm:"default:true;comment:是否开启注册"`
+	AcceptableEmailSuffixes string  `json:"acceptable_email_suffixes" gorm:"comment:可接受的邮箱后缀"`
+	EnableEmailCode         bool    `json:"enable_email_code"         gorm:"default:false;comment:是否开启注册email 验证码"`
+	EnableLoginEmailCode    bool    `json:"enable_login_email_code"   gorm:"default:false;comment:是否开启登录email 验证码"`
+	IsMultipoint            bool    `json:"is_multipoint"     gorm:"default:true;comment:是否多点登录"`
+	BackendUrl              string  `json:"backend_url"       gorm:"comment:后端地址"`
+	ApiPrefix               string  `json:"api_prefix"        gorm:"default:/api;comment:api前缀"`
+	SubName                 string  `json:"sub_name"          gorm:"default:AirGo;comment:订阅名称"`
+	TEK                     string  `json:"tek"               gorm:"default:airgo;comment:前后端通信密钥"`
+	DefaultGoods            string  `json:"default_goods"     gorm:"comment:新用户默认套餐"`
+	EnabledRebate           bool    `json:"enabled_rebate"    gorm:"default:false;comment:是否开启返利"`
+	RebateRate              float64 `json:"rebate_rate"       gorm:"default:0.1;comment:返利率"`
+	EnabledDeduction        bool    `json:"enabled_deduction" gorm:"default:false;comment:是否开启旧套餐抵扣"`
+	DeductionThreshold      float64 `json:"deduction_threshold" gorm:"default:0.8;comment:旧套餐抵扣阈值,大于该值则抵扣"`
+	EnabledClockIn          bool    `json:"enabled_clock_in" gorm:"default:true;comment:是否开启打卡"`
+	ClockInMinTraffic       int64   `json:"clock_in_min_traffic" gorm:"default:100;comment:打卡最小流量(MB)"`
+	ClockInMaxTraffic       int64   `json:"clock_in_max_traffic" gorm:"default:1000;comment:打卡最大流量(MB)"`
+}
 
 // 公共配置参数
 type PublicSystem struct {
-	EnableRegister       bool    `json:"enable_register"`         // 是否开启注册
-	EnableEmailCode      bool    `json:"enable_email_code"`       // 是否开启注册email 验证码
-	EnableLoginEmailCode bool    `json:"enable_login_email_code"` // 是否开启登录email 验证码
-	RebateRate           float64 `json:"rebate_rate"`             // 佣金率
-	BackendUrl           string  `json:"backend_url"`             // 后端地址
-	EnabledClockIn       bool    `json:"enabled_clock_in"`        //是否开启打卡
+	EnableRegister          bool    `json:"enable_register"`           // 是否开启注册
+	AcceptableEmailSuffixes string  `json:"acceptable_email_suffixes"` //可接受的邮箱后缀
+	EnableEmailCode         bool    `json:"enable_email_code"`         // 是否开启注册email 验证码
+	EnableLoginEmailCode    bool    `json:"enable_login_email_code"`   // 是否开启登录email 验证码
+	RebateRate              float64 `json:"rebate_rate"`               // 佣金率
+	BackendUrl              string  `json:"backend_url"`               // 后端地址
+	EnabledClockIn          bool    `json:"enabled_clock_in"`          //是否开启打卡
 }

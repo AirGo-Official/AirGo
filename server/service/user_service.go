@@ -67,11 +67,11 @@ func NewUser(u model.User) error {
 // 新注册用户分配套餐
 func NewUserSubscribe(u *model.User) *model.User {
 	//查询商品信息
-	if global.Server.System.DefaultGoods == "" {
+	if global.Server.Subscribe.DefaultGoods == "" {
 		return u
 	}
 	var goods = model.Goods{
-		Subject: global.Server.System.DefaultGoods,
+		Subject: global.Server.Subscribe.DefaultGoods,
 	}
 	//查询默认套餐
 	g, _, err := CommonSqlFind[model.Goods, model.Goods, model.Goods](goods)
@@ -276,7 +276,7 @@ func ReferrerRebate(uID int64, receiptAmount string) {
 		return //推荐人不存在
 	}
 	a, _ := strconv.ParseFloat(receiptAmount, 64)
-	referrerUser.Remain = referrerUser.Remain + a*global.Server.System.RebateRate
+	referrerUser.Remain = referrerUser.Remain + a*global.Server.Subscribe.RebateRate
 	SaveUser(&referrerUser)
 }
 
@@ -303,7 +303,7 @@ func ClockIn(uID int64) (int, error) {
 		return 0, errors.New("subscribe is expired")
 	}
 	//随机
-	t := encrypt_plugin.RandomNumber(int(global.Server.System.ClockInMinTraffic), int(global.Server.System.ClockInMaxTraffic)) //MB
+	t := encrypt_plugin.RandomNumber(int(global.Server.Subscribe.ClockInMinTraffic), int(global.Server.Subscribe.ClockInMaxTraffic)) //MB
 	user.SubscribeInfo.T = int64(t)*1024*1024 + user.SubscribeInfo.T
 	err = SaveUser(user)
 	return t, err

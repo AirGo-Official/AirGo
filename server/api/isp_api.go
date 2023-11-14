@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"log"
 )
 
 // 获取监控
@@ -193,12 +192,11 @@ func ISPLogin(ctx *gin.Context) {
 // 套餐查询
 func QueryPackage(ctx *gin.Context) {
 	token := ctx.Query("id")
-	claims, err := jwt_plugin.ParseTokenHs256(token, global.Server.JWT.SigningKey)
+	claims, err := jwt_plugin.ParseTokenHs256(token, global.Server.Security.JWT.SigningKey)
 	if err != nil {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	log.Println("token解析后 claims.ID：", claims.UserID)
 	//设置user id
 	uID := claims.UserID
 	//查询monitor

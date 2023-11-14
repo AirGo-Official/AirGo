@@ -3,7 +3,7 @@ package service
 import (
 	"AirGo/global"
 	"AirGo/model"
-	"AirGo/utils/format_plugin"
+	"AirGo/utils/other_plugin"
 	"errors"
 	"gorm.io/gorm"
 )
@@ -28,7 +28,7 @@ func GetRouteIdsByRoleIds(roleIds []int64) ([]int64, error) {
 		routeIds = append(routeIds, RoleAndMenuArr[item].DynamicRouteID)
 	}
 	//过滤重复
-	routeIdsNew := format_plugin.ArrayDeduplication(routeIds)
+	routeIdsNew := other_plugin.ArrayDeduplication(routeIds)
 	return routeIdsNew, nil
 
 }

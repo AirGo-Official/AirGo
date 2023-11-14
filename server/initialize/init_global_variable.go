@@ -9,6 +9,7 @@ import (
 	"AirGo/utils/time_plugin"
 	"AirGo/utils/websocket_plugin"
 	"github.com/mojocn/base64Captcha"
+	"github.com/panjf2000/ants/v2"
 	"github.com/songzhibin97/gkit/cache/local_cache"
 	"github.com/yudeguang/ratelimit"
 	"time"
@@ -52,9 +53,9 @@ func InitWebsocket() {
 
 func InitRatelimit() {
 	global.RateLimit.IPRole = ratelimit.NewRule()
-	global.RateLimit.IPRole.AddRule(time.Second*60, int(global.Server.RateLimitParams.IPRoleParam))
+	global.RateLimit.IPRole.AddRule(time.Second*60, int(global.Server.Security.RateLimitParams.IPRoleParam))
 	global.RateLimit.VisitRole = ratelimit.NewRule()
-	global.RateLimit.VisitRole.AddRule(time.Second*60, int(global.Server.RateLimitParams.VisitParam))
+	global.RateLimit.VisitRole.AddRule(time.Second*60, int(global.Server.Security.RateLimitParams.VisitParam))
 }
 func InitEmailDialer() {
 	d := mail_plugin.InitEmailDialer(global.Server.Email.EmailHost, int(global.Server.Email.EmailPort), global.Server.Email.EmailFrom, global.Server.Email.EmailSecret)
@@ -65,8 +66,8 @@ func InitEmailDialer() {
 func InitLocalCache() {
 	//判断有没有设置时间
 	dr := time.Hour
-	if global.Server.JWT.ExpiresTime != "" {
-		dr, _ = time_plugin.ParseDuration(global.Server.JWT.ExpiresTime)
+	if global.Server.Security.JWT.ExpiresTime != "" {
+		dr, _ = time_plugin.ParseDuration(global.Server.Security.JWT.ExpiresTime)
 	}
 	//初始化local cache配置
 	global.LocalCache = local_cache.NewCache(
@@ -75,4 +76,7 @@ func InitLocalCache() {
 }
 func InitCasbin() {
 	global.Casbin = service.Casbin()
+}
+func InitGoroutinePool() {
+	global.GoroutinePool, _ = ants.NewPool(100)
 }

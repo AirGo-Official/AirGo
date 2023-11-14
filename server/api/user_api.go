@@ -10,6 +10,7 @@ import (
 	timeTool "AirGo/utils/time_plugin"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	//"AirGo/utils/encrypt_plugin"
@@ -23,7 +24,7 @@ import (
 
 // 用户注册
 func Register(ctx *gin.Context) {
-	if !global.Server.System.EnableRegister {
+	if !global.Server.Subscribe.EnableRegister {
 		response.Fail("Registration closed", nil, ctx)
 		return
 	}
@@ -34,13 +35,18 @@ func Register(ctx *gin.Context) {
 		response.Fail("Register error:"+err.Error(), nil, ctx)
 		return
 	}
+	//判断邮箱后缀
+	ok := other_plugin.In(u.EmailSuffix, strings.Fields(global.Server.Subscribe.AcceptableEmailSuffixes))
+	if !ok {
+		response.Fail("The suffix name of this email is not supported!", nil, ctx)
+	}
 	//处理base64Captcha
 	if !global.Base64CaptchaStore.Verify(u.Base64Captcha.ID, u.Base64Captcha.B64s, true) {
-		response.Fail("Verification code error", nil, ctx) //验证错校验失败会清除store中的value，需要前端重新获取
+		response.Fail("Verification code error,Please refresh the page and try again!", nil, ctx) //验证错校验失败会清除store中的value，需要前端重新获取
 		return
 	}
 	//校验邮箱验证码
-	if global.Server.System.EnableEmailCode {
+	if global.Server.Subscribe.EnableEmailCode {
 		cacheEmail, ok := global.LocalCache.Get(u.UserName + "emailcode")
 		if ok {
 			if cacheEmail != u.EmailCode {
@@ -80,7 +86,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	//校验邮箱验证码
-	if global.Server.System.EnableLoginEmailCode {
+	if global.Server.Subscribe.EnableLoginEmailCode {
 		cacheEmail, ok := global.LocalCache.Get(l.UserName + "emailcode")
 		global.LocalCache.Delete(l.UserName + "emailcode")
 		if ok {
@@ -111,21 +117,20 @@ func Login(c *gin.Context) {
 			UserID:   user.ID,
 			UserName: user.UserName,
 		}
-		ep, _ := timeTool.ParseDuration(global.Server.JWT.ExpiresTime)
+		ep, _ := timeTool.ParseDuration(global.Server.Security.JWT.ExpiresTime)
 		registeredClaims := jwt.RegisteredClaims{
-			Issuer:    global.Server.JWT.Issuer,               // 签发者
+			Issuer:    global.Server.Security.JWT.Issuer,      // 签发者
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ep)), //过期时间
 			NotBefore: jwt.NewNumericDate(time.Now()),         //生效时间
 		}
-		tokenNew, err := jwt_plugin.GenerateTokenUsingHs256(myCustomClaimsPrefix, registeredClaims, global.Server.JWT.SigningKey)
+		tokenNew, err := jwt_plugin.GenerateTokenUsingHs256(myCustomClaimsPrefix, registeredClaims, global.Server.Security.JWT.SigningKey)
 		if err != nil {
 			global.Logrus.Error(err.Error())
 			return
 		} else {
-			token = tokenNew
-			go func(l *model.UserLogin, token string) {
-				global.LocalCache.Set(l.UserName+"token", token, ep)
-			}(&l, token)
+			global.GoroutinePool.Submit(func() {
+				global.LocalCache.Set(l.UserName+"token", tokenNew, ep)
+			})
 		}
 	}
 	response.OK("Login success", gin.H{
@@ -300,6 +305,12 @@ func ResetUserPassword(ctx *gin.Context) {
 		response.Fail("ResetUserPassword error:"+err.Error(), nil, ctx)
 		return
 	}
+	//判断邮箱后缀
+	ok := other_plugin.In(u.UserName[strings.Index(u.UserName, "@"):], strings.Fields(global.Server.Subscribe.AcceptableEmailSuffixes))
+	if !ok {
+		response.Fail("The suffix name of this email is not supported!", nil, ctx)
+	}
+
 	//校验邮箱验证码
 	emailcode, _ := global.LocalCache.Get(u.UserName + "emailcode")
 	if emailcode != u.EmailCode {

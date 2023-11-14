@@ -14,41 +14,12 @@ import (
 	"time"
 )
 
-//	type Resource struct {
-//		fs   embed.FS
-//		path string
-//	}
-//
-//	func NewResource() *Resource {
-//		return &Resource{
-//			fs:   f,
-//			path: "web",
-//		}
-//	}
-//
-//	func (r *Resource) Open(name string) (fs.File, error) {
-//		//if filepath.Separator != '/' && strings.ContainsRune(name, filepath.Separator) {
-//		//	return nil, errors.New("http: invalid character in file path")
-//		//}
-//		fullName := filepath.Join(r.path, filepath.FromSlash(path.Clean("/"+name)))
-//		file, err := r.fs.Open(fullName)
-//		return file, err
-//	}
-//
-// ////go:embed all:web/*
-
 // 初始化总路由
 func InitRouter() {
-
 	gin.SetMode(gin.ReleaseMode) //ReleaseMode TestMode DebugMode
-
 	Router := gin.Default()
-	//Router.Use(static.Serve("/", static.LocalFile("./web", true))) //静态资源(不嵌入)，可解决/问题。项目目录下web文件夹
-	//Router.Static("/static", "static") //静态资源(不嵌入)
-	//Router.StaticFS("/web", http.FS(NewResource())) //静态资源(嵌入)
-
 	Router.Use(middleware.Serve("/", middleware.EmbedFolder(web.Static, "web"))) // targetPtah=web 是embed和web文件夹的相对路径
-	Router.Use(middleware.Cors(), middleware.Recovery())                         //不开启跨域验证码出错
+	Router.Use(middleware.Cors(), middleware.Recovery())
 
 	//固定路由组，不进行casbin校验
 	RouterGroupStatic := Router.Group("/api")
@@ -60,7 +31,6 @@ func InitRouter() {
 		publicRouter.GET("/epayNotify", api.EpayNotify)             //易支付异步回调
 		publicRouter.POST("/alipayNotify", api.AlipayNotify)        //支付宝异步验证支付结果，弃用
 		publicRouter.GET("/queryPackage", api.QueryPackage)         //运营商流量查询
-
 		publicRouter.GET("/getThemeConfig", api.GetThemeConfig)     //获取主题配置
 		publicRouter.GET("/getPublicSetting", api.GetPublicSetting) //获取公共系统设置
 
@@ -85,7 +55,7 @@ func InitRouter() {
 
 	// 路由组
 	// user
-	RouterGroup := Router.Group(global.Server.System.ApiPrefix) //使用前缀，默认为 /api
+	RouterGroup := Router.Group(global.Server.Subscribe.ApiPrefix) //使用前缀，默认为 /api
 	//user
 	userRouter := RouterGroup.Group("/user").Use(middleware.RateLimitIP(), middleware.ParseJwt(), middleware.Casbin(), middleware.RateLimitVisit())
 	{
@@ -129,12 +99,11 @@ func InitRouter() {
 	}
 
 	//系统设置
-	systemAdminRouter := RouterGroup.Group("/system").Use(middleware.ParseJwt(), middleware.Casbin())
+	serverAdminRouter := RouterGroup.Group("/server").Use(middleware.ParseJwt(), middleware.Casbin())
 	{
-		systemAdminRouter.POST("/updateThemeConfig", api.UpdateThemeConfig) //设置主题
-		systemAdminRouter.GET("/getSetting", api.GetSetting)                //获取系统设置
-		systemAdminRouter.POST("/updateSetting", api.UpdateSetting)         //修改系统设置
-		systemAdminRouter.GET("createx25519", api.Createx25519)             // reality x25519
+		serverAdminRouter.POST("/updateThemeConfig", api.UpdateThemeConfig) //设置主题
+		serverAdminRouter.GET("/getSetting", api.GetSetting)                //获取系统设置
+		serverAdminRouter.POST("/updateSetting", api.UpdateSetting)         //修改系统设置
 	}
 
 	//节点
@@ -146,6 +115,7 @@ func InitRouter() {
 		nodeAdminRouter.POST("/updateNode", api.UpdateNode)     //更新节点
 		nodeAdminRouter.POST("/getTraffic", api.GetNodeTraffic) //获取节点 with Traffic,分页
 		nodeAdminRouter.POST("/nodeSort", api.NodeSort)         //节点排序
+		nodeAdminRouter.GET("/createx25519", api.Createx25519)  // reality x25519
 
 		nodeAdminRouter.POST("/newNodeShared", api.NewNodeShared)        //新增节点
 		nodeAdminRouter.GET("/getNodeSharedList", api.GetNodeSharedList) //获取节点列表

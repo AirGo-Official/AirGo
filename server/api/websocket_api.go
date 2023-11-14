@@ -52,6 +52,10 @@ func WebSocketMsg(ctx *gin.Context) {
 		QuitChanel:    make(chan bool),
 	}
 	global.WsManager.OnlineChannel <- client
-	go client.Read(global.WsManager, service.GetNodesStatus)
-	go client.Write(global.WsManager)
+	global.GoroutinePool.Submit(func() {
+		client.Read(global.WsManager, service.GetNodesStatus)
+	})
+	global.GoroutinePool.Submit(func() {
+		client.Write(global.WsManager)
+	})
 }

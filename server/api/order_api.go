@@ -164,7 +164,7 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 		}
 	}
 	//旧套餐抵扣处理
-	if global.Server.System.EnabledDeduction {
+	if global.Server.Subscribe.EnabledDeduction {
 		//计算剩余率
 		if user.SubscribeInfo.SubStatus {
 			rate, err := strconv.ParseFloat(fmt.Sprintf("%.2f", float64((user.SubscribeInfo.T-user.SubscribeInfo.U-user.SubscribeInfo.D))/float64(user.SubscribeInfo.T)), 64)
@@ -173,7 +173,7 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 				rate = 0 //
 			}
 			//套餐流量剩余率大于设定的阈值才进行处理
-			if rate >= global.Server.System.DeductionThreshold {
+			if rate >= global.Server.Subscribe.DeductionThreshold {
 				//查找旧套餐价格
 				order, _, _ := service.CommonSqlFind[model.Orders, string, model.Orders]("user_id = " + strconv.FormatInt(uIDInt, 10) + " ORDER BY id desc LIMIT 1")
 				if order.ReceiptAmount != "" { //使用 实收金额 进行判断

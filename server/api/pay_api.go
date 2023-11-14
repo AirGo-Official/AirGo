@@ -35,12 +35,20 @@ func Purchase(ctx *gin.Context) {
 	//0元购，跳过支付
 	totalAmountFloat64, _ := strconv.ParseFloat(sysOrder.TotalAmount, 10)
 	if totalAmountFloat64 == 0 {
-		sysOrder.TradeStatus = model.OrderCompleted                     //更新数据库订单状态,自定义结束状态completed
-		sysOrder.ReceiptAmount = "0"                                    //实收金额
-		sysOrder.BuyerPayAmount = "0"                                   //付款金额
-		go service.UpdateOrder(&sysOrder)                               //更新数据库状态
-		go service.UpdateUserSubscribe(&sysOrder)                       //更新用户订阅信息
-		go service.RemainHandle(sysOrder.UserID, sysOrder.RemainAmount) //处理用户余额
+		sysOrder.TradeStatus = model.OrderCompleted //更新数据库订单状态,自定义结束状态completed
+		sysOrder.ReceiptAmount = "0"                //实收金额
+		sysOrder.BuyerPayAmount = "0"               //付款金额
+
+		global.GoroutinePool.Submit(func() {
+			service.UpdateOrder(&sysOrder) //更新数据库状态
+		})
+		global.GoroutinePool.Submit(func() {
+			service.UpdateUserSubscribe(&sysOrder) //更新用户订阅信息
+		})
+		global.GoroutinePool.Submit(func() {
+			service.RemainHandle(sysOrder.UserID, sysOrder.RemainAmount) //处理用户余额
+		})
+
 		response.OK("Purchase success", nil, ctx)
 		return
 	}
@@ -61,7 +69,9 @@ func Purchase(ctx *gin.Context) {
 			return
 		}
 		sysOrder.TradeStatus = model.OrderWAIT_BUYER_PAY //初始订单状态：等待付款
-		go service.UpdateOrder(&sysOrder)                //更新数据库
+		global.GoroutinePool.Submit(func() {
+			service.UpdateOrder(&sysOrder) //更新数据库
+		})
 		var pcptf = model.PreCreatePayToFrontend{
 			EpayInfo: *res,
 		}
@@ -82,12 +92,16 @@ func Purchase(ctx *gin.Context) {
 			return
 		}
 		sysOrder.TradeStatus = model.OrderWAIT_BUYER_PAY //初始订单状态：等待付款
-		go service.UpdateOrder(&sysOrder)                //更新数据库
+		global.GoroutinePool.Submit(func() {
+			service.UpdateOrder(&sysOrder) //更新数据库
+		})
 		var pcptf = model.PreCreatePayToFrontend{
 			AlipayInfo: model.AlipayPreCreatePayToFrontend{QRCode: res.QRCode},
 		}
 		response.OK("alipay success:", pcptf, ctx) //返回用户qrcode
-		go service.PollAliPay(&sysOrder, client)   //5分钟等待付款，轮询
+		global.GoroutinePool.Submit(func() {
+			service.PollAliPay(&sysOrder, client) //5分钟等待付款，轮询
+		})
 	case "wechatpay":
 
 	}
@@ -145,11 +159,12 @@ func EpayNotify(ctx *gin.Context) {
 	sysOrder.ReceiptAmount = epayRes.Money  //实收金额
 	sysOrder.BuyerPayAmount = epayRes.Money //付款金额
 	sysOrder.TradeStatus = epayRes.TradeStatus
-
-	//更新数据库订单信息
-	go service.UpdateOrder(&sysOrder)
-	//更新用户订阅信息
-	go service.UpdateUserSubscribe(&sysOrder)
+	global.GoroutinePool.Submit(func() {
+		service.UpdateOrder(&sysOrder) //更新数据库订单信息
+	})
+	global.GoroutinePool.Submit(func() {
+		service.UpdateUserSubscribe(&sysOrder) //更新用户订阅信息
+	})
 	//返回success以表示服务器接收到了订单通知
 	ctx.String(200, "success")
 

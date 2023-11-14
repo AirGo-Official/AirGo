@@ -43,7 +43,6 @@ const (
 )
 
 // Gorm 初始化数据库并产生数据库全局变量
-// Author SliverHorn
 func Gorm() *gorm.DB {
 
 	switch global.Config.SystemParams.DbType {
@@ -60,13 +59,12 @@ func Gorm() *gorm.DB {
 func GormSqlite() *gorm.DB {
 
 	if db, err := gorm.Open(sqlite.Open(global.Config.Sqlite.Path), &gorm.Config{
-		SkipDefaultTransaction: true, //关闭事务，将获得大约 30%+ 性能提升
+		SkipDefaultTransaction: true, //关闭事务
 		NamingStrategy: schema.NamingStrategy{
-			//TablePrefix: "gormv2_",
 			SingularTable: true, //单数表名
 		},
 	}); err != nil {
-		global.Logrus.Error("gorm.Open error:", err)
+		global.Logrus.Error("gorm open error:", err)
 		panic(err)
 	} else {
 		sqlDB, _ := db.DB()
@@ -80,17 +78,16 @@ func GormSqlite() *gorm.DB {
 func GormMysql() *gorm.DB {
 	mysqlConfig := mysql.Config{
 		DSN:                       global.Config.Mysql.Username + ":" + global.Config.Mysql.Password + "@tcp(" + global.Config.Mysql.Address + ":" + global.Config.Mysql.Port + ")/" + global.Config.Mysql.Dbname + "?" + global.Config.Mysql.Config,
-		DefaultStringSize:         191, // string 类型字段的默认长度
+		DefaultStringSize:         191,
 		SkipInitializeWithVersion: false,
 	}
 	if db, err := gorm.Open(mysql.New(mysqlConfig), &gorm.Config{
-		SkipDefaultTransaction: true, //关闭事务，将获得大约 30%+ 性能提升
+		SkipDefaultTransaction: true, //关闭事务
 		NamingStrategy: schema.NamingStrategy{
-			//TablePrefix: "gormv2_",
-			SingularTable: true, //单数表名
+			SingularTable: true,
 		},
 	}); err != nil {
-		global.Logrus.Error("gorm.Open error:", err)
+		global.Logrus.Error("gorm open error:", err)
 		panic(err)
 	} else {
 		db.InstanceSet("gorm:table_options", "ENGINE="+global.Config.Mysql.Engine)
@@ -140,20 +137,45 @@ func RegisterTables() {
 		model.Access{},
 	)
 	if err != nil {
-		//os.Exit(0)
 		global.Logrus.Error("table AutoMigrate error:", err.Error())
-		return
+		panic(err)
 	}
 	global.Logrus.Info("table AutoMigrate success")
 }
+func InsertInto() {
+	var err error
+	defer global.Logrus.Error(err)
 
-// 导入数据
-func InsertInto(db *gorm.DB) error {
+	var funcs = []func() error{
+		InsertIntoUser,
+		InsertIntoDynamicRoute,
+		InsertIntoRole,
+		InsertIntoUserAndRole,
+		InsertIntoRoleAndMenu,
+		InsertIntoGoods,
+		InsertIntoNode,
+		InsertIntoGoodsAndNodes,
+		InsertIntoCasbinRule,
+		InsertIntoTheme,
+		InsertIntoServer,
+		InsertIntoArticle,
+		InsertIntoAccess,
+	}
+	for _, v := range funcs {
+		err = v()
+		if err != nil {
+			return
+		}
+	}
+}
+
+func InsertIntoUser() error {
 	uuid1 := uuid.NewV4()
 	uuid2 := uuid.NewV4()
 	expiedTime := time.Date(2099, 9, 9, 9, 9, 9, 0, time.Local)
 	sysUserData := []model.User{
 		{
+			ID:             1,
 			UUID:           uuid1,
 			UserName:       global.Config.SystemParams.AdminEmail,
 			Password:       utils.BcryptEncode(global.Config.SystemParams.AdminPassword),
@@ -168,6 +190,7 @@ func InsertInto(db *gorm.DB) error {
 			},
 		},
 		{
+			ID:             2,
 			UUID:           uuid2,
 			UserName:       "123@oicq.com",
 			Password:       utils.BcryptEncode("123456"),
@@ -181,55 +204,62 @@ func InsertInto(db *gorm.DB) error {
 			},
 		},
 	}
-	if err := db.Create(&sysUserData).Error; err != nil {
+	if err := global.DB.Create(&sysUserData).Error; err != nil {
 		return errors.New("db.Create(&userData) Error")
 	}
-	//插入sys_dynamic-router_data表
+	return nil
+}
+func InsertIntoDynamicRoute() error {
 	DynamicRouteData := []model.DynamicRoute{
-		{ParentID: 0, Path: "/admin", Name: "admin", Component: "/layout/routerView/parent.vue", Meta: model.Meta{Title: "超级管理员", Icon: "iconfont icon-shouye_dongtaihui"}},   //id==1
-		{ParentID: 1, Path: "/admin/menu", Name: "adminMenu", Component: "/admin/menu/index.vue", Meta: model.Meta{Title: "菜单", Icon: "iconfont icon-caidan"}},                //id==2
-		{ParentID: 1, Path: "/admin/role", Name: "adminRole", Component: "/admin/role/index.vue", Meta: model.Meta{Title: "角色", Icon: "iconfont icon-icon-"}},                 //id==3
-		{ParentID: 1, Path: "/admin/user", Name: "adminUser", Component: "/admin/user/index.vue", Meta: model.Meta{Title: "用户", Icon: "iconfont icon-gerenzhongxin"}},         //id==4
-		{ParentID: 1, Path: "/admin/order", Name: "adminOrder", Component: "/admin/order/index.vue", Meta: model.Meta{Title: "订单", Icon: "iconfont icon--chaifenhang"}},       //id==5
-		{ParentID: 1, Path: "/admin/node", Name: "adminNode", Component: "/admin/node/index.vue", Meta: model.Meta{Title: "节点", Icon: "iconfont icon-shuxingtu"}},             //id==6
-		{ParentID: 1, Path: "/admin/shop", Name: "adminShop", Component: "/admin/shop/index.vue", Meta: model.Meta{Title: "商品", Icon: "iconfont icon-zhongduancanshuchaxun"}}, //id==7
-		{ParentID: 1, Path: "/admin/system", Name: "system", Component: "/admin/system/index.vue", Meta: model.Meta{Title: "系统设置", Icon: "iconfont icon-xitongshezhi"}},       //id==8
-		{ParentID: 1, Path: "/admin/article", Name: "article", Component: "/admin/article/index.vue", Meta: model.Meta{Title: "文章", Icon: "iconfont icon-huanjingxingqiu"}},   //id==9
-		{ParentID: 1, Path: "/admin/coupon", Name: "coupon", Component: "/admin/coupon/index.vue", Meta: model.Meta{Title: "折扣码", Icon: "ele-ShoppingBag"}},                   //id==10
-		{ParentID: 1, Path: "/admin/access", Name: "access", Component: "/admin/access/index.vue", Meta: model.Meta{Title: "访问控制", Icon: "ele-ChromeFilled"}},                 //id==11
+		{ID: 1, ParentID: 0, Path: "/admin", Name: "admin", Component: "/layout/routerView/parent.vue", Meta: model.Meta{Title: "超级管理员", Icon: "iconfont icon-shouye_dongtaihui"}},   //id==1
+		{ID: 2, ParentID: 1, Path: "/admin/menu", Name: "adminMenu", Component: "/admin/menu/index.vue", Meta: model.Meta{Title: "菜单", Icon: "iconfont icon-caidan"}},                //id==2
+		{ID: 3, ParentID: 1, Path: "/admin/role", Name: "adminRole", Component: "/admin/role/index.vue", Meta: model.Meta{Title: "角色", Icon: "iconfont icon-icon-"}},                 //id==3
+		{ID: 4, ParentID: 1, Path: "/admin/user", Name: "adminUser", Component: "/admin/user/index.vue", Meta: model.Meta{Title: "用户", Icon: "iconfont icon-gerenzhongxin"}},         //id==4
+		{ID: 5, ParentID: 1, Path: "/admin/order", Name: "adminOrder", Component: "/admin/order/index.vue", Meta: model.Meta{Title: "订单", Icon: "iconfont icon--chaifenhang"}},       //id==5
+		{ID: 6, ParentID: 1, Path: "/admin/node", Name: "adminNode", Component: "/admin/node/index.vue", Meta: model.Meta{Title: "节点", Icon: "iconfont icon-shuxingtu"}},             //id==6
+		{ID: 7, ParentID: 1, Path: "/admin/shop", Name: "adminShop", Component: "/admin/shop/index.vue", Meta: model.Meta{Title: "商品", Icon: "iconfont icon-zhongduancanshuchaxun"}}, //id==7
+		{ID: 8, ParentID: 1, Path: "/admin/system", Name: "system", Component: "/admin/system/index.vue", Meta: model.Meta{Title: "系统", Icon: "iconfont icon-xitongshezhi"}},         //id==8
+		{ID: 9, ParentID: 1, Path: "/admin/article", Name: "article", Component: "/admin/article/index.vue", Meta: model.Meta{Title: "文章", Icon: "iconfont icon-huanjingxingqiu"}},   //id==9
+		{ID: 10, ParentID: 1, Path: "/admin/coupon", Name: "coupon", Component: "/admin/coupon/index.vue", Meta: model.Meta{Title: "折扣码", Icon: "ele-ShoppingBag"}},                  //id==10
+		{ID: 11, ParentID: 1, Path: "/admin/access", Name: "access", Component: "/admin/access/index.vue", Meta: model.Meta{Title: "访问控制", Icon: "ele-ChromeFilled"}},                //id==11
 
-		{ParentID: 0, Path: "/home", Name: "home", Component: "/home/index.vue", Meta: model.Meta{Title: "首页", Icon: "iconfont icon-shouye"}},                           //12
-		{ParentID: 0, Path: "/shop", Name: "shop", Component: "/shop/index.vue", Meta: model.Meta{Title: "商店", Icon: "iconfont icon-zidingyibuju"}},                     //13
-		{ParentID: 0, Path: "/myOrder", Name: "myOrder", Component: "/myOrder/index.vue", Meta: model.Meta{Title: "我的订单", Icon: "iconfont icon--chaifenhang"}},          //14
-		{ParentID: 0, Path: "/personal", Name: "personal", Component: "/personal/index.vue", Meta: model.Meta{Title: "个人信息", Icon: "iconfont icon-gerenzhongxin"}},      //15
-		{ParentID: 0, Path: "/serverStatus", Name: "serverStatus", Component: "/serverStatus/index.vue", Meta: model.Meta{Title: "节点状态", Icon: "iconfont icon-putong"}}, //16
-		{ParentID: 0, Path: "/gallery", Name: "gallery", Component: "/gallery/index.vue", Meta: model.Meta{Title: "无限图库", Icon: "iconfont icon-step"}},                  //17
-		{ParentID: 0, Path: "/income", Name: "income", Component: "/income/index.vue", Meta: model.Meta{Title: "营收概览", Icon: "iconfont icon-xingqiu"}},                  //18
-		{ParentID: 0, Path: "/isp", Name: "isp", Component: "/isp/index.vue", Meta: model.Meta{Title: "套餐监控", Icon: "iconfont icon-tongzhi1"}},                          //19
-
-		{ParentID: 0, Path: "/article/notice", Name: "notice", Component: "/article/index_notice.vue", Meta: model.Meta{Title: "公告", Icon: "ele-ChatLineSquare"}},   //20
-		{ParentID: 0, Path: "/article/knowledge", Name: "knowledge", Component: "/article/index_knowledge.vue", Meta: model.Meta{Title: "知识库", Icon: "fa fa-book"}}, //21
+		{ID: 12, ParentID: 0, Path: "/home", Name: "home", Component: "/home/index.vue", Meta: model.Meta{Title: "首页", Icon: "iconfont icon-shouye"}},                           //12
+		{ID: 13, ParentID: 0, Path: "/shop", Name: "shop", Component: "/shop/index.vue", Meta: model.Meta{Title: "商店", Icon: "iconfont icon-zidingyibuju"}},                     //13
+		{ID: 14, ParentID: 0, Path: "/myOrder", Name: "myOrder", Component: "/myOrder/index.vue", Meta: model.Meta{Title: "我的订单", Icon: "iconfont icon--chaifenhang"}},          //14
+		{ID: 15, ParentID: 0, Path: "/personal", Name: "personal", Component: "/personal/index.vue", Meta: model.Meta{Title: "个人信息", Icon: "iconfont icon-gerenzhongxin"}},      //15
+		{ID: 16, ParentID: 0, Path: "/serverStatus", Name: "serverStatus", Component: "/serverStatus/index.vue", Meta: model.Meta{Title: "节点状态", Icon: "iconfont icon-putong"}}, //16
+		{ID: 17, ParentID: 0, Path: "/gallery", Name: "gallery", Component: "/gallery/index.vue", Meta: model.Meta{Title: "图库", Icon: "iconfont icon-step"}},                    //17
+		{ID: 18, ParentID: 0, Path: "/income", Name: "income", Component: "/income/index.vue", Meta: model.Meta{Title: "营收概览", Icon: "iconfont icon-xingqiu"}},                  //18
+		{ID: 19, ParentID: 0, Path: "/isp", Name: "isp", Component: "/isp/index.vue", Meta: model.Meta{Title: "套餐监控", Icon: "iconfont icon-tongzhi1"}},                          //19
+		{ID: 20, ParentID: 0, Path: "/article/notice", Name: "notice", Component: "/article/index_notice.vue", Meta: model.Meta{Title: "公告", Icon: "ele-ChatLineSquare"}},       //20
+		{ID: 21, ParentID: 0, Path: "/article/knowledge", Name: "knowledge", Component: "/article/index_knowledge.vue", Meta: model.Meta{Title: "知识库", Icon: "fa fa-book"}},     //21
 	}
-	if err := db.Create(&DynamicRouteData).Error; err != nil {
+	if err := global.DB.Create(&DynamicRouteData).Error; err != nil {
 		return errors.New("sys_dynamic-router_data表数据初始化失败!")
 	}
-	//插入user_role表
+	return nil
+}
+func InsertIntoRole() error {
 	sysRoleData := []model.Role{
 		{ID: 1, RoleName: "admin", Description: "超级管理员"},
 		{ID: 2, RoleName: "普通用户", Description: "普通用户"},
 	}
-	if err := db.Create(&sysRoleData).Error; err != nil {
+	if err := global.DB.Create(&sysRoleData).Error; err != nil {
 		return errors.New("user_role表数据初始化失败!")
 	}
-	//插入user_and_role表
+	return nil
+}
+func InsertIntoUserAndRole() error {
 	userAndRoleData := []model.UserAndRole{
 		{UserID: 1, RoleID: 1},
 		{UserID: 2, RoleID: 2},
 	}
-	if err := db.Create(&userAndRoleData).Error; err != nil {
+	if err := global.DB.Create(&userAndRoleData).Error; err != nil {
 		return errors.New("user_and_role_data表数据初始化失败!")
 	}
-	//插入role_and_menu
+	return nil
+}
+func InsertIntoRoleAndMenu() error {
 	roleAndMenuData := []model.RoleAndMenu{
 		//管理员的权限
 		{RoleID: 1, DynamicRouteID: 1},  //超级管理员
@@ -249,7 +279,6 @@ func InsertInto(db *gorm.DB) error {
 		{RoleID: 1, DynamicRouteID: 14}, //我的订单
 		{RoleID: 1, DynamicRouteID: 15}, //个人信息
 		{RoleID: 1, DynamicRouteID: 16}, //节点状态
-		//{RoleID: 1, DynamicRouteID: 17}, //无限图库
 		{RoleID: 1, DynamicRouteID: 18}, //营收概览
 		{RoleID: 1, DynamicRouteID: 19}, //套餐监控
 		{RoleID: 1, DynamicRouteID: 20}, //公告
@@ -261,7 +290,6 @@ func InsertInto(db *gorm.DB) error {
 		{RoleID: 2, DynamicRouteID: 14}, //我的订单
 		{RoleID: 2, DynamicRouteID: 15}, //个人信息
 		{RoleID: 2, DynamicRouteID: 16}, //节点状态
-		//{RoleID: 2, DynamicRouteID: 17}, //无限图库
 		{RoleID: 2, DynamicRouteID: 19}, //套餐监控
 		{RoleID: 2, DynamicRouteID: 20}, //公告
 		{RoleID: 2, DynamicRouteID: 21}, //知识库
@@ -269,25 +297,32 @@ func InsertInto(db *gorm.DB) error {
 	if err := global.DB.Create(&roleAndMenuData).Error; err != nil {
 		return errors.New("role_and_menu表数据初始化失败!")
 	}
-	//插入货物 goods
+
+	return nil
+}
+func InsertIntoGoods() error {
 	goodsData := []model.Goods{
-		{Subject: "10G|30天", TotalBandwidth: 10, ExpirationDate: 30, TotalAmount: "0.01", Des: text2, TrafficResetMethod: "NotStack"},
-		{Subject: "20G|180天", TotalBandwidth: 20, ExpirationDate: 180, TotalAmount: "0", Des: text2, TrafficResetMethod: "NotStack"},
+		{ID: 1, Subject: "10G|30天", TotalBandwidth: 10, ExpirationDate: 30, TotalAmount: "0.01", Des: text2, TrafficResetMethod: "NotStack"},
+		{ID: 2, Subject: "20G|180天", TotalBandwidth: 20, ExpirationDate: 180, TotalAmount: "0", Des: text2, TrafficResetMethod: "NotStack"},
 	}
 	if err := global.DB.Create(&goodsData).Error; err != nil {
 		return errors.New("goods表数据初始化失败!")
 	}
-	//插入node
+	return nil
+}
+func InsertIntoNode() error {
 	key1 := utils.RandomString(32)
 	key2 := utils.RandomString(32)
 	nodeData := []model.Node{
-		{Remarks: "测试节点1", Address: "www.10010.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, ServerKey: key1, TrafficRate: 1},
-		{Remarks: "测试节点2", Address: "www.10086.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, ServerKey: key2, TrafficRate: 1},
+		{ID: 1, Remarks: "测试节点1", Address: "www.10010.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, ServerKey: key1, TrafficRate: 1},
+		{ID: 2, Remarks: "测试节点2", Address: "www.10086.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, ServerKey: key2, TrafficRate: 1},
 	}
 	if err := global.DB.Create(&nodeData).Error; err != nil {
 		return errors.New("node表数据初始化失败!")
 	}
-	//插入goods_and_nodes
+	return nil
+}
+func InsertIntoGoodsAndNodes() error {
 	goodsAndNodesData := []model.GoodsAndNodes{
 		{GoodsID: 1, NodeID: 1},
 		{GoodsID: 1, NodeID: 2},
@@ -297,185 +332,198 @@ func InsertInto(db *gorm.DB) error {
 	if err := global.DB.Create(&goodsAndNodesData).Error; err != nil {
 		return errors.New("goods_and_nodes表数据初始化失败!")
 	}
-	// 插入casbin_rule
+	return nil
+}
+func InsertIntoCasbinRule() error {
 	casbinRuleData := []gormadapter.CasbinRule{
 		// user
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/changeSubHost", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/getUserInfo", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/changeUserPassword", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/resetSub", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/clockin", V2: "GET"},
+		{ID: 1, Ptype: "p", V0: "1", V1: apiPre + "/user/changeSubHost", V2: "POST"},
+		{ID: 2, Ptype: "p", V0: "1", V1: apiPre + "/user/getUserInfo", V2: "GET"},
+		{ID: 3, Ptype: "p", V0: "1", V1: apiPre + "/user/changeUserPassword", V2: "POST"},
+		{ID: 4, Ptype: "p", V0: "1", V1: apiPre + "/user/resetSub", V2: "GET"},
+		{ID: 5, Ptype: "p", V0: "1", V1: apiPre + "/user/clockin", V2: "GET"},
 
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/getUserList", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/newUser", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/updateUser", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/deleteUser", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/user/findUser", V2: "POST"},
+		{ID: 6, Ptype: "p", V0: "1", V1: apiPre + "/user/getUserList", V2: "POST"},
+		{ID: 7, Ptype: "p", V0: "1", V1: apiPre + "/user/newUser", V2: "POST"},
+		{ID: 8, Ptype: "p", V0: "1", V1: apiPre + "/user/updateUser", V2: "POST"},
+		{ID: 9, Ptype: "p", V0: "1", V1: apiPre + "/user/deleteUser", V2: "POST"},
+		{ID: 10, Ptype: "p", V0: "1", V1: apiPre + "/user/findUser", V2: "POST"},
 
 		// role
-		{Ptype: "p", V0: "1", V1: apiPre + "/role/getRoleList", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/role/modifyRoleInfo", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/role/addRole", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/role/delRole", V2: "POST"},
+		{ID: 11, Ptype: "p", V0: "1", V1: apiPre + "/role/getRoleList", V2: "POST"},
+		{ID: 12, Ptype: "p", V0: "1", V1: apiPre + "/role/modifyRoleInfo", V2: "POST"},
+		{ID: 13, Ptype: "p", V0: "1", V1: apiPre + "/role/addRole", V2: "POST"},
+		{ID: 14, Ptype: "p", V0: "1", V1: apiPre + "/role/delRole", V2: "POST"},
 
 		// menu
-		{Ptype: "p", V0: "1", V1: apiPre + "/menu/getAllRouteList", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/menu/getAllRouteTree", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/menu/newDynamicRoute", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/menu/delDynamicRoute", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/menu/updateDynamicRoute", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/menu/findDynamicRoute", V2: "POST"},
+		{ID: 15, Ptype: "p", V0: "1", V1: apiPre + "/menu/getAllRouteList", V2: "GET"},
+		{ID: 16, Ptype: "p", V0: "1", V1: apiPre + "/menu/getAllRouteTree", V2: "GET"},
+		{ID: 17, Ptype: "p", V0: "1", V1: apiPre + "/menu/newDynamicRoute", V2: "POST"},
+		{ID: 18, Ptype: "p", V0: "1", V1: apiPre + "/menu/delDynamicRoute", V2: "POST"},
+		{ID: 19, Ptype: "p", V0: "1", V1: apiPre + "/menu/updateDynamicRoute", V2: "POST"},
+		{ID: 20, Ptype: "p", V0: "1", V1: apiPre + "/menu/findDynamicRoute", V2: "POST"},
 
-		{Ptype: "p", V0: "1", V1: apiPre + "/menu/getRouteList", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/menu/getRouteTree", V2: "GET"},
+		{ID: 21, Ptype: "p", V0: "1", V1: apiPre + "/menu/getRouteList", V2: "GET"},
+		{ID: 22, Ptype: "p", V0: "1", V1: apiPre + "/menu/getRouteTree", V2: "GET"},
 
 		//shop
-		{Ptype: "p", V0: "1", V1: apiPre + "/shop/preCreatePay", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/shop/purchase", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/shop/getAllEnabledGoods", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/shop/getAllGoods", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/shop/findGoods", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/shop/newGoods", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/shop/deleteGoods", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/shop/updateGoods", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/shop/goodsSort", V2: "POST"},
+		{ID: 23, Ptype: "p", V0: "1", V1: apiPre + "/shop/preCreatePay", V2: "POST"},
+		{ID: 24, Ptype: "p", V0: "1", V1: apiPre + "/shop/purchase", V2: "POST"},
+		{ID: 25, Ptype: "p", V0: "1", V1: apiPre + "/shop/getAllEnabledGoods", V2: "GET"},
+		{ID: 26, Ptype: "p", V0: "1", V1: apiPre + "/shop/getAllGoods", V2: "GET"},
+		{ID: 27, Ptype: "p", V0: "1", V1: apiPre + "/shop/findGoods", V2: "POST"},
+		{ID: 28, Ptype: "p", V0: "1", V1: apiPre + "/shop/newGoods", V2: "POST"},
+		{ID: 29, Ptype: "p", V0: "1", V1: apiPre + "/shop/deleteGoods", V2: "POST"},
+		{ID: 30, Ptype: "p", V0: "1", V1: apiPre + "/shop/updateGoods", V2: "POST"},
+		{ID: 31, Ptype: "p", V0: "1", V1: apiPre + "/shop/goodsSort", V2: "POST"},
 
 		//node
-		{Ptype: "p", V0: "1", V1: apiPre + "/node/getAllNode", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/node/newNode", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/node/deleteNode", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/node/updateNode", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/node/getTraffic", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/node/nodeSort", V2: "POST"},
+		{ID: 32, Ptype: "p", V0: "1", V1: apiPre + "/node/getAllNode", V2: "GET"},
+		{ID: 33, Ptype: "p", V0: "1", V1: apiPre + "/node/newNode", V2: "POST"},
+		{ID: 34, Ptype: "p", V0: "1", V1: apiPre + "/node/deleteNode", V2: "POST"},
+		{ID: 35, Ptype: "p", V0: "1", V1: apiPre + "/node/updateNode", V2: "POST"},
+		{ID: 36, Ptype: "p", V0: "1", V1: apiPre + "/node/getTraffic", V2: "POST"},
+		{ID: 37, Ptype: "p", V0: "1", V1: apiPre + "/node/nodeSort", V2: "POST"},
+		{ID: 38, Ptype: "p", V0: "1", V1: apiPre + "/node/createx25519", V2: "GET"},
 
-		{Ptype: "p", V0: "1", V1: apiPre + "/node/newNodeShared", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/node/getNodeSharedList", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/node/deleteNodeShared", V2: "POST"},
+		{ID: 39, Ptype: "p", V0: "1", V1: apiPre + "/node/newNodeShared", V2: "POST"},
+		{ID: 40, Ptype: "p", V0: "1", V1: apiPre + "/node/getNodeSharedList", V2: "GET"},
+		{ID: 41, Ptype: "p", V0: "1", V1: apiPre + "/node/deleteNodeShared", V2: "POST"},
 
 		//casbin
-		{Ptype: "p", V0: "1", V1: apiPre + "/casbin/getPolicyByRoleIds", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/casbin/updateCasbinPolicy", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/casbin/getAllPolicy", V2: "GET"},
+		{ID: 42, Ptype: "p", V0: "1", V1: apiPre + "/casbin/getPolicyByRoleIds", V2: "POST"},
+		{ID: 43, Ptype: "p", V0: "1", V1: apiPre + "/casbin/updateCasbinPolicy", V2: "POST"},
+		{ID: 44, Ptype: "p", V0: "1", V1: apiPre + "/casbin/getAllPolicy", V2: "GET"},
 
 		//order
-		{Ptype: "p", V0: "1", V1: apiPre + "/order/getOrderInfo", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/order/getAllOrder", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/order/getOrderByUserID", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/order/completedOrder", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/order/getMonthOrderStatistics", V2: "POST"},
+		{ID: 45, Ptype: "p", V0: "1", V1: apiPre + "/order/getOrderInfo", V2: "POST"},
+		{ID: 46, Ptype: "p", V0: "1", V1: apiPre + "/order/getAllOrder", V2: "POST"},
+		{ID: 47, Ptype: "p", V0: "1", V1: apiPre + "/order/getOrderByUserID", V2: "POST"},
+		{ID: 48, Ptype: "p", V0: "1", V1: apiPre + "/order/completedOrder", V2: "POST"},
+		{ID: 49, Ptype: "p", V0: "1", V1: apiPre + "/order/getMonthOrderStatistics", V2: "POST"},
 
-		//system
-		{Ptype: "p", V0: "1", V1: apiPre + "/system/updateThemeConfig", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/system/getSetting", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/system/updateSetting", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/system/createx25519", V2: "GET"},
+		//server
+		{ID: 50, Ptype: "p", V0: "1", V1: apiPre + "/server/updateThemeConfig", V2: "POST"},
+		{ID: 51, Ptype: "p", V0: "1", V1: apiPre + "/server/getSetting", V2: "GET"},
+		{ID: 52, Ptype: "p", V0: "1", V1: apiPre + "/server/updateSetting", V2: "POST"},
 
 		//upload
-		{Ptype: "p", V0: "1", V1: apiPre + "/upload/newPictureUrl", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/upload/getPictureList", V2: "POST"},
+		{ID: 53, Ptype: "p", V0: "1", V1: apiPre + "/upload/newPictureUrl", V2: "POST"},
+		{ID: 54, Ptype: "p", V0: "1", V1: apiPre + "/upload/getPictureList", V2: "POST"},
 
 		//ws
-		{Ptype: "p", V0: "1", V1: apiPre + "/websocket/msg", V2: "GET"},
+		{ID: 55, Ptype: "p", V0: "1", V1: apiPre + "/websocket/msg", V2: "GET"},
 
 		//article
-		{Ptype: "p", V0: "1", V1: apiPre + "/article/newArticle", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/article/deleteArticle", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/article/updateArticle", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/article/getArticle", V2: "POST"},
+		{ID: 56, Ptype: "p", V0: "1", V1: apiPre + "/article/newArticle", V2: "POST"},
+		{ID: 57, Ptype: "p", V0: "1", V1: apiPre + "/article/deleteArticle", V2: "POST"},
+		{ID: 58, Ptype: "p", V0: "1", V1: apiPre + "/article/updateArticle", V2: "POST"},
+		{ID: 59, Ptype: "p", V0: "1", V1: apiPre + "/article/getArticle", V2: "POST"},
 
 		//report
-		{Ptype: "p", V0: "1", V1: apiPre + "/report/getDB", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/report/getTables", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/report/getColumn", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/report/reportSubmit", V2: "POST"},
+		{ID: 60, Ptype: "p", V0: "1", V1: apiPre + "/report/getDB", V2: "GET"},
+		{ID: 61, Ptype: "p", V0: "1", V1: apiPre + "/report/getTables", V2: "POST"},
+		{ID: 62, Ptype: "p", V0: "1", V1: apiPre + "/report/getColumn", V2: "POST"},
+		{ID: 63, Ptype: "p", V0: "1", V1: apiPre + "/report/reportSubmit", V2: "POST"},
 
 		//coupon
-		{Ptype: "p", V0: "1", V1: apiPre + "/coupon/newCoupon", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/coupon/deleteCoupon", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/coupon/updateCoupon", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/coupon/getCoupon", V2: "POST"},
+		{ID: 64, Ptype: "p", V0: "1", V1: apiPre + "/coupon/newCoupon", V2: "POST"},
+		{ID: 65, Ptype: "p", V0: "1", V1: apiPre + "/coupon/deleteCoupon", V2: "POST"},
+		{ID: 66, Ptype: "p", V0: "1", V1: apiPre + "/coupon/updateCoupon", V2: "POST"},
+		{ID: 67, Ptype: "p", V0: "1", V1: apiPre + "/coupon/getCoupon", V2: "POST"},
 
 		//isp
-		{Ptype: "p", V0: "1", V1: apiPre + "/isp/sendCode", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/isp/ispLogin", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/isp/getMonitorByUserID", V2: "POST"},
+		{ID: 68, Ptype: "p", V0: "1", V1: apiPre + "/isp/sendCode", V2: "POST"},
+		{ID: 69, Ptype: "p", V0: "1", V1: apiPre + "/isp/ispLogin", V2: "POST"},
+		{ID: 70, Ptype: "p", V0: "1", V1: apiPre + "/isp/getMonitorByUserID", V2: "POST"},
 
 		//pay
-		{Ptype: "p", V0: "1", V1: apiPre + "/pay/getEnabledPayList", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/pay/getPayList", V2: "GET"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/pay/newPay", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/pay/deletePay", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/pay/updatePay", V2: "POST"},
+		{ID: 71, Ptype: "p", V0: "1", V1: apiPre + "/pay/getEnabledPayList", V2: "GET"},
+		{ID: 72, Ptype: "p", V0: "1", V1: apiPre + "/pay/getPayList", V2: "GET"},
+		{ID: 73, Ptype: "p", V0: "1", V1: apiPre + "/pay/newPay", V2: "POST"},
+		{ID: 74, Ptype: "p", V0: "1", V1: apiPre + "/pay/deletePay", V2: "POST"},
+		{ID: 75, Ptype: "p", V0: "1", V1: apiPre + "/pay/updatePay", V2: "POST"},
 
 		//access
-		{Ptype: "p", V0: "1", V1: apiPre + "/access/newRoutes", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/access/updateRoutes", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/access/deleteRoutes", V2: "POST"},
-		{Ptype: "p", V0: "1", V1: apiPre + "/access/getRoutesList", V2: "POST"},
+		{ID: 76, Ptype: "p", V0: "1", V1: apiPre + "/access/newRoutes", V2: "POST"},
+		{ID: 77, Ptype: "p", V0: "1", V1: apiPre + "/access/updateRoutes", V2: "POST"},
+		{ID: 78, Ptype: "p", V0: "1", V1: apiPre + "/access/deleteRoutes", V2: "POST"},
+		{ID: 79, Ptype: "p", V0: "1", V1: apiPre + "/access/getRoutesList", V2: "POST"},
 
 		//普通用户权限
-		{Ptype: "p", V0: "2", V1: apiPre + "/user/changeUserPassword", V2: "POST"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/user/getUserInfo", V2: "GET"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/user/resetSub", V2: "GET"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/user/changeSubHost", V2: "POST"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/user/clockin", V2: "GET"},
+		{ID: 80, Ptype: "p", V0: "2", V1: apiPre + "/user/changeUserPassword", V2: "POST"},
+		{ID: 81, Ptype: "p", V0: "2", V1: apiPre + "/user/getUserInfo", V2: "GET"},
+		{ID: 82, Ptype: "p", V0: "2", V1: apiPre + "/user/resetSub", V2: "GET"},
+		{ID: 83, Ptype: "p", V0: "2", V1: apiPre + "/user/changeSubHost", V2: "POST"},
+		{ID: 84, Ptype: "p", V0: "2", V1: apiPre + "/user/clockin", V2: "GET"},
 
-		{Ptype: "p", V0: "2", V1: apiPre + "/menu/getRouteList", V2: "GET"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/menu/getRouteTree", V2: "GET"},
+		{ID: 85, Ptype: "p", V0: "2", V1: apiPre + "/menu/getRouteList", V2: "GET"},
+		{ID: 86, Ptype: "p", V0: "2", V1: apiPre + "/menu/getRouteTree", V2: "GET"},
 
-		{Ptype: "p", V0: "2", V1: apiPre + "/order/getOrderInfo", V2: "POST"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/order/getOrderByUserID", V2: "POST"},
+		{ID: 87, Ptype: "p", V0: "2", V1: apiPre + "/order/getOrderInfo", V2: "POST"},
+		{ID: 88, Ptype: "p", V0: "2", V1: apiPre + "/order/getOrderByUserID", V2: "POST"},
 
-		{Ptype: "p", V0: "2", V1: apiPre + "/shop/preCreatePay", V2: "POST"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/shop/purchase", V2: "POST"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/shop/getAllEnabledGoods", V2: "GET"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/shop/findGoods", V2: "POST"},
+		{ID: 89, Ptype: "p", V0: "2", V1: apiPre + "/shop/preCreatePay", V2: "POST"},
+		{ID: 90, Ptype: "p", V0: "2", V1: apiPre + "/shop/purchase", V2: "POST"},
+		{ID: 91, Ptype: "p", V0: "2", V1: apiPre + "/shop/getAllEnabledGoods", V2: "GET"},
+		{ID: 92, Ptype: "p", V0: "2", V1: apiPre + "/shop/findGoods", V2: "POST"},
 
-		{Ptype: "p", V0: "2", V1: apiPre + "/websocket/msg", V2: "GET"},
+		{ID: 93, Ptype: "p", V0: "2", V1: apiPre + "/websocket/msg", V2: "GET"},
 
-		{Ptype: "p", V0: "2", V1: apiPre + "/upload/newPictureUrl", V2: "POST"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/upload/getPictureList", V2: "POST"},
+		{ID: 94, Ptype: "p", V0: "2", V1: apiPre + "/upload/newPictureUrl", V2: "POST"},
+		{ID: 95, Ptype: "p", V0: "2", V1: apiPre + "/upload/getPictureList", V2: "POST"},
 
-		{Ptype: "p", V0: "2", V1: apiPre + "/article/getArticle", V2: "POST"},
+		{ID: 96, Ptype: "p", V0: "2", V1: apiPre + "/article/getArticle", V2: "POST"},
 
-		{Ptype: "p", V0: "2", V1: apiPre + "/isp/sendCode", V2: "POST"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/isp/ispLogin", V2: "POST"},
-		{Ptype: "p", V0: "2", V1: apiPre + "/isp/getMonitorByUserID", V2: "POST"},
+		{ID: 97, Ptype: "p", V0: "2", V1: apiPre + "/isp/sendCode", V2: "POST"},
+		{ID: 98, Ptype: "p", V0: "2", V1: apiPre + "/isp/ispLogin", V2: "POST"},
+		{ID: 99, Ptype: "p", V0: "2", V1: apiPre + "/isp/getMonitorByUserID", V2: "POST"},
 
-		{Ptype: "p", V0: "2", V1: apiPre + "/pay/getEnabledPayList", V2: "GET"},
+		{ID: 100, Ptype: "p", V0: "2", V1: apiPre + "/pay/getEnabledPayList", V2: "GET"},
 	}
 	if err := global.DB.Create(&casbinRuleData).Error; err != nil {
 		return errors.New("casbin_rule表数据初始化失败!")
 	}
-	//主题配置
+	return nil
+}
+func InsertIntoTheme() error {
 	themeData := model.Theme{
 		ID: 1,
 	}
 	if err := global.DB.Create(&themeData).Error; err != nil {
 		return errors.New("theme表数据初始化失败!")
 	}
-
-	//系统设置
+	return nil
+}
+func InsertIntoServer() error {
 	settingData := model.Server{
 		ID: 1,
 		Email: model.Email{
 			EmailContent: text1,
 			EmailSubject: "hello，我的宝！",
 		},
+		Subscribe: model.Subscribe{
+			AcceptableEmailSuffixes: "@qq.com\n@foxmail.com\n@gmail.com\n@163.com\n@126.com\n@yeah.net",
+		},
 	}
 	if err := global.DB.Create(&settingData).Error; err != nil {
 		return errors.New("server表数据初始化失败!")
 	}
-	//文章
+	return nil
+}
+func InsertIntoArticle() error {
 	articleData := []model.Article{
-		{Type: "home", Title: "首页自定义显示内容", Introduction: "首页自定义显示内容，可编辑，可显示与隐藏，不可删除！", Content: text3, Status: true},
-		{Type: "home", Title: "首页弹窗内容", Introduction: "首页弹窗，可编辑，可显示与隐藏，不可删除！", Content: text4, Status: true},
+		{ID: 1, Type: "home", Title: "首页自定义显示内容", Introduction: "首页自定义显示内容，可编辑，可显示与隐藏，不可删除！", Content: text3, Status: true},
+		{ID: 2, Type: "home", Title: "首页弹窗内容", Introduction: "首页弹窗，可编辑，可显示与隐藏，不可删除！", Content: text4, Status: true},
 	}
 	if err := global.DB.Create(&articleData).Error; err != nil {
 		return errors.New("article表数据初始化失败!")
 	}
-	//access
+	return nil
+}
+func InsertIntoAccess() error {
 	accessData := model.Access{
+		ID:    1,
 		Name:  "禁用流量消耗器",
 		Route: "api.vv1234.cn\nshua.leyz.top\nllss.atewm.cn\nsiriling.github.io\nshidahuilang.github.io\nfu-c-k.github.io\ndb.laomoe.com\nloss.98cat.cn\nnet.ljxnet.cn",
 	}

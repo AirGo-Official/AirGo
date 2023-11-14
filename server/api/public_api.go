@@ -5,6 +5,7 @@ import (
 	"AirGo/model"
 	"AirGo/utils/encrypt_plugin"
 	"AirGo/utils/mail_plugin"
+	"AirGo/utils/other_plugin"
 	"AirGo/utils/response"
 	"github.com/gin-gonic/gin"
 	"strings"
@@ -53,7 +54,13 @@ func GetMailCode(ctx *gin.Context) {
 		response.Fail("GetMailCode error:"+err.Error(), nil, ctx)
 		return
 	}
-	_, ok := global.LocalCache.Get(u.UserName + "emailcode")
+	//判断邮箱后缀
+	ok := other_plugin.In(u.UserName[strings.Index(u.UserName, "@"):], strings.Fields(global.Server.Subscribe.AcceptableEmailSuffixes))
+	if !ok {
+		response.Fail("The suffix name of this email is not supported!", nil, ctx)
+	}
+
+	_, ok = global.LocalCache.Get(u.UserName + "emailcode")
 	if ok {
 		response.Fail("The email verification code is frequently obtained. Please try again in 60 minutes!", nil, ctx)
 		return
@@ -61,30 +68,30 @@ func GetMailCode(ctx *gin.Context) {
 	//生成验证码
 	randomStr := encrypt_plugin.RandomString(4) //4位随机数
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(2)
 	//验证码存入local cache
-	go func(wg *sync.WaitGroup) {
+	global.GoroutinePool.Submit(func() {
 		global.LocalCache.Set(u.UserName+"emailcode", randomStr, 60*time.Second) //过期
 		wg.Done()
-	}(&wg)
+	})
 	//发送邮件
-	go func(wg *sync.WaitGroup) {
+	global.GoroutinePool.Submit(func() {
 		//判断别名邮箱
 		from := global.Server.Email.EmailFrom
 		if global.Server.Email.EmailFromAlias != "" {
 			from = global.Server.Email.EmailFromAlias
 		}
-		//选择验证码模
+		//选择内容模板
 		originalText := strings.Replace(global.Server.Email.EmailContent, "emailcode", randomStr, -1)
 		err = mail_plugin.SendEmail(global.EmailDialer, from, global.Server.Email.EmailNickname, u.UserName, global.Server.Email.EmailSubject, originalText)
 		if err != nil {
 			global.Logrus.Error(err.Error())
+			response.Fail("The email verification code has failed to be sent.error:"+err.Error(), nil, ctx)
+
+		} else {
+			response.OK("Email verification code has been sent, please check your email carefully.", nil, ctx)
 		}
 		wg.Done()
-	}(&wg)
-	go func(ctx *gin.Context, wg *sync.WaitGroup) {
-		response.OK("Email verification code has been sent, please check your email carefully.", nil, ctx)
-		wg.Done()
-	}(ctx, &wg)
+	})
 	wg.Wait()
 }

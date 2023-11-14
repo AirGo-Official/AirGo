@@ -5,6 +5,7 @@ import (
 	"AirGo/utils/websocket_plugin"
 	"github.com/casbin/casbin/v2"
 	"github.com/mojocn/base64Captcha"
+	ants "github.com/panjf2000/ants/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/songzhibin97/gkit/cache/local_cache"
 	"github.com/spf13/viper"
@@ -27,5 +28,5 @@ var (
 	WsManager          *websocket_plugin.ClientManager //websocket 全局客户端管理
 	Logrus             *logrus.Logger                  //日志
 	RateLimit          model.RateLimitRule             //限流
-	//Base64CaptchaDriver *base64Captcha.DriverDigit //Base64CaptchaDriver
+	GoroutinePool      *ants.Pool                      //线程池
 )

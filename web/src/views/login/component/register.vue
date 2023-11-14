@@ -10,13 +10,12 @@
         </template>
         <template #append>
           <el-select v-model="registerData.email_suffix" style="width: 130px;">
-            <el-option label="@qq.com" value="@qq.com"/>
-            <el-option label="@gmail.com" value="@gmail.com"/>
-            <el-option label="@163.com" value="@163.com"/>
-            <el-option label="@126.com" value="@126.com"/>
-            <el-option label="@outlook.com" value="@outlook.com"/>
-            <el-option label="@hotmail.com" value="@hotmail.com"/>
-            <el-option label="@foxmail.com" value="@foxmail.com"/>
+            <el-option
+                v-for="item in acceptable_email_suffixes_arr"
+                :key="item"
+                :label="item"
+                :value="item"
+            />
           </el-select>
         </template>
       </el-input>
@@ -110,7 +109,7 @@ const router = useRouter();
 const storesThemeConfig = useThemeConfig();
 const {themeConfig} = storeToRefs(storesThemeConfig);
 const serverStore = useServerStore()
-const {publicServerConfig} = storeToRefs(serverStore)
+const {publicServerConfig,acceptable_email_suffixes_arr} = storeToRefs(serverStore)
 const publicStore = usePublicStore()
 
 const apiStore = useApiStore()

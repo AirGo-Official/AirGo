@@ -3,7 +3,6 @@ module AirGo
 go 1.21
 
 require (
-	github.com/bitly/go-simplejson v0.5.1
 	github.com/casbin/casbin/v2 v2.77.2
 	github.com/casbin/gorm-adapter/v3 v3.19.0
 	github.com/fsnotify/fsnotify v1.6.0
@@ -11,6 +10,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/mojocn/base64Captcha v1.3.5
+	github.com/panjf2000/ants/v2 v2.8.2
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.9.3
