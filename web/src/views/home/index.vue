@@ -121,6 +121,9 @@ const getArticleID1=()=>{
 //获取首页弹窗内容
 const getArticleID2=()=>{
   articleStore.getArticleList({search:"id=2 AND status=true",page_num:1,page_size:1}).then((res)=>{
+    if ((res.data.article_list as Article[]).length === 0){
+      return
+    }
     //保存
     articleStoreData.articleID2.value=res.data.article_list[0]
     //显示弹窗

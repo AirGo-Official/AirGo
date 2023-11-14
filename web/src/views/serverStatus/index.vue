@@ -26,13 +26,15 @@
                 <el-icon color="#409EFC">
                   <Top/>
                 </el-icon>
-                <span>{{ v.u }}Mbps</span>
+                <span v-if="v.u < 1">{{ (v.u)*1024 }}kbps</span>
+                <span v-else>{{ v.u }}Mbps</span>
               </el-col>
               <el-col :xs="12" :sm="12" :md="4" :lg="4" :xl="4" style="margin: auto">
                 <el-icon color="#409EFC">
                   <Bottom/>
                 </el-icon>
-                <span>{{ v.d }}Mbps</span>
+                <span v-if="v.d < 1">{{ (v.d)*1024 }}kbps</span>
+                <span v-else>{{ v.d }}Mbps</span>
               </el-col>
             </el-row>
 

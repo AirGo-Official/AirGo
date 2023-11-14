@@ -140,7 +140,6 @@ const onSignIn = async () => {
 };
 // 登录成功后的跳转
 const signInSuccess = (isNoPower: boolean | undefined) => {
-  console.log("3")
   if (isNoPower) {
     ElMessage.warning('抱歉，您没有登录权限');
     Session.clear();

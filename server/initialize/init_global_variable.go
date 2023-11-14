@@ -78,5 +78,5 @@ func InitCasbin() {
 	global.Casbin = service.Casbin()
 }
 func InitGoroutinePool() {
-	global.GoroutinePool, _ = ants.NewPool(100)
+	global.GoroutinePool, _ = ants.NewPool(100, ants.WithPreAlloc(true))
 }

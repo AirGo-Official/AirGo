@@ -166,8 +166,6 @@ export const useThemeConfig = defineStore('themeStore', {
         async updateThemeConfig(data?: object) {
             const apiStore = useApiStore()
             const res = await request(apiStore.api.server_updateThemeConfig, data)
-            //更新主题到pinia
-            //设置缓存
         },
     },
 });

@@ -51,11 +51,12 @@ export const useServerStore = defineStore("serverStore", {
 
             email: {
                 email_from: '',
+                email_from_alias:'Admin',
                 email_secret: '',
                 email_host: '',
-                email_port: 0,
-                email_is_ssl: true,
-                email_nickname: '',
+                email_port: 465,
+                email_is_ssl: false,
+                email_nickname: '管理员',
                 email_subject: '',
                 email_content: '',
             },

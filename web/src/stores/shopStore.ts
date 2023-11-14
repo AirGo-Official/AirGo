@@ -36,6 +36,7 @@ export const useShopStore = defineStore("shopStore", {
                 updated_at: "",
                 good_order: 0,
                 status: false,
+                traffic_reset_method:'',
                 des: '',
                 subject: "",
                 total_amount: "",

@@ -82,7 +82,6 @@ const onGoToMore = () => {
 // 前往详情
 const toDetails = (params: Article) => {
   // router.push({path:'notices',query:{id:1}})
-  console.log("k:", params)
   // JSON.parse(JSON.stringify(row))
   state.currentArticle = JSON.parse(JSON.stringify(params))
   state.isShowDialog = true

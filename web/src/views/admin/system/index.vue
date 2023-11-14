@@ -125,21 +125,21 @@
 
         <el-tab-pane label="邮件">
           <el-form :model="serverConfig.serverConfig.value.email" label-width="100px">
-            <el-form-item label="服务器地址">
+            <el-form-item label="服务器">
               <el-input v-model="serverConfig.serverConfig.value.email.email_host" placeholder="mail.example.com"/>
             </el-form-item>
             <el-form-item label="端口">
               <el-input v-model.number="serverConfig.serverConfig.value.email.email_port" type="number"/>
             </el-form-item>
-            <el-form-item label="账户">
+            <el-form-item label="邮箱账户">
               <el-input v-model="serverConfig.serverConfig.value.email.email_from" placeholder="10010@qq.com"/>
             </el-form-item>
-            <el-form-item label="别名">
+            <el-form-item label="邮箱别名">
               <el-input v-model="serverConfig.serverConfig.value.email.email_from_alias" placeholder="10010@foxmail.com"/>
               <div style="color: #9b9da1">*例如：qq邮箱可以设置foxmil别名。发送邮件时优先显示别名。无特殊情况可忽略本项</div>
             </el-form-item>
-            <el-form-item label="昵称">
-              <el-input v-model="serverConfig.serverConfig.value.email.email_nickname" placeholder="吊炸天机场管理员"/>
+            <el-form-item label="账户昵称">
+              <el-input v-model="serverConfig.serverConfig.value.email.email_nickname" placeholder="Admin"/>
             </el-form-item>
             <el-form-item label="密码">
               <el-input v-model="serverConfig.serverConfig.value.email.email_secret" type="password"/>

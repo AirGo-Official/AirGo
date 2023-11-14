@@ -110,9 +110,11 @@ func Login(c *gin.Context) {
 	//登录以后签发jwt，先查询是否有token缓存
 	var token string
 	cacheToken, ok := global.LocalCache.Get(l.UserName + "token")
-	if ok {
+	if ok && cacheToken != "" {
+		fmt.Println("旧的token")
 		token = cacheToken.(string)
 	} else {
+		fmt.Println("重新token")
 		myCustomClaimsPrefix := jwt_plugin.MyCustomClaimsPrefix{
 			UserID:   user.ID,
 			UserName: user.UserName,
@@ -128,8 +130,9 @@ func Login(c *gin.Context) {
 			global.Logrus.Error(err.Error())
 			return
 		} else {
+			token = tokenNew
 			global.GoroutinePool.Submit(func() {
-				global.LocalCache.Set(l.UserName+"token", tokenNew, ep)
+				global.LocalCache.Set(l.UserName+"token", token, ep)
 			})
 		}
 	}
