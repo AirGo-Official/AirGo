@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// websocket im 测试
+// websocket
 func WebSocketMsg(ctx *gin.Context) {
 	var upgrader = websocket.Upgrader{
 		ReadBufferSize:   1024,

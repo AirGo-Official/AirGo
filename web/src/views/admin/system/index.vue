@@ -34,12 +34,12 @@
             </el-form-item>
             <el-divider></el-divider>
             <el-form-item label="新注册分配套餐">
-              <el-select v-model="serverConfig.serverConfig.value.subscribe.default_goods" placeholder="选择套餐" style="width: 30%">
+              <el-select v-model.number="serverConfig.serverConfig.value.subscribe.default_goods" placeholder="选择套餐" style="width: 30%">
                 <el-option
                     v-for="item in goodsList"
                     :key="item.id"
                     :label="item.subject"
-                    :value="item.subject"
+                    :value="item.id"
                 />
               </el-select>
             </el-form-item>
@@ -70,16 +70,10 @@
                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
             </el-form-item>
             <el-form-item label="打卡获得流量范围">
-              <el-col :span="2">
-                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_min_traffic" :precision="0" :step="10" :min="0" :max="10000000" />
-              </el-col>
-              <el-col :span="2" style="text-align: center">
-                <span>-</span>
-              </el-col>
-              <el-col :span="3">
-                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_max_traffic" :precision="0" :step="10" :min="0" :max="10000000" />
-              </el-col>
-              <el-col :span="10">
+              <el-col >
+                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_min_traffic" :precision="0" :step="10" :min="0" :max="10000000" style="width: 120px" />
+                <span>---</span>
+                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_max_traffic" :precision="0" :step="10" :min="0" :max="10000000" style="width: 120px"/>
                 <span>MB</span>
               </el-col>
             </el-form-item>

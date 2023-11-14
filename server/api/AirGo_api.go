@@ -4,19 +4,18 @@ import (
 	"AirGo/global"
 	"AirGo/model"
 	"AirGo/service"
-	"AirGo/utils/encrypt_plugin"
-	"AirGo/utils/response"
 	"encoding/base64"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AGGetNodeInfo(ctx *gin.Context) {
 	//验证key
-	if global.Server.System.MuKey != ctx.Query("key") {
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
 		return
 	}
 	id := ctx.Query("id")
@@ -25,6 +24,22 @@ func AGGetNodeInfo(ctx *gin.Context) {
 		global.Logrus.Error("AGGetNodeInfo error,id="+id, err.Error())
 		return
 	}
+	//处理探针
+	global.GoroutinePool.Submit(func() {
+		cacheStatus, ok := global.LocalCache.Get(id + "status")
+		if ok && cacheStatus != nil {
+			oldStatus := cacheStatus.(model.NodeStatus)
+			oldStatus.Status = true
+			global.LocalCache.Set(id+"status", oldStatus, 2*time.Minute) //2分钟后过期
+
+		} else {
+			var status model.NodeStatus
+			status.Status = true
+			status.ID, _ = strconv.ParseInt(id, 64, 10)
+			global.LocalCache.Set(id+"status", status, 2*time.Minute) //2分钟后过期
+		}
+	})
+	//处理ss节点加密
 	if node.NodeType == "shadowsocks" {
 		switch node.Scy {
 		case "2022-blake3-aes-128-gcm":
@@ -38,7 +53,7 @@ func AGGetNodeInfo(ctx *gin.Context) {
 }
 func AGReportNodeStatus(ctx *gin.Context) {
 	//验证key
-	if global.Server.System.MuKey != ctx.Query("key") {
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
 		return
 	}
 	var AGNodeStatus model.AGNodeStatus
@@ -47,21 +62,34 @@ func AGReportNodeStatus(ctx *gin.Context) {
 		global.Logrus.Error("error", err.Error())
 		return
 	}
-	cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(AGNodeStatus.ID, 10) + "status")
-	if ok && cacheStatus != nil {
-		oldStatus := cacheStatus.(model.NodeStatus)
-		oldStatus.CPU = AGNodeStatus.CPU
-		oldStatus.Mem = AGNodeStatus.Mem
-		oldStatus.Disk = AGNodeStatus.Disk
-		//oldStatus.Uptime=AGNodeStatus.Uptime
-		global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+"status", oldStatus, 2*time.Minute) //2分钟后过期
-	}
+	//处理探针
+	global.GoroutinePool.Submit(func() {
+		cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(AGNodeStatus.ID, 10) + "status")
+		if ok && cacheStatus != nil {
+			oldStatus := cacheStatus.(model.NodeStatus)
+			oldStatus.Status = true
+			oldStatus.CPU = AGNodeStatus.CPU
+			oldStatus.Mem = AGNodeStatus.Mem
+			oldStatus.Disk = AGNodeStatus.Disk
+			//oldStatus.Uptime=AGNodeStatus.Uptime
+			global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+"status", oldStatus, 2*time.Minute) //2分钟后过期
+		} else {
+			var status model.NodeStatus
+			status.Status = true
+			status.ID = AGNodeStatus.ID
+			status.CPU = AGNodeStatus.CPU
+			status.Mem = AGNodeStatus.Mem
+			status.Disk = AGNodeStatus.Disk
+			global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+"status", status, 2*time.Minute) //2分钟后过期
+		}
+	})
+
 	ctx.String(200, "success")
 }
 
 func AGGetUserlist(ctx *gin.Context) {
 	//验证key
-	if global.Server.System.MuKey != ctx.Query("key") {
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
 		return
 	}
 	id := ctx.Query("id")
@@ -112,7 +140,7 @@ func AGGetUserlist(ctx *gin.Context) {
 
 func AGReportUserTraffic(ctx *gin.Context) {
 	//验证key
-	if global.Server.System.MuKey != ctx.Query("key") {
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
 		return
 	}
 	var AGUserTraffic model.AGUserTraffic
@@ -145,54 +173,50 @@ func AGReportUserTraffic(ctx *gin.Context) {
 		trafficLog.U = trafficLog.D + v.Download
 
 	}
-	// 统计status
-	go func(id, userAmount, u, d int64) {
-		var nodeStatus = model.NodeStatus{
-			ID:         id,
-			UserAmount: userAmount,
-			U:          float64(u),
-			D:          float64(d),
-			LastTime:   time.Now(),
-			Status:     true,
-		}
+	// 处理探针
+	global.GoroutinePool.Submit(func() {
 		var duration float64 = 60
-		cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(id, 10) + "status")
+		cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(AGUserTraffic.ID, 10) + "status")
 		if ok && cacheStatus != nil {
 			oldStatus := cacheStatus.(model.NodeStatus)
-			duration = nodeStatus.LastTime.Sub(oldStatus.LastTime).Seconds()
+			oldStatus.Status = true
+			oldStatus.UserAmount = int64(len(userIds))
+			now := time.Now()
+			duration = now.Sub(oldStatus.LastTime).Seconds()
+			oldStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", oldStatus.D/1024/1024/duration*8), 64) //Byte--->Mbps
+			oldStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", oldStatus.U/1024/1024/duration*8), 64)
+			oldStatus.LastTime = now
+			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+"status", oldStatus, 2*time.Minute)
+		} else {
+			var nodeStatus model.NodeStatus
+			nodeStatus.Status = true
+			nodeStatus.ID = AGUserTraffic.ID
+			nodeStatus.UserAmount = int64(len(userIds))
+			nodeStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", nodeStatus.D/1024/1024/duration*8), 64) //Byte--->Mbps
+			nodeStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", nodeStatus.U/1024/1024/duration*8), 64)
+			nodeStatus.LastTime = time.Now()
+			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+"status", nodeStatus, 2*time.Minute)
 		}
-		nodeStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", nodeStatus.D/1024/1024/duration*8), 64) //Byte--->Mbps
-		nodeStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", nodeStatus.U/1024/1024/duration*8), 64)
-		global.LocalCache.Set(strconv.FormatInt(id, 10)+"status", nodeStatus, 2*time.Minute)
-
-	}(AGUserTraffic.ID, int64(len(userIds)), trafficLog.U, trafficLog.D)
+	})
 	//插入流量统计统计
-	err = service.CommonSqlCreate[model.TrafficLog](trafficLog)
-
-	if err != nil {
-		global.Logrus.Error("插入流量统计统计error:", err)
-		return
-	}
+	global.GoroutinePool.Submit(func() {
+		err = service.CommonSqlCreate[model.TrafficLog](trafficLog)
+		if err != nil {
+			global.Logrus.Error("插入流量统计统计error:", err)
+			return
+		}
+	})
 	//更新用户流量信息
-	if len(userArr) == 0 {
-		return
-	}
-	err = service.UpdateUserTrafficInfo(userArr, userIds)
-	if err != nil {
-		global.Logrus.Error("更新用户流量信息error:", err)
-		return
-	}
+	global.GoroutinePool.Submit(func() {
+		if len(userArr) == 0 {
+			return
+		}
+		err = service.UpdateUserTrafficInfo(userArr, userIds)
+		if err != nil {
+			global.Logrus.Error("更新用户流量信息error:", err)
+			return
+		}
+	})
 	ctx.String(200, "success")
 
-}
-
-// reality x25519
-func Createx25519(ctx *gin.Context) {
-	str := encrypt_plugin.RandomString(43)
-	pub, pri, err := encrypt_plugin.ExecuteX25519(str)
-	if err != nil {
-		global.Logrus.Error(err.Error())
-		return
-	}
-	response.OK("Createx25519 success", model.AGREALITYx25519{PublicKey: pub, PrivateKey: pri}, ctx)
 }

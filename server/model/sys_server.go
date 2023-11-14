@@ -60,12 +60,12 @@ type Subscribe struct {
 	ApiPrefix               string  `json:"api_prefix"        gorm:"default:/api;comment:api前缀"`
 	SubName                 string  `json:"sub_name"          gorm:"default:AirGo;comment:订阅名称"`
 	TEK                     string  `json:"tek"               gorm:"default:airgo;comment:前后端通信密钥"`
-	DefaultGoods            string  `json:"default_goods"     gorm:"comment:新用户默认套餐"`
+	DefaultGoods            int64   `json:"default_goods"     gorm:"comment:新用户默认套餐"`
 	EnabledRebate           bool    `json:"enabled_rebate"    gorm:"default:false;comment:是否开启返利"`
 	RebateRate              float64 `json:"rebate_rate"       gorm:"default:0.1;comment:返利率"`
 	EnabledDeduction        bool    `json:"enabled_deduction" gorm:"default:false;comment:是否开启旧套餐抵扣"`
 	DeductionThreshold      float64 `json:"deduction_threshold" gorm:"default:0.8;comment:旧套餐抵扣阈值,大于该值则抵扣"`
-	EnabledClockIn          bool    `json:"enabled_clock_in" gorm:"default:true;comment:是否开启打卡"`
+	EnabledClockIn          bool    `json:"enabled_clock_in"    gorm:"default:true;comment:是否开启打卡"`
 	ClockInMinTraffic       int64   `json:"clock_in_min_traffic" gorm:"default:100;comment:打卡最小流量(MB)"`
 	ClockInMaxTraffic       int64   `json:"clock_in_max_traffic" gorm:"default:1000;comment:打卡最大流量(MB)"`
 }
@@ -73,10 +73,10 @@ type Subscribe struct {
 // 公共配置参数
 type PublicSystem struct {
 	EnableRegister          bool    `json:"enable_register"`           // 是否开启注册
-	AcceptableEmailSuffixes string  `json:"acceptable_email_suffixes"` //可接受的邮箱后缀
+	AcceptableEmailSuffixes string  `json:"acceptable_email_suffixes"` // 可接受的邮箱后缀
 	EnableEmailCode         bool    `json:"enable_email_code"`         // 是否开启注册email 验证码
 	EnableLoginEmailCode    bool    `json:"enable_login_email_code"`   // 是否开启登录email 验证码
 	RebateRate              float64 `json:"rebate_rate"`               // 佣金率
 	BackendUrl              string  `json:"backend_url"`               // 后端地址
-	EnabledClockIn          bool    `json:"enabled_clock_in"`          //是否开启打卡
+	EnabledClockIn          bool    `json:"enabled_clock_in"`          // 是否开启打卡
 }

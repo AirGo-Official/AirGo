@@ -33,7 +33,7 @@ declare interface Subscribe {
 
     sub_name: string;
     tek: string;
-    default_goods: string;
+    default_goods: number;
     enabled_rebate: boolean;    //是否开启返利
     rebate_rate: number;        //返利率
     enabled_deduction: boolean; //是否开启旧套餐抵扣

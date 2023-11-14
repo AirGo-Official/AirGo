@@ -10,7 +10,7 @@
                   今日订单：{{ state.statisticsData.dayOrderDataCurrent.total }}
                 </el-col>
                 <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                  今日收入：{{ state.statisticsData.dayOrderDataCurrent.total_amount }} ¥
+                  今日收入：{{ state.statisticsData.dayOrderDataCurrent.total_amount.toFixed(2) }} ¥
                 </el-col>
               </el-row>
             </el-card>
@@ -24,7 +24,7 @@
                   当月订单：{{ state.statisticsData.monthOrderDataCurrent.total }}
                 </el-col>
                 <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                  当月收入：{{ state.statisticsData.monthOrderDataCurrent.total_amount }} ¥
+                  当月收入：{{ state.statisticsData.monthOrderDataCurrent.total_amount.toFixed(2) }} ¥
                 </el-col>
               </el-row>
             </el-card>
@@ -38,7 +38,7 @@
                   上月订单：{{ state.statisticsData.monthOrderDataLast.total }}
                 </el-col>
                 <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                  上月收入：{{ state.statisticsData.monthOrderDataLast.total_amount }} ¥
+                  上月收入：{{ state.statisticsData.monthOrderDataLast.total_amount.toFixed(2) }} ¥
                 </el-col>
               </el-row>
             </el-card>

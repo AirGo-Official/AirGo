@@ -39,7 +39,7 @@ export const useServerStore = defineStore("serverStore", {
                 backend_url: '',
                 api_prefix: '',
                 tek: '',
-                default_goods: '',
+                default_goods: 0,
                 enabled_rebate: true,    //是否开启返利
                 rebate_rate: 0,          //返利率
                 enabled_deduction: true, //是否开启旧套餐抵扣

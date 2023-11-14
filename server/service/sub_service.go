@@ -15,12 +15,6 @@ import (
 	"strings"
 )
 
-func Show(data any) {
-	b, _ := json.Marshal(data)
-	fmt.Println(string(b))
-
-}
-
 // 获取订阅
 func GetUserSub(url string, subType string) string {
 	//查找用户

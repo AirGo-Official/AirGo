@@ -32,6 +32,9 @@ func Register(u *model.User) error {
 			RoleGroup:      []model.Role{{ID: 2}}, //默认角色,普通用户
 			InvitationCode: encrypt_plugin.RandomString(8),
 			ReferrerCode:   u.ReferrerCode,
+			SubscribeInfo: model.SubscribeInfo{
+				SubscribeUrl: encrypt_plugin.RandomString(8), //随机字符串订阅url
+			},
 		}
 		return CreateUser(NewUserSubscribe(&newUser))
 	} else {
@@ -67,11 +70,11 @@ func NewUser(u model.User) error {
 // 新注册用户分配套餐
 func NewUserSubscribe(u *model.User) *model.User {
 	//查询商品信息
-	if global.Server.Subscribe.DefaultGoods == "" {
+	if global.Server.Subscribe.DefaultGoods == 0 {
 		return u
 	}
 	var goods = model.Goods{
-		Subject: global.Server.Subscribe.DefaultGoods,
+		ID: global.Server.Subscribe.DefaultGoods,
 	}
 	//查询默认套餐
 	g, _, err := CommonSqlFind[model.Goods, model.Goods, model.Goods](goods)
