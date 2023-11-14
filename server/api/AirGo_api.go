@@ -151,7 +151,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	}
 	//查询节点倍率
 	node, _, err := service.CommonSqlFind[model.Node, string, model.Node]("id = " + fmt.Sprintf("%d", AGUserTraffic.ID))
-	if node.TrafficRate < 0 || err != nil {
+	if node.TrafficRate <= 0 || err != nil {
 		node.TrafficRate = 1
 	}
 	// 处理流量统计
@@ -183,8 +183,8 @@ func AGReportUserTraffic(ctx *gin.Context) {
 			oldStatus.UserAmount = int64(len(userIds))
 			now := time.Now()
 			duration = now.Sub(oldStatus.LastTime).Seconds()
-			oldStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", oldStatus.D/1024/1024/duration*8), 64) //Byte--->Mbps
-			oldStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", oldStatus.U/1024/1024/duration*8), 64)
+			oldStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/1024/1024/duration*8), 64) //Byte--->Mbps
+			oldStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/1024/1024/duration*8), 64)
 			oldStatus.LastTime = now
 			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+"status", oldStatus, 2*time.Minute)
 		} else {
@@ -192,8 +192,8 @@ func AGReportUserTraffic(ctx *gin.Context) {
 			nodeStatus.Status = true
 			nodeStatus.ID = AGUserTraffic.ID
 			nodeStatus.UserAmount = int64(len(userIds))
-			nodeStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", nodeStatus.D/1024/1024/duration*8), 64) //Byte--->Mbps
-			nodeStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", nodeStatus.U/1024/1024/duration*8), 64)
+			nodeStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/1024/1024/duration*8), 64) //Byte--->Mbps
+			nodeStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/1024/1024/duration*8), 64)
 			nodeStatus.LastTime = time.Now()
 			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+"status", nodeStatus, 2*time.Minute)
 		}
