@@ -308,7 +308,7 @@ func ClashSubscribe(nodes *[]model.Node, user model.User) string {
 	clashYaml.Secret = ""
 	clashYaml.Proxies = proxiesArr
 	clashYaml.ProxyGroups = append(clashYaml.ProxyGroups, proxyGroup1, proxyGroup2, proxyGroup3)
-	clashYaml.Rules = []string{
+	clashYaml.Rules = []string{ //注：规则写的简单，后期再优化
 		"DOMAIN-SUFFIX,local,DIRECT",
 		"IP-CIDR,127.0.0.0/8,DIRECT",
 		"IP-CIDR,172.16.0.0/12,DIRECT",
@@ -336,7 +336,7 @@ func ClashVmessVlessTrojan(n model.Node, user model.User) model.ClashProxy {
 	case "vmess":
 		proxy.Type = "vmess"
 		proxy.Uuid = user.UUID.String()
-		proxy.Alterid = fmt.Sprintf("%d", n.Aid)
+		proxy.Alterid = n.Aid
 		proxy.Cipher = "auto"
 	case "vless":
 		proxy.Type = "vless"
@@ -420,7 +420,7 @@ func ClashVmessVlessTrojanShared(n model.Node) model.ClashProxy {
 	case "vmess":
 		proxy.Type = "vmess"
 		proxy.Uuid = n.UUID
-		proxy.Alterid = fmt.Sprintf("%d", n.Aid)
+		proxy.Alterid = n.Aid
 		proxy.Cipher = "auto"
 	case "vless":
 		proxy.Type = "vless"

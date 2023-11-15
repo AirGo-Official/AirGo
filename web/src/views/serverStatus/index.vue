@@ -26,15 +26,19 @@
                 <el-icon color="#409EFC">
                   <Top/>
                 </el-icon>
-                <span v-if="v.u < 1">{{ (v.u)*1024 }}kbps</span>
-                <span v-else>{{ v.u }}Mbps</span>
+                <span v-if="v.u < 1024">{{ v.u.toFixed(2) }}B/s</span>
+                <span v-else-if="1024 < v.u < 1048576">{{ (v.u/1024).toFixed(2) }}kB/s</span>
+                <span v-else-if="1048576 < v.u < 1073741824">{{ (v.u/1024/1024).toFixed(2) }}MB/s</span>
+                <span v-else>{{ v.u }}B/s</span>
               </el-col>
               <el-col :xs="12" :sm="12" :md="4" :lg="4" :xl="4" style="margin: auto">
                 <el-icon color="#409EFC">
                   <Bottom/>
                 </el-icon>
-                <span v-if="v.d < 1">{{ (v.d)*1024 }}kbps</span>
-                <span v-else>{{ v.d }}Mbps</span>
+                <span v-if="v.d < 1024">{{ v.d.toFixed(2) }}B/s</span>
+                <span v-else-if="1024 < v.d < 1048576">{{ (v.d/1024).toFixed(2) }}kB/s</span>
+                <span v-else-if="1048576 < v.d < 1073741824">{{ (v.d/1024/1024).toFixed(2) }}MB/s</span>
+                <span v-else>{{ v.d }}B/s</span>
               </el-col>
             </el-row>
 

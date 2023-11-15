@@ -175,7 +175,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	}
 	// 处理探针
 	global.GoroutinePool.Submit(func() {
-		var duration float64 = 60
+		var duration float64 = 60 //默认60秒间隔
 		cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(AGUserTraffic.ID, 10) + "status")
 		if ok && cacheStatus != nil {
 			oldStatus := cacheStatus.(model.NodeStatus)
@@ -183,8 +183,8 @@ func AGReportUserTraffic(ctx *gin.Context) {
 			oldStatus.UserAmount = int64(len(userIds))
 			now := time.Now()
 			duration = now.Sub(oldStatus.LastTime).Seconds()
-			oldStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/1024/1024/duration*8), 64) //Byte--->Mbps
-			oldStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/1024/1024/duration*8), 64)
+			oldStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/duration), 64) //Byte per second
+			oldStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/duration), 64)
 			oldStatus.LastTime = now
 			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+"status", oldStatus, 2*time.Minute)
 		} else {
@@ -192,8 +192,8 @@ func AGReportUserTraffic(ctx *gin.Context) {
 			nodeStatus.Status = true
 			nodeStatus.ID = AGUserTraffic.ID
 			nodeStatus.UserAmount = int64(len(userIds))
-			nodeStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/1024/1024/duration*8), 64) //Byte--->Mbps
-			nodeStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/1024/1024/duration*8), 64)
+			nodeStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/duration), 64) //Byte per second
+			nodeStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/duration), 64)
 			nodeStatus.LastTime = time.Now()
 			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+"status", nodeStatus, 2*time.Minute)
 		}
