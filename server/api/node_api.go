@@ -29,6 +29,7 @@ func NewNode(ctx *gin.Context) {
 		response.Fail("NewNode error:"+err.Error(), nil, ctx)
 		return
 	}
+	service.Show(node)
 	node.ServerKey = encrypt_plugin.RandomString(32)
 	n, _, _ := service.CommonSqlFind[model.Node, model.Node, model.Node](model.Node{
 		Remarks: node.Remarks,

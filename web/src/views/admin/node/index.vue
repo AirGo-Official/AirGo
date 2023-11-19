@@ -65,6 +65,7 @@
             <el-button type="warning" v-if="scope.row.node_type ==='vless'">vless</el-button>
             <el-button type="info" v-if="scope.row.node_type ==='trojan'">trojan</el-button>
             <el-button type="danger" v-if="scope.row.node_type ==='shadowsocks'">shadowsocks</el-button>
+            <el-button type="primary" v-if="scope.row.node_type ==='hysteria'">hysteria</el-button>
           </template>
         </el-table-column>
         <el-table-column prop="total_up" label="上行流量(GB)" show-overflow-tooltip width="200">
@@ -183,7 +184,7 @@ const state = reactive({
 })
 
 //打开新建节点，修改节点弹窗
-function onOpenEditNode(title: string, row?: NodeInfo) {
+function onOpenEditNode(title: string, row?: NodeInfo) {1
   nodeDialogRef.value.openDialog(title, row)
 }
 

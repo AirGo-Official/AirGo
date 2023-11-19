@@ -74,8 +74,8 @@ type Theme struct {
 	// 全局网站标题 / 副标题
 	// 网站主标题（菜单导航、浏览器当前网页标题）
 	GlobalTitle         string `json:"globalTitle"          gorm:"default:AirGo;comment:网站主标题"`
-	GlobalViceTitle     string `json:"globalViceTitle"      gorm:"default:AirGo;comment:网站副标题"`
-	GlobalViceTitleMsg  string `json:"globalViceTitleMsg"   gorm:"default:AirGo;comment:网站副标题"`
+	GlobalViceTitle     string `json:"globalViceTitle"      gorm:"default:Professional and stable!!;comment:网站副标题"`
+	GlobalViceTitleMsg  string `json:"globalViceTitleMsg"   gorm:"default:You deserve it;comment:网站副标题"`
 	GlobalI18n          string `json:"globalI18n"           gorm:"default:zh-cn;comment:默认初始语言"`
 	GlobalComponentSize string `json:"globalComponentSize"  gorm:"default:small;comment:默认全局组件大小，可选值<large|'default'|small>"`
 }

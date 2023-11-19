@@ -266,6 +266,40 @@ func ParseSSLink(link string) *model.NodeShared {
 	return &node
 }
 
+func ParseHy2Link(link string) *model.NodeShared {
+	u, err := url.Parse(link)
+	if err != nil {
+		return nil
+	}
+	if u.User == nil || u.Scheme != "hy2" {
+		return nil
+	}
+	node := new(model.NodeShared)
+	node.Enabled = true
+	node.NodeType = "hysteria"
+	node.IsSharedNode = true
+	//remarks
+	node.Remarks = u.Fragment
+	if node.Remarks == "" {
+		node.Remarks = u.Host
+	}
+	//address
+	node.Address = u.Hostname()
+	//port
+	node.Port, err = strconv.ParseInt(u.Port(), 10, 64)
+	if err != nil {
+		return nil
+	}
+	//解析参数
+	urlQuery := u.Query()
+	//uuid
+	node.UUID = u.User.Username()
+	if urlQuery.Get("sni") != "" {
+		node.Sni = urlQuery.Get("sni")
+	}
+	return node
+}
+
 func ParseSubUrl(urlStr string) *[]model.NodeShared {
 	//去掉前后空格
 	urlStr = strings.TrimSpace(urlStr)
@@ -300,7 +334,7 @@ func ParseSubUrl(urlStr string) *[]model.NodeShared {
 	return &Nodes
 }
 
-// 解析一条节点,vmess vless trojan
+// 解析一条节点,vmess vless trojan hysteria
 func ParseOne(link string) *model.NodeShared {
 	//fmt.Println("解析一条链接", link)
 	u, err := url.Parse(link)
@@ -322,6 +356,10 @@ func ParseOne(link string) *model.NodeShared {
 		}
 	case "ss":
 		if obj := ParseSSLink(link); obj != nil {
+			return obj
+		}
+	case "hy2":
+		if obj := ParseHy2Link(link); obj != nil {
 			return obj
 		}
 	}

@@ -93,12 +93,12 @@ func V2rayNGSubscribe(nodes *[]model.Node, user model.User) string {
 				subArr = append(subArr, res)
 			}
 			continue
-		case "vless", "trojan":
+		case "vless", "trojan", "hysteria":
 			if v.IsSharedNode {
 				uuid, _ := uuid.FromString(v.UUID)
 				user = model.User{UUID: uuid, SubscribeInfo: model.SubscribeInfo{Host: v.Host}}
 			}
-			if res := V2rayNGVlessTrojan(v, user); res != "" {
+			if res := V2rayNGVlessTrojanHysteria(v, user); res != "" {
 				subArr = append(subArr, res)
 			}
 			continue
@@ -162,14 +162,16 @@ func V2rayNGVmess(node model.Node, user model.User) string {
 	return "vmess://" + vmessStr
 }
 
-// v2rayNG vless trojan
-func V2rayNGVlessTrojan(node model.Node, user model.User) string {
+// v2rayNG vless trojan hysteria
+func V2rayNGVlessTrojanHysteria(node model.Node, user model.User) string {
 	var vlessUrl url.URL
 	switch node.NodeType {
 	case "vless":
 		vlessUrl.Scheme = "vless"
 	case "trojan":
 		vlessUrl.Scheme = "trojan"
+	case "hysteria":
+		vlessUrl.Scheme = "hy2"
 	}
 	vlessUrl.User = url.UserPassword(user.UUID.String(), "")
 	vlessUrl.Host = node.Address + ":" + strconv.FormatInt(node.Port, 10)
@@ -207,6 +209,9 @@ func V2rayNGVlessTrojan(node model.Node, user model.User) string {
 			values.Add("sni", node.Sni)
 			values.Add("sid", node.ShortId)
 		}
+	case "hy2":
+		values.Add("sni", node.Sni)
+
 	case "trojan":
 	}
 	vlessUrl.RawQuery = values.Encode()
@@ -270,9 +275,9 @@ func ClashSubscribe(nodes *[]model.Node, user model.User) string {
 		nameArr = append(nameArr, v.Remarks)
 		var proxy model.ClashProxy
 		if v.IsSharedNode { //共享节点
-			proxy = ClashVmessVlessTrojanShared(v)
+			proxy = ClashVmessVlessTrojanHysteriaShared(v)
 		} else {
-			proxy = ClashVmessVlessTrojan(v, user)
+			proxy = ClashVmessVlessTrojanHysteria(v, user)
 		}
 
 		proxiesArr = append(proxiesArr, proxy)
@@ -329,8 +334,8 @@ func ClashSubscribe(nodes *[]model.Node, user model.User) string {
 
 }
 
-// Clash vmess vless trojan
-func ClashVmessVlessTrojan(n model.Node, user model.User) model.ClashProxy {
+// Clash vmess vless trojan hysteria
+func ClashVmessVlessTrojanHysteria(n model.Node, user model.User) model.ClashProxy {
 	var proxy model.ClashProxy
 	switch n.NodeType {
 	case "vmess":
@@ -345,6 +350,10 @@ func ClashVmessVlessTrojan(n model.Node, user model.User) model.ClashProxy {
 	case "trojan":
 		proxy.Type = "trojan"
 		proxy.Uuid = user.UUID.String()
+		proxy.Sni = n.Sni
+	case "hysteria":
+		proxy.Type = "hysteria2"
+		proxy.Password = user.UUID.String()
 		proxy.Sni = n.Sni
 	case "shadowsocks":
 		proxy.Type = "ss"
@@ -414,7 +423,7 @@ func ClashVmessVlessTrojan(n model.Node, user model.User) model.ClashProxy {
 	return proxy
 }
 
-func ClashVmessVlessTrojanShared(n model.Node) model.ClashProxy {
+func ClashVmessVlessTrojanHysteriaShared(n model.Node) model.ClashProxy {
 	var proxy model.ClashProxy
 	switch n.NodeType {
 	case "vmess":
@@ -428,6 +437,10 @@ func ClashVmessVlessTrojanShared(n model.Node) model.ClashProxy {
 		proxy.Flow = n.VlessFlow
 	case "trojan":
 		proxy.Type = "trojan"
+		proxy.Uuid = n.UUID
+		proxy.Sni = n.Sni
+	case "hysteria":
+		proxy.Type = "hysteria2"
 		proxy.Uuid = n.UUID
 		proxy.Sni = n.Sni
 	case "shadowsocks":

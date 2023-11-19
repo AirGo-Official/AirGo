@@ -183,7 +183,7 @@ type NodeShared struct {
 	Enabled         bool      `json:"enabled" gorm:"default:true"`        //是否为激活节点
 	NodeSpeedlimit  int64     `json:"node_speedlimit"`                    //节点限速/Mbps
 	TrafficRate     int64     `json:"traffic_rate"`                       //倍率
-	NodeType        string    `json:"node_type"`                          //节点类型 vless,vmess,trojan,shadowsocks
+	NodeType        string    `json:"node_type"`                          //节点类型 vless,vmess,shadowsocks,hysteria
 	IsSharedNode    bool      `json:"is_shared_node" gorm:"default:true"` //共享节点，不修改uuid和host
 	V               string    `json:"v"`                                  //
 	Scy             string    `json:"scy"`                                //加密方式 vless需要填 "none"，不能留空.none,auto,chacha20-poly1305,aes-128-gcm,aes-256-gcm,2022-blake3-aes-128-gcm,2022-blake3-aes-256-gcm,2022-blake3-chacha20-poly1305

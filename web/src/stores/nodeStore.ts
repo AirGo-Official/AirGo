@@ -149,6 +149,51 @@ export const useNodeStore = defineStore("nodeStore", {
                 access:[],
                 access_ids:[],
             } as NodeInfo,
+            hysteriaInfo: {
+                node_speedlimit: 0, //节点限速/Mbps
+                traffic_rate: 1,    //倍率
+                node_type: 'hysteria',
+                uuid: '',
+                //基础参数
+                remarks: '',//别名
+                address: '',
+                port: 80,
+                node_order: 0,//节点排序
+                enabled: true,  //是否为激活节点
+                //中转参数
+                enable_transfer: false,//是否启用中转
+                transfer_address: '',//中转ip
+                transfer_port: 0,   //中转port
+                //
+                total_up: 0,
+                total_down: 0,
+                goods: [],//多对多,关联商品
+                //vmess参数
+                v: '2',
+                scy: 'none',//加密方式 auto,none,chacha20-poly1305,aes-128-gcm,zero
+                aid: 0,//额外ID
+                //vless参数
+                flow: '',//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
+                encryption: '',//加密方式 none
+                network: '',//传输协议 tcp,kcp,ws,h2,quic,grpc
+                type: '',   //伪装类型 ws,h2：无    tcp,kcp：none，http    quic：none，srtp，utp，wechat-video，dtls，wireguard
+                host: '',   //伪装域名
+                path: '/',   //path
+                mode: 'multi',   //grpc传输模式 gun，multi
+                service_name: '/',
+                security: 'none',//传输层安全类型 none,tls,reality
+                sni: '',
+                fp: 'chrome',
+                alpn: '',
+                allowInsecure: true,//tls 跳过证书验证
+                dest: '',
+                private_key: '',
+                pbk: '',
+                sid: '',
+                spx: '',
+                access:[],
+                access_ids:[],
+            } as NodeInfo,
         },
         //节点状态页面数据
         serverStatusData: {
@@ -206,7 +251,7 @@ export const useNodeStore = defineStore("nodeStore", {
             const res = await request(apiStoreData.api.value.node_deleteNodeShared, data)
             return res
         },
-        //
+        //根据节点类型返回节点对象
          returnNodeInfo(nodeType: string) {
             let n = {} as NodeInfo
             switch (nodeType) {
@@ -218,6 +263,9 @@ export const useNodeStore = defineStore("nodeStore", {
                     break
                 case "shadowsocks":
                     n = this.dialogData.shadowsocksInfo
+                    break
+                case "hysteria":
+                    n = this.dialogData.hysteriaInfo
                     break
             }
             return n

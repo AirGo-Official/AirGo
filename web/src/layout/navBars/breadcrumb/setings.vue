@@ -5,12 +5,49 @@
         <!-- 全局主题 -->
         <el-divider content-position="left">全局主题</el-divider>
         <div class="layout-breadcrumb-seting-bar-flex">
-          <div class="layout-breadcrumb-seting-bar-flex-label">primary</div>
+          <div class="layout-breadcrumb-seting-bar-flex-label">全局主颜色</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
             <el-color-picker v-model="getThemeConfig.primary" size="default"
                              @change="onColorPickerChange"></el-color-picker>
           </div>
         </div>
+
+        <div class="layout-breadcrumb-seting-bar-flex mt14">
+          <div class="layout-breadcrumb-seting-bar-flex-label">网站主标题</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-input v-model="getThemeConfig.globalTitle" size="default" style="width: 150px"></el-input>
+          </div>
+        </div>
+
+        <div class="layout-breadcrumb-seting-bar-flex mt14">
+          <div class="layout-breadcrumb-seting-bar-flex-label">网站副标题</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-input v-model="getThemeConfig.globalViceTitle" size="default" style="width: 150px"></el-input>
+          </div>
+        </div>
+
+        <div class="layout-breadcrumb-seting-bar-flex mt14">
+          <div class="layout-breadcrumb-seting-bar-flex-label">网站副标题说明</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-input v-model="getThemeConfig.globalViceTitleMsg" size="default" style="width: 150px"></el-input>
+          </div>
+        </div>
+        <div class="layout-breadcrumb-seting-bar-flex mt14">
+          <div class="layout-breadcrumb-seting-bar-flex-label">默认初始语言</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-select v-model="getThemeConfig.globalI18n" placeholder="请选择" size="default" style="width: 90px">
+              <el-option label="中文" value="zh-cn"></el-option>
+              <el-option label="English" value="en"></el-option>
+              <el-option label="中文繁體" value="zh-twe"></el-option>
+            </el-select>
+          </div>
+
+        </div>
+<!--        <div class="layout-breadcrumb-seting-bar-flex mt14">-->
+<!--          <div class="layout-breadcrumb-seting-bar-flex-label">默认全局组件大小</div>-->
+<!--        </div>-->
+
+
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">深色模式</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
@@ -207,12 +244,14 @@
             <el-switch v-model="getThemeConfig.isShowLogo" size="small" @change="onIsShowLogoChange"></el-switch>
           </div>
         </div>
-        <div>
-          <div class="layout-breadcrumb-seting-bar-flex-label">logo 链接</div>
+
+        <div class="layout-breadcrumb-seting-bar-flex mt14">
+          <div class="layout-breadcrumb-seting-bar-flex-label">logo链接</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-input v-model="getThemeConfig.logo_link">logo 链接</el-input>
+            <el-input v-model="getThemeConfig.logo_link" size="default" style="width: 150px"></el-input>
           </div>
         </div>
+
         <div
             class="layout-breadcrumb-seting-bar-flex mt15"
             :style="{ opacity: getThemeConfig.layout === 'classic' || getThemeConfig.layout === 'transverse' ? 0.5 : 1 }"

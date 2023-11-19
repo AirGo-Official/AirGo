@@ -28,10 +28,11 @@ func Register(u *model.User) error {
 			UUID:           uuid.NewV4(),
 			UserName:       u.UserName,
 			NickName:       u.UserName,
-			Password:       encrypt_plugin.BcryptEncode(u.Password),
-			RoleGroup:      []model.Role{{ID: 2}}, //默认角色,普通用户
-			InvitationCode: encrypt_plugin.RandomString(8),
-			ReferrerCode:   u.ReferrerCode,
+			Avatar:         "",                                      //头像
+			Password:       encrypt_plugin.BcryptEncode(u.Password), //密码
+			RoleGroup:      []model.Role{{ID: 2}},                   //默认角色：普通用户角色
+			InvitationCode: encrypt_plugin.RandomString(8),          //邀请码
+			ReferrerCode:   u.ReferrerCode,                          //推荐人
 			SubscribeInfo: model.SubscribeInfo{
 				SubscribeUrl: encrypt_plugin.RandomString(8), //随机字符串订阅url
 			},
