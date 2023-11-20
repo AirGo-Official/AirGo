@@ -1,3 +1,9 @@
+#截止到版本0.1.0，golang版本为1.21，node版本为v20.9.0，请开发者斟酌。
+
+npm cache clean -f
+npm install npm -g
+npm install n -g
+n v20.9.0
 
 cd ../../web
 npm i

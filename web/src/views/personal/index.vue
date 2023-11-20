@@ -43,13 +43,24 @@
               </div>
             </div>
           </div>
+          <div class="personal-edit-title">免流混淆：{{userInfos.subscribe_info.host}}</div>
+          <div class="personal-edit-safe-box">
+            <div class="personal-edit-safe-item">
+              <div class="personal-edit-safe-item-left">
+                <el-input class="personal-edit-safe-item-left-label" v-model="state.host.host" style="width: 90%"></el-input>
+              </div>
+              <div class="personal-edit-safe-item-right">
+                <el-button type="primary" @click="onChangeHost">立即修改</el-button>
+              </div>
+            </div>
+          </div>
           <div class="personal-edit-title">
             我的邀请（佣金率：{{ serverConfig.publicServerConfig.value.rebate_rate * 100 }}%）
           </div>
           <div class="personal-edit-safe-box">
             <div class="personal-edit-safe-item">
               <div class="personal-edit-safe-item-left">
-                <div class="personal-edit-safe-item-left-label">专属邀请链接</div>
+<!--                <div class="personal-edit-safe-item-left-label">专属邀请链接</div>-->
                 <div class="personal-edit-safe-item-left-value">
                   {{ state.url }}/#/login?i={{ userInfos.invitation_code }}
                 </div>
@@ -97,23 +108,32 @@ import {useApiStore} from "/@/stores/apiStore";
 import {request} from "/@/utils/request";
 import {ElMessage} from "element-plus";
 
-const userInfo = useUserStore()
-const {userInfos} = storeToRefs(userInfo)
+const userStore = useUserStore()
+const {userInfos} = storeToRefs(userStore)
 const serverStore = useServerStore()
 const serverConfig = storeToRefs(serverStore)
 const ChangePasswordDialog = defineAsyncComponent(() => import('/@/views/personal/change_password_dialog.vue'));
 const changePasswordDialogRef = ref()
 const apiStore = useApiStore()
 
+
+
 const state = reactive({
   url: '',
+  host: {
+    host: '',
+  },
 })
 
 //打开修改密码弹窗
 const onOpenPWDialog = () => {
   changePasswordDialogRef.value.openDialog()
 }
-
+//修改混淆
+const onChangeHost = () => {
+  userStore.changeHost(state.host)
+  state.host.host = ''
+}
 //图片超过4M就压缩
 function beforeUpload(file: any) {
   return new Promise((resolve, reject) => {
@@ -147,13 +167,13 @@ const clockin = () => {
   }
 
   //判断订阅是否有效
-  if (!userInfo.userInfos.subscribe_info.sub_status){
+  if (!userInfos.value.subscribe_info.sub_status){
     ElMessage.error("订阅已失效，请购买订阅后重试")
     return
   }
   request(apiStore.api.user_clockin).then((res)=>{
-    ElMessage.success("打卡获得流量："+res.data+"MB")
-    userInfo.getUserInfo()//刷新用户信息
+    ElMessage.success(res.data)
+    userStore.getUserInfo()//刷新用户信息
   })
 }
 

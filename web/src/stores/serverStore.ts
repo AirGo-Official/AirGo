@@ -47,6 +47,8 @@ export const useServerStore = defineStore("serverStore", {
                 enabled_clock_in: true,
                 clock_in_min_traffic: 100,
                 clock_in_max_traffic: 1000,
+                clock_in_min_day: 0,
+                clock_in_max_day: 0,
             },
 
             email: {
@@ -95,6 +97,7 @@ export const useServerStore = defineStore("serverStore", {
             const apiStore = useApiStore()
             const apiStoreData = storeToRefs(apiStore)
             const res = await request(apiStoreData.api.value.server_updateSetting, data)
+            ElMessage.success(res.msg)
         }
     }
 })

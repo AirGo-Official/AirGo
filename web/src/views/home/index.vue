@@ -1,9 +1,10 @@
 <template>
   <div>
     <el-row :gutter="10" class="home-card-two mb15">
-      <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+<!--      套餐详情-->
+      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
         <div class="home-card-item">
-          <el-card class="box-card">
+          <el-card class="box-card" style="height: 300px">
             <template #header>
               <div class="card-header">
                 <el-text class="card-header-left">套餐详情</el-text>
@@ -28,29 +29,10 @@
           </el-card>
         </div>
       </el-col>
-      <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+      <!--      订阅连接-->
+      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
         <div class="home-card-item">
-          <el-card class="box-card" style="width: 100%;flex: 1;">
-            <template #header>
-              <div class="card-header">
-                <el-text class="card-header-left">当前混淆:</el-text>
-                <span>{{ userInfos.subscribe_info.host }}</span>
-              </div>
-            </template>
-            <div>
-              <el-input v-model="state.host.host" placeholder="输入混淆">
-                <template #append>
-                  <el-button size="large" @click="onChangeHost" :icon="Select">确认修改</el-button>
-                </template>
-              </el-input>
-            </div>
-
-          </el-card>
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="14" :md="14" :lg="16" :xl="16">
-        <div class="home-card-item">
-          <el-card class="box-card">
+          <el-card class="box-card" style="height: 300px">
             <template #header>
               <div class="card-header">
                 <el-text class="card-header-left">订阅地址</el-text>
@@ -68,11 +50,15 @@
           </el-card>
         </div>
       </el-col>
-      <el-col :xs="24" :sm="14" :md="14" :lg="16" :xl="16">
+
+<!--      自定义内容-->
+      <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
         <div class="home-card-item" >
-          <div class="box-card">
-            <v-md-preview :text="articleStoreData.articleID1.value.content"></v-md-preview>
-          </div>
+          <el-card class="box-card">
+            <div class="box-card">
+              <v-md-preview :text="articleStoreData.articleID1.value.content"></v-md-preview>
+            </div>
+          </el-card>
         </div>
       </el-col>
     </el-row>

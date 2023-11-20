@@ -383,7 +383,7 @@ func ClockIn(ctx *gin.Context) {
 		return
 	}
 
-	msg, err := service.ClockIn(uIDInt)
+	t, day, err := service.ClockIn(uIDInt)
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("ClockIn error:"+err.Error(), nil, ctx)
@@ -392,5 +392,5 @@ func ClockIn(ctx *gin.Context) {
 	now := time.Now()
 	zeroTime := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
 	global.LocalCache.Set(fmt.Sprintf("%d", uIDInt)+"clockin", nil, zeroTime.Sub(now))
-	response.OK("ClockIn success", msg, ctx)
+	response.OK("ClockIn success", fmt.Sprintf("day: +%d，flow：+%dMB", day, t), ctx)
 }

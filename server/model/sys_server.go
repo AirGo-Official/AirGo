@@ -68,6 +68,8 @@ type Subscribe struct {
 	EnabledClockIn          bool    `json:"enabled_clock_in"    gorm:"default:true;comment:是否开启打卡"`
 	ClockInMinTraffic       int64   `json:"clock_in_min_traffic" gorm:"default:100;comment:打卡最小流量(MB)"`
 	ClockInMaxTraffic       int64   `json:"clock_in_max_traffic" gorm:"default:1000;comment:打卡最大流量(MB)"`
+	ClockInMinDay           int64   `json:"clock_in_min_day" gorm:"default:0;comment:打卡最小天数"`
+	ClockInMaxDay           int64   `json:"clock_in_max_day" gorm:"default:1;comment:打卡最大天数"`
 }
 
 // 公共配置参数

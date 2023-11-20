@@ -77,6 +77,14 @@
                 <span>MB</span>
               </el-col>
             </el-form-item>
+            <el-form-item label="打卡获得天数范围">
+              <el-col >
+                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_min_day" :precision="0" :step="1" :min="0" :max="10000" style="width: 120px" />
+                <span>---</span>
+                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_max_day" :precision="0" :step="1" :min="0" :max="10000" style="width: 120px"/>
+                <span>day</span>
+              </el-col>
+            </el-form-item>
 
             <el-divider></el-divider>
             <el-form-item>

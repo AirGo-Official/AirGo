@@ -141,13 +141,7 @@ run_status() {
       temp=$(systemctl is-active $1)
       if [[ x"${temp}" == x"active" ]]; then
           return 0
-      else
-          count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
-          if [[ count -eq 0 ]]; then
-              return 1
-          else
-              return 0
-          fi
+      else return 1
       fi
 }
 
@@ -442,9 +436,9 @@ main(){
     installationStatus='已安装'
   fi
   run_status ${appName}
-    if [[ $? -eq 0 ]]; then
-      runStatus='已运行'
-    fi
+  if [[ $? == 0 ]]; then
+    runStatus='已运行'
+  fi
 
   echo -e "
   ${green}${appName}-panel 管理脚本${plain}

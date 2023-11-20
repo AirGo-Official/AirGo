@@ -42,6 +42,8 @@ declare interface Subscribe {
     enabled_clock_in: boolean
     clock_in_min_traffic: number
     clock_in_max_traffic: number
+    clock_in_min_day: number
+    clock_in_max_day: number
 }
 
 declare interface Captcha {

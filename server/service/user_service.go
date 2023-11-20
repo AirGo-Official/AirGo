@@ -296,20 +296,24 @@ func RemainHandle(uid int64, remain string) {
 }
 
 // 打卡
-func ClockIn(uID int64) (int, error) {
+func ClockIn(uID int64) (int, int, error) {
 	//查询用户信息
 	user, err := GetUserInfo(uID)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 	//判断订阅是否有效
 	if !user.SubscribeInfo.SubStatus {
-		return 0, errors.New("subscribe is expired")
+		return 0, 0, errors.New("subscribe is expired")
 	}
-	//随机
+	//随机流量
 	t := encrypt_plugin.RandomNumber(int(global.Server.Subscribe.ClockInMinTraffic), int(global.Server.Subscribe.ClockInMaxTraffic)) //MB
 	user.SubscribeInfo.T = int64(t)*1024*1024 + user.SubscribeInfo.T
+	//随机天数
+	day := encrypt_plugin.RandomNumber(int(global.Server.Subscribe.ClockInMinDay), int(global.Server.Subscribe.ClockInMaxDay))
+	*user.SubscribeInfo.ExpiredAt = user.SubscribeInfo.ExpiredAt.AddDate(0, 0, day)
+
 	err = SaveUser(user)
-	return t, err
+	return t, day, err
 
 }
