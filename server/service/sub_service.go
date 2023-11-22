@@ -67,21 +67,27 @@ func GetUserSub(url string, subType string) string {
 	//根据subType生成不同客户端订阅
 	switch subType {
 	case "v2ray":
-		return V2rayNGSubscribe(&goods.Nodes, u)
+		return V2raySubscribe(&goods.Nodes, u)
+	case "singbox":
+		return SingboxSubscribe(&goods.Nodes, u)
 	case "clash":
 		return ClashSubscribe(&goods.Nodes, u)
 	default:
-		return V2rayNGSubscribe(&goods.Nodes, u)
+		return SingboxSubscribe(&goods.Nodes, u)
 	}
 }
 
-// v2rayNG 订阅
-func V2rayNGSubscribe(nodes *[]model.Node, user model.User) string {
+func SingboxSubscribe(nodes *[]model.Node, user model.User) string {
 	var subArr []string
 	for _, v := range *nodes {
 		//剔除禁用节点
 		if !v.Enabled {
 			continue
+		}
+		//中转节点修改ip和端口
+		if v.EnableTransfer {
+			v.Address = v.TransferAddress
+			v.Port = v.TransferPort
 		}
 		switch v.NodeType {
 		case "vmess":
@@ -117,6 +123,60 @@ func V2rayNGSubscribe(nodes *[]model.Node, user model.User) string {
 		}
 	}
 	return base64.StdEncoding.EncodeToString([]byte(strings.Join(subArr, "\r\n")))
+}
+
+func V2raySubscribe(nodes *[]model.Node, user model.User) string {
+
+	var subArr []string
+	for _, v := range *nodes {
+		//剔除禁用节点
+		if !v.Enabled {
+			continue
+		}
+		//中转节点修改ip和端口
+		if v.EnableTransfer {
+			v.Address = v.TransferAddress
+			v.Port = v.TransferPort
+		}
+		//剔除xray还未支持的一些协议
+		if v.NodeType == "hysteria" {
+			continue
+		}
+		switch v.NodeType {
+		case "vmess":
+			if v.IsSharedNode {
+				uuid, _ := uuid.FromString(v.UUID)
+				user = model.User{UUID: uuid, SubscribeInfo: model.SubscribeInfo{Host: v.Host}}
+			}
+			if res := V2rayNGVmess(v, user); res != "" {
+				subArr = append(subArr, res)
+			}
+			continue
+		case "vless", "trojan":
+			if v.IsSharedNode {
+				uuid, _ := uuid.FromString(v.UUID)
+				user = model.User{UUID: uuid, SubscribeInfo: model.SubscribeInfo{Host: v.Host}}
+			}
+			if res := V2rayNGVlessTrojanHysteria(v, user); res != "" {
+				subArr = append(subArr, res)
+			}
+			continue
+		case "shadowsocks":
+			if v.IsSharedNode {
+				if res := V2rayNGShadowsocksShared(v); res != "" {
+					subArr = append(subArr, res)
+				}
+
+			} else {
+				if res := V2rayNGShadowsocks(v, user); res != "" {
+					subArr = append(subArr, res)
+				}
+			}
+			continue
+		}
+	}
+	return base64.StdEncoding.EncodeToString([]byte(strings.Join(subArr, "\r\n")))
+
 }
 
 // v2rayNG vmess
@@ -272,6 +332,11 @@ func ClashSubscribe(nodes *[]model.Node, user model.User) string {
 		if !v.Enabled {
 			continue
 		}
+		//中转节点修改ip和端口
+		if v.EnableTransfer {
+			v.Address = v.TransferAddress
+			v.Port = v.TransferPort
+		}
 		nameArr = append(nameArr, v.Remarks)
 		var proxy model.ClashProxy
 		if v.IsSharedNode { //共享节点
@@ -358,6 +423,9 @@ func ClashVmessVlessTrojanHysteria(n model.Node, user model.User) model.ClashPro
 	case "shadowsocks":
 		proxy.Type = "ss"
 		proxy.Cipher = n.Scy
+		if proxy.Cipher == "chacha20-poly1305" {
+			proxy.Cipher = "chacha20-ietf-poly1305"
+		}
 		switch strings.HasPrefix(n.Scy, "2022") {
 		case true:
 			p1 := n.Scy

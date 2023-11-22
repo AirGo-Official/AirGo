@@ -32,6 +32,7 @@ func InitializeAll() {
 	InitWebsocket()     //websocket
 	InitRatelimit()     //限流
 	InitGoroutinePool() //初始化线程池
+	InitTGBot()         //初始化tg bot
 	InitRouter()        //初始总路由，放在最后
 }
 func InitializeResetAdmin() {
@@ -60,4 +61,15 @@ func InitializeUpdate() {
 	}
 	//插入新的数据
 	InsertIntoDynamicRoute()
+}
+func InitTGBot() {
+	if global.Server.Notice.BotToken == "" {
+		return
+	}
+	err := global.GoroutinePool.Submit(func() {
+		service.TGBot(global.Server.Notice.BotToken)
+	})
+	if err != nil {
+		global.Logrus.Error("InitTGBot error:", err)
+	}
 }

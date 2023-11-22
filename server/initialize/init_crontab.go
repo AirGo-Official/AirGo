@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// 秒级操作,函数没执行完就跳过本次函数,打印任务日志
+// 秒级操作
 // c := cron.New(cron.WithSeconds(), cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)), cron.WithLogger(
 // 	cron.VerbosePrintfLogger(log.New(os.Stdout, "cron: ", log.LstdFlags))))
 
@@ -24,40 +24,34 @@ import (
 //c.Stop()  // 停止调度，但正在运行的作业不会被停止
 
 func InitCrontab() {
-	UserCrontab()
-	CleanDBTraffic()
-}
+	global.Crontab = cron.New(cron.WithSeconds())
 
-// 用户流量，有效期 任务
-func UserCrontab() {
-	c := cron.New()
-	_, err := c.AddFunc("*/2 * * * *", func() {
+	// 用户流量，有效期任务,默认2分钟
+	_, err := global.Crontab.AddFunc("* */2 * * * *", func() {
 		err := service.UserExpiryCheck()
 		if err != nil {
 			global.Logrus.Error("service.UserExpiryCheck error:", err)
 		}
 	})
 	if err != nil {
-		return
+		global.Logrus.Error("UserExpiryCheck error:", err)
+	} else {
+		global.Logrus.Info("用户流量有效期定时任务")
 	}
-	global.Logrus.Info("用户流量有效期定时任务")
-	c.Start()
-}
-
-// 定时清理数据库(traffic)
-func CleanDBTraffic() {
-	c := cron.New()
-	_, err := c.AddFunc("1 1 1 * *", func() { //分 时 日 月 星期
+	// 定时清理数据库(traffic),默认10天
+	_, err = global.Crontab.AddFunc("* * */10 * * *", func() {
 		y, m, _ := time.Now().Date()
 		startTime := time.Date(y, m-2, 1, 0, 0, 0, 0, time.Local)
 		err := global.DB.Where("created_at < ?", startTime).Delete(&model.TrafficLog{}).Error
 		if err != nil {
-			global.Logrus.Error("service.UserExpiryCheck error:", err)
+			global.Logrus.Error("Regularly clean up the database (traffic) error:", err)
 		}
 	})
 	if err != nil {
-		return
+		global.Logrus.Error("Regularly clean up the database (traffic) error:", err)
+	} else {
+		global.Logrus.Info("清理数据库(traffic)定时任务")
 	}
-	global.Logrus.Info("清理数据库(traffic)定时任务")
-	c.Start()
+	global.Crontab.Start()
+
 }

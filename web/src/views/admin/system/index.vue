@@ -26,10 +26,16 @@
               <el-input v-model="serverConfig.serverConfig.value.subscribe.sub_name"/>
               <div style="color: #9b9da1;display:block">更新订阅时显示的名字</div>
             </el-form-item>
-            <el-form-item label="AirGo后端地址">
+            <el-form-item label="官网地址">
+              <el-input v-model="serverConfig.serverConfig.value.subscribe.frontend_url"/>
+              <div style="color: #9b9da1">
+                例：http://abc.com:8899
+              </div>
+            </el-form-item>
+            <el-form-item label="网站后端地址">
               <el-input v-model="serverConfig.serverConfig.value.subscribe.backend_url"/>
               <div style="color: #9b9da1">
-                该地址与更新订阅、支付回调有关，请认真填写。前后分离时一般和前端.env中的VITE_API_URL保持一致即可；前后不分离时填公网可访问的后端地址。例如：http://abc.com:8899
+                该地址与更新订阅、支付回调有关，请认真填写。前后分离时一般和前端.env中的VITE_API_URL保持一致；前后不分离时填公网可访问的后端地址。例：http://abc.com:8899
               </div>
             </el-form-item>
             <el-divider></el-divider>
@@ -209,6 +215,19 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
+
+        <el-tab-pane label="通知">
+          <el-form :model="serverConfig.serverConfig.value.notice" label-width="120px">
+            <el-form-item label="TG bot token">
+              <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"/>
+            </el-form-item>
+            <el-form-item>
+              <el-button @click="onSubmit('notice')" type="primary">保存</el-button>
+            </el-form-item>
+          </el-form>
+
+        </el-tab-pane>
+
       </el-tabs>
       <PayDialog ref="PayDialogRef" @refresh="payStore.getPayList()"></PayDialog>
     </el-card>
@@ -286,6 +305,9 @@ const onSubmit = (type:string) => {
       break
     case "subscribe":
       serverStore.updateServerConfig({"subscribe":serverConfig.serverConfig.value.subscribe})
+      break
+    case "notice":
+      serverStore.updateServerConfig({"notice":serverConfig.serverConfig.value.notice})
       break
     default:
       break

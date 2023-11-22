@@ -37,6 +37,7 @@ export const useServerStore = defineStore("serverStore", {
                 is_multipoint: true,
                 sub_name: '',
                 backend_url: '',
+                frontend_url: '',
                 api_prefix: '',
                 tek: '',
                 default_goods: 0,
@@ -62,6 +63,9 @@ export const useServerStore = defineStore("serverStore", {
                 email_subject: '',
                 email_content: '',
             },
+            notice:{
+                bot_token:'',
+            } as Notice,
 
         } as Server,
         publicServerConfig: {

@@ -6,8 +6,11 @@ declare interface Server {
     subscribe: Subscribe;
     email: Email;
     security: Security;
+    notice: Notice;
 }
-
+declare interface Notice {
+    bot_token: string;
+}
 declare interface Security {
     captcha: Captcha
     jwt: Jwt
@@ -29,6 +32,7 @@ declare interface Subscribe {
     is_multipoint: boolean;
 
     backend_url: string;
+    frontend_url: string;
     api_prefix: string;
 
     sub_name: string;

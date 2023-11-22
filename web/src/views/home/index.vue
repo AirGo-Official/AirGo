@@ -40,11 +40,17 @@
               </div>
             </template>
             <div>
-              <el-button style="margin-top: 10px;margin-bottom: 10px" @click="v2rayNGSub('v2ray')" type="primary" plain>
-                复制通用订阅订阅
+              <el-button size="large" style="margin-top: 10px;margin-bottom: 10px;color: #ff0000" @click="Sub('v2ray')">
+                xray 内核通用订阅
               </el-button>
-              <el-button style="margin-top: 10px;margin-bottom: 10px" @click="v2rayNGSub('clash')" type="success" plain>
-                复制Clash Meta订阅
+              <el-button size="large" style="margin-top: 10px;margin-bottom: 10px;color: #f5b16c" @click="Sub('singbox')">
+                Sing Box 内核通用订阅
+              </el-button>
+              <el-button size="large" style="margin-top: 10px;margin-bottom: 10px;color: #37cc27" @click="Sub('clash')">
+                Clash Meta 内核订阅
+              </el-button>
+              <el-button size="large" style="margin-top: 10px;margin-bottom: 10px;color: #0aa3f8" @click="Sub('v2ray')">
+                通用订阅
               </el-button>
             </div>
           </el-card>
@@ -132,11 +138,13 @@ const onResetSub = () => {
     userStore.getUserInfo()
   })
 }
-const v2rayNGSub = (type: string) => {
+const Sub = (type: string) => {
   switch (type) {
     case "v2ray":
-      //通用订阅；v2rayNG订阅
       copyText(userStore.subUrl + "&type=v2ray")
+      break
+    case "singbox":
+      copyText(userStore.subUrl + "&type=singbox")
       break
     case "clash":
       //Clash订阅

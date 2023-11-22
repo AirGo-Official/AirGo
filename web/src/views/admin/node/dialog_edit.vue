@@ -572,6 +572,7 @@ const state = reactive({
     {dest: "www.icloud.com:443", sni: "www.icloud.com"},
   ] as RealityItem[],
   scyArr: ["auto", "none", "chacha20-poly1305", "aes-128-gcm", "aes-256-gcm", "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305",],
+  scyArrForClashMeta: ["aes-128-gcm","aes-192-gcm","aes-256-gcm","chacha20-ietf-poly1305","2022-blake3-aes-128-gcm","2022-blake3-aes-256-gcm","2022-blake3-chacha20-poly1305"],
   flowArr: ["", "xtls-rprx-vision", "xtls-rprx-vision-udp443",],
   networkArr: ["ws", "tcp", "grpc",],
   typeArr1: ["none", "http"],

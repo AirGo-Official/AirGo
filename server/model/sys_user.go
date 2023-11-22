@@ -23,7 +23,8 @@ type User struct {
 	Enable         bool      `json:"enable"       gorm:"default:true;comment:用户是否被启用 true正常 false冻结"`
 	InvitationCode string    `json:"invitation_code" gorm:"comment:我的邀请码"`
 	ReferrerCode   string    `json:"referrer_code"   gorm:"comment:推荐人码"`
-	Remain         float64   `json:"remain"          gorm:"comment:余额"`
+	Remain         float64   `json:"remain"          gorm:"default:0;comment:余额"`
+	TgID           int64     `json:"tg_id"           gorm:"comment:tg id"`
 	//角色组
 	RoleGroup []Role `json:"role_group" gorm:"many2many:user_and_role;"` //多对多
 	//订单

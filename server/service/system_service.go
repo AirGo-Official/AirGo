@@ -17,6 +17,8 @@ func UpdateSetting(setting *model.Server) error {
 
 	} else if !reflect.DeepEqual(setting.Subscribe, model.Subscribe{}) {
 		global.Server.Subscribe = setting.Subscribe
+	} else if !reflect.DeepEqual(setting.Notice, model.Notice{}) {
+		global.Server.Notice = setting.Notice
 	}
 
 	err := global.DB.Save(&global.Server).Error

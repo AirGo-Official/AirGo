@@ -153,8 +153,8 @@ func InsertInto() {
 		InsertIntoUserAndRole,
 		InsertIntoRoleAndMenu,
 		InsertIntoGoods,
-		InsertIntoNode,
-		InsertIntoGoodsAndNodes,
+		//InsertIntoNode,
+		//InsertIntoGoodsAndNodes,
 		InsertIntoCasbinRule,
 		InsertIntoTheme,
 		InsertIntoServer,
@@ -302,8 +302,7 @@ func InsertIntoRoleAndMenu() error {
 }
 func InsertIntoGoods() error {
 	goodsData := []model.Goods{
-		{ID: 1, Subject: "10G|30天", TotalBandwidth: 10, ExpirationDate: 30, TotalAmount: "0.01", Des: text2, TrafficResetMethod: "NotStack"},
-		{ID: 2, Subject: "20G|180天", TotalBandwidth: 20, ExpirationDate: 180, TotalAmount: "0", Des: text2, TrafficResetMethod: "NotStack"},
+		{ID: 1, Subject: "10G|30天", TotalBandwidth: 10, ExpirationDate: 30, TotalAmount: "0.00", Des: text2, TrafficResetMethod: "NotStack"},
 	}
 	if err := global.DB.Create(&goodsData).Error; err != nil {
 		return errors.New("goods表数据初始化失败!")

@@ -12,6 +12,10 @@ type Server struct {
 	Subscribe Subscribe `json:"subscribe"   gorm:"embedded"`
 	Email     Email     `json:"email"    gorm:"embedded"`
 	Security  Security  `json:"security" gorm:"embedded"`
+	Notice    Notice    `json:"notice" gorm:"embedded"`
+}
+type Notice struct {
+	BotToken string `json:"bot_token"` //tg bot token
 }
 
 type Email struct {
@@ -57,6 +61,7 @@ type Subscribe struct {
 	EnableLoginEmailCode    bool    `json:"enable_login_email_code"   gorm:"default:false;comment:是否开启登录email 验证码"`
 	IsMultipoint            bool    `json:"is_multipoint"     gorm:"default:true;comment:是否多点登录"`
 	BackendUrl              string  `json:"backend_url"       gorm:"comment:后端地址"`
+	FrontendUrl             string  `json:"frontend_url"       gorm:"comment:官网地址"`
 	ApiPrefix               string  `json:"api_prefix"        gorm:"default:/api;comment:api前缀"`
 	SubName                 string  `json:"sub_name"          gorm:"default:AirGo;comment:订阅名称"`
 	TEK                     string  `json:"tek"               gorm:"default:airgo;comment:前后端通信密钥"`

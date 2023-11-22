@@ -110,6 +110,18 @@ func FindUserByID(id int64) (*model.User, error) {
 	return &u, err
 }
 
+// 查用户 by tg_id
+func FindUserByTgID(tgID int64) (*model.User, error) {
+	var u model.User
+	err := global.DB.Where("tg_id = ?", tgID).First(&u).Error
+	return &u, err
+}
+func FindUserByUserName(userName string) (*model.User, error) {
+	var u model.User
+	err := global.DB.Where("user_name = ?", userName).First(&u).Error
+	return &u, err
+}
+
 // 更新用户订阅信息
 func UpdateUserSubscribe(order *model.Orders) error {
 	//查询商品信息

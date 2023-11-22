@@ -7,6 +7,7 @@ require (
 	github.com/casbin/gorm-adapter/v3 v3.19.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gin-gonic/gin v1.9.1
+	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/mojocn/base64Captcha v1.3.5
@@ -77,6 +78,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
+	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
