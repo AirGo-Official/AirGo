@@ -37,6 +37,21 @@ func Register(u *model.User) error {
 				SubscribeUrl: encrypt_plugin.RandomString(8), //随机字符串订阅url
 			},
 		}
+		//通知
+		if global.Server.Notice.WhenUserRegistered {
+			global.GoroutinePool.Submit(func() {
+				if global.Server.Notice.TGAdmin == "" {
+					return
+				}
+				tgIDs := strings.Fields(global.Server.Notice.TGAdmin)
+				for _, v := range tgIDs {
+					chatID, _ := strconv.ParseInt(v, 10, 64)
+					TGBotSendMessage(chatID, "新注册用户："+newUser.UserName)
+				}
+
+			})
+		}
+
 		return CreateUser(NewUserSubscribe(&newUser))
 	} else {
 		return err

@@ -6,7 +6,6 @@ import (
 	"AirGo/service"
 	"AirGo/utils/response"
 	"github.com/gin-gonic/gin"
-	"reflect"
 )
 
 // 主题配置
@@ -74,14 +73,6 @@ func UpdateSetting(ctx *gin.Context) {
 		global.Logrus.Error(err.Error())
 		response.Fail("UpdateSetting error:"+err.Error(), nil, ctx)
 		return
-	}
-	//判断需要重新加载的资源
-	if !reflect.DeepEqual(setting.Notice, model.Notice{}) {
-		if setting.Notice.BotToken != "" {
-			global.GoroutinePool.Submit(func() {
-				service.TGBot(setting.Notice.BotToken)
-			})
-		}
 	}
 
 	response.OK("UpdateSetting success", nil, ctx)

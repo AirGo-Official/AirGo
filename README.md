@@ -37,6 +37,12 @@ golang, gin, gorm
     <td> <img src="https://telegraph-image.pages.dev/file/149800a378b536600ab07.png">
 </table>
 
+# AirGo特点
+- 更简单，告别复杂的配置和繁琐的部署过程，最快1分钟安装，5分钟对接
+- 更强大，基于gin框架和ants goroutine优化，轻松应对百万并发
+- 更安全，jwt和casbin鉴权结合，减少安全风险
+- 更丰富，外链页面、首页内容，弹窗内容，颜色风格等，完全可自定义，凸显您的个性
+
 更新记录：[https://github.com/ppoonk/AirGo/wiki](https://github.com/ppoonk/AirGo/wiki)
 
 使用文档：[https://github.com/ppoonk/AirGo/wiki/AirGo-Wiki](https://github.com/ppoonk/AirGo/wiki/AirGo-Wiki)

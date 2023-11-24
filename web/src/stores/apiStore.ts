@@ -131,7 +131,8 @@ export const useApiStore = defineStore("apiStore", {
             access_updateRoutes: {path: apiPre + "/access/updateRoutes", method: "post"} as ApiItem,
             access_deleteRoutes: {path: apiPre + "/access/deleteRoutes", method: "post"} as ApiItem,
             access_getRoutesList: {path: apiPre + "/access/getRoutesList", method: "post"} as ApiItem,
-
+            //migration
+            migration_fromOther:{path: apiPre + "/migration/fromOther", method: "post"} as ApiItem,
         },
 
     }),

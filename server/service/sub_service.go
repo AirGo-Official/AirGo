@@ -31,24 +31,36 @@ func GetUserSub(url string, subType string) string {
 	expiredBd1 := (float64(u.SubscribeInfo.T - u.SubscribeInfo.U - u.SubscribeInfo.D)) / 1024 / 1024 / 1024
 	expiredBd2 := strconv.FormatFloat(expiredBd1, 'f', 2, 64)
 
-	var firstNode = model.Node{
-		Remarks:  "到期时间:" + expiredTime,
-		Address:  global.Server.Subscribe.SubName,
-		Port:     6666,
-		Aid:      0,
-		Network:  "ws",
-		Enabled:  true,
-		NodeType: "vmess",
+	var firstNode, secondNode model.Node
+	if len(goods.Nodes) > 0 {
+		firstNode = goods.Nodes[0]
+		firstNode.Remarks = "到期时间:" + expiredTime
+
+		secondNode = goods.Nodes[0]
+		secondNode.Remarks = "剩余流量:" + expiredBd2 + "GB"
+
+	} else {
+		firstNode = model.Node{
+			Remarks:  "到期时间:" + expiredTime,
+			Address:  global.Server.Subscribe.SubName,
+			Port:     6666,
+			Aid:      0,
+			Network:  "ws",
+			Enabled:  true,
+			NodeType: "vmess",
+		}
+		secondNode = model.Node{
+			Remarks:  "剩余流量:" + expiredBd2 + "GB",
+			Address:  global.Server.Subscribe.SubName,
+			Port:     6666,
+			Aid:      0,
+			Network:  "ws",
+			Enabled:  true,
+			NodeType: "vmess",
+		}
+
 	}
-	var secondNode = model.Node{
-		Remarks:  "剩余流量:" + expiredBd2 + "GB",
-		Address:  global.Server.Subscribe.SubName,
-		Port:     6666,
-		Aid:      0,
-		Network:  "ws",
-		Enabled:  true,
-		NodeType: "vmess",
-	}
+
 	//插入计算剩余天数，流量
 	goods.Nodes = append(goods.Nodes, model.Node{}, model.Node{})
 	copy(goods.Nodes[2:], goods.Nodes[0:])

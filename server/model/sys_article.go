@@ -11,7 +11,7 @@ type Article struct {
 	Status       bool   `json:"status"       gorm:"comment:是否启用"`
 	Title        string `json:"title"        gorm:"comment:文章标题"`
 	Introduction string `json:"introduction" gorm:"comment:文章简介"`
-	Content      string `json:"content"      gorm:"comment:文章内容;size:30000;type:text"`
+	Content      string `json:"content"      gorm:"comment:文章内容;type:text"`
 }
 
 type ArticleWithTotal struct {

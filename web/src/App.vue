@@ -21,6 +21,7 @@ import setIntroduction from '/@/utils/setIconfont';
 import {useServerStore} from "/@/stores/serverStore";
 import {useUserStore} from "/@/stores/userStore";
 const userStore = useUserStore()
+const userStoreData = storeToRefs(userStore)
 // 引入组件
 const Setings = defineAsyncComponent(() => import('/@/layout/navBars/breadcrumb/setings.vue'));
 const CloseFull = defineAsyncComponent(() => import('/@/layout/navBars/breadcrumb/closeFull.vue'));
@@ -33,6 +34,7 @@ const stores = useTagsViewRoutes();
 const storesThemeConfig = useThemeConfig();
 const {themeConfig} = storeToRefs(storesThemeConfig);
 const serverStore = useServerStore()
+const serverStoreData=storeToRefs(serverStore)
 
 // 设置锁屏时组件显示隐藏
 const setLockScreen = computed(() => {
@@ -55,7 +57,12 @@ onBeforeMount(() => {
 //组件被挂载之前,获取布局配置,公共配置,
 onBeforeMount(() => {
   storesThemeConfig.getThemeConfig()
-  serverStore.getPublicServerConfig();//获取public config
+  serverStore.getPublicServerConfig().then(()=>{
+    userStoreData.registerData.value.email_suffix=serverStoreData.acceptable_email_suffixes_arr.value[0]//将注册邮箱后缀设为第一个
+
+  });//获取public config
+
+
 })
 // 页面加载时
 onMounted(() => {

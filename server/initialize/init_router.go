@@ -223,6 +223,11 @@ func InitRouter() {
 		accessRouter.POST("/deleteRoutes", api.DeleteRoutes)
 		accessRouter.POST("/getRoutesList", api.GetRoutesList)
 	}
+	//migration
+	migrationRouter := RouterGroup.Group("/migration").Use(middleware.ParseJwt(), middleware.Casbin())
+	{
+		migrationRouter.POST("/fromOther", api.Migration)
+	}
 
 	srv := &http.Server{
 		Addr:    ":" + strconv.Itoa(global.Config.SystemParams.HTTPPort),

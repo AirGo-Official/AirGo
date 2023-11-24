@@ -94,7 +94,7 @@
 
             <el-divider></el-divider>
             <el-form-item>
-              <el-button @click="onSubmit('subscribe')" type="primary">保存</el-button>
+              <el-button @click="onSubmit()" type="primary">保存</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -168,7 +168,7 @@
             </el-form-item>
             <el-divider></el-divider>
             <el-form-item>
-              <el-button @click="onSubmit('email')" type="primary">保存</el-button>
+              <el-button @click="onSubmit()" type="primary">保存</el-button>
               <el-button @click="onTestEmail" >测试</el-button>
             </el-form-item>
           </el-form>
@@ -211,18 +211,43 @@
               <el-input v-model="serverConfig.serverConfig.value.security.jwt.expires_time"/>
             </el-form-item>
             <el-form-item>
-              <el-button @click="onSubmit('security')" type="primary">保存</el-button>
+              <el-button @click="onSubmit()" type="primary">保存</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
 
         <el-tab-pane label="通知">
-          <el-form :model="serverConfig.serverConfig.value.notice" label-width="120px">
-            <el-form-item label="TG bot token">
-              <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"/>
-            </el-form-item>
-            <el-form-item>
-              <el-button @click="onSubmit('notice')" type="primary">保存</el-button>
+
+          <el-form :model="serverConfig.serverConfig.value.notice" label-width="120px" label-position="top">
+
+            <el-card>
+              <el-form-item label="TG bot token">
+                <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"/>
+              </el-form-item>
+              <el-form-item label="TG管理员账号(多个账号换行)">
+                <el-input v-model="serverConfig.serverConfig.value.notice.tg_admin" type="textarea" autosize/>
+              </el-form-item>
+
+              <el-form-item label="节点离线通知">
+                <el-switch v-model="serverConfig.serverConfig.value.notice.when_node_offline" inline-prompt active-text="开启"
+                           inactive-text="关闭"
+                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+              </el-form-item>
+              <el-form-item label="用户注册通知">
+                <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_registered" inline-prompt active-text="开启"
+                           inactive-text="关闭"
+                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+              </el-form-item>
+              <el-form-item label="用户购买通知">
+                <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_purchased" inline-prompt active-text="开启"
+                           inactive-text="关闭"
+                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+              </el-form-item>
+
+            </el-card>
+
+            <el-form-item style="margin-top: 20px">
+              <el-button @click="onSubmit()" type="primary">保存</el-button>
             </el-form-item>
           </el-form>
 
@@ -295,25 +320,8 @@ const openPayDialog = (type: string, row?: PayInfo) => {
 }
 
 //保存提交
-const onSubmit = (type:string) => {
-  switch (type){
-    case "security":
-      serverStore.updateServerConfig({"security":serverConfig.serverConfig.value.security})
-      break
-    case "email":
-      serverStore.updateServerConfig({"email":serverConfig.serverConfig.value.email})
-      break
-    case "subscribe":
-      serverStore.updateServerConfig({"subscribe":serverConfig.serverConfig.value.subscribe})
-      break
-    case "notice":
-      serverStore.updateServerConfig({"notice":serverConfig.serverConfig.value.notice})
-      break
-    default:
-      break
-
-  }
-
+const onSubmit = () => {
+  serverStore.updateServerConfig(serverConfig.serverConfig.value)
   setTimeout(() => {
     serverStore.getServerConfig()
     serverStore.getPublicServerConfig()
@@ -321,7 +329,6 @@ const onSubmit = (type:string) => {
 }
 //删除支付
 const deletePay = (data: PayInfo) => {
-  // payApi.deletePayApi(data).then((res) => {
   request(apiStoreData.api.value.pay_deletePay, data).then((res) => {
     setTimeout(() => {
       payStore.getPayList(); //获取支付列表

@@ -24,18 +24,19 @@ type Orders struct {
 	OutTradeNo      string `json:"out_trade_no" gorm:"comment:商户订单号"`
 	GoodsID         int64  `json:"goods_id"     gorm:"comment:商品id"`
 	Subject         string `json:"subject"      gorm:"comment:商品的标题/交易标题/订单标题/订单关键字"`
-	Price           string `json:"price"        gorm:"comment:商品的价格"`
-	PayID           int64  `json:"pay_id"       gorm:"comment:支付方式id"`
-	PayType         string `json:"pay_type"     gorm:"comment:支付方式，alipay,epay"`
+	Price           string `json:"price"            gorm:"comment:商品的价格"`
+	TotalAmount     string `json:"total_amount"     gorm:"comment:订单金额"`
+	ReceiptAmount   string `json:"receipt_amount"   gorm:"comment:实收金额"`
+	BuyerPayAmount  string `json:"buyer_pay_amount" gorm:"comment:付款金额"`
+	PayID           int64  `json:"pay_id"           gorm:"comment:支付方式id"`
+	PayType         string `json:"pay_type"         gorm:"comment:支付方式，alipay,epay"`
 	CouponID        int64  `json:"coupon_id"        gorm:"comment:折扣码id"`
 	CouponName      string `json:"coupon_name"      gorm:"comment:折扣码"`
 	CouponAmount    string `json:"coupon_amount"    gorm:"comment:折扣金额"`
 	DeductionAmount string `json:"deduction_amount" gorm:"comment:旧套餐折扣金额"`
 	RemainAmount    string `json:"remain_amount"    gorm:"comment:余额折扣金额"`
 	TradeStatus     string `json:"trade_status"     gorm:"default:Created;comment:交易状态 1、WAIT_BUYER_PAY（交易创建，等待买家付款）；2、TRADE_CLOSED（未付款交易超时关闭，或支付完成后全额退款）；3、TRADE_SUCCESS（交易支付成功）； 4、TRADE_FINISHED（交易结束，不可退款）；5、Completed（手动完成订单）；6、Created（订单已创建）"`
-	TotalAmount     string `json:"total_amount"     gorm:"comment:订单金额"`
-	ReceiptAmount   string `json:"receipt_amount"   gorm:"comment:实收金额"`
-	BuyerPayAmount  string `json:"buyer_pay_amount" gorm:"comment:付款金额"`
+
 	//第三方支付参数
 	PayInfo      PreCreatePayToFrontend `json:"pay_info"         gorm:"-"` //支付信息，epay，alipay等"
 	TradeNo      string                 `json:"trade_no"         gorm:"comment:第三方交易号"`

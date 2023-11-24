@@ -26,17 +26,17 @@ func AGGetNodeInfo(ctx *gin.Context) {
 	}
 	//处理探针
 	global.GoroutinePool.Submit(func() {
-		cacheStatus, ok := global.LocalCache.Get(id + "status")
+		cacheStatus, ok := global.LocalCache.Get(id + global.NodeStatus)
 		if ok && cacheStatus != nil {
 			oldStatus := cacheStatus.(model.NodeStatus)
 			oldStatus.Status = true
-			global.LocalCache.Set(id+"status", oldStatus, 2*time.Minute) //2分钟后过期
+			global.LocalCache.Set(id+global.NodeStatus, oldStatus, 2*time.Minute) //2分钟后过期
 
 		} else {
 			var status model.NodeStatus
 			status.Status = true
 			status.ID, _ = strconv.ParseInt(id, 64, 10)
-			global.LocalCache.Set(id+"status", status, 2*time.Minute) //2分钟后过期
+			global.LocalCache.Set(id+global.NodeStatus, status, 2*time.Minute) //2分钟后过期
 		}
 	})
 	//处理ss节点加密
@@ -64,7 +64,7 @@ func AGReportNodeStatus(ctx *gin.Context) {
 	}
 	//处理探针
 	global.GoroutinePool.Submit(func() {
-		cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(AGNodeStatus.ID, 10) + "status")
+		cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(AGNodeStatus.ID, 10) + global.NodeStatus)
 		if ok && cacheStatus != nil {
 			oldStatus := cacheStatus.(model.NodeStatus)
 			oldStatus.Status = true
@@ -72,7 +72,7 @@ func AGReportNodeStatus(ctx *gin.Context) {
 			oldStatus.Mem = AGNodeStatus.Mem
 			oldStatus.Disk = AGNodeStatus.Disk
 			//oldStatus.Uptime=AGNodeStatus.Uptime
-			global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+"status", oldStatus, 2*time.Minute) //2分钟后过期
+			global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+global.NodeStatus, oldStatus, 2*time.Minute) //2分钟后过期
 		} else {
 			var status model.NodeStatus
 			status.Status = true
@@ -80,7 +80,7 @@ func AGReportNodeStatus(ctx *gin.Context) {
 			status.CPU = AGNodeStatus.CPU
 			status.Mem = AGNodeStatus.Mem
 			status.Disk = AGNodeStatus.Disk
-			global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+"status", status, 2*time.Minute) //2分钟后过期
+			global.LocalCache.Set(strconv.FormatInt(AGNodeStatus.ID, 10)+global.NodeStatus, status, 2*time.Minute) //2分钟后过期
 		}
 	})
 
@@ -176,7 +176,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	// 处理探针
 	global.GoroutinePool.Submit(func() {
 		var duration float64 = 60 //默认60秒间隔
-		cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(AGUserTraffic.ID, 10) + "status")
+		cacheStatus, ok := global.LocalCache.Get(strconv.FormatInt(AGUserTraffic.ID, 10) + global.NodeStatus)
 		if ok && cacheStatus != nil {
 			oldStatus := cacheStatus.(model.NodeStatus)
 			oldStatus.Status = true
@@ -186,7 +186,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 			oldStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/duration), 64) //Byte per second
 			oldStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/duration), 64)
 			oldStatus.LastTime = now
-			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+"status", oldStatus, 2*time.Minute)
+			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+global.NodeStatus, oldStatus, 2*time.Minute)
 		} else {
 			var nodeStatus model.NodeStatus
 			nodeStatus.Status = true
@@ -195,7 +195,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 			nodeStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/duration), 64) //Byte per second
 			nodeStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/duration), 64)
 			nodeStatus.LastTime = time.Now()
-			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+"status", nodeStatus, 2*time.Minute)
+			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+global.NodeStatus, nodeStatus, 2*time.Minute)
 		}
 	})
 	//插入流量统计统计

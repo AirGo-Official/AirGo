@@ -15,7 +15,11 @@ type Server struct {
 	Notice    Notice    `json:"notice" gorm:"embedded"`
 }
 type Notice struct {
-	BotToken string `json:"bot_token"` //tg bot token
+	BotToken           string `json:"bot_token"`            //tg bot token
+	TGAdmin            string `json:"tg_admin"`             //tg admin
+	WhenUserRegistered bool   `json:"when_user_registered"` //用户注册后通知
+	WhenUserPurchased  bool   `json:"when_user_purchased"`  //用户购买成功后通知
+	WhenNodeOffline    bool   `json:"when_node_offline"`    //节点离线时通知
 }
 
 type Email struct {

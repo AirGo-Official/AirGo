@@ -229,3 +229,25 @@ func In(target string, str_array []string) bool {
 	}
 	return false
 }
+
+// 数组拆分
+func SplitArray[T any](arr []T, num int64) [][]T {
+
+	max := int64(len(arr))
+	if max < num {
+		return nil
+	}
+	var segmens = make([][]T, 0)
+	quantity := max / num
+	end := int64(0)
+	for i := int64(1); i <= num; i++ {
+		qu := i * quantity
+		if i != num {
+			segmens = append(segmens, arr[i-1+end:qu])
+		} else {
+			segmens = append(segmens, arr[i-1+end:])
+		}
+		end = qu - i
+	}
+	return segmens
+}

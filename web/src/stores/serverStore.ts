@@ -65,6 +65,10 @@ export const useServerStore = defineStore("serverStore", {
             },
             notice:{
                 bot_token:'',
+                tg_admin: '',
+                when_user_registered: false,
+                when_user_purchased: false,
+                when_node_offline: false,
             } as Notice,
 
         } as Server,

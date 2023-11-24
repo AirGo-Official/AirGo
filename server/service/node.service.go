@@ -57,7 +57,7 @@ func GetNodesStatus() *[]model.NodeStatus {
 	var nodestatusArr []model.NodeStatus
 	for _, v := range nodesIds {
 		var nodeStatus = model.NodeStatus{}
-		vStatus, ok := global.LocalCache.Get(strconv.FormatInt(v.ID, 10) + "status")
+		vStatus, ok := global.LocalCache.Get(strconv.FormatInt(v.ID, 10) + global.NodeStatus)
 		if !ok { //cache过期，离线了
 			nodeStatus.ID = v.ID
 			nodeStatus.Name = v.Remarks

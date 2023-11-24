@@ -4,7 +4,10 @@ import (
 	"AirGo/global"
 	"AirGo/model"
 	"AirGo/service"
+	"fmt"
 	"github.com/robfig/cron/v3"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -27,30 +30,55 @@ func InitCrontab() {
 	global.Crontab = cron.New(cron.WithSeconds())
 
 	// 用户流量，有效期任务,默认2分钟
-	_, err := global.Crontab.AddFunc("* */2 * * * *", func() {
+	_, err := global.Crontab.AddFunc("0 */2 * * * *", func() {
 		err := service.UserExpiryCheck()
 		if err != nil {
-			global.Logrus.Error("service.UserExpiryCheck error:", err)
+			global.Logrus.Error("用户流量有效期定时任务 error:", err)
 		}
 	})
 	if err != nil {
-		global.Logrus.Error("UserExpiryCheck error:", err)
+		global.Logrus.Error("用户流量有效期定时任务 error:", err)
 	} else {
 		global.Logrus.Info("用户流量有效期定时任务")
 	}
 	// 定时清理数据库(traffic),默认10天
-	_, err = global.Crontab.AddFunc("* * */10 * * *", func() {
+	_, err = global.Crontab.AddFunc("0 0 */10 * * *", func() {
 		y, m, _ := time.Now().Date()
 		startTime := time.Date(y, m-2, 1, 0, 0, 0, 0, time.Local)
 		err := global.DB.Where("created_at < ?", startTime).Delete(&model.TrafficLog{}).Error
 		if err != nil {
-			global.Logrus.Error("Regularly clean up the database (traffic) error:", err)
+			global.Logrus.Error("清理数据库(traffic)定时任务 error:", err)
 		}
 	})
 	if err != nil {
-		global.Logrus.Error("Regularly clean up the database (traffic) error:", err)
+		global.Logrus.Error("清理数据库(traffic)定时任务 error:", err)
 	} else {
 		global.Logrus.Info("清理数据库(traffic)定时任务")
+	}
+	// 定时检查节点状态并通知,默认2分钟
+	_, err = global.Crontab.AddFunc("0 */2 * * * *", func() {
+		if !global.Server.Notice.WhenNodeOffline {
+			return
+		}
+		text := service.GetNodeStatus()
+		if text == "" {
+			return
+		}
+		if global.Server.Notice.TGAdmin == "" {
+			return
+		}
+		tgIDs := strings.Fields(global.Server.Notice.TGAdmin)
+		for _, v := range tgIDs {
+			fmt.Println("tgIDs:", tgIDs)
+			chatID, _ := strconv.ParseInt(v, 10, 64)
+			service.TGBotSendMessage(chatID, text)
+		}
+
+	})
+	if err != nil {
+		global.Logrus.Error("检查节点状态并定时任务 error:", err)
+	} else {
+		global.Logrus.Info("检查节点状态并定时任务")
 	}
 	global.Crontab.Start()
 

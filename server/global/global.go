@@ -3,7 +3,9 @@ package global
 import (
 	"AirGo/model"
 	"AirGo/utils/websocket_plugin"
+	"context"
 	"github.com/casbin/casbin/v2"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/mojocn/base64Captcha"
 	ants "github.com/panjf2000/ants/v2"
 	"github.com/robfig/cron/v3"
@@ -31,4 +33,13 @@ var (
 	RateLimit          model.RateLimitRule             //限流器
 	GoroutinePool      *ants.Pool                      //线程池
 	Crontab            *cron.Cron                      //定时任务
+	CtxMap             map[string]*context.Context     //
+	CancelMap          map[string]*context.CancelFunc  //
+	TGBot              *tgbotapi.BotAPI                //tg bot
+)
+
+const (
+	NodeStatus  = "status"
+	TGBotCtx    = "TGBotCtx"
+	TGBotCancel = "TGBotCancel"
 )

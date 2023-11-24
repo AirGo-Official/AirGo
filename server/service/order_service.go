@@ -47,6 +47,9 @@ func GetMonthOrderStatistics(orderParams *model.PaginationParams) (*model.OrderS
 		endTime = time.Now().Local()
 		startTime = endTime.AddDate(0, 0, -30)
 	}
+	return GetOrderStatistics(startTime, endTime)
+}
+func GetOrderStatistics(startTime, endTime time.Time) (*model.OrderStatistics, error) {
 	var orderStatistic model.OrderStatistics
 	err := global.DB.Model(&model.Orders{}).Where("created_at > ? and created_at < ?", startTime, endTime).Select("sum(receipt_amount) as total_amount").Find(&orderStatistic).Count(&orderStatistic.Total).Error
 	if err != nil {
