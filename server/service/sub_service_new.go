@@ -450,22 +450,27 @@ func Quantumult(nodes *[]model.Node) string {
 		case global.NodeTypeVmess:
 			var nodeItem []string
 			nodeItem = append(nodeItem, fmt.Sprintf("vmess=%s:%d", v.Address, v.Port))
-			nodeItem = append(nodeItem, fmt.Sprintf("method=%s", v.Scy))
+			nodeItem = append(nodeItem, fmt.Sprintf("method=%s", "chacha20-ietf-poly1305")) //surge不能为auto
 			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", v.UUID))
 
-			switch v.Network {
-			case global.NetworkWs:
-				nodeItem = append(nodeItem, fmt.Sprintf("obfs=ws"))
-				nodeItem = append(nodeItem, fmt.Sprintf("obfs-uri=%s", v.Path))
-				nodeItem = append(nodeItem, fmt.Sprintf("obfs-host=%s", v.Host))
-			}
 			switch v.Security {
 			case "tls":
-				nodeItem = append(nodeItem, fmt.Sprintf("obfs=over-tls"))
-				if v.AllowInsecure {
-					nodeItem = append(nodeItem, fmt.Sprintf("tls-verification=false"))
-				} else {
-					nodeItem = append(nodeItem, fmt.Sprintf("tls-verification=true"))
+				if v.Network == global.NetworkWs {
+					nodeItem = append(nodeItem, fmt.Sprintf("obfs=over-tls"))
+					//nodeItem = append(nodeItem, fmt.Sprintf("obfs-uri=%s", v.Path))
+					nodeItem = append(nodeItem, fmt.Sprintf("obfs-host=%s", v.Host))
+					if v.AllowInsecure {
+						nodeItem = append(nodeItem, fmt.Sprintf("tls-verification=false"))
+					} else {
+						nodeItem = append(nodeItem, fmt.Sprintf("tls-verification=true"))
+					}
+				}
+
+			default:
+				if v.Network == global.NetworkWs {
+					nodeItem = append(nodeItem, fmt.Sprintf("obfs=ws"))
+					nodeItem = append(nodeItem, fmt.Sprintf("obfs-uri=%s", v.Path))
+					nodeItem = append(nodeItem, fmt.Sprintf("obfs-host=%s", v.Host))
 				}
 
 			}
@@ -508,8 +513,8 @@ func Quantumult(nodes *[]model.Node) string {
 
 		}
 	}
+	fmt.Println(strings.Join(nodeArr, "\n"))
 	return strings.Join(nodeArr, "\n")
-
 }
 
 func VmessUrl(node model.Node) string {
@@ -609,6 +614,10 @@ func VlessTrojanHysteriaUrl(node model.Node) string {
 
 	case "trojan":
 	}
+	if node.AllowInsecure {
+		values.Add("allowInsecure", "1")
+	}
+
 	nodeUrl.RawQuery = values.Encode()
 	nodeUrl.Fragment = node.Remarks
 	return strings.ReplaceAll(nodeUrl.String(), ":@", "@")
@@ -747,7 +756,7 @@ func VmessUrlForShadowrocket(node model.Node) string {
 		values.Add("tls", "1")
 		sni := node.Address
 		if node.Sni != "" {
-			sni = node.ServiceName
+			sni = node.Sni
 		}
 		values.Add("peer", sni)
 
@@ -755,7 +764,7 @@ func VmessUrlForShadowrocket(node model.Node) string {
 		values.Add("tls", "1")
 		sni := node.Address
 		if node.Sni != "" {
-			sni = node.ServiceName
+			sni = node.Sni
 		}
 		values.Add("peer", sni)
 		values.Add("pbk", node.PublicKey)
