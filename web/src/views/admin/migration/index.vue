@@ -1,28 +1,6 @@
 <template>
   <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
-      <el-row :gutter="10" style="width: 768px">
-        <el-col :span="4">
-          <el-input size="default" placeholder="请输入名称"
-                    style="max-width: 180px"></el-input>
-        </el-col>
-        <el-col :span="3">
-          <el-button size="default" type="primary" class="ml10">
-            <el-icon>
-              <ele-Search/>
-            </el-icon>
-            查询
-          </el-button>
-        </el-col>
-        <el-col :span="4">
-          <el-button size="default" type="success" class="ml10" @click="openDialog('新建')">
-            <el-icon>
-              <ele-FolderAdd/>
-            </el-icon>
-            新增
-          </el-button>
-        </el-col>
-      </el-row>
       <el-row style="margin-top: 20px;margin-bottom: 20px">
         <el-button type="danger">
           迁移之前请做好数据备份。由于面板之间数据不兼容，迁移仅保留用户最基本的账号email和uuid数据，并将用户密码初始为123456，请引导用户及时修改密码
@@ -68,8 +46,6 @@
           迁移结果: {{state.migrationResult}}
         </el-card>
       </el-row>
-
-
     </el-card>
     <Dialog ref="DialogRef"></Dialog>
   </div>

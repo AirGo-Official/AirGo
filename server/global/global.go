@@ -39,7 +39,24 @@ var (
 )
 
 const (
-	NodeStatus  = "status"
+	//
+	NodeStatus           = "status"
+	NodeStatusIsNotified = "notified"
+	//tg 常量
 	TGBotCtx    = "TGBotCtx"
 	TGBotCancel = "TGBotCancel"
+
+	//节点类型
+	NodeTypeVmess       = "vmess"
+	NodeTypeVless       = "vless"
+	NodeTypeTrojan      = "trojan"
+	NodeTypeHysteria    = "hysteria"
+	NodeTypeShadowsocks = "shadowsocks"
+
+	//传输协议
+	NetworkWs   = "ws"
+	NetworkTcp  = "tcp"
+	NetworkKcp  = "kcp"
+	NetworkGrpc = "grpc"
+	NetworkQuic = "quic"
 )

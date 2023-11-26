@@ -4,7 +4,6 @@ import (
 	"AirGo/global"
 	"AirGo/model"
 	"AirGo/service"
-	"fmt"
 	"github.com/robfig/cron/v3"
 	"strconv"
 	"strings"
@@ -42,7 +41,7 @@ func InitCrontab() {
 		global.Logrus.Info("用户流量有效期定时任务")
 	}
 	// 定时清理数据库(traffic),默认10天
-	_, err = global.Crontab.AddFunc("0 0 */10 * * *", func() {
+	_, err = global.Crontab.AddFunc("0 0 0 */10 * *", func() {
 		y, m, _ := time.Now().Date()
 		startTime := time.Date(y, m-2, 1, 0, 0, 0, 0, time.Local)
 		err := global.DB.Where("created_at < ?", startTime).Delete(&model.TrafficLog{}).Error
@@ -60,7 +59,7 @@ func InitCrontab() {
 		if !global.Server.Notice.WhenNodeOffline {
 			return
 		}
-		text := service.GetNodeStatus()
+		text := service.GetOfflineNodeStatus()
 		if text == "" {
 			return
 		}
@@ -69,7 +68,6 @@ func InitCrontab() {
 		}
 		tgIDs := strings.Fields(global.Server.Notice.TGAdmin)
 		for _, v := range tgIDs {
-			fmt.Println("tgIDs:", tgIDs)
 			chatID, _ := strconv.ParseInt(v, 10, 64)
 			service.TGBotSendMessage(chatID, text)
 		}

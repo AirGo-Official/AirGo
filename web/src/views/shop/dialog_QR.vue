@@ -30,15 +30,11 @@ import {useShopStore} from "/@/stores/shopStore";
 const qrcodeRef = ref();
 const shopStore = useShopStore()
 const {shopData} = storeToRefs(shopStore)
-//定义变量
-const state = reactive({
-  isShowQRDialog: false,
-  QRcode: null,
-})
+
 //二维码
 const onInitQrcode = () => {
   //清除上一次二维码
-  const codeHtml = document.getElementById("qrcode");
+  let codeHtml = document.getElementById("qrcode");
   codeHtml.innerHTML = "";
   state.QRcode = new QRCode(qrcodeRef.value, {
     text: shopData.value.currentOrder.pay_info.alipay_info.qr_code,
@@ -48,6 +44,11 @@ const onInitQrcode = () => {
     colorLight: '#ffffff',
   });
 }
+//定义变量
+const state = reactive({
+  isShowQRDialog: false,
+  QRcode: null,
+})
 //打开弹窗
 const openDialog = () => {
   state.isShowQRDialog = true

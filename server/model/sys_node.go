@@ -19,10 +19,10 @@ type Node struct {
 	NodeType        string `json:"node_type"`                                //节点类型 vless,vmess,trojan,shadowsocks
 	IsSharedNode    bool   `json:"is_shared_node"`                           //共享节点，不修改uuid和host
 	V               string `json:"v"   gorm:"default:2"`                     //
-	Scy             string `json:"scy"`                                      //加密方式 vless需要填 "none"，不能留空。none,auto,chacha20-poly1305,aes-128-gcm,aes-256-gcm,2022-blake3-aes-128-gcm,2022-blake3-aes-256-gcm,2022-blake3-chacha20-poly1305
+	Scy             string `json:"scy"`                                      //加密方式 none,auto,chacha20-poly1305,aes-128-gcm,aes-256-gcm,2022-blake3-aes-128-gcm,2022-blake3-aes-256-gcm,2022-blake3-chacha20-poly1305
 	ServerKey       string `json:"server_key"`                               //
-	Aid             int64  `json:"aid" gorm:"default:0"`                     //额外ID
-	VlessFlow       string `json:"flow"`                                     //流控 不填,xtls-rprx-vision,xtls-rprx-vision-udp443
+	Aid             int64  `json:"aid"  gorm:"default:0"`                    //额外ID
+	VlessFlow       string `json:"flow" gorm:"default:none"`                 //流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
 	VlessEncryption string `json:"encryption" gorm:"default:none"`           //加密方式 vless:none
 	Network         string `json:"network" gorm:"default:ws"`                //传输协议 tcp,kcp,ws,h2,quic,grpc
 	Type            string `json:"type"    gorm:"default:none"`              //伪装类型 ws,h2：无    tcp,kcp：none，http    mKCP,quic：none，srtp，utp，wechat-video，dtls，wireguard
@@ -57,104 +57,6 @@ type Node struct {
 	AccessIds   []int64      `json:"access_ids"    gorm:"-"`
 }
 
-// vmess 格式
-type Vmess struct {
-	V            string `json:"v" `   //
-	Name         string `json:"ps"`   //节点名
-	Address      string `json:"add"`  //节点地址
-	Port         string `json:"port"` //端口
-	Uuid         string `json:"id"`   //用户UUID
-	Aid          string `json:"aid"`  //额外ID
-	Net          string `json:"net"`  //传输协议
-	Disguisetype string `json:"type"` //伪装类型
-	Host         string `json:"host"` //伪装域名
-	Path         string `json:"path"` //
-	Tls          string `json:"tls"`  //传输层安全
-	Alpn         string `json:"alpn"`
-	Fp           string `json:"fp"`
-	Sni          string `json:"sni"`
-}
-
-// clash  yaml格式
-type ClashYaml struct {
-	Port               int64             `yaml:"port"`
-	SocksPort          int64             `yaml:"socks-port"`
-	RedirPort          int64             `yaml:"redir-port"`
-	AllowLan           bool              `yaml:"allow-lan"`
-	Mode               string            `yaml:"mode"`
-	LogLevel           string            `yaml:"log-level"`
-	ExternalController string            `yaml:"external-controller"`
-	Secret             string            `yaml:"secret"`
-	Proxies            []ClashProxy      `yaml:"proxies"`
-	ProxyGroups        []ClashProxyGroup `yaml:"proxy-groups"`
-	Rules              []string          `yaml:"rules"`
-}
-type ClashProxy struct {
-	//基础参数
-	Name    string `yaml:"name" json:"name"`
-	Type    string `yaml:"type" json:"type"`
-	Server  string `yaml:"server" json:"server"`
-	Port    int    `yaml:"port" json:"port"`
-	Uuid    string `yaml:"uuid" json:"uuid"`
-	Network string `yaml:"network" json:"network"`
-	Udp     bool   `yaml:"udp" json:"udp"`
-	//vmess参数
-	Alterid int64  `yaml:"alterId" json:"alterId"`
-	Cipher  string `yaml:"cipher" json:"cipher"`
-	//trojan 参数
-	Password string `yaml:"password" json:"password"`
-	//vless流控
-	Flow string `yaml:"flow" json:"flow"`
-
-	Tls               bool        `yaml:"tls" json:"tls"`
-	Sni               string      `yaml:"sni" json:"sni"`
-	ClientFingerprint string      `yaml:"client-fingerprint" json:"client-fingerprint"` //Available: "chrome","firefox","safari","ios","random", currently only support TLS transport in TCP/GRPC/WS/HTTP for VLESS/Vmess and trojan.
-	Alpn              []string    `yaml:"alpn" json:"alpn"`                             //h2 http/1.1
-	Servername        string      `yaml:"servername" json:"servername"`                 //REALITY servername
-	SkipCertVerify    bool        `yaml:"skip-cert-verify" json:"skip-cert-verify"`
-	WsOpts            WsOpts      `yaml:"ws-opts" json:"ws-opts"`
-	RealityOpts       RealityOpts `yaml:"reality-opts" json:"reality-opts"`
-	GrpcOpts          GrpcOpts    `yaml:"grpc-opts" json:"grpc-opts"`
-	H2Opts            H2Opts      `yaml:"h2-opts" json:"h2-opts"`
-}
-
-type WsOpts struct {
-	Path                string            `yaml:"path"`
-	Headers             map[string]string `yaml:"headers"`
-	MaxEarlyData        int               `yaml:"max-early-data"`         //2048
-	EarlyDataHeaderName string            `yaml:"early-data-header-name"` //Sec-WebSocket-Protocol
-}
-type WsHeaders struct {
-	Host string `yaml:"Host"`
-}
-
-type RealityOpts struct {
-	PublicKey string `yaml:"public-key"`
-	ShortID   string `yaml:"short-id"`
-}
-type GrpcOpts struct {
-	GrpcServiceName string `yaml:"grpc-service-name"` //grpc
-}
-
-type H2Opts struct {
-	Host []string `yaml:"host"`
-	Path string   `yaml:"path"`
-}
-type HttpOpts struct {
-	Method  string                `yaml:"method"` //GET
-	Path    map[string][]string   `yaml:"path"`
-	Headers map[string]Connection `yaml:"headers"`
-}
-type Connection []string
-
-type ClashProxyGroup struct {
-	Name     string   `yaml:"name"`
-	Type     string   `yaml:"type"`
-	Proxies  []string `yaml:"proxies"`
-	Url      string   `yaml:"url"`
-	Interval int      `yaml:"interval"`
-}
-
 // 节点状态
 type NodeStatus struct {
 	ID          int64     `json:"id"`
@@ -186,7 +88,7 @@ type NodeShared struct {
 	NodeType        string    `json:"node_type"`                          //节点类型 vless,vmess,shadowsocks,hysteria
 	IsSharedNode    bool      `json:"is_shared_node" gorm:"default:true"` //共享节点，不修改uuid和host
 	V               string    `json:"v"`                                  //
-	Scy             string    `json:"scy"`                                //加密方式 vless需要填 "none"，不能留空.none,auto,chacha20-poly1305,aes-128-gcm,aes-256-gcm,2022-blake3-aes-128-gcm,2022-blake3-aes-256-gcm,2022-blake3-chacha20-poly1305
+	Scy             string    `json:"scy"`                                //加密方式 none,auto,chacha20-poly1305,aes-128-gcm,aes-256-gcm,2022-blake3-aes-128-gcm,2022-blake3-aes-256-gcm,2022-blake3-chacha20-poly1305
 	ServerKey       string    `json:"server_key"`                         //
 	Aid             int64     `json:"aid"`                                //额外ID
 	VlessFlow       string    `json:"flow"`                               //流控 null,xtls-rprx-vision,xtls-rprx-vision-udp443

@@ -74,6 +74,9 @@ func TGBotCloseListen() {
 	}
 }
 func TGBotSendMessage(chatID int64, text string) {
+	if global.Server.Notice.BotToken == "" {
+		return
+	}
 	msg := tgbotapi.NewMessage(chatID, text)
 	global.TGBot.Send(msg)
 }
@@ -449,7 +452,7 @@ func NodeStatus(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 }
 func GetNodeStatus() string {
 	var NodeArr []model.Node
-	err := global.DB.First(&NodeArr).Error
+	err := global.DB.Find(&NodeArr).Error
 	if err != nil {
 		return ""
 	}
@@ -459,6 +462,29 @@ func GetNodeStatus() string {
 		if ok {
 			msgArr = append(msgArr, fmt.Sprintf("节点: %s, 状态: %s ", v.Remarks, "✅"))
 		} else {
+			msgArr = append(msgArr, fmt.Sprintf("节点: %s, 状态: %s ", v.Remarks, "❌"))
+		}
+	}
+	text := strings.Join(msgArr, "\n")
+	return text
+}
+func GetOfflineNodeStatus() string {
+	var NodeArr []model.Node
+	err := global.DB.Find(&NodeArr).Error
+	if err != nil {
+		return ""
+	}
+	var msgArr []string
+	for _, v := range NodeArr {
+		_, ok := global.LocalCache.Get(fmt.Sprintf("%d%s", v.ID, global.NodeStatus))
+		if !ok {
+			//获取离线节点的通知状态，防止频繁推送
+			_, ok = global.LocalCache.Get(fmt.Sprintf("%d%s", v.ID, global.NodeStatusIsNotified))
+			if ok {
+				continue
+			}
+			//设置离线节点的通知状态，防止频繁推送
+			global.LocalCache.SetNoExpire(fmt.Sprintf("%d%s", v.ID, global.NodeStatusIsNotified), global.NodeStatusIsNotified)
 			msgArr = append(msgArr, fmt.Sprintf("节点: %s, 状态: %s ", v.Remarks, "❌"))
 		}
 	}

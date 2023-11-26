@@ -26,6 +26,9 @@ func AGGetNodeInfo(ctx *gin.Context) {
 	}
 	//处理探针
 	global.GoroutinePool.Submit(func() {
+		//取消离线节点的通知状态
+		global.LocalCache.Delete(fmt.Sprintf("%d%s", node.ID, global.NodeStatusIsNotified))
+
 		cacheStatus, ok := global.LocalCache.Get(id + global.NodeStatus)
 		if ok && cacheStatus != nil {
 			oldStatus := cacheStatus.(model.NodeStatus)

@@ -84,9 +84,27 @@ func GetUserSub(url string, subType string) string {
 		return SingboxSubscribe(&goods.Nodes, u)
 	case "clash":
 		return ClashSubscribe(&goods.Nodes, u)
+	case "shadowrocket":
+		return ShadowrocketSubscribe(&goods.Nodes, u)
 	default:
 		return SingboxSubscribe(&goods.Nodes, u)
 	}
+}
+func ShadowrocketSubscribe(nodes *[]model.Node, user model.User) string {
+	var node []model.Shadowrocket
+
+	for _, v := range *nodes {
+		item := model.Shadowrocket{}
+		item.Host = v.Address
+		item.Port = fmt.Sprintf("%d", v.Port)
+		item.Type = "VLESS"
+		node = append(node, item)
+	}
+	b, err := json.Marshal(node)
+	fmt.Println("err:", err)
+	fmt.Println("b:", string(b))
+	return string(b)
+
 }
 
 func SingboxSubscribe(nodes *[]model.Node, user model.User) string {
@@ -247,6 +265,7 @@ func V2rayNGVlessTrojanHysteria(node model.Node, user model.User) string {
 	}
 	vlessUrl.User = url.UserPassword(user.UUID.String(), "")
 	vlessUrl.Host = node.Address + ":" + strconv.FormatInt(node.Port, 10)
+
 	values := url.Values{}
 	switch vlessUrl.Scheme {
 	case "vless":
@@ -280,6 +299,8 @@ func V2rayNGVlessTrojanHysteria(node model.Node, user model.User) string {
 			values.Add("spx", node.SpiderX)
 			values.Add("sni", node.Sni)
 			values.Add("sid", node.ShortId)
+		default:
+			values.Add("security", "none")
 		}
 	case "hy2":
 		values.Add("sni", node.Sni)

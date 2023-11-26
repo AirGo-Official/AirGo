@@ -39,19 +39,22 @@
                 <el-button type="primary" size="large" text plain class="button" @click="onResetSub">重置订阅链接</el-button>
               </div>
             </template>
-            <div>
-              <el-button size="large" style="margin-top: 10px;margin-bottom: 10px;color: #ff0000" @click="Sub('v2ray')">
-                xray 内核通用订阅
-              </el-button>
-              <el-button size="large" style="margin-top: 10px;margin-bottom: 10px;color: #f5b16c" @click="Sub('singbox')">
-                Sing Box 内核通用订阅
-              </el-button>
-              <el-button size="large" style="margin-top: 10px;margin-bottom: 10px;color: #37cc27" @click="Sub('clash')">
-                Clash Meta 内核订阅
-              </el-button>
-              <el-button size="large" style="margin-top: 10px;margin-bottom: 10px;color: #0aa3f8" @click="Sub('v2ray')">
-                通用订阅
-              </el-button>
+            <div style="text-align: center">
+              <div>
+                <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('')">
+                  复制通用订阅
+                </el-button>
+              </div>
+              <div>
+                <el-button size="large" color="deeppink" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="QRSub()">
+                  二维码订阅
+                </el-button>
+              </div>
+              <div>
+                <el-button size="large" color="brown" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="state.isShowSubDialog=true">
+                  手动选择订阅
+                </el-button>
+              </div>
             </div>
           </el-card>
         </div>
@@ -71,6 +74,57 @@
     <el-dialog v-model="state.isShowDialog" :title="state.title" width="80%" destroy-on-close center>
       <v-md-preview :text="articleStoreData.articleID2.value.content"></v-md-preview>
     </el-dialog>
+    <el-dialog v-model="state.isShowSubDialog">
+      <div>
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('NekoBox')">
+          NekoBox 订阅
+        </el-button>
+      </div>
+      <div>
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('v2rayNG')">
+          v2rayNG 订阅
+        </el-button>
+      </div>
+      <div>
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('v2rayN')">
+          v2rayN 订阅
+        </el-button>
+      </div>
+      <div>
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('Clash')">
+          Clash 订阅
+        </el-button>
+      </div>
+      <div>
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('Shadowrocket')">
+          Shadowrocket 订阅
+        </el-button>
+      </div>
+      <div>
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('Surge')">
+          Surge 订阅
+        </el-button>
+      </div>
+      <div>
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('Quantumult')">
+          Quantumult 订阅
+        </el-button>
+      </div>
+      <div>
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('V2rayU')">
+          V2rayU 订阅
+        </el-button>
+      </div>
+
+
+
+    </el-dialog>
+    <el-dialog v-model="state.isShowQRSubDialog" width="350px">
+      <!-- 二维码弹窗 -->
+      <div >
+        <div id="qrcode" ref="qrcodeRef"></div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -81,11 +135,12 @@ import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
 import {useUserStore} from "/@/stores/userStore";
-import {onMounted, reactive} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import {ElMessage} from 'element-plus';
 import {Select} from '@element-plus/icons-vue'
 import commonFunction from '/@/utils/commonFunction';
 import {useArticleStore} from "/@/stores/articleStore";
+import QRCode from "qrcodejs2-fixes";
 
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
@@ -95,12 +150,17 @@ const {copyText} = commonFunction();
 
 const articleStore =useArticleStore()
 const articleStoreData = storeToRefs(articleStore)
+const qrcodeRef = ref();
+
 //定义参数
 const state = reactive({
   host: {
     host: '',
   },
   isShowDialog:false,
+  isShowSubDialog:false,
+  isShowQRSubDialog:false,
+  QRcode: null,
 })
 
 //获取首页自定义内容
@@ -138,22 +198,63 @@ const onResetSub = () => {
     userStore.getUserInfo()
   })
 }
+//复制订阅
 const Sub = (type: string) => {
   switch (type) {
-    case "v2ray":
-      copyText(userStore.subUrl + "&type=v2ray")
+    case "NekoBox":
+      copyText(userStore.subUrl + "&type=NekoBox")
       break
-    case "singbox":
-      copyText(userStore.subUrl + "&type=singbox")
+    case "v2rayNG":
+      copyText(userStore.subUrl + "&type=v2rayNG")
       break
-    case "clash":
-      //Clash订阅
-      copyText(userStore.subUrl + "&type=clash")
+    case "v2rayN":
+      copyText(userStore.subUrl + "&type=v2rayN")
       break
+    case "Clash":
+      copyText(userStore.subUrl + "&type=Clash")
+      break
+
+    case "Shadowrocket":
+      copyText(userStore.subUrl + "&type=Shadowrocket")
+      break
+
+    case "Surge":
+      copyText(userStore.subUrl + "&type=Surge")
+      break
+
+    case "Quantumult":
+      copyText(userStore.subUrl + "&type=Quantumult")
+      break
+    case "V2rayU":
+      copyText(userStore.subUrl + "&type=V2rayU")
+      break
+
     default:
-      copyText(userStore.subUrl + "&type=v2ray")
+      copyText(userStore.subUrl)
       break
   }
+}
+//二维码订阅
+const QRSub=()=>{
+  state.isShowQRSubDialog=true
+  setTimeout(()=>{
+    onInitQrcode()
+  },200)
+
+
+}
+//二维码
+const onInitQrcode = () => {
+  //清除上一次二维码
+  const codeHtml = document.getElementById("qrcode");
+  codeHtml.innerHTML = "";
+  state.QRcode = new QRCode(qrcodeRef.value, {
+    text: userStore.subUrl,
+    width: 300,
+    height: 300,
+    colorDark: '#0a55f8',
+    colorLight: 'rgb(255,255,255)',
+  });
 }
 // 页面加载时
 onMounted(() => {

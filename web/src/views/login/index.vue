@@ -122,7 +122,7 @@ onMounted(() => {
       .login-left-logo-text {
         display: flex;
         flex-direction: column;
-        width: 300px;
+        width: 400px;
 
         span {
           margin-left: 10px;

@@ -1,4 +1,4 @@
-#截止到版本0.1.0，golang版本为1.21，node版本为v20.9.0，请开发者斟酌。
+#从release 0.1.0 开始，golang版本为1.21，node版本为v20.9.0，请开发者注意！
 
 npm cache clean -f
 npm install npm -g

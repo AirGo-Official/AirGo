@@ -336,11 +336,64 @@ func ResetUserPassword(ctx *gin.Context) {
 
 // 获取订阅
 func GetSub(ctx *gin.Context) {
-	//订阅参数
-	link := ctx.Query("link")
-	subType := ctx.Query("type")
+	//Shadowrocket/2070 CFNetwork/1325.0.1 Darwin/21.1.0
+	//ClashMetaForAndroid/2.8.9.Meta
+	//ClashX/1.118.0 (com.west2online.ClashX; build:1.118.0; macOS 10.15.7) Alamofire/5.8.0
+	//Quantumult/627 CFNetwork/1325.0.1 Darwin/21.1.0
+	//NekoBox/Android/1.2.9 (Prefer ClashMeta Format)
+	//v2rayNG/1.8.9
+	//V2rayU/4.0.0 CFNetwork/1128.0.1 Darwin/19.6.0 (x86_64)
+	//v2rayN/6.30
 
-	res := service.GetUserSub(link, subType)
+	clientType := ""
+	ua := ctx.Request.Header.Get("User-Agent")
+	fmt.Println("ua:", ua)
+
+	if strings.HasPrefix(ua, "NekoBox") {
+		clientType = "NekoBox"
+		goto next
+	}
+	if strings.HasPrefix(ua, "v2rayNG") {
+		clientType = "v2rayNG"
+		goto next
+	}
+	if strings.HasPrefix(ua, "v2rayN") {
+		clientType = "v2rayN"
+		goto next
+	}
+	if strings.HasPrefix(ua, "Clash") {
+		clientType = "Clash"
+		goto next
+	}
+
+	if strings.HasPrefix(ua, "Shadowrocket") {
+		clientType = "Shadowrocket"
+		goto next
+	}
+
+	if strings.HasPrefix(ua, "Surge") {
+		clientType = "Surge"
+		goto next
+	}
+	if strings.HasPrefix(ua, "Quantumult") {
+		clientType = "Quantumult"
+		goto next
+	}
+
+	if strings.HasPrefix(ua, "V2rayU") {
+		clientType = "V2rayU"
+		goto next
+	}
+	if clientType == "" {
+		clientType = ctx.Query("type")
+	}
+	if clientType == "" {
+		clientType = "v2rayNG"
+	}
+
+next:
+	link := ctx.Query("link")
+	res := service.GetUserSubNew(link, clientType)
 	if res == "" {
 		return
 	}
