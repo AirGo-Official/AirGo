@@ -746,8 +746,8 @@ func VmessUrlForShadowrocket(node model.Node) string {
 	switch node.Network {
 	case global.NetworkWs:
 		values.Add("obfs", "websocket")
-		//values.Add("path", node.Path)
-		//values.Add("obfsParam", node.Host)
+		values.Add("path", node.Path)
+		values.Add("obfsParam", node.Host)
 	case global.NetworkTcp:
 		values.Add("obfs", "none")
 	case global.NetworkGrpc:
