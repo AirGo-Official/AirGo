@@ -226,6 +226,23 @@
         <el-form-item label="port">
           <el-input v-model.number="dialogData.vmessInfo.port"/>
         </el-form-item>
+        <el-form-item label="scy">
+          <el-select
+              v-model="dialogData.vmessInfo.scy"
+              filterable
+              allow-create
+              default-first-option
+              :reserve-keyword="false"
+              style="width: 100%"
+          >
+            <el-option
+                v-for="(v,k) in state.scyArrForVmess"
+                :key="k"
+                :label="v"
+                :value="v">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="network">
           <el-select
               v-model="dialogData.vmessInfo.network"
@@ -553,6 +570,7 @@ const state = reactive({
     {dest: "blog.api.www.cloudflare.com:443", sni: "blog.api.www.cloudflare.com"},
     {dest: "www.icloud.com:443", sni: "www.icloud.com"},
   ] as RealityItem[],
+  scyArrForVmess: ["auto", "none", "aes-128-gcm", "aes-256-gcm","chacha20-ietf-poly1305",],
   scyArrForSS: ["aes-128-gcm", "aes-256-gcm","chacha20-ietf-poly1305", "2022-blake3-aes-128-gcm", "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305",],
   scyArrForClashMeta: ["aes-128-gcm","aes-192-gcm","aes-256-gcm","chacha20-ietf-poly1305","2022-blake3-aes-128-gcm","2022-blake3-aes-256-gcm","2022-blake3-chacha20-poly1305"],
   flowArr: ["", "xtls-rprx-vision", "xtls-rprx-vision-udp443",],

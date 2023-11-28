@@ -274,26 +274,27 @@ func InsertIntoRoleAndMenu() error {
 		{RoleID: 1, DynamicRouteID: 9},  //文章设置
 		{RoleID: 1, DynamicRouteID: 10}, //折扣码管理
 		{RoleID: 1, DynamicRouteID: 11}, //访问控制
+		{RoleID: 1, DynamicRouteID: 12}, //数据迁移
 
-		{RoleID: 1, DynamicRouteID: 12}, //首页
-		{RoleID: 1, DynamicRouteID: 13}, //商店
-		{RoleID: 1, DynamicRouteID: 14}, //我的订单
-		{RoleID: 1, DynamicRouteID: 15}, //个人信息
-		{RoleID: 1, DynamicRouteID: 16}, //节点状态
-		{RoleID: 1, DynamicRouteID: 18}, //营收概览
-		{RoleID: 1, DynamicRouteID: 19}, //套餐监控
-		{RoleID: 1, DynamicRouteID: 20}, //公告
-		{RoleID: 1, DynamicRouteID: 21}, //知识库
+		{RoleID: 1, DynamicRouteID: 13},
+		{RoleID: 1, DynamicRouteID: 14},
+		{RoleID: 1, DynamicRouteID: 15},
+		{RoleID: 1, DynamicRouteID: 16},
+		{RoleID: 1, DynamicRouteID: 17},
+		{RoleID: 1, DynamicRouteID: 18},
+		{RoleID: 1, DynamicRouteID: 19},
+		{RoleID: 1, DynamicRouteID: 20},
+		{RoleID: 1, DynamicRouteID: 21},
+		{RoleID: 1, DynamicRouteID: 22},
 
 		//普通用户的权限
-		{RoleID: 2, DynamicRouteID: 12}, //首页
-		{RoleID: 2, DynamicRouteID: 13}, //商店
-		{RoleID: 2, DynamicRouteID: 14}, //我的订单
-		{RoleID: 2, DynamicRouteID: 15}, //个人信息
-		{RoleID: 2, DynamicRouteID: 16}, //节点状态
-		{RoleID: 2, DynamicRouteID: 19}, //套餐监控
-		{RoleID: 2, DynamicRouteID: 20}, //公告
-		{RoleID: 2, DynamicRouteID: 21}, //知识库
+		{RoleID: 2, DynamicRouteID: 13}, //首页
+		{RoleID: 2, DynamicRouteID: 14}, //商店
+		{RoleID: 2, DynamicRouteID: 15}, //我的订单
+		{RoleID: 2, DynamicRouteID: 16}, //个人信息
+		{RoleID: 2, DynamicRouteID: 17}, //节点状态
+		{RoleID: 2, DynamicRouteID: 21}, //公告
+		{RoleID: 2, DynamicRouteID: 22}, //知识库
 	}
 	if err := global.DB.Create(&roleAndMenuData).Error; err != nil {
 		return errors.New("role_and_menu表数据初始化失败!")

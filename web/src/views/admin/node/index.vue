@@ -1,6 +1,6 @@
 <template>
   <div class="container layout-padding">
-    <el-card shadow="hover" class="layout-padding-auto">
+    <el-card shadow="hover" class="layout-padding-auto" v-loading="state.isLoadingTable">
       <el-row :gutter="10" style="width: 768px">
         <el-col :span="4">
           <el-input v-model="state.params.search" size="default" placeholder="请输入名称"
@@ -174,7 +174,7 @@ const shortcuts = [
 ]
 //定义参数
 const state = reactive({
-  loading: true,
+  isLoadingTable: false,
   params: {
     search: '',
     page_num: 1,
@@ -200,7 +200,10 @@ function onOpenNodeSharedDialog() {
 
 //查询节点
 function onGetNode(params?: object) {
-  nodeStore.getNodeWithTraffic(params)
+  state.isLoadingTable=true
+  nodeStore.getNodeWithTraffic(params).then(()=>{
+      state.isLoadingTable=false
+  })
 }
 
 //删除节点

@@ -54,19 +54,18 @@
 <script lang="ts" setup>
 
 //定义参数
-import {defineAsyncComponent, reactive, ref} from "vue";
+import { reactive} from "vue";
 import {ElMessageBox} from "element-plus";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 
-const Dialog = defineAsyncComponent(() => import('/@/views/admin/migration/dialog.vue'))
-const DialogRef = ref()
+
 const apiStore=useApiStore()
 
 const state = reactive({
   loading: false,
   html: "",
-  panels: ["v2board", "sspanel"],
+  panels: ["v2board", "sspanel", "AirGo"],
   migrationParams: {
     "panel_type": "",
     "db_address": "",
@@ -79,10 +78,6 @@ const state = reactive({
 
 })
 
-//打开弹窗
-function openDialog(title: string, row?: any) {
-  DialogRef.value.openDialog(title, row)
-}
 const onSubmit=()=>{
   ElMessageBox.confirm(`请做好数据备份，并填写正确的数据库信息，是否继续?`, '提示', {
     confirmButtonText: '确认',

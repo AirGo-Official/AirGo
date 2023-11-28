@@ -35,22 +35,28 @@ func Migration(mig *model.Migration) (string, error) {
 	var userList []model.User
 	switch mig.PanelType {
 	case "v2board":
-		err = oldDB.Table("v2_user").Select("email as user_name, uuid").Find(&userList).Error
+		err = oldDB.Table("v2_user").Select("email as user_name, uuid, email as nick_name").Find(&userList).Error
 		if err != nil {
-			fmt.Println(err)
+			global.Logrus.Error("Migration error:", err)
 			return "", err
 		}
 	case "sspanel":
 		err = oldDB.Debug().Table("user").Select("email as user_name, uuid, user_name as nick_name").Find(&userList).Error
 		if err != nil {
-			fmt.Println(err)
+			global.Logrus.Error("Migration error:", err)
 			return "", err
 		}
+	case "AirGo":
+		err = oldDB.Debug().Table("user").Select("user_name, uuid, user_name as nick_name").Find(&userList).Error
+		if err != nil {
+			global.Logrus.Error("Migration error:", err)
+			return "", err
+		}
+
 	}
 	//处理用户默认数据
 	newUserList := UserDefaultValues(&userList)
 	length := len(*newUserList)
-	fmt.Println("length:", length)
 	if length == 0 {
 		return "", errors.New("Data is empty")
 	}
@@ -59,7 +65,7 @@ func Migration(mig *model.Migration) (string, error) {
 		for _, v := range u {
 			err = global.DB.Create(&v).Error
 			if err != nil {
-				fmt.Println("Create error:", err)
+				global.Logrus.Error("Migration error:", err)
 				return "", err
 			}
 		}
@@ -67,7 +73,7 @@ func Migration(mig *model.Migration) (string, error) {
 	} else {
 		err = global.DB.Create(&userList).Error
 		if err != nil {
-			fmt.Println("Create error:", err)
+			global.Logrus.Error("Migration error:", err)
 			return "", err
 		}
 	}

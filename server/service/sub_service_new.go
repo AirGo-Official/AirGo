@@ -90,7 +90,9 @@ func GetUserSubNew(url string, clientType string) string {
 		//替换用户uuid和免流host
 		if !goods.Nodes[k].IsSharedNode {
 			goods.Nodes[k].UUID = u.UUID.String()
-			goods.Nodes[k].Host = u.SubscribeInfo.Host
+			if u.SubscribeInfo.Host != "" {
+				goods.Nodes[k].Host = u.SubscribeInfo.Host
+			}
 		}
 		nodeArr = append(nodeArr, goods.Nodes[k])
 	}
@@ -299,7 +301,7 @@ func Surge(nodes *[]model.Node) string {
 			nodeItem = append(nodeItem, fmt.Sprintf("%d", v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("username=%s", v.UUID))
 			nodeItem = append(nodeItem, "tfo=true")
-			nodeItem = append(nodeItem, "udp-relay=true")
+			//nodeItem = append(nodeItem, "udp-relay=true")
 			//
 			nodeItem = append(nodeItem, "vmess-aead=true")
 			//tls
@@ -331,7 +333,7 @@ func Surge(nodes *[]model.Node) string {
 			nodeItem = append(nodeItem, fmt.Sprintf("%d", v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", v.UUID))
 			nodeItem = append(nodeItem, "tfo=true")
-			nodeItem = append(nodeItem, "udp-relay=true")
+			//nodeItem = append(nodeItem, "udp-relay=true")
 			//
 			sni := v.Address
 			if v.Sni != "" {
@@ -351,13 +353,16 @@ func Surge(nodes *[]model.Node) string {
 			nodeItem = append(nodeItem, v.Address)
 			nodeItem = append(nodeItem, fmt.Sprintf("%d", v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", v.UUID))
-			nodeItem = append(nodeItem, "tfo=true")
-			nodeItem = append(nodeItem, "udp-relay=true")
+			//nodeItem = append(nodeItem, "tfo=true")
+			//nodeItem = append(nodeItem, "udp-relay=true")
 			nodeArr = append(nodeArr, strings.Join(nodeItem, ", "))
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
 			proxyGroupFallback = append(proxyGroupFallback, v.Remarks)
 		case global.NodeTypeShadowsocks:
+			if strings.HasPrefix(v.Scy, "2022") {
+				continue
+			}
 			var nodeItem []string
 			nodeItem = append(nodeItem, v.Remarks+"="+"ss")
 			nodeItem = append(nodeItem, v.Address)
@@ -365,7 +370,7 @@ func Surge(nodes *[]model.Node) string {
 			nodeItem = append(nodeItem, fmt.Sprintf("encrypt-method=%s", v.Scy))
 			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordHandler(v)))
 			nodeItem = append(nodeItem, "tfo=true")
-			nodeItem = append(nodeItem, "udp-relay=true")
+			//nodeItem = append(nodeItem, "udp-relay=true")
 			nodeArr = append(nodeArr, strings.Join(nodeItem, ", "))
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
@@ -480,6 +485,9 @@ func Quantumult(nodes *[]model.Node) string {
 			nodeArr = append(nodeArr, strings.Join(nodeItem, ", "))
 
 		case global.NodeTypeShadowsocks:
+			if strings.HasPrefix(v.Scy, "2022") {
+				continue
+			}
 			var nodeItem []string
 			nodeItem = append(nodeItem, fmt.Sprintf("shadowsocks=%s:%d", v.Address, v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("method=%s", v.Scy))
@@ -725,8 +733,8 @@ func VmessUrlForShadowrocket(node model.Node) string {
 
 	values := url.Values{}
 	//基础参数
-	values.Add("tfo", "1")             //tcp快速打开
-	values.Add("mux", "1")             //多路复用
+	values.Add("tfo", "1") //tcp快速打开
+	//values.Add("mux", "1")             //多路复用
 	values.Add("remark", node.Remarks) //节点名
 
 	switch node.NodeType {
@@ -798,7 +806,7 @@ func TrojanUrlForShadowrocket(node model.Node) string {
 	nodeUrl.Host = node.Address + ":" + strconv.FormatInt(node.Port, 10)
 	values := url.Values{}
 	values.Add("tfo", "1") //tcp快速打开
-	values.Add("mux", "1") //多路复用
+	//values.Add("mux", "1") //多路复用
 
 	sni := node.Address
 	if node.Sni != "" {
@@ -821,7 +829,7 @@ func Hy2UrlForShadowrocket(node model.Node) string {
 
 	values := url.Values{}
 	values.Add("tfo", "1") //tcp快速打开
-	values.Add("mux", "1") //多路复用
+	//values.Add("mux", "1") //多路复用
 
 	sni := node.Address
 	if node.Sni != "" {
@@ -836,7 +844,6 @@ func Hy2UrlForShadowrocket(node model.Node) string {
 
 	values.Add("obfs", "none")
 	nodeUrl.RawQuery = values.Encode()
-	fmt.Println("nodeUrl.String()", nodeUrl.String())
 	return strings.ReplaceAll(nodeUrl.String(), ":@", "@")
 }
 

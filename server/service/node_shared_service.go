@@ -15,8 +15,6 @@ import (
 )
 
 func ParseVMessLink(link string) *model.NodeShared {
-	// vmess 例子 {"add":"AirGo","aid":"0","alpn":"h2,http/1.1","fp":"qq","host":"www.baidu.com","id":"e0d5fe65-a5d1-4b8a-8d40-ed92a6a35d8b","net":"ws","path":"/path","port":"6666","ps":"到期时间:2024-03-06  |  剩余流量:20.00GB","scy":"auto","sni":"www.baidu.com","tls":"tls","type":"","v":"2"}
-	// vmess 例子 {"add":"AirGo","aid":"0","alpn":"","fp":"","host":"www.baidu.com","id":"e0d5fe65-a5d1-4b8a-8d40-ed92a6a35d8b","net":"ws","path":"/path","port":"6666","ps":"到期时间:2024-03-06  |  剩余流量:20.00GB","scy":"auto","sni":"","tls":"reality","type":"","v":"2"}
 	node := new(model.NodeShared)
 	node.Enabled = true
 	node.NodeType = "vmess"
@@ -119,9 +117,6 @@ func ParseVMessLink(link string) *model.NodeShared {
 }
 
 func ParseVLessLink(link string) *model.NodeShared {
-	// vless例子 vless://d342d11e-d424-4583-b36e-524ab1f0afa7@1.6.1.1:443?path=%2F%3Fed%3D2048&security=tls&flow=xtls-rprx-vision-udp443&encryption=none&alpn=h2,http/1.1&host=v2.airgoo.link&fp=randomized&type=ws&sni=v2.airgoo.link#v2.airgoo.link
-	// vless例子 vless://d342d11e-d424-4583-b36e-524ab1f0afa7@1.6.1.4:443?path=%2F%3Fed%3D2048&security=reality&flow=xtls-rprx-vision-udp443&encryption=none&pbk=ppkk&host=v2.airgoo.link&fp=randomized&spx=ssxx&type=ws&sni=v2.airgoo.link&sid=ssdd#v2.airgoo.link
-	// [scheme:][//[userinfo@]host][/]path[?query][#fragment]
 	u, err := url.Parse(link)
 	if err != nil {
 		return nil
@@ -160,25 +155,29 @@ func ParseVLessLink(link string) *model.NodeShared {
 	if urlQuery.Get("type") != "" {
 		node.Network = urlQuery.Get("type")
 	}
-	if urlQuery.Get("security") != "" {
-		node.Security = urlQuery.Get("security")
+	if urlQuery.Get("headerType") != "" {
+		node.Type = urlQuery.Get("headerType")
 	}
-	//获取混淆
 	if urlQuery.Get("host") != "" {
 		node.Host = urlQuery.Get("host")
-	} else {
-		return nil
 	}
-
 	if urlQuery.Get("path") != "" {
 		node.Path = urlQuery.Get("path")
 	}
-
+	if urlQuery.Get("security") != "" {
+		node.Security = urlQuery.Get("security")
+	}
 	if urlQuery.Get("sni") != "" {
 		node.Sni = urlQuery.Get("sni")
 	}
+	if urlQuery.Get("fp") != "" {
+		node.Fingerprint = urlQuery.Get("fp")
+	}
 	if urlQuery.Get("alpn") != "" {
 		node.Alpn = urlQuery.Get("alpn")
+	}
+	if urlQuery.Get("pbk") != "" {
+		node.PublicKey = urlQuery.Get("pbk")
 	}
 	if urlQuery.Get("allowInsecure") != "" {
 		node.AllowInsecure = true
@@ -242,7 +241,6 @@ func ParseTrojanLink(link string) *model.NodeShared {
 	if urlQuery.Get("allowInsecure") != "" {
 		node.AllowInsecure = true
 	}
-
 	return node
 }
 
