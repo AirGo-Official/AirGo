@@ -1,11 +1,11 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
-	"AirGo/utils/response"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/response"
 )
 
 // 购买流程：获取订单详情（前端：立即购买）->订单预创建（前端：提交订单）->购买主逻辑（前端：确认购买）

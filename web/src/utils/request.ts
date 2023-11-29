@@ -63,6 +63,12 @@ service.interceptors.response.use(
                     })
                     .catch(() => {
                     });
+            } else if (res.code === 408){
+                ElMessageBox.alert('当前已被限流，请1分钟后重试', '提示', {})
+                    .then(() => {
+                    })
+                    .catch(() => {
+                    });
             }
             ElMessage.error(res.msg);
             return Promise.reject(service.interceptors.response);

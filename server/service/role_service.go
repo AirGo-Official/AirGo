@@ -1,8 +1,8 @@
 package service
 
 import (
-	"AirGo/global"
-	"AirGo/model"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
 )
 
 // 根据uId查角色Ids

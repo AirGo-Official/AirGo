@@ -1,20 +1,19 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
-	"AirGo/utils/other_plugin"
-	"AirGo/utils/response"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/response"
 	"strconv"
 	"strings"
 )
 
 // 支付主逻辑
 func Purchase(ctx *gin.Context) {
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("Purchase error:user id error", nil, ctx)
 		return

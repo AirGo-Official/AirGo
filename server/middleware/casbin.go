@@ -1,14 +1,16 @@
 package middleware
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/utils/response"
+	"fmt"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/utils/response"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	//"AirGo/utils/casbin_plugin"
+	//"github.com/ppoonk/AirGo/utils/casbin_plugin"
 )
 
 // Casbin 拦截器
@@ -21,6 +23,7 @@ func Casbin() gin.HandlerFunc {
 			return
 		}
 		uIdNew, _ := uID.(int64)
+		uIdStr := fmt.Sprintf("%d", uIdNew)
 		//请求的PATH
 		path := c.Request.URL.Path
 		obj := strings.TrimSpace(path)
@@ -28,8 +31,24 @@ func Casbin() gin.HandlerFunc {
 		act := c.Request.Method
 		// 获取用户的角色组
 		var roleIds []int64
-		global.DB.Model(&model.UserAndRole{}).Select("role_id").Where("user_id = ?", uIdNew).Find(&roleIds)
-		//fmt.Println("获取用户的角色组:", roleIds)
+		//先判断cache中有无
+		roleIdsCache, ok := global.LocalCache.Get(uIdStr + global.UserRoleIds)
+		if ok {
+			roleIds = roleIdsCache.([]int64)
+		} else {
+			err := global.DB.Model(&model.UserAndRole{}).Select("role_id").Where("user_id = ?", uIdNew).Find(&roleIds).Error
+			if err != nil {
+				global.Logrus.Error("Casbin error:", err)
+				c.Abort()
+				return
+			}
+		}
+		if len(roleIds) == 0 {
+			global.Logrus.Error("Casbin error:", "roleIds = 0")
+			c.Abort()
+			return
+		}
+		global.LocalCache.Set(uIdStr+global.UserRoleIds, roleIds, 5*time.Minute) //超时
 		status := false
 		for _, v := range roleIds {
 			success, err := global.Casbin.Enforce(strconv.FormatInt(v, 10), obj, act) // 判断策略中是否存在

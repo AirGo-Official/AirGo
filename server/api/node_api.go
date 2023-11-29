@@ -1,12 +1,12 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
-	"AirGo/utils/encrypt_plugin"
-	"AirGo/utils/response"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
+	"github.com/ppoonk/AirGo/utils/response"
 )
 
 // 获取全部节点
@@ -29,7 +29,6 @@ func NewNode(ctx *gin.Context) {
 		response.Fail("NewNode error:"+err.Error(), nil, ctx)
 		return
 	}
-	service.Show(node)
 	node.ServerKey = encrypt_plugin.RandomString(32)
 	n, _, _ := service.CommonSqlFind[model.Node, model.Node, model.Node](model.Node{
 		Remarks: node.Remarks,

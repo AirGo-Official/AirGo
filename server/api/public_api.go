@@ -1,13 +1,13 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/utils/encrypt_plugin"
-	"AirGo/utils/mail_plugin"
-	"AirGo/utils/other_plugin"
-	"AirGo/utils/response"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
+	"github.com/ppoonk/AirGo/utils/mail_plugin"
+	"github.com/ppoonk/AirGo/utils/other_plugin"
+	"github.com/ppoonk/AirGo/utils/response"
 	"strings"
 	"sync"
 	"time"

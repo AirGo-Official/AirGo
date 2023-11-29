@@ -9,13 +9,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Panic：记录日志，然后panic。
-// Fatal：致命错误，出现错误时程序无法正常运转。输出日志后，程序退出；
-// Error：错误日志，需要查看原因；
-// Warn：警告信息，提醒程序员注意；
-// Info：关键操作，核心流程的日志；
-// Debug：一般程序中输出的调试信息；
-// Trace：很细粒度的信息，一般用不到；
 func InitLogrus() *logrus.Logger {
 	//实例化
 	logger := logrus.New()

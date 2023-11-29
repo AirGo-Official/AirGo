@@ -1,15 +1,14 @@
 package global
 
 import (
-	"AirGo/model"
-	"AirGo/utils/websocket_plugin"
 	"context"
 	"github.com/casbin/casbin/v2"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/mojocn/base64Captcha"
 	ants "github.com/panjf2000/ants/v2"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/utils/websocket_plugin"
 	"github.com/robfig/cron/v3"
-	_ "github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 	"github.com/songzhibin97/gkit/cache/local_cache"
 	"github.com/spf13/viper"
@@ -39,6 +38,8 @@ var (
 )
 
 const (
+	//
+	UserRoleIds = "roleIds"
 	//
 	NodeStatus           = "status"
 	NodeStatusIsNotified = "notified"

@@ -1,10 +1,10 @@
 package initialize
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	utils "AirGo/utils/encrypt_plugin"
 	"errors"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	utils "github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	"gorm.io/driver/sqlite"
 	"time"
 

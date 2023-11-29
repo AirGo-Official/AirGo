@@ -1,12 +1,12 @@
 package isp_plugin
 
 import (
-	"AirGo/model"
-	"AirGo/utils/net_plugin"
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/utils/net_plugin"
 	"net/http"
 	"net/url"
 	"strconv"

@@ -9,7 +9,8 @@ import (
 const (
 	ERROR      = 1
 	SUCCESS    = 0
-	TOKENERROR = 401
+	TOKENERROR = 401 //前端判断401错误，token过期
+	LIMITERROR = 408 //前端判断408错误，限流
 )
 
 // 序列化器

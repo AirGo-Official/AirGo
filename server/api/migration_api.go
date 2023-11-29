@@ -1,11 +1,11 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
-	"AirGo/utils/response"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/response"
 )
 
 func Migration(ctx *gin.Context) {
@@ -16,7 +16,6 @@ func Migration(ctx *gin.Context) {
 		response.Fail("Migration error:"+err.Error(), nil, ctx)
 		return
 	}
-	service.Show(mig)
 	msg, err := service.Migration(&mig)
 	if err != nil {
 		global.Logrus.Error(err)

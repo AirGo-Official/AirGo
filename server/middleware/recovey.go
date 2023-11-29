@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"AirGo/global"
-	"AirGo/utils/format_plugin"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/utils/format_plugin"
 )
 
 func Recovery() gin.HandlerFunc {
@@ -16,5 +16,4 @@ func Recovery() gin.HandlerFunc {
 		}()
 		ctx.Next()
 	}
-
 }

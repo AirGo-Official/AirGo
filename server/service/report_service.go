@@ -1,10 +1,10 @@
 package service
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/utils/other_plugin"
 	"errors"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/utils/other_plugin"
 	"strings"
 )
 

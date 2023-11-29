@@ -1,9 +1,9 @@
 package service
 
 import (
-	"AirGo/global"
-	"AirGo/model"
 	"errors"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
 	"gorm.io/gorm"
 	"strconv"
 	"time"

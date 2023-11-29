@@ -1,10 +1,10 @@
 package main
 
 import (
-	"AirGo/initialize"
-	"AirGo/utils/os_plugin"
 	"flag"
 	"fmt"
+	"github.com/ppoonk/AirGo/initialize"
+	"github.com/ppoonk/AirGo/utils/os_plugin"
 	"runtime"
 )
 

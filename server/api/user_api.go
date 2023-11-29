@@ -1,23 +1,23 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
-	"AirGo/utils/encrypt_plugin"
-	"AirGo/utils/jwt_plugin"
-	"AirGo/utils/other_plugin"
-	timeTool "AirGo/utils/time_plugin"
 	"fmt"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
+	"github.com/ppoonk/AirGo/utils/jwt_plugin"
+	"github.com/ppoonk/AirGo/utils/other_plugin"
+	timeTool "github.com/ppoonk/AirGo/utils/time_plugin"
 	"net/http"
 	"strings"
 	"time"
 
-	//"AirGo/utils/encrypt_plugin"
+	//"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 
-	"AirGo/utils/response"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/ppoonk/AirGo/utils/response"
 	//uuid "github.com/satori/go.uuid"
 	uuid "github.com/satori/go.uuid"
 )
@@ -144,7 +144,7 @@ func Login(c *gin.Context) {
 
 // 修改混淆
 func ChangeSubHost(ctx *gin.Context) {
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("user id error", nil, ctx)
 		return
@@ -167,7 +167,7 @@ func ChangeSubHost(ctx *gin.Context) {
 
 // 获取自身信息
 func GetUserInfo(ctx *gin.Context) {
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("user id error", nil, ctx)
 		return
@@ -273,7 +273,7 @@ func DeleteUser(ctx *gin.Context) {
 
 // 修改密码
 func ChangeUserPassword(ctx *gin.Context) {
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("user id error", nil, ctx)
 		return
@@ -403,7 +403,7 @@ next:
 
 // 重置订阅
 func ResetSub(ctx *gin.Context) {
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("user id error", nil, ctx)
 		return
@@ -424,7 +424,7 @@ func ResetSub(ctx *gin.Context) {
 
 // 打卡
 func ClockIn(ctx *gin.Context) {
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("user id error", nil, ctx)
 		return

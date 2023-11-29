@@ -1,9 +1,9 @@
 package service
 
 import (
-	"AirGo/global"
-	"AirGo/model"
 	"fmt"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
 	"gorm.io/gorm/clause"
 	"reflect"
 	"strings"

@@ -1,14 +1,14 @@
 package service
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/utils/encrypt_plugin"
-	"AirGo/utils/net_plugin"
 	"context"
 	"errors"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
+	"github.com/ppoonk/AirGo/utils/net_plugin"
 	"gorm.io/gorm"
 	"regexp"
 	"runtime"

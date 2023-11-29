@@ -1,12 +1,12 @@
 package service
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/utils/encrypt_plugin"
-	"AirGo/utils/net_plugin"
 	"encoding/json"
 	"fmt"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
+	"github.com/ppoonk/AirGo/utils/net_plugin"
 	"github.com/smartwalle/alipay/v3"
 	"net/http"
 	"net/url"

@@ -1,11 +1,10 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
-	"AirGo/utils/other_plugin"
-	"AirGo/utils/response"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/response"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,7 @@ import (
 
 // 获取角色动态路由
 func GetRouteList(ctx *gin.Context) {
-	uIdInt, _ := other_plugin.GetUserIDFromGinContext(ctx)
+	uIdInt, _ := GetUserIDFromGinContext(ctx)
 	//查询uId对应的角色
 	roleIds, err := service.FindRoleIdsByuId(uIdInt)
 	if err != nil {

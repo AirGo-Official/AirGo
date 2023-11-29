@@ -1,8 +1,8 @@
 package initialize
 
 import (
-	"AirGo/global"
 	"github.com/fsnotify/fsnotify"
+	"github.com/ppoonk/AirGo/global"
 	"github.com/spf13/viper"
 )
 

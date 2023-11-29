@@ -1,9 +1,9 @@
 package initialize
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
 	"github.com/robfig/cron/v3"
 	"strconv"
 	"strings"

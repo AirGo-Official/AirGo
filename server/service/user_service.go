@@ -1,8 +1,8 @@
 package service
 
 import (
-	"AirGo/global"
 	"fmt"
+	"github.com/ppoonk/AirGo/global"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"os"
@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"AirGo/model"
-	encrypt_plugin "AirGo/utils/encrypt_plugin"
 	"errors"
+	"github.com/ppoonk/AirGo/model"
+	encrypt_plugin "github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	uuid "github.com/satori/go.uuid"
 )
 

@@ -1,12 +1,12 @@
 package initialize
 
 import (
-	"AirGo/api"
-	"AirGo/global"
-	"AirGo/middleware"
-	"AirGo/web"
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/api"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/middleware"
+	"github.com/ppoonk/AirGo/web"
 	"net/http"
 	"os"
 	"os/signal"

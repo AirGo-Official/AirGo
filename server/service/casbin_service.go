@@ -1,14 +1,14 @@
 package service
 
 import (
-	"AirGo/global"
-	"AirGo/model"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/casbin/casbin/v2"
 	casbinModel "github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
 	"strconv"
 	"strings"
 )
@@ -164,7 +164,6 @@ func GetUserAllRoutesByUserID(uid int64) (string, error) {
 		vv := v[strings.LastIndex(v, "/")+1:]
 		routesMap[vv] = v
 	}
-	fmt.Println(len(routesMap))
 	byte, err := json.Marshal(routesMap)
 	if err != nil {
 		return "", err

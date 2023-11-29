@@ -1,14 +1,14 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
-	"AirGo/utils/other_plugin"
-	"AirGo/utils/response"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/other_plugin"
+	"github.com/ppoonk/AirGo/utils/response"
 	"gorm.io/gorm"
 	"strconv"
 	"time"
@@ -42,7 +42,7 @@ func GetMonthOrderStatistics(ctx *gin.Context) {
 
 // 获取用户订单by user id，显示用户最近10条订单
 func GetOrderByUserID(ctx *gin.Context) {
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("GetOrderByUserID error:user id error", nil, ctx)
 		return
@@ -117,8 +117,8 @@ func PreCreateOrder(ctx *gin.Context) {
 // 订单预处理，计算价格
 func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 
-	uIDInt, _ := other_plugin.GetUserIDFromGinContext(ctx)
-	uName, _ := other_plugin.GetUserNameFromGinContext(ctx)
+	uIDInt, _ := GetUserIDFromGinContext(ctx)
+	uName, _ := GetUserNameFromGinContext(ctx)
 
 	var msg string
 	user, _ := service.FindUserByID(uIDInt)

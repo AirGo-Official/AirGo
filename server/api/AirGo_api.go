@@ -1,11 +1,11 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
 	"encoding/base64"
 	"fmt"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
 	"strconv"
 	"strings"
 	"time"
@@ -51,9 +51,10 @@ func AGGetNodeInfo(ctx *gin.Context) {
 			node.ServerKey = base64.StdEncoding.EncodeToString([]byte(node.ServerKey))
 		}
 	}
-	ctx.JSON(200, node)
-
+	//etag
+	EtagHandler(node, ctx)
 }
+
 func AGReportNodeStatus(ctx *gin.Context) {
 	//验证key
 	if global.Server.Subscribe.TEK != ctx.Query("key") {
@@ -127,7 +128,7 @@ func AGGetUserlist(ctx *gin.Context) {
 				if node.Scy == "2022-blake3-aes-128-gcm" {
 					p = p[:16]
 				}
-				p = base64.StdEncoding.EncodeToString([]byte(p)) //openssl rand -base64 32
+				p = base64.StdEncoding.EncodeToString([]byte(p))
 				users[k].Passwd = p
 			}
 		default:
@@ -137,8 +138,7 @@ func AGGetUserlist(ctx *gin.Context) {
 		}
 	default:
 	}
-	ctx.JSON(200, users)
-
+	EtagHandler(users, ctx)
 }
 
 func AGReportUserTraffic(ctx *gin.Context) {

@@ -1,13 +1,12 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/service"
-	"AirGo/utils/other_plugin"
-	"AirGo/utils/response"
-	"AirGo/utils/websocket_plugin"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/response"
+	"github.com/ppoonk/AirGo/utils/websocket_plugin"
 	"net/http"
 	"strconv"
 	"time"
@@ -26,7 +25,7 @@ func WebSocketMsg(ctx *gin.Context) {
 		//后端带token响应，否则前端接收不到数据
 		Subprotocols: []string{ctx.GetHeader("Sec-WebSocket-Protocol")},
 	}
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("user id error", nil, ctx)
 		return

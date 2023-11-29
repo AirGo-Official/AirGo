@@ -1,10 +1,10 @@
 package websocket_plugin
 
 import (
-	"AirGo/model"
-	"AirGo/utils/logrus_plugin"
 	"encoding/json"
 	"fmt"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/utils/logrus_plugin"
 	"io"
 	"log"
 	"os"

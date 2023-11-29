@@ -1,23 +1,22 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
-	"AirGo/utils/encrypt_plugin"
-	"AirGo/utils/isp_plugin"
-	"AirGo/utils/jwt_plugin"
-	"AirGo/utils/other_plugin"
-	"AirGo/utils/response"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
+	"github.com/ppoonk/AirGo/utils/isp_plugin"
+	"github.com/ppoonk/AirGo/utils/jwt_plugin"
+	"github.com/ppoonk/AirGo/utils/response"
 	"gorm.io/gorm"
 )
 
 // 获取监控
 func GetMonitorByUserID(ctx *gin.Context) {
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("GetMonitorByUserID error:user id error", nil, ctx)
 		return
@@ -103,7 +102,7 @@ func SendCode(ctx *gin.Context) {
 
 // 登录运营商
 func ISPLogin(ctx *gin.Context) {
-	uIDInt, ok := other_plugin.GetUserIDFromGinContext(ctx)
+	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("ISPLogin error:user id error", nil, ctx)
 		return

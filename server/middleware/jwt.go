@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"AirGo/global"
-	"AirGo/utils/jwt_plugin"
-	"AirGo/utils/response"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/utils/jwt_plugin"
+	"github.com/ppoonk/AirGo/utils/response"
 	"strings"
 
 	"github.com/gin-gonic/gin"

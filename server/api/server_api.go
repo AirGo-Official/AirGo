@@ -1,11 +1,11 @@
 package api
 
 import (
-	"AirGo/global"
-	"AirGo/model"
-	"AirGo/service"
-	"AirGo/utils/response"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
+	"github.com/ppoonk/AirGo/utils/response"
 )
 
 // 主题配置
@@ -67,7 +67,6 @@ func UpdateSetting(ctx *gin.Context) {
 		response.Fail("UpdateSetting error:"+err.Error(), nil, ctx)
 		return
 	}
-	service.Show(setting)
 	err = service.UpdateSetting(&setting)
 	if err != nil {
 		global.Logrus.Error(err.Error())
