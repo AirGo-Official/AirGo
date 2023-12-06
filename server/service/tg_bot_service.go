@@ -11,7 +11,7 @@ import (
 	"github.com/ppoonk/AirGo/utils/net_plugin"
 	"gorm.io/gorm"
 	"regexp"
-	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -60,17 +60,21 @@ func TGBotStartListen() {
 	global.TGBot = bot
 
 	ctx, cancel := context.WithCancel(context.Background())
-	global.CtxMap[global.TGBotCtx] = &ctx
-	global.CancelMap[global.TGBotCancel] = &cancel
-	go TGBotListen(global.TGBot, global.CtxMap[global.TGBotCtx])
+
+	global.ContextGroup.MapLock.Lock()
+	global.ContextGroup.CtxMap[global.TGBotCtx] = &ctx
+	global.ContextGroup.CancelMap[global.TGBotCancel] = &cancel
+	global.ContextGroup.MapLock.Unlock()
+
+	go TGBotListen(global.TGBot, global.ContextGroup.CtxMap[global.TGBotCtx])
 }
 
 func TGBotCloseListen() {
-	cancel, ok := global.CancelMap[global.TGBotCancel]
+	cancel, ok := global.ContextGroup.CancelMap[global.TGBotCancel]
 	if ok {
 		(*cancel)()
-		delete(global.CtxMap, global.TGBotCtx)
-		delete(global.CancelMap, global.TGBotCancel)
+		delete(global.ContextGroup.CtxMap, global.TGBotCtx)
+		delete(global.ContextGroup.CancelMap, global.TGBotCancel)
 	}
 }
 func TGBotSendMessage(chatID int64, text string) {
@@ -83,14 +87,16 @@ func TGBotSendMessage(chatID int64, text string) {
 func NewTGBot(token string) (*tgbotapi.BotAPI, error) {
 	var bot *tgbotapi.BotAPI
 	var err error
-
-	if runtime.GOOS == "darwin" { //本机开发使用代理
-		c := net_plugin.ClientWithSocks5("127.0.0.1", 1080, 10*time.Second)
+	if global.Server.Notice.TGSocks5 != "" {
+		socks := strings.Split(global.Server.Notice.TGSocks5, ":")
+		add := socks[0]
+		port := socks[1]
+		portInt, _ := strconv.ParseInt(port, 10, 64)
+		c := net_plugin.ClientWithSocks5(add, int(portInt), 10*time.Second)
 		bot, err = tgbotapi.NewBotAPIWithClient(token, c)
 	} else {
 		bot, err = tgbotapi.NewBotAPI(token)
 	}
-
 	if err != nil {
 		global.Logrus.Error("TGBotListen error:", err)
 		return nil, err

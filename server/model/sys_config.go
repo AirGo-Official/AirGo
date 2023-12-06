@@ -27,7 +27,8 @@ type Sqlite struct {
 type SystemParams struct {
 	AdminEmail    string `mapstructure:"admin-email"    yaml:"admin-email"`
 	AdminPassword string `mapstructure:"admin-password" yaml:"admin-password"`
-	HTTPPort      int    `mapstructure:"http-port"           yaml:"http-port"`
+	HTTPPort      int    `mapstructure:"http-port"      yaml:"http-port"`
 	HTTPSPort     int    `mapstructure:"https-port"     yaml:"https-port"`
+	GRPCPort      int    `mapstructure:"grpc-port"      yaml:"grpc-port"`
 	DbType        string `mapstructure:"db-type"        yaml:"db-type"`
 }

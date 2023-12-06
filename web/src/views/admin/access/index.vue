@@ -8,7 +8,7 @@
                     style="max-width: 180px"></el-input>
         </el-col>
         <el-col :span="3">
-          <el-button  size="default" type="primary" class="ml10" @click="accessStore.getRoutesList(accessStoreData.params.value)">
+          <el-button  size="default" type="primary" class="ml10" @click="getAccess()">
             <el-icon>
               <ele-Search/>
             </el-icon>
@@ -45,8 +45,8 @@
           :page-sizes="[10, 30, 50]"
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="onHandleSizeChange" @current-change="onHandleCurrentChange"
-          v-model:current-page="accessStoreData.params.value.pagination_params.page_num"
-          v-model:page-size="accessStoreData.params.value.pagination_params.page_size"
+          v-model:current-page="accessStoreData.params.value.pagination.page_num"
+          v-model:page-size="accessStoreData.params.value.pagination.page_size"
           :total="accessStoreData.routes_list.value.total"
       />
     </el-card>
@@ -77,9 +77,12 @@ const state = reactive({
 function openDialog(title: string, row?:any) {
   DialogRef.value.openDialog(title, row)
 }
-//删除节点
+//获取数据
+const getAccess=()=>{
+  accessStore.getRoutesList(accessStoreData.params.value)
+}
+//删除
 function onRowDel(row: any) {
-  console.log("row",row)
   ElMessageBox.confirm(`此操作将永久删除：${row.name}，是否继续?`, '提示', {
     confirmButtonText: '删除',
     cancelButtonText: '取消',
@@ -88,7 +91,7 @@ function onRowDel(row: any) {
       .then(() => {
         accessStore.deleteRoutes(row)
         setTimeout(()=>{
-          accessStore.getRoutesList(accessStoreData.params.value)
+          getAccess()
         },500)
 
       })
@@ -98,19 +101,17 @@ function onRowDel(row: any) {
 
 // 分页改变
 const onHandleSizeChange = (val: number) => {
-  accessStoreData.params.value.pagination_params.page_size = val;
-  accessStore.getRoutesList(accessStoreData.params.value)
+  accessStoreData.params.value.pagination.page_size = val;
+  getAccess()
 
 };
 // 分页改变
 const onHandleCurrentChange = (val: number) => {
-  accessStoreData.params.value.pagination_params.page_num = val;
-  accessStore.getRoutesList(accessStoreData.params.value)
-
+  accessStoreData.params.value.pagination.page_num = val;
+  getAccess()
 };
-
 onMounted(() => {
-  accessStore.getRoutesList(accessStoreData.params.value)
+  getAccess()
 });
 
 

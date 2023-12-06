@@ -93,6 +93,12 @@ func GetStructFieldMap(data interface{}) ([]string, map[string]interface{}, map[
 	t := v.Type() //Value转Type
 	for i := 0; i < t.NumField(); i++ {
 		if t.Field(i).Type.Kind() == reflect.Struct {
+			//如果没有指定gorm:"embedded",则跳过递归
+			comment := t.Field(i).Tag.Get("gorm")
+			index := strings.Index(comment, "embedded")
+			if index == -1 {
+				continue
+			}
 			//嵌套结构体，递归
 			mm1, mm2, mm3 := GetStructFieldMap(v.Field(i).Interface())
 			for _, v := range mm1 {
@@ -108,10 +114,9 @@ func GetStructFieldMap(data interface{}) ([]string, map[string]interface{}, map[
 					m3[k] = v
 				}
 			}
-
 			continue
 		}
-		//json
+		//json:字段
 		jsonName := t.Field(i).Tag.Get("json")
 		if jsonName == "-" {
 			continue
@@ -121,7 +126,7 @@ func GetStructFieldMap(data interface{}) ([]string, map[string]interface{}, map[
 			jsonName = jsonName[:index]
 		}
 		//fmt.Println("jsonName:", jsonName)
-		//gorm
+		//gorm:通过gorm备注获得中文名
 		comment := t.Field(i).Tag.Get("gorm")
 		if comment == "-" {
 			continue

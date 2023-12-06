@@ -173,15 +173,7 @@ func PollAliPay(order *model.Orders, client *alipay.Client) {
 				RemainHandle(order.UserID, order.RemainAmount) //处理用户余额
 			})
 			global.GoroutinePool.Submit(func() { //通知
-				if global.Server.Notice.TGAdmin == "" {
-					return
-				}
-				tgIDs := strings.Fields(global.Server.Notice.TGAdmin)
-				for _, v := range tgIDs {
-					chatID, _ := strconv.ParseInt(v, 10, 64)
-					TGBotSendMessage(chatID, fmt.Sprintf("用户：%s\n购买订阅：%s\n销售价格：%s\n订单金额：%s\n支付方式：%s", order.UserName, order.Subject, order.Price, order.TotalAmount, order.PayType))
-				}
-
+				UnifiedPushMessage(fmt.Sprintf("用户：%s\n购买订阅：%s\n销售价格：%s\n订单金额：%s\n支付方式：%s", order.UserName, order.Subject, order.Price, order.TotalAmount, order.PayType))
 			})
 			t.Stop()
 			return

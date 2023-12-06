@@ -27,11 +27,11 @@
           <div class="login-right-warp-main-form">
             <div v-if="!state.isScan">
               <el-tabs v-model="state.tabsActiveName">
-                <el-tab-pane label="登录" name="account">
+                <el-tab-pane label="登录" name="login">
                   <Account/>
                 </el-tab-pane>
-                <el-tab-pane label="注册" name="mobile">
-                  <Register/>
+                <el-tab-pane label="注册" name="register">
+                  <Register ref="RegisterRef" @toLogin="toLogin"/>
                 </el-tab-pane>
               </el-tabs>
             </div>
@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts" name="loginIndex">
-import {computed, defineAsyncComponent, onMounted, reactive} from 'vue';
+import {computed, defineAsyncComponent, onMounted, reactive,ref} from 'vue';
 import {storeToRefs} from 'pinia';
 
 
@@ -64,6 +64,7 @@ import {Local} from "/@/utils/storage";
 // 引入组件
 const Account = defineAsyncComponent(() => import('/@/views/login/component/account.vue'));
 const Register = defineAsyncComponent(() => import('/@/views/login/component/register.vue'));
+const RegisterRef = ref()
 const Scan = defineAsyncComponent(() => import('/@/views/login/component/scan.vue'));
 const LayoutFooter = defineAsyncComponent(() => import('/@/layout/footer/index.vue'));
 
@@ -72,7 +73,7 @@ const LayoutFooter = defineAsyncComponent(() => import('/@/layout/footer/index.v
 const storesThemeConfig = useThemeConfig();
 const {themeConfig} = storeToRefs(storesThemeConfig);
 const state = reactive({
-  tabsActiveName: 'account',
+  tabsActiveName: 'login',
   isScan: false,
 });
 
@@ -85,11 +86,18 @@ const route = useRoute();
 const isFooter = computed(() => {
   return themeConfig.value.isFooter && !route.meta.isIframe;
 });
+// 去登录
+const toLogin = () => {
+  state.tabsActiveName = "login"
+}
 
 // 页面加载时
 onMounted(() => {
-  // console.log("route.query",  route.query.i)
-  Local.set('invitation', route.query.i)
+  let i = ''
+  if (route.query.i !== undefined){
+    i = route.query.i as string
+  }
+  Local.set('invitation', i)
   NextLoading.done();
 });
 </script>
@@ -171,6 +179,7 @@ onMounted(() => {
       position: relative;
       overflow: hidden;
       background-color: var(--el-color-white);
+
       .login-right-warp-mian {
         display: flex;
         flex-direction: column;

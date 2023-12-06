@@ -1,19 +1,12 @@
 package model
 
 import (
+	"context"
 	"database/sql/driver"
 	"encoding/json"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
+	"sync"
 )
-
-// 分页参数
-type PaginationParams struct {
-	Search   string   `json:"search"`
-	PageNum  int64    `json:"page_num"`
-	PageSize int64    `json:"page_size"`
-	Total    int64    `json:"total"`
-	Date     []string `json:"date"`
-}
 
 // 结构体-字符串 对应map
 var (
@@ -35,6 +28,7 @@ var (
 		"node":          Node{},
 		"pay":           Pay{},
 		"access":        Access{},
+		"ticket":        Ticket{},
 	}
 	StringAndSlice = map[string]any{
 		"user":          []User{},
@@ -54,6 +48,7 @@ var (
 		"node":          []Node{},
 		"pay":           []Pay{},
 		"access":        []Access{},
+		"ticket":        []Ticket{},
 	}
 )
 
@@ -66,4 +61,10 @@ func (s *SliceForGorm) Scan(value interface{}) error {
 }
 func (s SliceForGorm) Value() (driver.Value, error) {
 	return json.Marshal(s)
+}
+
+type ContextGroup struct {
+	MapLock   sync.RWMutex
+	CtxMap    map[string]*context.Context    //
+	CancelMap map[string]*context.CancelFunc //
 }

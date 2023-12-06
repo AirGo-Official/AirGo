@@ -222,7 +222,10 @@
 
             <el-card>
               <el-form-item label="TG bot token">
-                <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"/>
+                <el-input v-model="serverConfig.serverConfig.value.notice.bot_token" placeholder="1234567890:AAAAABBBBBCCCCCDDDDFFFFGGGHHHJJKKLL"/>
+              </el-form-item>
+              <el-form-item label="TG socks5代理">
+                <el-input v-model="serverConfig.serverConfig.value.notice.tg_socks5" placeholder="127.0.0.1:1080"/>
               </el-form-item>
               <el-form-item label="TG管理员账号(多个账号换行)">
                 <el-input v-model="serverConfig.serverConfig.value.notice.tg_admin" type="textarea" autosize/>

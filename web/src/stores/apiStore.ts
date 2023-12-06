@@ -104,7 +104,6 @@ export const useApiStore = defineStore("apiStore", {
             upload_getPictureList: {path: apiPre + "/upload/getPictureList", method: "post"} as ApiItem,
 
             //report
-            report_getDB: {path: apiPre + "/report/getDB", method: "get"} as ApiItem,
             report_getTables: {path: apiPre + "/report/getTables", method: "post"} as ApiItem,
             report_getColumn: {path: apiPre + "/report/getColumn", method: "post"} as ApiItem,
             report_reportSubmit: {path: apiPre + "/report/reportSubmit", method: "post"} as ApiItem,
@@ -133,6 +132,15 @@ export const useApiStore = defineStore("apiStore", {
             access_getRoutesList: {path: apiPre + "/access/getRoutesList", method: "post"} as ApiItem,
             //migration
             migration_fromOther:{path: apiPre + "/migration/fromOther", method: "post"} as ApiItem,
+            //ticket
+            ticket_newTicket:{path: apiPre + "/ticket/newTicket", method: "post"} as ApiItem,
+            ticket_deleteTicket:{path: apiPre + "/ticket/deleteTicket", method: "post"} as ApiItem,
+            ticket_updateTicket:{path: apiPre + "/ticket/updateTicket", method: "post"} as ApiItem,
+            ticket_updateUserTicket:{path: apiPre + "/ticket/updateUserTicket", method: "post"} as ApiItem,
+            ticket_getUserTicketList:{path: apiPre + "/ticket/getUserTicketList", method: "post"} as ApiItem,
+            ticket_getTicketList:{path: apiPre + "/ticket/getTicketList", method: "post"} as ApiItem,
+            ticket_sendTicketMessage:{path: apiPre + "/ticket/sendTicketMessage", method: "post"} as ApiItem,
+            ticket_getTicketMessage:{path: apiPre + "/ticket/getTicketMessage", method: "post"} as ApiItem,
         },
 
     }),

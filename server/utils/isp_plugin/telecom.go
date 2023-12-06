@@ -248,10 +248,8 @@ func TelecomQueryTrafficHandler(resp, mobile string) (string, error) {
 	var special, specialUse string
 	var specialInfo string
 	if len(ratableResourcePackages) > 1 {
-		fmt.Println("不为空")
 		specialUseLeftStructure, ok1 := ratableResourcePackages[1].(map[string]interface{})["leftStructure"].(map[string]interface{})
 		if ok1 {
-			fmt.Println(55)
 			specialUse = specialUseLeftStructure["title"].(string) + specialUseLeftStructure["num"].(string) + specialUseLeftStructure["unit"].(string)
 		}
 		special = "【" + specialUse + "】"

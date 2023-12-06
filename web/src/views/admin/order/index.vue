@@ -2,9 +2,9 @@
   <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
       <div class="mb15">
-        <el-input v-model="state.params.search" placeholder="请输入订单号"
+        <el-input v-model="reportStoreData.reportParams.value.field_params_list[0].condition_value" placeholder="请输入订单号"
                   style="max-width: 180px" size="default"></el-input>
-        <el-button size="default" type="primary" class="ml10" @click="onSearch(state.params)">
+        <el-button size="default" type="primary" class="ml10" @click="onSearch()">
           <el-icon>
             <ele-Search/>
           </el-icon>
@@ -20,25 +20,25 @@
         <el-collapse v-if="state.isShowCollapse" v-model="state.activeCollapseNames">
           <el-collapse-item name="1">
             <!--          report组件-->
-            <ReportComponent ref="reportRef" @getReportData="getReportDataHandler"></ReportComponent>
+            <ReportComponent ref="reportRef" @getReportData="getReportData"></ReportComponent>
           </el-collapse-item>
         </el-collapse>
       </div>
-      <el-table :data="orderManageData.allOrders.order_list" stripe style="width: 100%;flex: 1;">
+      <el-table :data="orderManageData.allOrders.order_list" stripe style="width: 100%;flex: 1;" @sort-change="sortChange">
         <el-table-column type="index" label="序号" fixed width="60px"/>
-        <el-table-column prop="out_trade_no" label="订单号" width="200"/>
-        <el-table-column prop="id" label="订单ID" width="60px"/>
-        <el-table-column prop="created_at" label="下单日期" width="150">
+        <el-table-column prop="out_trade_no" label="订单号" width="200" sortable="custom"/>
+        <el-table-column prop="id" label="订单ID" width="100px" sortable="custom"/>
+        <el-table-column prop="created_at" label="下单日期" width="150" sortable="custom">
           <template #default="scope">
             <el-tag type="success">{{ DateStrtoTime(scope.row.created_at) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="user_name" label="用户" width="180"/>
-        <el-table-column prop="goods_id" label="商品ID" show-overflow-tooltip width="60"/>
-        <el-table-column prop="subject" label="商品标题" show-overflow-tooltip width="200"/>
-        <el-table-column prop="total_amount" label="订单金额" show-overflow-tooltip width="80"/>
-        <el-table-column prop="receipt_amount" label="实收金额" show-overflow-tooltip width="80"/>
-        <el-table-column prop="trade_status" label="交易状态" show-overflow-tooltip>
+        <el-table-column prop="user_name" label="用户" width="180" sortable="custom"/>
+        <el-table-column prop="goods_id" label="商品ID" show-overflow-tooltip width="100" sortable="custom"/>
+        <el-table-column prop="subject" label="商品标题" show-overflow-tooltip width="200" sortable="custom"/>
+        <el-table-column prop="total_amount" label="订单金额" show-overflow-tooltip width="100" sortable="custom"/>
+        <el-table-column prop="receipt_amount" label="实收金额" show-overflow-tooltip width="100" sortable="custom"/>
+        <el-table-column prop="trade_status" label="交易状态" show-overflow-tooltip sortable="custom" width="100">
           <template #default="scope">
             <el-tag type="success" v-if="scope.row.trade_status==='TRADE_SUCCESS'">支付成功</el-tag>
             <el-tag type="warning" v-else-if="scope.row.trade_status==='WAIT_BUYER_PAY'">等待买家付款</el-tag>
@@ -62,8 +62,8 @@
                      class="mt15"
                      layout="total, sizes, prev, pager, next, jumper"
                      :page-sizes="[10, 30, 50]"
-                     v-model:current-page="state.params.page_num"
-                     v-model:page-size="state.params.page_size"
+                     v-model:current-page="reportStoreData.reportParams.value.pagination.page_num"
+                     v-model:page-size="reportStoreData.reportParams.value.pagination.page_size"
                      :total="orderManageData.allOrders.total"
                      @size-change="onHandleSizeChange"
                      @current-change="onHandleCurrentChange">
@@ -73,13 +73,14 @@
 </template>
 
 <script setup lang="ts">
-import {defineAsyncComponent, onMounted, reactive, ref} from "vue";
+import {defineAsyncComponent, onBeforeMount, onMounted, reactive, ref} from "vue";
 import {useOrderStore} from "/@/stores/orderStore";
 import {DateStrtoTime} from "/@/utils/formatTime"
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
 import {ElMessage, ElMessageBox} from "element-plus";
+import {useReportStore} from "/@/stores/reportStore";
 
 const orderStore = useOrderStore()
 const {orderManageData} = storeToRefs(orderStore)
@@ -87,26 +88,18 @@ const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
 const ReportComponent = defineAsyncComponent(() => import('/@/components/report/index.vue'))
 const reportRef = ref()
+const reportStore = useReportStore()
+const reportStoreData = storeToRefs(reportStore)
 
 //定义参数
 const state = reactive({
-  params: {
-    page_num: 1,
-    page_size: 30,
-    search: '',
-    date: [],
-  } as PaginationParams,
   activeCollapseNames: '1', //当前激活的折叠面板
   isShowCollapse: false,
-  fieldConditionList: {},
 })
 //
-const onSearch = (params?: object) => {
-  orderStore.getAllOrder(params)
+const onSearch = () => {
+  orderStore.getAllOrder(reportStoreData.reportParams.value)
 }
-onMounted(() => {
-  onSearch(state.params)
-})
 //完成未支付订单
 const onCompleteOrder=(row: Order)=> {
   ElMessageBox.confirm(`此操作将永久完成用户未支付订单（${row.subject}），并使之有效，, 是否继续?`, '提示', {
@@ -117,7 +110,7 @@ const onCompleteOrder=(row: Order)=> {
       .then(() => {
         orderStore.completedOrder(row)
         setTimeout(()=>{
-          onSearch(state.params)
+          onSearch()
         },500)
       })
       .catch(() => {
@@ -126,23 +119,31 @@ const onCompleteOrder=(row: Order)=> {
 
 // 分页改变
 const onHandleSizeChange = (val: number) => {
-  if (state.isShowCollapse) {
-    getReportDataHandler(state.fieldConditionList)
-  } else {
-    state.params.page_size = val;
-    orderStore.getAllOrder(state.params)
-  }
-
+  reportStoreData.reportParams.value.pagination.page_size = val;
+    onSearch()
 };
 // 分页改变
 const onHandleCurrentChange = (val: number) => {
-  if (state.isShowCollapse) {
-    getReportDataHandler(state.fieldConditionList)
-  } else {
-    state.params.page_num = val;
-    orderStore.getAllOrder(state.params)
-  }
+  reportStoreData.reportParams.value.pagination.page_num = val;
+    onSearch()
 };
+//排序监听
+const sortChange = (column: any) => {
+  //处理嵌套字段
+  let p = (column.prop as string)
+  if (p.indexOf('.') !== -1) {
+    p = p.slice(p.indexOf('.')+1)
+  }
+  switch (column.order){
+    case 'ascending':
+      reportStoreData.reportParams.value.pagination.order_by=p+" ASC"
+      break
+    default:
+      reportStoreData.reportParams.value.pagination.order_by=p+" DESC"
+      break
+  }
+  onSearch()
+}
 //开启高级查询折叠面板
 const onShowCollapse = () => {
   state.isShowCollapse = !state.isShowCollapse
@@ -153,47 +154,24 @@ const onShowCollapse = () => {
     }
   }, 500)
 }
-//请求数据
-const getReportDataHandler = (data: any) => {
-  //拼接分页参数
-  (data as any).pagination_params = state.params;
-  state.fieldConditionList = data
-  request(apiStoreData.api.value.report_reportSubmit, data).then((res) => {
-    orderManageData.value.allOrders.order_list = res.data.table_data
-    orderManageData.value.allOrders.total = res.data.total
-  })
+//
+const getReportData = (data: any) => {
+  onSearch()
 }
-
-//时间范围
-const shortcuts = [
-  {
-    text: '上周',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-      return [start, end]
-    },
-  },
-  {
-    text: '上月',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-      return [start, end]
-    },
-  },
-  {
-    text: '最近3个月',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-      return [start, end]
-    },
-  },
-]
+//初始化查询参数
+const defaultFieldParams = () => {
+  reportStoreData.reportParams.value.table_name = 'orders'
+  reportStoreData.reportParams.value.field_params_list = [
+    {field: 'out_trade_no', field_chinese_name: '', field_type: '', condition: 'like', condition_value: '', operator: '',} as FieldParams]
+  reportStoreData.reportParams.value.pagination = {page_num: 1, page_size: 30, order_by: 'id DESC',} as Pagination
+}
+//
+onBeforeMount(() => {
+  defaultFieldParams()
+});
+onMounted(() => {
+  onSearch()
+});
 
 </script>
 

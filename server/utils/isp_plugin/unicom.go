@@ -174,7 +174,6 @@ func UnicomQueryTrafficHandler(resp, mobile string) (string, error) {
 			}
 		}
 	}
-	//fmt.Println("非共享ok")
 	//共享
 	var sharedList string
 	shared, ok := respMap["resources"].([]interface{})[0].(map[string]interface{})["details"].([]interface{})

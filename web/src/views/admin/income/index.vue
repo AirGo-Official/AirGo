@@ -7,24 +7,10 @@
             <el-card class="box-card">
               <el-row :gutter="10" justify="space-around" align="middle">
                 <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                  今日订单：{{ state.statisticsData.dayOrderDataCurrent.total }}
+                  今日订单：{{ state.statisticsData.todayOrder.total }}
                 </el-col>
                 <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                  今日收入：{{ state.statisticsData.dayOrderDataCurrent.total_amount.toFixed(2) }} ¥
-                </el-col>
-              </el-row>
-            </el-card>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
-          <div class="home-card-item">
-            <el-card class="box-card">
-              <el-row :gutter="10" justify="space-around" align="middle">
-                <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                  当月订单：{{ state.statisticsData.monthOrderDataCurrent.total }}
-                </el-col>
-                <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                  当月收入：{{ state.statisticsData.monthOrderDataCurrent.total_amount.toFixed(2) }} ¥
+                  今日收入：{{ state.statisticsData.todayOrder.total_amount.toFixed(2) }} ¥
                 </el-col>
               </el-row>
             </el-card>
@@ -35,10 +21,24 @@
             <el-card class="box-card">
               <el-row :gutter="10" justify="space-around" align="middle">
                 <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                  上月订单：{{ state.statisticsData.monthOrderDataLast.total }}
+                  当月订单：{{ state.statisticsData.thisMonthOrder.total }}
                 </el-col>
                 <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                  上月收入：{{ state.statisticsData.monthOrderDataLast.total_amount.toFixed(2) }} ¥
+                  当月收入：{{ state.statisticsData.thisMonthOrder.total_amount.toFixed(2) }} ¥
+                </el-col>
+              </el-row>
+            </el-card>
+          </div>
+        </el-col>
+        <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+          <div class="home-card-item">
+            <el-card class="box-card">
+              <el-row :gutter="10" justify="space-around" align="middle">
+                <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+                  上月订单：{{ state.statisticsData.lastMonthOrder.total }}
+                </el-col>
+                <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+                  上月收入：{{ state.statisticsData.lastMonthOrder.total_amount.toFixed(2) }} ¥
                 </el-col>
               </el-row>
             </el-card>
@@ -50,7 +50,7 @@
       <el-divider>
         当月数据
       </el-divider>
-      <el-table :data="state.statisticsData.monthNodeCurrent.node_list" height="100%" style="width: 100%;flex: 1;"
+      <el-table :data="state.statisticsData.thisMonthTraffic.node_list" height="100%" style="width: 100%;flex: 1;"
                 stripe fit show-summary :summary-method="getSummaries">
         <el-table-column fixed type="index" label="序号" width="60"/>
         <el-table-column prop="remarks" label="节点名称" show-overflow-tooltip width="200"></el-table-column>
@@ -71,7 +71,7 @@
       <el-divider>
         上月数据
       </el-divider>
-      <el-table :data="state.statisticsData.monthNodeLast.node_list" height="100%" style="width: 100%;flex: 1;" stripe
+      <el-table :data="state.statisticsData.lastMonthTraffic.node_list" height="100%" style="width: 100%;flex: 1;" stripe
                 fit show-summary :summary-method="getSummaries">
         <el-table-column fixed type="index" label="序号" width="60"/>
         <el-table-column prop="remarks" label="节点名称" show-overflow-tooltip width="200"></el-table-column>
@@ -99,77 +99,82 @@ import {formatDate} from "/@/utils/formatTime";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
+import {useReportStore} from "/@/stores/reportStore";
 
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
+const reportStore = useReportStore()
+const reportStoreData = storeToRefs(reportStore)
+
 const state = reactive({
-  statisticsData: {
-    dayOrderDataCurrent: {
-      total_amount: 0,
-      total: 0,
-    } as OrdersWithTotal,
-    monthOrderDataCurrent: {
-      total_amount: 0,
-      total: 0,
-    } as OrdersWithTotal,
-    monthOrderDataLast: {
-      total_amount: 0,
-      total: 0,
-    } as OrdersWithTotal,
-    monthNodeCurrent: {
-      total: 0,
-      node_list: [] as NodeInfo[],
-    },
-    monthNodeLast: {
-      total: 0,
-      node_list: [] as NodeInfo[],
-    },
+
+  duration: {
+    today: [''],
+    this_month: [''],
+    last_month: [''],
   },
-  monthOptions: {
-    dateDay: {
-      page_num: 1,
-      page_size: 200,
-      date: ['', ''],
+
+  statisticsData: {
+    todayOrder: {
+      total_amount: 0,
+      total: 0,
+    } as OrdersWithTotal,
+    thisMonthOrder: {
+      total_amount: 0,
+      total: 0,
+    } as OrdersWithTotal,
+    lastMonthOrder: {
+      total_amount: 0,
+      total: 0,
+    } as OrdersWithTotal,
+    thisMonthTraffic: {
+      total: 0,
+      node_list: [] as NodeInfo[],
     },
-    dateCurrent: {
-      page_num: 1,
-      page_size: 200,
-      date: ['', ''],
-    },
-    dateLast: {
-      page_num: 1,
-      page_size: 200,
-      date: ['', ''],
+    lastMonthTraffic: {
+      total: 0,
+      node_list: [] as NodeInfo[],
     },
   },
 })
+//初始化查询参数
+const defaultFieldParams = (start: string, end: string) => {
+  reportStoreData.reportParams.value.table_name = 'orders'
+  reportStoreData.reportParams.value.field_params_list = [
+    {field: 'created_at', field_chinese_name: '', field_type: '', condition: '>', condition_value: start, operator: ''},
+    {field: 'created_at', field_chinese_name: '', field_type: '', condition: '<', condition_value: end, operator: 'AND',}
+  ] as FieldParams[]
+}
 
 //获取订单统计
 function getMonthOrder(params?: object) {
-  request(apiStoreData.api.value.order_getMonthOrderStatistics, state.monthOptions.dateDay).then((res) => {
-    state.statisticsData.dayOrderDataCurrent = res.data
+  defaultFieldParams(state.duration.today[0],state.duration.today[1])
+  request(apiStoreData.api.value.order_getMonthOrderStatistics, reportStoreData.reportParams.value).then((res) => {
+    state.statisticsData.todayOrder = res.data
   })
-  request(apiStoreData.api.value.order_getMonthOrderStatistics, state.monthOptions.dateCurrent).then((res) => {
-    state.statisticsData.monthOrderDataCurrent = res.data
-  })
-  request(apiStoreData.api.value.order_getMonthOrderStatistics, state.monthOptions.dateLast).then((res) => {
-    state.statisticsData.monthOrderDataLast = res.data
-  })
-}
 
-//获取节点流量统计
-function getMonthNodeInfo(params?: object) {
-  request(apiStoreData.api.value.node_getTraffic, state.monthOptions.dateCurrent).then((res) => {
-    state.statisticsData.monthNodeCurrent = res.data
+    defaultFieldParams(state.duration.this_month[0],state.duration.this_month[1])
+    request(apiStoreData.api.value.order_getMonthOrderStatistics, reportStoreData.reportParams.value).then((res) => {
+      state.statisticsData.thisMonthOrder = res.data
+    })
+    request(apiStoreData.api.value.node_getTraffic, reportStoreData.reportParams.value).then((res) => {
+      state.statisticsData.thisMonthTraffic = res.data
+    })
 
-  })
-  request(apiStoreData.api.value.node_getTraffic, state.monthOptions.dateLast).then((res) => {
-    state.statisticsData.monthNodeLast = res.data
-  })
+
+    defaultFieldParams(state.duration.last_month[0],state.duration.last_month[1])
+    request(apiStoreData.api.value.order_getMonthOrderStatistics, reportStoreData.reportParams.value).then((res) => {
+      state.statisticsData.lastMonthOrder = res.data
+    })
+    request(apiStoreData.api.value.node_getTraffic, reportStoreData.reportParams.value).then((res) => {
+      state.statisticsData.lastMonthTraffic = res.data
+    })
+
+
 }
 
 function initDate() {
-  // 时间范围格式 "2023-05-09 11:56:02"
+  // 目标时间范围格式： "2023-05-09 11:56:02"
   let currentDate = new Date();
   let currentY = currentDate.getFullYear();
   let currentM = currentDate.getMonth() + 1;
@@ -178,25 +183,28 @@ function initDate() {
   //当月
   let startDate = new Date(currentY, currentM - 1, 1);
   let endDate = new Date(currentY, currentM, 0, 23, 59, 59); // new Date(2020,11,0);//表示2020/11/30这天
-  let start = formatDate(startDate, "YYYY-mm-dd HH:MM:SS")
-  let end = formatDate(endDate, "YYYY-mm-dd HH:MM:SS")
+  let thisMonthStart = formatDate(startDate, "YYYY-mm-dd HH:MM:SS")
+  let thisMonthEnd = formatDate(endDate, "YYYY-mm-dd HH:MM:SS")
   //上月
   let lastStartDate = new Date(currentY, currentM - 2, 1);
   let lastEndDate = new Date(currentY, currentM - 1, 0, 23, 59, 59); // new Date(2020,11,0);//表示2020/11/30这天
-  let lastStart = formatDate(lastStartDate, "YYYY-mm-dd HH:MM:SS")
-  let lastEnd = formatDate(lastEndDate, "YYYY-mm-dd HH:MM:SS")
+  let lastMonthStart = formatDate(lastStartDate, "YYYY-mm-dd HH:MM:SS")
+  let lastMonthEnd = formatDate(lastEndDate, "YYYY-mm-dd HH:MM:SS")
   //当天范围
-  let currentDayStartDate = new Date();
-  currentDayStartDate.setHours(0);
-  currentDayStartDate.setMinutes(0);
-  currentDayStartDate.setSeconds(0);
-  currentDayStartDate.setMilliseconds(0);
-  let currentDayEndDate = new Date(currentDayStartDate.getTime() + 3600 * 1000 * 24 - 1000)
-  let currentDayStart = formatDate(currentDayStartDate, "YYYY-mm-dd HH:MM:SS")
-  let currentDayEnd = formatDate(currentDayEndDate, "YYYY-mm-dd HH:MM:SS")
-  state.monthOptions.dateCurrent.date = [start, end]
-  state.monthOptions.dateLast.date = [lastStart, lastEnd]
-  state.monthOptions.dateDay.date = [currentDayStart, currentDayEnd]
+  let todayStartDate = new Date();
+  todayStartDate.setHours(0);
+  todayStartDate.setMinutes(0);
+  todayStartDate.setSeconds(0);
+  todayStartDate.setMilliseconds(0);
+  let todayEndDate = new Date(todayStartDate.getTime() + 3600 * 1000 * 24 - 1000)
+  let todayStart = formatDate(todayStartDate, "YYYY-mm-dd HH:MM:SS")
+  let todayEnd = formatDate(todayEndDate, "YYYY-mm-dd HH:MM:SS")
+
+  state.duration.this_month = [thisMonthStart, thisMonthEnd]
+
+  state.duration.last_month = [lastMonthStart, lastMonthEnd]
+
+  state.duration.today = [todayStart, todayEnd]
 }
 
 
@@ -204,8 +212,6 @@ function initDate() {
 onMounted(() => {
   initDate()
   getMonthOrder()
-  getMonthNodeInfo()
-
 });
 
 //表格合计
@@ -262,6 +268,6 @@ const getSummaries = (param: SummaryMethodProps) => {
 }
 
 .el-card {
-  background-image: url("../../assets/bgc/1.png");
+  background-image: url("../../../assets/bgc/1.png");
 }
 </style>

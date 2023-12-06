@@ -34,8 +34,8 @@ func ParseJwt() gin.HandlerFunc {
 			return
 		}
 		//设置user id
-		c.Set("uID", claims.UserID)
-		c.Set("uName", claims.UserName)
+		c.Set(global.CtxSetUserID, claims.UserID)
+		c.Set(global.CtxSetUserName, claims.UserName)
 		c.Next()
 	}
 

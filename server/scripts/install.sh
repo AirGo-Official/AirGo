@@ -18,6 +18,7 @@ githubApi="https://api.github.com/repos/ppoonk/AirGo/releases/latest"
 manageScript="https://raw.githubusercontent.com/ppoonk/AirGo/main/server/scripts/install.sh"
 acmeGit="https://github.com/acmesh-official/acme.sh.git"
 yamlFile="/usr/local/AirGo/config.yaml"
+ghproxy='https://mirror.ghproxy.com/'
 ipv4=""
 ipv4_local=""
 
@@ -45,8 +46,8 @@ get_region() {
     country=$( curl -4 "https://ipinfo.io/country" 2> /dev/null )
     if [ "$country" == "CN" ]; then
       acmeGit="https://gitee.com/neilpang/acme.sh.git"
-      downloadPrefix="https://gh-proxy.com/${downloadPrefix}"
-      manageScript="https://gh-proxy.com/${manageScript}"
+      downloadPrefix="${ghproxy}${downloadPrefix}"
+      manageScript="${ghproxy}${manageScript}"
     fi
 }
 open_ports(){
@@ -65,17 +66,11 @@ open_ports(){
 
 set_dependences() {
     if [[ $(command -v yum) ]]; then
-      if [[ ! $(command -v wget) ]] || [[ ! $(command -v curl) ]] || [[ ! $(command -v git) ]] || [[ ! $(command -v socat) ]] || [[ ! $(command -v unzip) ]] || [[ ! $(command -v gawk) ]] || [[ ! $(command -v lsof) ]]; then
-          echo -e ${green}"安装依赖\n"${plain}
-          yum update -y
-          yum install wget curl git socat unzip gawk lsof -y
-      fi
+        yum update -y
+        yum install wget curl git socat unzip gawk lsof -y
     elif [[ $(command -v apt) ]]; then
-      if [[ ! $(command -v wget) ]] || [[ ! $(command -v curl) ]] || [[ ! $(command -v git) ]] || [[ ! $(command -v socat) ]] || [[ ! $(command -v unzip) ]] || [[ ! $(command -v gawk) ]] || [[ ! $(command -v lsof) ]]; then
-          echo -e ${green}"安装依赖\n"${plain}
-          apt update -y
-          apt install wget curl git socat unzip gawk lsof -y
-      fi
+        apt update -y
+        apt install wget curl git socat unzip gawk lsof -y
        echo -e "依赖已安装\n"
     fi
 }
@@ -83,7 +78,7 @@ get_latest_version() {
           latestVersion=$(curl -Ls $githubApi | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           if [[ ! -n "$latestVersion" ]]; then
               echo -e "${red}获取最新版本失败，请稍后重试${plain}"
-              exit 1
+#              exit 1
           fi
 }
 get_current_version(){
@@ -145,13 +140,15 @@ run_status() {
       fi
 }
 
+download_manage_scripts(){
+    wget -N --no-check-certificate -O /usr/bin/${appName} ${manageScript}
+    chmod 777 /usr/bin/${appName}
+}
+
 download(){
   echo -e "开始下载核心，版本：${latestVersion}"
   rm -rf /usr/local/${appName}
   mkdir /usr/local/${appName}
-
-  wget -N --no-check-certificate -O /usr/bin/${appName} ${manageScript}
-  chmod 777 /usr/bin/${appName}
 
   wget -N --no-check-certificate -O /usr/local/${appName}/${appName}.zip ${downloadPrefix}${latestVersion}/${appName}-${system}-${arch}-${latestVersion}.zip
   if [[ $? -ne 0 ]]; then
@@ -480,4 +477,5 @@ main(){
 
 }
 initialize
+download_manage_scripts
 main

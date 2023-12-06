@@ -24,8 +24,8 @@ type Pay struct {
 type AliPay struct {
 	AlipayAppID         string `json:"alipay_app_id"`
 	AlipayReturnURL     string `json:"alipay_return_url"`
-	AlipayAppPrivateKey string `json:"alipay_app_private_key" gorm:"size:3000;type:text"`
-	AlipayAliPublicKey  string `json:"alipay_ali_public_key"  gorm:"size:3000;type:text"`
+	AlipayAppPrivateKey string `json:"alipay_app_private_key" gorm:"type:text"`
+	AlipayAliPublicKey  string `json:"alipay_ali_public_key"  gorm:"type:text"`
 	AlipayEncryptKey    string `json:"alipay_encrypt_key"` //alipay 接口内容加密密钥
 }
 

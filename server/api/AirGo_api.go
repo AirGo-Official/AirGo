@@ -19,7 +19,7 @@ func AGGetNodeInfo(ctx *gin.Context) {
 		return
 	}
 	id := ctx.Query("id")
-	node, _, err := service.CommonSqlFind[model.Node, string, model.AGNodeInfo]("id = " + id)
+	node, _, err := service.CommonSqlFind[model.Node, string, model.AGNodeInfo](fmt.Sprintf("id = %s", id))
 	if err != nil {
 		global.Logrus.Error("AGGetNodeInfo error,id="+id, err.Error())
 		return
@@ -98,7 +98,7 @@ func AGGetUserlist(ctx *gin.Context) {
 	}
 	id := ctx.Query("id")
 	//节点是否启用
-	node, _, _ := service.CommonSqlFind[model.Node, string, model.Node]("id = " + id)
+	node, _, _ := service.CommonSqlFind[model.Node, string, model.Node](fmt.Sprintf("id = %s", id))
 	if !node.Enabled {
 		return
 	}
@@ -119,6 +119,8 @@ func AGGetUserlist(ctx *gin.Context) {
 		global.Logrus.Error("error,id="+id, err.Error())
 		return
 	}
+	//处理全局限制用户；连接数，待写
+	//处理ss加密
 	switch node.NodeType {
 	case "shadowsocks":
 		switch strings.HasPrefix(node.Scy, "2022") {
@@ -140,6 +142,25 @@ func AGGetUserlist(ctx *gin.Context) {
 	}
 	EtagHandler(users, ctx)
 }
+func ssEncryptionHandler(node model.Node, user *model.AGUserInfo) {
+	switch node.NodeType {
+	case "shadowsocks":
+		if strings.HasPrefix(node.Scy, "2022") {
+			//
+			p := user.UUID.String()
+			if node.Scy == "2022-blake3-aes-128-gcm" {
+				p = p[:16]
+			}
+			p = base64.StdEncoding.EncodeToString([]byte(p))
+			user.Passwd = p
+
+		} else {
+			user.Passwd = user.UUID.String()
+		}
+	default:
+
+	}
+}
 
 func AGReportUserTraffic(ctx *gin.Context) {
 	//验证key
@@ -153,7 +174,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 		return
 	}
 	//查询节点倍率
-	node, _, err := service.CommonSqlFind[model.Node, string, model.Node]("id = " + fmt.Sprintf("%d", AGUserTraffic.ID))
+	node, _, err := service.CommonSqlFind[model.Node, string, model.Node](fmt.Sprintf("id = %d", AGUserTraffic.ID))
 	if node.TrafficRate <= 0 || err != nil {
 		node.TrafficRate = 1
 	}
@@ -203,10 +224,24 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	})
 	//插入流量统计统计
 	global.GoroutinePool.Submit(func() {
-		err = service.CommonSqlCreate[model.TrafficLog](trafficLog)
-		if err != nil {
-			global.Logrus.Error("插入流量统计统计error:", err)
-			return
+		//查询当天的数据
+		now := time.Now()
+		zeroTime := time.Date(now.Year(), now.Month(), now.Day()-1, 0, 0, 0, 0, now.Location())
+		traffic, _, _ := service.CommonSqlLast[model.TrafficLog, string, model.TrafficLog](fmt.Sprintf("node_id = %d AND created_at > '%v'", AGUserTraffic.ID, zeroTime))
+		if traffic.ID == 0 {
+			err = service.CommonSqlCreate[model.TrafficLog](trafficLog)
+			if err != nil {
+				global.Logrus.Error("插入流量统计统计error:", err)
+				return
+			}
+		} else {
+			traffic.U = traffic.U + trafficLog.U
+			traffic.D = traffic.D + trafficLog.D
+			err = service.CommonSqlSave[model.TrafficLog](traffic)
+			if err != nil {
+				global.Logrus.Error("插入流量统计统计error:", err)
+				return
+			}
 		}
 	})
 	//更新用户流量信息

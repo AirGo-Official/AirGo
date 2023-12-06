@@ -2,10 +2,10 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"gorm.io/gorm"
-	"strconv"
 	"time"
 )
 
@@ -35,7 +35,7 @@ func VerifyCoupon(order *model.Orders) (model.Coupon, error) {
 		return model.Coupon{}, errors.New("优惠码已过期")
 	}
 	//判断使用次数
-	orderArr, _, err := CommonSqlFind[model.Orders, string, []model.Orders]("user_id = " + strconv.FormatInt(order.UserID, 10) + " AND coupon_id = " + strconv.FormatInt(c.ID, 10))
+	orderArr, _, err := CommonSqlFind[model.Orders, string, []model.Orders](fmt.Sprintf("user_id = %d AND coupon_id = %d", order.UserID, c.ID))
 	if err != nil {
 		return model.Coupon{}, errors.New("优惠码错误")
 	}

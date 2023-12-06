@@ -40,7 +40,6 @@ body,
   overflow: hidden;
   position: relative;
 }
-
 /* 主布局样式
 ------------------------------- */
 .layout-container {
@@ -94,7 +93,6 @@ body,
       }
     }
   }
-
   // 用于界面高度自适应
   .layout-padding {
     @extend .layout-pd;

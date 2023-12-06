@@ -8,7 +8,6 @@ import (
 	"github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/response"
 	"strconv"
-	"strings"
 )
 
 // 支付主逻辑
@@ -29,6 +28,7 @@ func Purchase(ctx *gin.Context) {
 	receiveOrder.UserID = uIDInt //确认user id
 	sysOrder, _, err := service.CommonSqlFind[model.Orders, model.Orders, model.Orders](model.Orders{UserID: receiveOrder.UserID, OutTradeNo: receiveOrder.OutTradeNo})
 	if err != nil {
+
 		global.Logrus.Error(err.Error())
 		response.Fail("Purchase error:"+err.Error(), nil, ctx)
 		return
@@ -49,7 +49,9 @@ func Purchase(ctx *gin.Context) {
 		global.GoroutinePool.Submit(func() {
 			service.RemainHandle(sysOrder.UserID, sysOrder.RemainAmount) //处理用户余额
 		})
-
+		global.GoroutinePool.Submit(func() { //通知
+			service.UnifiedPushMessage(fmt.Sprintf("用户：%s\n购买订阅：%s\n销售价格：%s\n订单金额：%s\n支付方式：%s", sysOrder.UserName, sysOrder.Subject, sysOrder.Price, sysOrder.TotalAmount, sysOrder.PayType))
+		})
 		response.OK("Purchase success", nil, ctx)
 		return
 	}
@@ -167,15 +169,7 @@ func EpayNotify(ctx *gin.Context) {
 		service.UpdateUserSubscribe(&sysOrder) //更新用户订阅信息
 	})
 	global.GoroutinePool.Submit(func() { //通知
-		if global.Server.Notice.TGAdmin == "" {
-			return
-		}
-		tgIDs := strings.Fields(global.Server.Notice.TGAdmin)
-		for _, v := range tgIDs {
-			chatID, _ := strconv.ParseInt(v, 10, 64)
-			service.TGBotSendMessage(chatID, fmt.Sprintf("用户：%s\n购买订阅：%s\n销售价格：%s\n订单金额：%s\n支付方式：%s", sysOrder.UserName, sysOrder.Subject, sysOrder.Price, sysOrder.TotalAmount, sysOrder.PayType))
-		}
-
+		service.UnifiedPushMessage(fmt.Sprintf("用户：%s\n购买订阅：%s\n销售价格：%s\n订单金额：%s\n支付方式：%s", sysOrder.UserName, sysOrder.Subject, sysOrder.Price, sysOrder.TotalAmount, sysOrder.PayType))
 	})
 	//返回success以表示服务器接收到了订单通知
 	ctx.String(200, "success")

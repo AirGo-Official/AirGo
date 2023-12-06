@@ -76,12 +76,10 @@ const state = reactive({
   //查询的条件参数
   params: {
     table_name: '',
-    field_params_list: [] as FieldTable[],    //搜索条件列表 {field: '', field_chinese_name: '', field_type: '', condition: '=', condition_value: '',}
+    field_params_list: [] as FieldParams[],    //搜索条件列表 {field: '', field_chinese_name: '', field_type: '', condition: '=', condition_value: '',}
     pagination_params: {
-      search: '',
       page_num: 1,
       page_size: 30,
-      date: [],
     } as Pagination,//分页参数
   },
 

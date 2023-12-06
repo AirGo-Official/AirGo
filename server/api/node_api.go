@@ -55,7 +55,7 @@ func DeleteNode(ctx *gin.Context) {
 		response.Fail("DeleteNode error:"+err.Error(), nil, ctx)
 		return
 	}
-	err = service.CommonSqlDelete[model.Node, model.Node](node)
+	err = service.DeleteNode(&node)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("DeleteNode error:"+err.Error(), nil, ctx)
@@ -85,14 +85,19 @@ func UpdateNode(ctx *gin.Context) {
 
 // 查询节点流量
 func GetNodeTraffic(ctx *gin.Context) {
-	var trafficParams model.PaginationParams
-	err := ctx.ShouldBind(&trafficParams)
+	var params model.FieldParamsReq
+	err := ctx.ShouldBind(&params)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetNodeTraffic error:"+err.Error(), nil, ctx)
 		return
 	}
-	res := service.GetNodeTraffic(trafficParams)
+	res, err := service.GetNodeTraffic(&params)
+	if err != nil {
+		global.Logrus.Error(err.Error())
+		response.Fail("GetNodeTraffic error:"+err.Error(), nil, ctx)
+		return
+	}
 	response.OK("GetNodeTraffic success", res, ctx)
 }
 

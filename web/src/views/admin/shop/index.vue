@@ -19,15 +19,28 @@
         <el-table-column type="index" label="序号" width="60" fixed/>
         <el-table-column prop="subject" label="套餐名称" show-overflow-tooltip width="180"></el-table-column>
         <el-table-column prop="id" label="套餐ID" show-overflow-tooltip width="60"></el-table-column>
-        <el-table-column prop="total_amount" label="套餐价格(元)" show-overflow-tooltip width="100"></el-table-column>
-        <el-table-column prop="total_bandwidth" label="总流量(GB)" show-overflow-tooltip width="100"></el-table-column>
-        <el-table-column prop="expiration_date" label="有效期(天)" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="status" label="是否显示" show-overflow-tooltip>
+        <el-table-column prop="status" label="是否显示" show-overflow-tooltip width="100">
           <template #default="scope">
             <el-tag class="ml-2" v-if="scope.row.status" type="success">启用</el-tag>
             <el-tag class="ml-2" v-if="!scope.row.status" type="danger">禁用</el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="total_amount" label="套餐价格(元)" show-overflow-tooltip width="100"></el-table-column>
+        <el-table-column prop="total_bandwidth" label="总流量(GB)" show-overflow-tooltip width="100"></el-table-column>
+        <el-table-column prop="expiration_date" label="有效期(天)" show-overflow-tooltip width="100"></el-table-column>
+
+        <el-table-column prop="traffic_reset_method" label="是否叠加" show-overflow-tooltip width="100">
+          <template #default="scope">
+            <el-tag class="ml-2" v-if="scope.row.traffic_reset_method" type="success">叠加</el-tag>
+            <el-tag class="ml-2" v-else type="info">不叠加</el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="reset_day" label="流量重置日" show-overflow-tooltip></el-table-column>
+
+
+
+
         <el-table-column label="操作" width="100">
           <template #default="scope">
             <el-button size="small" text type="primary"

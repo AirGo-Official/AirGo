@@ -93,9 +93,8 @@ func BcryptDecode(password, hash string) error {
 
 // md5 encode
 func Md5Encode(str string, isUpper bool) string {
-	hash := md5.New()
-	hash.Write([]byte(str))
-	res := hex.EncodeToString(hash.Sum(nil))
+	sum := md5.Sum([]byte(str))
+	res := hex.EncodeToString(sum[:])
 	//转大写，strings.ToUpper(res)
 	if isUpper {
 		res = strings.ToUpper(res)

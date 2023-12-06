@@ -4,34 +4,33 @@ import (
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"strconv"
+	"strings"
 	"time"
 )
 
 // 查询节点流量
-func GetNodeTraffic(params model.PaginationParams) model.NodesWithTotal {
+func GetNodeTraffic(params *model.FieldParamsReq) (*model.NodesWithTotal, error) {
 	var nodesWithTotal model.NodesWithTotal
 	var startTime, endTime time.Time
 	//时间格式转换
-	if len(params.Date) == 2 {
-		startTime, _ = time.ParseInLocation("2006-01-02 15:04:05", params.Date[0], time.Local)
-		endTime, _ = time.ParseInLocation("2006-01-02 15:04:05", params.Date[1], time.Local)
-	} else {
-		//默认前1个月数据
-		endTime = time.Now().Local()
-		startTime = endTime.AddDate(0, 0, -30)
+	startTime, err := time.ParseInLocation("2006-01-02 15:04:05", params.FieldParamsList[0].ConditionValue, time.Local)
+	if err != nil {
+		return nil, err
 	}
-	if params.Search != "" {
-		err := global.DB.Model(&model.Node{}).Count(&nodesWithTotal.Total).Where("remarks LIKE ?", "%"+params.Search+"%").Limit(int(params.PageSize)).Offset((int(params.PageNum)-1)*int(params.PageSize)).Preload("TrafficLogs", global.DB.Where("created_at > ? and created_at < ?", startTime, endTime)).Preload("Access").Order("node_order").Find(&nodesWithTotal.NodeList).Error
-		if err != nil {
-			global.Logrus.Error("查询节点流量error:", err.Error())
-			return model.NodesWithTotal{}
-		}
-	} else {
-		err := global.DB.Model(&model.Node{}).Count(&nodesWithTotal.Total).Limit(int(params.PageSize)).Offset((int(params.PageNum)-1)*int(params.PageSize)).Preload("TrafficLogs", global.DB.Where("created_at > ? and created_at < ?", startTime, endTime)).Preload("Access").Order("node_order").Find(&nodesWithTotal.NodeList).Error
-		if err != nil {
-			global.Logrus.Error("查询节点流量error:", err.Error())
-			return model.NodesWithTotal{}
-		}
+	endTime, _ = time.ParseInLocation("2006-01-02 15:04:05", params.FieldParamsList[1].ConditionValue, time.Local)
+	if err != nil {
+		return nil, err
+	}
+	//注意：	params.FieldParamsList 数组前两项传时间，第三个开始传查询参数
+	params.FieldParamsList = append([]model.FieldParamsItem{}, params.FieldParamsList[2:]...)
+	_, dataSql := CommonSqlFindSqlHandler(params)
+	dataSql = dataSql[strings.Index(dataSql, "WHERE ")+6:]
+	if dataSql == "" {
+		dataSql = "id > 0"
+	}
+	err = global.DB.Model(&model.Node{}).Count(&nodesWithTotal.Total).Where(dataSql).Preload("TrafficLogs", global.DB.Where("created_at > ? and created_at < ?", startTime, endTime)).Preload("Access").Find(&nodesWithTotal.NodeList).Error
+	if err != nil {
+		return nil, err
 	}
 	for i1, _ := range nodesWithTotal.NodeList {
 		//处理流量记录
@@ -47,7 +46,7 @@ func GetNodeTraffic(params model.PaginationParams) model.NodesWithTotal {
 		}
 		nodesWithTotal.NodeList[i1].Access = []model.Access{}
 	}
-	return nodesWithTotal
+	return &nodesWithTotal, err
 }
 
 // 获取 node status，用于探针
@@ -85,4 +84,54 @@ func UpdateNode(node *model.Node) error {
 	//更新节点
 	err := global.DB.Save(&node).Error
 	return err
+}
+
+// 删除节点
+func DeleteNode(node *model.Node) error {
+	var funcs = []func() error{
+		func() error { //删除商品关联的节点
+			return global.DB.Where("node_id = ?", node.ID).Delete(&model.GoodsAndNodes{}).Error
+		},
+		func() error { //删除节点关联的访问控制
+			return global.DB.Model(&model.Node{ID: node.ID}).Association("Access").Replace(nil)
+		},
+		func() error { //删除节点关联的流量统计信息
+			return global.DB.Where("node_id = ?", node.ID).Delete(&model.TrafficLog{}).Error
+		},
+		func() error { //删除节点
+			return global.DB.Delete(&node).Error
+		},
+	}
+	for _, v := range funcs {
+		err := v()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// 删除节点,临时代码，处理之前版本删除节点遗留的数据库垃圾数据
+func DeleteNodeTemp() error {
+	var ids []int64
+	global.DB.Model(&model.Node{}).Select("id").Find(&ids)
+
+	var funcs = []func() error{
+		func() error { //删除商品关联的节点
+			return global.DB.Where("node_id NOT IN ?", ids).Delete(&model.GoodsAndNodes{}).Error
+		},
+		func() error { //删除节点关联的访问控制
+			return global.DB.Where("node_id NOT IN ?", ids).Delete(&model.NodeAndAccess{}).Error
+		},
+		func() error { //删除节点关联的流量统计信息
+			return global.DB.Where("node_id NOT IN ?", ids).Delete(&model.TrafficLog{}).Error
+		},
+	}
+	for _, v := range funcs {
+		err := v()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

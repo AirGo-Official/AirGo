@@ -130,13 +130,11 @@ const onSubmitResetPassword = () => {
 }
 // 登录
 const onSignIn = async () => {
-  //state.loading.signIn = true;
   await userStore.userLogin(loginData.value)
   //添加完动态路由，再进行 router 跳转，否则可能报错 No match found for location with path "/"
   const isNoPower = await initBackEndControlRoutes();
   //执行完 initBackEndControlRoutes，再执行 signInSuccess
   signInSuccess(isNoPower);
-
 };
 // 登录成功后的跳转
 const signInSuccess = (isNoPower: boolean | undefined) => {
@@ -162,7 +160,6 @@ const signInSuccess = (isNoPower: boolean | undefined) => {
     // 添加 loading，防止第一次进入界面时出现短暂空白
     NextLoading.start();
   }
-  //state.loading.signIn = false;
 };
 //获取邮箱验证码
 const onGetEmailCode = () => {
@@ -170,12 +167,11 @@ const onGetEmailCode = () => {
     return
   }
   state.isCountDown = true
-  request(apiStoreData.staticApi.value.public_getEmailCode, loginData.value).then((res) => {
+  userStore.sendEmailCode(loginData.value.user_name).then((res)=>{
     state.isCountDown = true
     ElMessage.success(res.msg)
     handleTimeChange()
   })
-
 };
 //倒计时
 const handleTimeChange = () => {
@@ -207,7 +203,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
       onSignIn()
     } else {
       console.log('error submit!', fields)

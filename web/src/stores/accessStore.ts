@@ -11,13 +11,11 @@ export const useAccessStore = defineStore("accessStore", {
             field_params_list: [
                 {field: 'name', condition: 'like', condition_value: '',},
             ] as FieldTableNew[],
-            pagination_params: {
-                search: '',
+            pagination: {
                 page_num: 1,
                 page_size: 30,
-                date: [],
             } as Pagination,//分页参数
-        },
+        } as FieldParams,
         routes_list: {
             total: 0,
             data: [] as Access[]

@@ -18,26 +18,45 @@ declare interface SqliteColumn {
     type: string;
 }
 
+declare interface FieldParams{
+    table_name: string
+    field_params_list: FieldParams[],
+    pagination: Pagination,
+}
+
 
 //搜索条件
-declare interface FieldTable {
+declare interface FieldParams {
     field: string;
     field_chinese_name: string;
     field_type: string;
     condition: string;
     condition_value: string;
+    operator: string;
 }
+
+
 declare interface FieldTableNew {
     field: string;
     condition: string;
     condition_value: string;
 }
+
+
+
 //分页条件
 declare interface Pagination {
-    search: string
     page_num: number
     page_size: number
-    date: [],
+    order_by: string,
+}
+
+
+declare interface PaginationParams {
+    page_num: number;
+    page_size: number;
+    search: string;
+    date: [];
 }
 
 

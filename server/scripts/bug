@@ -1,0 +1,300 @@
+fatal error: concurrent map writes
+
+goroutine 104 [running]:
+github.com/casbin/casbin/v2/persist/cache.(*DefaultCache).Get(0xc000662b00, {0xc00148a330, 0x1f})
+        /Users/luster/go/pkg/mod/github.com/casbin/casbin/v2@v2.79.0/persist/cache/default-cache.go:45 +0xf3
+github.com/casbin/casbin/v2.(*CachedEnforcer).getCachedResult(0xc000fc27e0?, {0xc00148a330?, 0x1027dce08?})
+        /Users/luster/go/pkg/mod/github.com/casbin/casbin/v2@v2.79.0/enforcer_cached.go:132 +0xac
+github.com/casbin/casbin/v2.(*CachedEnforcer).Enforce(0xc001446720, {0xc000fc27e0, 0x3, 0x3})
+        /Users/luster/go/pkg/mod/github.com/casbin/casbin/v2@v2.79.0/enforcer_cached.go:75 +0x76
+github.com/ppoonk/AirGo/initialize.InitRouter.Casbin.func10(0xc000126200)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/casbin.go:54 +0x588
+github.com/gin-gonic/gin.(*Context).Next(0xc000126200)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174 +0x2b
+github.com/ppoonk/AirGo/initialize.InitRouter.ParseJwt.func9(0x0?)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/jwt.go:39 +0x199
+github.com/gin-gonic/gin.(*Context).Next(0xc000126200)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174 +0x2b
+github.com/ppoonk/AirGo/initialize.InitRouter.RateLimitIP.func8(0x100c81840?)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/ratelimit.go:21 +0x85
+github.com/gin-gonic/gin.(*Context).Next(0xc000126200)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174 +0x2b
+github.com/ppoonk/AirGo/initialize.InitRouter.Recovery.func5(0xc000cf64c0?)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/recovey.go:17 +0x45
+github.com/gin-gonic/gin.(*Context).Next(0xc000126200)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174 +0x2b
+github.com/ppoonk/AirGo/initialize.InitRouter.Cors.func4(0xc000126200)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/cors.go:25 +0x12f
+github.com/gin-gonic/gin.(*Context).Next(...)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.CustomRecoveryWithWriter.func1(0xc000126200)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/recovery.go:102 +0x7a
+github.com/gin-gonic/gin.(*Context).Next(...)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc000126200)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/logger.go:240 +0xde
+github.com/gin-gonic/gin.(*Context).Next(...)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc001196340, 0xc000126200)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:620 +0x65b
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc001196340, {0x1014fac10?, 0xc00034e380}, 0xc000126600)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:576 +0x1dd
+net/http.serverHandler.ServeHTTP({0xc00038c120?}, {0x1014fac10?, 0xc00034e380?}, 0x6?)
+        /usr/local/go/src/net/http/server.go:2938 +0x8e
+net/http.(*conn).serve(0xc000eb87e0, {0x1014fd978, 0xc001491140})
+        /usr/local/go/src/net/http/server.go:2009 +0x5f4
+created by net/http.(*Server).Serve in goroutine 53
+        /usr/local/go/src/net/http/server.go:3086 +0x5cb
+
+goroutine 1 [chan receive, 41 minutes]:
+github.com/ppoonk/AirGo/initialize.InitRouter()
+        /Users/luster/Documents/2-github-project/AirGo/server/initialize/init_router.go:256 +0x405a
+github.com/ppoonk/AirGo/initialize.InitializeAll()
+        /Users/luster/Documents/2-github-project/AirGo/server/initialize/init_index.go:50 +0x54f
+main.main()
+        /Users/luster/Documents/2-github-project/AirGo/server/main.go:22 +0xf
+
+goroutine 6 [select]:
+github.com/panjf2000/ants/v2.(*Pool).purgeStaleWorkers(0xc0003cd860, {0x1014fd9b0, 0xc0003a4be0})
+        /Users/luster/go/pkg/mod/github.com/panjf2000/ants/v2@v2.9.0/pool.go:84 +0xf8
+created by github.com/panjf2000/ants/v2.(*Pool).goPurge in goroutine 1
+        /Users/luster/go/pkg/mod/github.com/panjf2000/ants/v2@v2.9.0/pool.go:149 +0xd8
+
+goroutine 7 [select]:
+github.com/panjf2000/ants/v2.(*Pool).ticktock(0xc0003cd860, {0x1014fd9b0, 0xc0003a4c30})
+        /Users/luster/go/pkg/mod/github.com/panjf2000/ants/v2@v2.9.0/pool.go:127 +0x13f
+created by github.com/panjf2000/ants/v2.(*Pool).goTicktock in goroutine 1
+        /Users/luster/go/pkg/mod/github.com/panjf2000/ants/v2@v2.9.0/pool.go:156 +0x118
+
+goroutine 8 [semacquire, 41 minutes]:
+sync.runtime_Semacquire(0xc000e29a40?)
+        /usr/local/go/src/runtime/sema.go:62 +0x25
+sync.(*WaitGroup).Wait(0xc000e45e10?)
+        /usr/local/go/src/sync/waitgroup.go:116 +0x48
+github.com/spf13/viper.(*Viper).WatchConfig.func1()
+        /Users/luster/go/pkg/mod/github.com/spf13/viper@v1.17.0/viper.go:501 +0x345
+created by github.com/spf13/viper.(*Viper).WatchConfig in goroutine 1
+        /Users/luster/go/pkg/mod/github.com/spf13/viper@v1.17.0/viper.go:441 +0x87
+
+goroutine 9 [syscall, 41 minutes]:
+syscall.syscall6(0xc00110bbf8?, 0x1002e9725?, 0xc0011aab80?, 0x5?, 0x2?, 0x1014f1258?, 0x1?)
+        /usr/local/go/src/runtime/sys_darwin.go:45 +0x98
+golang.org/x/sys/unix.kevent(0xc0011aea90?, 0x12?, 0x1014ff128?, 0x100d199e0?, 0xc0011aa701?, 0x11?)
+        /Users/luster/go/pkg/mod/golang.org/x/sys@v0.15.0/unix/zsyscall_darwin_amd64.go:275 +0x4e
+golang.org/x/sys/unix.Kevent(0xc0011aa3f0?, {0x0?, 0xc000e88cb0?, 0x1014f4be0?}, {0xc00110be70?, 0x1014ee590?, 0x1?}, 0xc0011aab77?)
+        /Users/luster/go/pkg/mod/golang.org/x/sys@v0.15.0/unix/syscall_bsd.go:397 +0x35
+github.com/fsnotify/fsnotify.(*Watcher).read(0x100cb5160?, {0xc00110be70?, 0x1?, 0xa})
+        /Users/luster/go/pkg/mod/github.com/fsnotify/fsnotify@v1.7.0/backend_kqueue.go:777 +0x39
+github.com/fsnotify/fsnotify.(*Watcher).readEvents(0xc000e88cb0)
+        /Users/luster/go/pkg/mod/github.com/fsnotify/fsnotify@v1.7.0/backend_kqueue.go:547 +0xcb
+created by github.com/fsnotify/fsnotify.NewBufferedWatcher in goroutine 8
+        /Users/luster/go/pkg/mod/github.com/fsnotify/fsnotify@v1.7.0/backend_kqueue.go:184 +0x245
+
+goroutine 10 [select, 41 minutes]:
+github.com/spf13/viper.(*Viper).WatchConfig.func1.1()
+        /Users/luster/go/pkg/mod/github.com/spf13/viper@v1.17.0/viper.go:464 +0xf9
+created by github.com/spf13/viper.(*Viper).WatchConfig.func1 in goroutine 8
+        /Users/luster/go/pkg/mod/github.com/spf13/viper@v1.17.0/viper.go:462 +0x308
+
+goroutine 11 [select, 41 minutes]:
+database/sql.(*DB).connectionOpener(0xc000e9c4e0, {0x1014fd9b0, 0xc000e29d60})
+        /usr/local/go/src/database/sql/sql.go:1218 +0x87
+created by database/sql.OpenDB in goroutine 1
+        /usr/local/go/src/database/sql/sql.go:791 +0x165
+
+goroutine 51 [chan receive]:
+github.com/yudeguang/ratelimit.(*singleRule).deleteExpired(0xc0014c39d0)
+        /Users/luster/go/pkg/mod/github.com/yudeguang/ratelimit@v0.0.0-20230316132559-4d9cafca864e/singleRule.go:176 +0x9e
+created by github.com/yudeguang/ratelimit.newsingleRule in goroutine 1
+        /Users/luster/go/pkg/mod/github.com/yudeguang/ratelimit@v0.0.0-20230316132559-4d9cafca864e/singleRule.go:64 +0xdf
+
+goroutine 21 [syscall, 41 minutes]:
+os/signal.signal_recv()
+        /usr/local/go/src/runtime/sigqueue.go:149 +0x25
+os/signal.loop()
+        /usr/local/go/src/os/signal/signal_unix.go:23 +0x13
+created by os/signal.Notify.func1.1 in goroutine 1
+        /usr/local/go/src/os/signal/signal.go:151 +0x1f
+
+goroutine 52 [select]:
+github.com/robfig/cron/v3.(*Cron).run(0xc0012de000)
+        /Users/luster/go/pkg/mod/github.com/robfig/cron/v3@v3.0.1/cron.go:263 +0xa7d
+created by github.com/robfig/cron/v3.(*Cron).Start in goroutine 1
+        /Users/luster/go/pkg/mod/github.com/robfig/cron/v3@v3.0.1/cron.go:222 +0xc5
+
+goroutine 50 [chan receive]:
+github.com/yudeguang/ratelimit.(*singleRule).deleteExpired(0xc0014c3960)
+        /Users/luster/go/pkg/mod/github.com/yudeguang/ratelimit@v0.0.0-20230316132559-4d9cafca864e/singleRule.go:176 +0x9e
+created by github.com/yudeguang/ratelimit.newsingleRule in goroutine 1
+        /Users/luster/go/pkg/mod/github.com/yudeguang/ratelimit@v0.0.0-20230316132559-4d9cafca864e/singleRule.go:64 +0xdf
+
+goroutine 38 [select]:
+github.com/panjf2000/ants/v2.(*Pool).purgeStaleWorkers(0xc0012dee60, {0x1014fd9b0, 0xc0013f3090})
+        /Users/luster/go/pkg/mod/github.com/panjf2000/ants/v2@v2.9.0/pool.go:84 +0xf8
+created by github.com/panjf2000/ants/v2.(*Pool).goPurge in goroutine 1
+        /Users/luster/go/pkg/mod/github.com/panjf2000/ants/v2@v2.9.0/pool.go:149 +0xd8
+
+goroutine 39 [select]:
+github.com/panjf2000/ants/v2.(*Pool).ticktock(0xc0012dee60, {0x1014fd9b0, 0xc0013f30e0})
+        /Users/luster/go/pkg/mod/github.com/panjf2000/ants/v2@v2.9.0/pool.go:127 +0x13f
+created by github.com/panjf2000/ants/v2.(*Pool).goTicktock in goroutine 1
+        /Users/luster/go/pkg/mod/github.com/panjf2000/ants/v2@v2.9.0/pool.go:156 +0x118
+
+goroutine 40 [chan receive, 41 minutes]:
+github.com/ppoonk/AirGo/utils/websocket_plugin.(*ClientManager).NewClientManager.func1()
+        /Users/luster/Documents/2-github-project/AirGo/server/utils/websocket_plugin/websocket_plugin.go:57 +0x46
+created by github.com/ppoonk/AirGo/utils/websocket_plugin.(*ClientManager).NewClientManager in goroutine 1
+        /Users/luster/Documents/2-github-project/AirGo/server/utils/websocket_plugin/websocket_plugin.go:54 +0x56
+
+goroutine 41 [chan receive, 41 minutes]:
+github.com/ppoonk/AirGo/utils/websocket_plugin.(*ClientManager).NewClientManager.func2()
+        /Users/luster/Documents/2-github-project/AirGo/server/utils/websocket_plugin/websocket_plugin.go:68 +0x50
+created by github.com/ppoonk/AirGo/utils/websocket_plugin.(*ClientManager).NewClientManager in goroutine 1
+        /Users/luster/Documents/2-github-project/AirGo/server/utils/websocket_plugin/websocket_plugin.go:65 +0x96
+
+goroutine 42 [chan receive, 41 minutes]:
+github.com/ppoonk/AirGo/utils/websocket_plugin.(*ClientManager).NewClientManager.func3()
+        /Users/luster/Documents/2-github-project/AirGo/server/utils/websocket_plugin/websocket_plugin.go:94 +0x47
+created by github.com/ppoonk/AirGo/utils/websocket_plugin.(*ClientManager).NewClientManager in goroutine 1
+        /Users/luster/Documents/2-github-project/AirGo/server/utils/websocket_plugin/websocket_plugin.go:91 +0xd6
+
+goroutine 53 [IO wait]:
+internal/poll.runtime_pollWait(0x1025907a8, 0x72)
+        /usr/local/go/src/runtime/netpoll.go:343 +0x85
+internal/poll.(*pollDesc).wait(0xc0014bd180?, 0x0?, 0x0)
+        /usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0x27
+internal/poll.(*pollDesc).waitRead(...)
+        /usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Accept(0xc0014bd180)
+        /usr/local/go/src/internal/poll/fd_unix.go:611 +0x2ac
+net.(*netFD).accept(0xc0014bd180)
+        /usr/local/go/src/net/fd_unix.go:172 +0x29
+net.(*TCPListener).accept(0xc0000d4480)
+        /usr/local/go/src/net/tcpsock_posix.go:152 +0x1e
+net.(*TCPListener).Accept(0xc0000d4480)
+        /usr/local/go/src/net/tcpsock.go:315 +0x30
+net/http.(*Server).Serve(0xc00125a000, {0x1014fafa0, 0xc0000d4480})
+        /usr/local/go/src/net/http/server.go:3056 +0x364
+net/http.(*Server).ListenAndServe(0xc00125a000)
+        /usr/local/go/src/net/http/server.go:2985 +0x71
+github.com/ppoonk/AirGo/initialize.InitRouter.func1()
+        /Users/luster/Documents/2-github-project/AirGo/server/initialize/init_router.go:242 +0x1b
+created by github.com/ppoonk/AirGo/initialize.InitRouter in goroutine 1
+        /Users/luster/Documents/2-github-project/AirGo/server/initialize/init_router.go:240 +0x3fb3
+
+goroutine 158 [runnable]:
+net/http.(*connReader).startBackgroundRead.func2()
+        /usr/local/go/src/net/http/server.go:679
+runtime.goexit()
+        /usr/local/go/src/runtime/asm_amd64.s:1650 +0x1
+created by net/http.(*connReader).startBackgroundRead in goroutine 104
+        /usr/local/go/src/net/http/server.go:679 +0xba
+
+goroutine 128 [runnable]:
+net/http.(*connReader).startBackgroundRead.func2()
+        /usr/local/go/src/net/http/server.go:679
+runtime.goexit()
+        /usr/local/go/src/runtime/asm_amd64.s:1650 +0x1
+created by net/http.(*connReader).startBackgroundRead in goroutine 166
+        /usr/local/go/src/net/http/server.go:679 +0xba
+
+goroutine 166 [runnable]:
+sync.(*entry).load(...)
+        /usr/local/go/src/sync/map.go:150
+sync.(*Map).Range(0xc0000007a0, 0xc000ec0fa8)
+        /usr/local/go/src/sync/map.go:472 +0x1fb
+github.com/casbin/casbin/v2/model.(*FunctionMap).GetFunctions(0xc00121a598)
+        /Users/luster/go/pkg/mod/github.com/casbin/casbin/v2@v2.79.0/model/function.go:60 +0x49
+github.com/casbin/casbin/v2.(*Enforcer).enforce(0xc00121a580, {0x0, 0x0}, 0x0, {0xc000f566c0, 0x3, 0x3})
+        /Users/luster/go/pkg/mod/github.com/casbin/casbin/v2@v2.79.0/enforcer.go:586 +0xd8
+github.com/casbin/casbin/v2.(*Enforcer).Enforce(...)
+        /Users/luster/go/pkg/mod/github.com/casbin/casbin/v2@v2.79.0/enforcer.go:817
+github.com/casbin/casbin/v2.(*CachedEnforcer).Enforce(0xc001446720, {0xc000f566c0, 0x3, 0x3})
+        /Users/luster/go/pkg/mod/github.com/casbin/casbin/v2@v2.79.0/enforcer_cached.go:81 +0xf0
+github.com/ppoonk/AirGo/initialize.InitRouter.Casbin.func16(0xc000eaa900)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/casbin.go:54 +0x588
+github.com/gin-gonic/gin.(*Context).Next(0xc000eaa900)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174 +0x2b
+github.com/ppoonk/AirGo/initialize.InitRouter.ParseJwt.func15(0x0?)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/jwt.go:39 +0x199
+github.com/gin-gonic/gin.(*Context).Next(0xc000eaa900)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174 +0x2b
+github.com/ppoonk/AirGo/initialize.InitRouter.RateLimitIP.func14(0x100c81840?)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/ratelimit.go:21 +0x85
+github.com/gin-gonic/gin.(*Context).Next(0xc000eaa900)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174 +0x2b
+github.com/ppoonk/AirGo/initialize.InitRouter.Recovery.func5(0xc00106cbf0?)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/recovey.go:17 +0x45
+github.com/gin-gonic/gin.(*Context).Next(0xc000eaa900)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174 +0x2b
+github.com/ppoonk/AirGo/initialize.InitRouter.Cors.func4(0xc000eaa900)
+        /Users/luster/Documents/2-github-project/AirGo/server/middleware/cors.go:25 +0x12f
+github.com/gin-gonic/gin.(*Context).Next(...)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.CustomRecoveryWithWriter.func1(0xc000eaa900)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/recovery.go:102 +0x7a
+github.com/gin-gonic/gin.(*Context).Next(...)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc000eaa900)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/logger.go:240 +0xde
+github.com/gin-gonic/gin.(*Context).Next(...)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/context.go:174
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc001196340, 0xc000eaa900)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:620 +0x65b
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc001196340, {0x1014fac10?, 0xc001424460}, 0xc000eaab00)
+        /Users/luster/go/pkg/mod/github.com/gin-gonic/gin@v1.9.1/gin.go:576 +0x1dd
+net/http.serverHandler.ServeHTTP({0xc000fc2030?}, {0x1014fac10?, 0xc001424460?}, 0x6?)
+        /usr/local/go/src/net/http/server.go:2938 +0x8e
+net/http.(*conn).serve(0xc000eb8750, {0x1014fd978, 0xc001491140})
+        /usr/local/go/src/net/http/server.go:2009 +0x5f4
+created by net/http.(*Server).Serve in goroutine 53
+        /usr/local/go/src/net/http/server.go:3086 +0x5cb
+
+goroutine 167 [IO wait]:
+internal/poll.runtime_pollWait(0x1025908a0, 0x72)
+        /usr/local/go/src/runtime/netpoll.go:343 +0x85
+internal/poll.(*pollDesc).wait(0xc000e46100?, 0xc00066a000?, 0x0)
+        /usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0x27
+internal/poll.(*pollDesc).waitRead(...)
+        /usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0xc000e46100, {0xc00066a000, 0x1000, 0x1000})
+        /usr/local/go/src/internal/poll/fd_unix.go:164 +0x27a
+net.(*netFD).Read(0xc000e46100, {0xc00066a000?, 0x1000dc5c5?, 0x0?})
+        /usr/local/go/src/net/fd_posix.go:55 +0x25
+net.(*conn).Read(0xc00037c030, {0xc00066a000?, 0x0?, 0xc000f563f8?})
+        /usr/local/go/src/net/net.go:179 +0x45
+net/http.(*connReader).Read(0xc000f563f0, {0xc00066a000, 0x1000, 0x1000})
+        /usr/local/go/src/net/http/server.go:791 +0x14b
+bufio.(*Reader).fill(0xc0006a8180)
+        /usr/local/go/src/bufio/bufio.go:113 +0x103
+bufio.(*Reader).Peek(0xc0006a8180, 0x4)
+        /usr/local/go/src/bufio/bufio.go:151 +0x53
+net/http.(*conn).serve(0xc000eb9170, {0x1014fd978, 0xc001491140})
+        /usr/local/go/src/net/http/server.go:2044 +0x75c
+created by net/http.(*Server).Serve in goroutine 53
+        /usr/local/go/src/net/http/server.go:3086 +0x5cb
+
+goroutine 168 [IO wait]:
+internal/poll.runtime_pollWait(0x1025906b0, 0x72)
+        /usr/local/go/src/runtime/netpoll.go:343 +0x85
+internal/poll.(*pollDesc).wait(0xc000e46180?, 0xc000399000?, 0x0)
+        /usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0x27
+internal/poll.(*pollDesc).waitRead(...)
+        /usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0xc000e46180, {0xc000399000, 0x1000, 0x1000})
+        /usr/local/go/src/internal/poll/fd_unix.go:164 +0x27a
+net.(*netFD).Read(0xc000e46180, {0xc000399000?, 0x1000dc5c5?, 0x0?})
+        /usr/local/go/src/net/fd_posix.go:55 +0x25
+net.(*conn).Read(0xc00037c038, {0xc000399000?, 0x0?, 0xc0006de548?})
+        /usr/local/go/src/net/net.go:179 +0x45
+net/http.(*connReader).Read(0xc0006de540, {0xc000399000, 0x1000, 0x1000})
+        /usr/local/go/src/net/http/server.go:791 +0x14b
+bufio.(*Reader).fill(0xc000efc2a0)
+        /usr/local/go/src/bufio/bufio.go:113 +0x103
+bufio.(*Reader).Peek(0xc000efc2a0, 0x4)
+        /usr/local/go/src/bufio/bufio.go:151 +0x53
+net/http.(*conn).serve(0xc000eb9200, {0x1014fd978, 0xc001491140})
+        /usr/local/go/src/net/http/server.go:2044 +0x75c
+created by net/http.(*Server).Serve in goroutine 53
+        /usr/local/go/src/net/http/server.go:3086 +0x5cb
+

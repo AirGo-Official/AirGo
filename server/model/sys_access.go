@@ -7,5 +7,5 @@ type Access struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	ID        int64     `json:"id"      gorm:"primary_key"`
 	Name      string    `json:"name"`
-	Route     string    `json:"route" gorm:"size:3000;type:text"`
+	Route     string    `json:"route" gorm:"type:text"`
 }

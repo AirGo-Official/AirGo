@@ -16,7 +16,7 @@ import (
 // Casbin 拦截器
 func Casbin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		uID, ok := c.Get("uID")
+		uID, ok := c.Get(global.CtxSetUserID)
 		if !ok {
 			response.Fail("接收参数错误", nil, c)
 			c.Abort()

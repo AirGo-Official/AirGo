@@ -46,9 +46,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         meta: {
             isKeepAlive: true,
         },
-        children: [
-
-        ],
+        children: [],
     },
 
 ];
@@ -96,7 +94,7 @@ export const staticRoutes: Array<RouteRecordRaw> = [
     {
         path: '/static',
         name: 'static',
-        children:[
+        children: [
             {
                 path: 'showArticle',
                 name: 'showArticle',

@@ -14,10 +14,8 @@
 import NodeRSA from 'jsencrypt';
 // RSA加密
 function RSA(pkey:string, data:string) {
-    // let buff = Buffer.from(data);
     let key = new NodeRSA();
     key.setPublicKey(pkey)
-    // let encrypted = key.encrypt(buff, 'base64', 'base64');
     return key.encrypt(data).toString();
 }
 

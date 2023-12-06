@@ -86,7 +86,6 @@ const onSubmit=()=>{
   })
       .then(() => {
         state.loading=true
-        console.log(1)
         request(apiStore.api.migration_fromOther,state.migrationParams).then((res)=>{
           state.migrationResult=res.data
           state.loading=false

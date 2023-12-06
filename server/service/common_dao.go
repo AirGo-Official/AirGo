@@ -19,7 +19,7 @@ func CommonSqlFind[T1, T2, T3 any](params T2) (T3, int64, error) {
 		err = global.DB.Model(&modelType).Where(params).Find(&res).Error
 
 	} else {
-		err = global.DB.Model(&modelType).Where(&params).Count(&total).Find(&res).Error
+		err = global.DB.Model(&modelType).Count(&total).Where(&params).Find(&res).Error
 	}
 	return res, total, err
 }
@@ -36,6 +36,19 @@ func CommonSqlFirst[T1, T2, T3 any](params T2) (T3, int64, error) {
 	}
 	return res, total, err
 }
+func CommonSqlLast[T1, T2, T3 any](params T2) (T3, int64, error) {
+	var res T3
+	var err error
+	var modelType T1
+	var total int64
+	if reflect.TypeOf(params).String() == reflect.String.String() {
+		err = global.DB.Model(&modelType).Where(params).First(&res).Error
+
+	} else {
+		err = global.DB.Model(&modelType).Count(&total).Where(&params).Last(&res).Error
+	}
+	return res, total, err
+}
 
 // 通用查询带分页参数
 func CommonSqlFindWithPagination[T1, T2, T3 any](params T2, paginationParams model.PaginationParams) (T3, int64, error) {
@@ -44,64 +57,56 @@ func CommonSqlFindWithPagination[T1, T2, T3 any](params T2, paginationParams mod
 	var modelType T1
 	var total int64
 	if reflect.TypeOf(params).String() == reflect.String.String() {
-		err = global.DB.Model(&modelType).Where(params).Count(&total).Limit(int(paginationParams.PageSize)).Offset((int(paginationParams.PageNum) - 1) * int(paginationParams.PageSize)).Find(&res).Error
+		err = global.DB.Model(&modelType).Count(&total).Where(params).Limit(int(paginationParams.PageSize)).Offset((int(paginationParams.PageNum) - 1) * int(paginationParams.PageSize)).Find(&res).Error
 
 	} else {
-		err = global.DB.Model(&modelType).Where(&params).Count(&total).Limit(int(paginationParams.PageSize)).Offset((int(paginationParams.PageNum) - 1) * int(paginationParams.PageSize)).Find(&res).Error
+		err = global.DB.Model(&modelType).Count(&total).Where(&params).Limit(int(paginationParams.PageSize)).Offset((int(paginationParams.PageNum) - 1) * int(paginationParams.PageSize)).Find(&res).Error
 	}
 	return res, total, err
 }
 
 // 通用查询
-func CommonSqlFindWithFieldParams(fieldParams model.FieldParamsReq) (any, int64, error) {
-	var sqlArr []string
-	for _, v := range fieldParams.FieldParamsList {
-		if v.Field == "" || v.Condition == "" || v.ConditionValue == "" {
-			continue
-		}
-		if v.Condition == "like" {
-			sqlArr = append(sqlArr, v.Field+"  "+v.Condition+" '%"+v.ConditionValue+"%'")
-
-		} else {
-			sqlArr = append(sqlArr, v.Field+" "+v.Condition+" '"+v.ConditionValue+"'")
-		}
-	}
-	totalSql := "select count(id) from " + fieldParams.TableName + " where " + strings.Join(sqlArr, " and ")
-	dataSql := "select * from " + fieldParams.TableName + " where " + strings.Join(sqlArr, " and ") + " limit " + fmt.Sprintf("%d", fieldParams.PaginationParams.PageSize) + " offset " + fmt.Sprintf("%d", fieldParams.PaginationParams.PageNum-1)
-
-	//fmt.Println("totalSql:", totalSql)
-	//fmt.Println("dataSql:", dataSql)
-
+func CommonSqlFindWithFieldParams(fieldParams *model.FieldParamsReq) (any, int64, error) {
+	totalSql, dataSql := CommonSqlFindSqlHandler(fieldParams)
 	var data any
 	data = model.StringAndSlice[fieldParams.TableName]
-
 	var total int64
 	err := global.DB.Raw(totalSql).Scan(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
 	err = global.DB.Raw(dataSql).Scan(&data).Error
 	return data, total, err
 }
-func CommonSqlFindWithFieldParamsNew(fieldParams model.FieldParamsReq) (any, int64, error) {
+
+func CommonSqlFindSqlHandler(fieldParams *model.FieldParamsReq) (string, string) {
 	var sqlArr []string
 	for _, v := range fieldParams.FieldParamsList {
+		if v.Condition == "" && v.ConditionValue == "" {
+			continue
+		}
 		switch v.Condition {
 		case "like":
 			sqlArr = append(sqlArr, v.Operator+" "+v.Field+"  "+v.Condition+" '%"+v.ConditionValue+"%'")
 		default:
 			sqlArr = append(sqlArr, v.Operator+" "+v.Field+" "+v.Condition+" '"+v.ConditionValue+"'")
 		}
-
 	}
-	totalSql := "select count(id) from " + fieldParams.TableName + " where " + strings.Join(sqlArr, "")
-	dataSql := "select * from " + fieldParams.TableName + " where " + strings.Join(sqlArr, "") + " limit " + fmt.Sprintf("%d", fieldParams.PaginationParams.PageSize) + " offset " + fmt.Sprintf("%d", fieldParams.PaginationParams.PageNum-1)
-	var data any
-	data = model.StringAndSlice[fieldParams.TableName]
-	//fmt.Println("totalSql:", totalSql)
-	//fmt.Println("dataSql:", dataSql)
-
-	var total int64
-	err := global.DB.Raw(totalSql).Scan(&total).Error
-	err = global.DB.Raw(dataSql).Scan(&data).Error
-	return data, total, err
+	//排序
+	var orderBy = "id ASC"
+	if fieldParams.Pagination.OrderBy != "" {
+		orderBy = fieldParams.Pagination.OrderBy
+	}
+	sql := strings.Join(sqlArr, " ")
+	//判断sql是否为空
+	sqlTemp := strings.TrimSpace(sql)
+	sqlTemp = strings.ReplaceAll(sql, "'", "")
+	if sqlTemp == "" {
+		sql = "id > 0"
+	}
+	totalSql := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s", fieldParams.TableName, sql)
+	dataSql := fmt.Sprintf("SELECT * FROM %s WHERE %s ORDER BY %s LIMIT %d OFFSET %d", fieldParams.TableName, sql, orderBy, fieldParams.Pagination.PageSize, fieldParams.Pagination.PageSize*(fieldParams.Pagination.PageNum-1))
+	return totalSql, dataSql
 }
 
 // 通用删除

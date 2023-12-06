@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package hello;
+
+option go_package = "/singbox";
+
+message HelloReq {
+  string Name = 1;
+  string Age = 2;
+}
+message HelloResp {
+  string Name = 1;
+  string Age = 2;
+}
+// protoc --go_out=./rpc/singbox/rpc --go-grpc_out=./rpc/singbox/rpc ./rpc/singbox/proto/common.proto

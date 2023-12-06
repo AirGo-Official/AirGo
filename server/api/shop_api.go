@@ -8,15 +8,22 @@ import (
 	"github.com/ppoonk/AirGo/utils/response"
 )
 
-// 购买流程：获取订单详情（前端：立即购买）->订单预创建（前端：提交订单）->购买主逻辑（前端：确认购买）
 // 查询全部已启用商品
 func GetAllEnabledGoods(ctx *gin.Context) {
+	goodsArr, ok := global.LocalCache.Get(global.AllEnabledGoods)
+	if ok {
+		response.OK("GetRouteList success", goodsArr, ctx)
+		return
+	}
 	goodsArr, _, err := service.CommonSqlFind[model.Goods, string, []model.Goods]("status = true ORDER BY goods_order")
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetAllEnabledGoods error:"+err.Error(), nil, ctx)
 		return
 	}
+	global.GoroutinePool.Submit(func() {
+		global.LocalCache.SetNoExpire(global.AllEnabledGoods, goodsArr)
+	})
 	response.OK("GetAllEnabledGoods success", goodsArr, ctx)
 }
 
@@ -47,6 +54,7 @@ func NewGoods(ctx *gin.Context) {
 		response.Fail("NewGoods error:"+err.Error(), nil, ctx)
 		return
 	}
+	global.LocalCache.Delete(global.AllEnabledGoods)
 	response.OK("NewGoods success", nil, ctx)
 }
 
@@ -65,6 +73,7 @@ func DeleteGoods(ctx *gin.Context) {
 		response.Fail("DeleteGoods error:"+err.Error(), nil, ctx)
 		return
 	}
+	global.LocalCache.Delete(global.AllEnabledGoods)
 	response.OK("DeleteGoods success", nil, ctx)
 
 }
@@ -84,6 +93,7 @@ func UpdateGoods(ctx *gin.Context) {
 		response.Fail("UpdateGoods error:"+err.Error(), nil, ctx)
 		return
 	}
+	global.LocalCache.Delete(global.AllEnabledGoods)
 	response.OK("UpdateGoods success", nil, ctx)
 }
 
@@ -102,5 +112,6 @@ func GoodsSort(ctx *gin.Context) {
 		response.Fail("GoodsSort error:"+err.Error(), nil, ctx)
 		return
 	}
+	global.LocalCache.Delete(global.AllEnabledGoods)
 	response.OK("GoodsSort success", nil, ctx)
 }

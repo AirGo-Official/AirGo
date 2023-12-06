@@ -11,6 +11,7 @@ declare interface Server {
 declare interface Notice {
     bot_token: string;
     tg_admin: string;
+    tg_socks5 :string;
     when_user_registered: boolean;
     when_user_purchased: boolean;
     when_node_offline: boolean;
@@ -61,15 +62,6 @@ declare interface Captcha {
     open_captcha: number;
     open_captcha_time_out: number;
 }
-
-declare interface Pay {
-    return_url: string;
-    app_id: string;
-    private_key: string;
-    ali_public_key: string;
-    encrypt_key: string;
-}
-
 declare interface Email {
     email_from: string;
     email_from_alias: string;

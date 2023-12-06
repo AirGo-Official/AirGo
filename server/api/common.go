@@ -3,18 +3,19 @@ package api
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 )
 
 // gin.Context中获取user id
 func GetUserIDFromGinContext(ctx *gin.Context) (int64, bool) {
-	userID, ok := ctx.Get("uID")
+	userID, ok := ctx.Get(global.CtxSetUserID)
 	return userID.(int64), ok
 }
 
 // gin.Context中获取user name
 func GetUserNameFromGinContext(ctx *gin.Context) (string, bool) {
-	userName, ok := ctx.Get("uName")
+	userName, ok := ctx.Get(global.CtxSetUserName)
 	return userName.(string), ok
 }
 
@@ -27,7 +28,6 @@ func EtagHandler(data any, ctx *gin.Context) {
 	}
 	str = string(b)
 	md5 = encrypt_plugin.Md5Encode(str, false)
-	//fmt.Println("md5:", md5)
 	if md5 == ctx.Request.Header.Get("If-None-Match") {
 		ctx.JSON(304, nil)
 		return

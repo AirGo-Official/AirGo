@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="state.isShowDialog" :title="state.title" width="769px" destroy-on-close>
+  <el-dialog v-model="state.isShowDialog" :title="state.title" width="80%" destroy-on-close>
     <el-form :model="goodsManageData.currentGoods" label-width="80px" label-position="top">
       <el-form-item label="商品标题">
         <el-input v-model="goodsManageData.currentGoods.subject"/>
@@ -17,7 +17,7 @@
       </el-form-item>
       <el-form-item label="总流量">
         <el-col :span="4">
-          <el-input v-model.number="goodsManageData.currentGoods.total_bandwidth" type="number"/>
+          <el-input-number v-model.number="goodsManageData.currentGoods.total_bandwidth" type="number"/>
         </el-col>
         <el-col :span="2" style="text-align: center">
           <span>-</span>
@@ -28,13 +28,24 @@
       </el-form-item>
       <el-form-item label="有效期">
         <el-col :span="4">
-          <el-input v-model.number="goodsManageData.currentGoods.expiration_date" type="number"/>
+          <el-input-number v-model.number="goodsManageData.currentGoods.expiration_date" type="number"/>
         </el-col>
         <el-col :span="2" style="text-align: center">
           <span>-</span>
         </el-col>
         <el-col :span="18">
           <span class="text-gray-500">天</span>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="流量重置日">
+        <el-col :span="4">
+          <el-input-number v-model.number="goodsManageData.currentGoods.reset_day" type="number"/>
+        </el-col>
+        <el-col :span="2" style="text-align: center">
+          <span>-</span>
+        </el-col>
+        <el-col :span="18">
+          <span class="text-gray-500">日</span>
         </el-col>
       </el-form-item>
       <el-form-item label="是否显示">
@@ -49,10 +60,6 @@
           <el-radio label="NotStack" >不叠加</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="描述">
-        <v-md-editor v-model="goodsManageData.currentGoods.des" height="400px"></v-md-editor>
-      </el-form-item>
-
       <el-form-item label="关联节点">
         <el-transfer
             :data="nodeManageData.nodes.node_list"
@@ -64,6 +71,9 @@
                   }"
             :titles="['全部节点', '选中节点']"
         />
+      </el-form-item>
+      <el-form-item label="描述">
+        <v-md-editor v-model="goodsManageData.currentGoods.des" height="400px"></v-md-editor>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -145,9 +155,26 @@ defineExpose({
 </script>
 
 
-<style scoped>
-.dialog-footer button:first-child {
-  margin-right: 10px;
+<style>
+/* 定义两边的el-transfer-panel大小的方法,直接设置是没有用的,需要去掉scoped即可。才能成功覆盖原生的样式 */
+.el-transfer-panel {
+  width: 400px;
+  height: 600px;
 }
+
+.el-transfer-panel__body {
+  height: 600px;
+}
+
+.el-transfer-panel__list {
+  height: 550px;
+}
+
+/*穿梭框内部展示列表的高宽度*/
+/*:deep(.el-transfer-panel__list.is-filterable){*/
+/*  width:280px;*/
+/*  height:500px;*/
+/*}*/
+
 </style>
   

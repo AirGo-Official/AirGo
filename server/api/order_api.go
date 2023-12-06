@@ -16,20 +16,29 @@ import (
 
 // 获取全部订单，分页获取
 func GetAllOrder(ctx *gin.Context) {
-	var params model.PaginationParams
+	var params model.FieldParamsReq
 	err := ctx.ShouldBind(&params)
-	res, err := service.GetAllOrder(&params)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetAllOrder error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("GetAllOrder success", res, ctx)
+	res, total, err := service.CommonSqlFindWithFieldParams(&params)
+	if err != nil {
+		global.Logrus.Error(err.Error())
+		response.Fail("GetAllOrder error:"+err.Error(), nil, ctx)
+		return
+	}
+	response.OK("GetAllOrder success", model.CommonDataResp{
+		Total: total,
+		Data:  res,
+	}, ctx)
+
 }
 
 // 获取订单统计
 func GetMonthOrderStatistics(ctx *gin.Context) {
-	var params model.PaginationParams
+	var params model.FieldParamsReq
 	err := ctx.ShouldBind(&params)
 	res, err := service.GetMonthOrderStatistics(&params)
 	if err != nil {
@@ -40,17 +49,23 @@ func GetMonthOrderStatistics(ctx *gin.Context) {
 	response.OK("GetMonthOrderStatistics success", res, ctx)
 }
 
-// 获取用户订单by user id，显示用户最近10条订单
+// 获取用户订单by user id
 func GetOrderByUserID(ctx *gin.Context) {
+	var params model.FieldParamsReq
+	err := ctx.ShouldBind(&params)
+	if err != nil {
+		global.Logrus.Error(err.Error())
+		response.Fail("GetAllOrder error:"+err.Error(), nil, ctx)
+		return
+	}
+
 	uIDInt, ok := GetUserIDFromGinContext(ctx)
 	if !ok {
 		response.Fail("GetOrderByUserID error:user id error", nil, ctx)
 		return
 	}
-	var params = model.PaginationParams{PageSize: 10} //显示用户最近10条订单
-	res, _, err := service.CommonSqlFindWithPagination[model.Orders, string, []model.Orders]("user_id = "+strconv.FormatInt(uIDInt, 10)+" ORDER BY id desc", params)
+	res, err := service.GetUserOrders(&params, uIDInt)
 	if err != nil {
-		global.Logrus.Error(err)
 		response.Fail("GetOrderByUserID error:"+err.Error(), nil, ctx)
 		return
 	}
@@ -175,7 +190,7 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 			//套餐流量剩余率大于设定的阈值才进行处理
 			if rate >= global.Server.Subscribe.DeductionThreshold {
 				//查找旧套餐价格
-				order, _, _ := service.CommonSqlFind[model.Orders, string, model.Orders]("user_id = " + strconv.FormatInt(uIDInt, 10) + " ORDER BY id desc LIMIT 1")
+				order, _, _ := service.CommonSqlFind[model.Orders, string, model.Orders](fmt.Sprintf("user_id = %d ORDER BY id desc LIMIT 1", uIDInt))
 				if order.ReceiptAmount != "" { //使用 实收金额 进行判断
 					receiptAmount, _ := strconv.ParseFloat(order.ReceiptAmount, 64)
 					deductionAmount := receiptAmount * rate

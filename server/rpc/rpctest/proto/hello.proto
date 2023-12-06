@@ -1,0 +1,10 @@
+syntax = "proto3";
+package hello;
+option go_package = "/singbox";
+
+import "rpc/singbox/proto/common.proto";
+service HelloService {
+  rpc SayHello (HelloReq) returns (HelloResp) {}
+}
+
+// protoc --go_out=./rpc/singbox/rpc --go-grpc_out=./rpc/singbox/rpc ./rpc/singbox/proto/hello.proto

@@ -10,7 +10,7 @@ export const useServerStore = defineStore("serverStore", {
             created_at: '',
             updated_at: '',
             id: 0,
-            security:{
+            security: {
                 jwt: {
                     signing_key: '',
                     expires_time: '',
@@ -33,7 +33,7 @@ export const useServerStore = defineStore("serverStore", {
                 enable_register: true,
                 enable_email_code: false,
                 enable_login_email_code: false,
-                acceptable_email_suffixes:'',
+                acceptable_email_suffixes: '',
                 is_multipoint: true,
                 sub_name: '',
                 backend_url: '',
@@ -50,11 +50,11 @@ export const useServerStore = defineStore("serverStore", {
                 clock_in_max_traffic: 1000,
                 clock_in_min_day: 0,
                 clock_in_max_day: 0,
-            },
+            } as Subscribe,
 
             email: {
                 email_from: '',
-                email_from_alias:'Admin',
+                email_from_alias: 'Admin',
                 email_secret: '',
                 email_host: '',
                 email_port: 465,
@@ -62,10 +62,11 @@ export const useServerStore = defineStore("serverStore", {
                 email_nickname: '管理员',
                 email_subject: '',
                 email_content: '',
-            },
-            notice:{
-                bot_token:'',
+            } as Email,
+            notice: {
+                bot_token: '',
                 tg_admin: '',
+                tg_socks5: '',
                 when_user_registered: false,
                 when_user_purchased: false,
                 when_node_offline: false,
@@ -79,9 +80,9 @@ export const useServerStore = defineStore("serverStore", {
             acceptable_email_suffixes: '', //可接受的邮箱后缀
             rebate_rate: 0,                  //佣金率
             backend_url: '',                 //
-            enabled_clock_in:true,           //是否开启打卡
+            enabled_clock_in: true,           //是否开启打卡
         },
-        acceptable_email_suffixes_arr:[] as string[],    //可接受的邮箱后缀数组
+        acceptable_email_suffixes_arr: [] as string[],    //可接受的邮箱后缀数组
 
     }),
     actions: {

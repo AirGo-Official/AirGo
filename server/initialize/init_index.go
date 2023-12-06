@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"context"
+	"fmt"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/mojocn/base64Captcha"
 	"github.com/panjf2000/ants/v2"
@@ -44,10 +45,11 @@ func InitializeAll() {
 	InitWebsocket()     //websocket
 	InitRatelimit()     //限流
 
-	InitCtxMapCancelMap() //
-	InitTGBot()           //初始化tg bot
-	InitCrontab()         //定时任务
-	InitRouter()          //初始总路由，放在最后
+	InitContextGroup() //
+	InitTGBot()        //初始化tg bot
+	InitCrontab()      //定时任务
+	//InitOnlineUsers()  //
+	InitRouter() //初始总路由，放在最后
 
 }
 
@@ -63,23 +65,45 @@ func InitializeUpdate() {
 	global.VP = InitViper() //初始化Viper
 	global.DB = Gorm()      //gorm连接数据库
 	InitServer()            //加载全局系统配置
-	//升级数据库casbin_rule表
-	err := global.DB.Where("id > 0").Delete(&gormadapter.CasbinRule{}).Error
-	if err != nil {
-		global.Logrus.Error(err.Error())
-		return
-	}
-	//插入新的数据
-	InsertIntoCasbinRule()
 
-	//升级数据库dynamic_route表
-	err = global.DB.Where("id > 0").Delete(&model.DynamicRoute{}).Error
-	if err != nil {
-		global.Logrus.Error(err.Error())
-		return
+	var funcs = []func() error{
+		func() error {
+			fmt.Println("升级数据库casbin_rule表")
+			return global.DB.Where("id > 0").Delete(&gormadapter.CasbinRule{}).Error
+		},
+		func() error {
+			return InsertIntoCasbinRule()
+		},
+		func() error {
+			fmt.Println("升级数据库菜单")
+			return global.DB.Where("id > 0").Delete(&model.DynamicRoute{}).Error
+		},
+		func() error {
+			return InsertIntoDynamicRoute()
+		},
+		func() error {
+			fmt.Println("升级角色和菜单")
+			return global.DB.Where("role_id > 0").Delete(&model.RoleAndMenu{}).Error
+		},
+		func() error {
+			return InsertIntoRoleAndMenu()
+		},
+		//临时代码，处理之前版本删除节点遗留的数据库垃圾数据
+		func() error {
+			fmt.Println("处理遗留垃圾数据")
+			return service.DeleteNodeTemp()
+		},
 	}
-	//插入新的数据
-	InsertIntoDynamicRoute()
+	for _, v := range funcs {
+		err := v()
+		if err != nil {
+			global.Logrus.Error(err.Error())
+			fmt.Println("升级核心出错：", err.Error())
+			return
+		}
+	}
+	fmt.Println("升级核心完成")
+
 }
 
 func InitLogrus() {
@@ -142,10 +166,15 @@ func InitRatelimit() {
 func InitGoroutinePool() {
 	global.GoroutinePool, _ = ants.NewPool(100, ants.WithPreAlloc(true))
 }
-func InitCtxMapCancelMap() {
-	global.CtxMap = make(map[string]*context.Context)
-	global.CancelMap = make(map[string]*context.CancelFunc)
+func InitContextGroup() {
+	global.ContextGroup = &model.ContextGroup{
+		CtxMap:    make(map[string]*context.Context),
+		CancelMap: make(map[string]*context.CancelFunc),
+	}
 }
 func InitTGBot() {
 	service.TGBotStartListen()
+}
+func InitOnlineUsers() {
+
 }

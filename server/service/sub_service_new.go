@@ -17,6 +17,7 @@ import (
 )
 
 func GetUserSubNew(url string, clientType string) string {
+	var nodeArr, nodeList []model.Node
 	//查找用户
 	var u model.User
 	err := global.DB.Where("subscribe_url = ? and sub_status = 1 and d + u < t", url).First(&u).Error
@@ -61,13 +62,19 @@ func GetUserSubNew(url string, clientType string) string {
 
 	}
 
+	if !u.SubscribeInfo.SubStatus || (u.SubscribeInfo.U+u.SubscribeInfo.D > u.SubscribeInfo.T) {
+		nodeArr = append(goods.Nodes, firstNode, secondNode)
+		fmt.Println("goto subHandler")
+		goto subHandler
+	}
+
 	//插入计算剩余天数，流量
 	goods.Nodes = append(goods.Nodes, model.Node{}, model.Node{})
 	copy(goods.Nodes[2:], goods.Nodes[0:])
 	goods.Nodes[0] = firstNode
 	goods.Nodes[1] = secondNode
 	//再插入共享的节点
-	nodeList, _, err := CommonSqlFind[model.NodeShared, string, []model.Node]("")
+	nodeList, _, err = CommonSqlFind[model.NodeShared, string, []model.Node]("")
 	if err == nil {
 		for _, v := range nodeList {
 			v.Enabled = true      //设为启用
@@ -76,7 +83,6 @@ func GetUserSubNew(url string, clientType string) string {
 		}
 	}
 	//最后处理一些参数
-	var nodeArr []model.Node
 	for k, _ := range goods.Nodes {
 		//剔除禁用节点
 		if !goods.Nodes[k].Enabled {
@@ -96,6 +102,7 @@ func GetUserSubNew(url string, clientType string) string {
 		}
 		nodeArr = append(nodeArr, goods.Nodes[k])
 	}
+subHandler:
 	//根据clientType生成不同客户端订阅
 	switch clientType {
 	case "v2rayNG", "V2rayU", "V2rayN":
@@ -120,7 +127,6 @@ func GetUserSubNew(url string, clientType string) string {
 
 	}
 	return ""
-
 }
 
 func v2rayNG(nodes *[]model.Node) string {
@@ -670,6 +676,7 @@ func ClashGenerate(node model.Node) model.ClashProxy {
 	case "hysteria":
 		proxy.Type = "hysteria2"
 		proxy.Uuid = node.UUID
+		proxy.Password = node.UUID
 		proxy.Sni = node.Sni
 	case "shadowsocks":
 		proxy.Type = "ss"
@@ -753,10 +760,15 @@ func VmessUrlForShadowrocket(node model.Node) string {
 	case global.NetworkGrpc:
 		values.Add("obfs", "grpc")
 		serviceName := node.Address
+		host := node.Address
+		if node.Host != "" {
+			host = node.Host
+		}
 		if node.ServiceName != "" {
 			serviceName = node.ServiceName
 		}
-		values.Add("host", serviceName)
+		values.Add("host", host)
+		values.Add("path", serviceName)
 	}
 	//tls
 	switch node.Security {

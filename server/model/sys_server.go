@@ -13,25 +13,27 @@ type Server struct {
 	Email     Email     `json:"email"    gorm:"embedded"`
 	Security  Security  `json:"security" gorm:"embedded"`
 	Notice    Notice    `json:"notice" gorm:"embedded"`
+	//Acme      Acme      `json:"acme" gorm:"embedded"`
 }
 type Notice struct {
 	BotToken           string `json:"bot_token"`            //tg bot token
 	TGAdmin            string `json:"tg_admin"`             //tg admin
+	TGSocks5           string `json:"tg_socks5"`            //tg socks5代理
 	WhenUserRegistered bool   `json:"when_user_registered"` //用户注册后通知
 	WhenUserPurchased  bool   `json:"when_user_purchased"`  //用户购买成功后通知
 	WhenNodeOffline    bool   `json:"when_node_offline"`    //节点离线时通知
 }
 
 type Email struct {
-	EmailFrom      string `json:"email_from"`                               // 发件人
-	EmailFromAlias string `json:"email_from_alias"`                         // 发件人别名
-	EmailSecret    string `json:"email_secret"`                             // 密钥
-	EmailHost      string `json:"email_host"`                               // 服务器地址
-	EmailPort      int64  `json:"email_port"`                               // 端口
-	EmailIsSSL     bool   `json:"email_is_ssl"`                             // 是否SSL
-	EmailNickname  string `json:"email_nickname"`                           // 昵称
-	EmailSubject   string `json:"email_subject" gorm:"default:hello!"`      // 邮件主题
-	EmailContent   string `json:"email_content" gorm:"size:5000;type:text"` //邮件内容
+	EmailFrom      string `json:"email_from"`                          // 发件人
+	EmailFromAlias string `json:"email_from_alias"`                    // 发件人别名
+	EmailSecret    string `json:"email_secret"`                        // 密钥
+	EmailHost      string `json:"email_host"`                          // 服务器地址
+	EmailPort      int64  `json:"email_port"`                          // 端口
+	EmailIsSSL     bool   `json:"email_is_ssl"`                        // 是否SSL
+	EmailNickname  string `json:"email_nickname"`                      // 昵称
+	EmailSubject   string `json:"email_subject" gorm:"default:hello!"` // 邮件主题
+	EmailContent   string `json:"email_content" gorm:"type:text"`      //邮件内容
 }
 type Security struct {
 	Captcha         Captcha         `json:"captcha" gorm:"embedded"`
@@ -43,7 +45,7 @@ type Captcha struct {
 	KeyLong            int64 `json:"key_long"        gorm:"default:6;comment:验证码长度"`
 	ImgWidth           int64 `json:"img_width"       gorm:"default:240;comment:验证码宽度"`
 	ImgHeight          int64 `json:"img_height"      gorm:"default:80;comment:验证码高度"`
-	OpenCaptcha        int64 `json:"open_captcha"    gorm:"default:2;comment:防爆破验证码开启此数，0代表每次登录都需要验证码，其他数字代表错误密码此数，如3代表错误三次后出现验证码"`
+	OpenCaptcha        int64 `json:"open_captcha"    gorm:"default:2"`
 	OpenCaptchaTimeOut int64 `json:"open_captcha_time_out" gorm:"default:300;comment:防爆破验证码超时时间，单位：s(秒)"`
 }
 type JWT struct {
@@ -79,6 +81,42 @@ type Subscribe struct {
 	ClockInMaxTraffic       int64   `json:"clock_in_max_traffic" gorm:"default:1000;comment:打卡最大流量(MB)"`
 	ClockInMinDay           int64   `json:"clock_in_min_day" gorm:"default:0;comment:打卡最小天数"`
 	ClockInMaxDay           int64   `json:"clock_in_max_day" gorm:"default:1;comment:打卡最大天数"`
+}
+type Acme struct {
+	//账户参数
+	AcmeEmail   string `json:"acme_email"`
+	AcmeMode    string `json:"acme_mode"    gorm:"default:dns"`         //dns http tls
+	AccountType string `json:"account_type" gorm:"default:letsencrypt"` //letsencrypt zerossl buypass google
+	KeyType     string `json:"key_type"`                                // P256 P384 2048 3072 4096
+	Address     string `json:"address"`
+	DNSProvider string `json:"dns_provider"`
+	//证书信息
+	IsExpired    bool      `json:"is_expired"`
+	IsRenewal    bool      `json:"is_renewal"`
+	ExpiredAt    time.Time `json:"expired_at"`
+	StartAt      time.Time `json:"start_at"`
+	PrivateKey   string    `json:"private_key"  gorm:"type:text"`
+	Pem          string    `json:"pem" gorm:"type:text"`
+	CertURL      string    `json:"cert_url"`
+	CommonName   string    `json:"common_name"`
+	Organization string    `json:"organization"`
+	//其他
+	EabKid     string `gorm:"default:null;" json:"eabKid"`
+	EabHmacKey string `gorm:"default:null"  json:"eabHmacKey"`
+
+	//TencentCloud
+	TencentCloudSecretId  string `json:"tencent_cloud_secret_id"`
+	TencentCloudSecretKey string `json:"tencent_cloud_secret_key"`
+	//ALICLOUD
+	AliCloudAccessKey string `json:"ali_cloud_access_key"`
+	AliCloudSecretKey string `json:"ali_cloud_secret_key"`
+	//
+	CloudflareDnsApiToken string `json:"cloudflare_dns_api_token"`
+	//
+	GodaddyApiKey    string `json:"godaddy_api_key"`
+	GodaddyApiSecret string `json:"godaddy_api_secret"`
+	//
+	HetznerApiKey string `json:"hetzner_api_key"`
 }
 
 // 公共配置参数

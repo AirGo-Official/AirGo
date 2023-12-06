@@ -1,27 +1,48 @@
 package model
 
-type DbNameAndTableReq struct {
-	Database  string `json:"database" gorm:"column:database"`
-	TableName string `json:"table_name" gorm:"column:table_name"`
-}
-
 type DbInfoReq struct {
 	DbType       string   `json:"db_type"`
 	DatabaseList []string `json:"database_list"`
 }
 
+type DbTableReq struct {
+	DbName    string `json:"db_name"`
+	TableName string `json:"table_name"`
+}
+
 // 查询参数 请求
 type FieldParamsReq struct {
-	TableName        string            `json:"table_name" binding:"required"`
-	FieldParamsList  []FieldParamsItem `json:"field_params_list"`
-	PaginationParams PaginationParams  `json:"pagination_params"` //分页参数
+	TableName       string            `json:"table_name" binding:"required"`
+	FieldParamsList []FieldParamsItem `json:"field_params_list"`
+	Pagination      Pagination        `json:"pagination"` //分页参数
 }
+
+// 查询字段参数
 type FieldParamsItem struct {
 	Operator       string `json:"operator"` // AND OR
 	Field          string `json:"field"`
 	FieldType      string `json:"field_type"`
 	Condition      string `json:"condition"` //= > < <> like
 	ConditionValue string `json:"condition_value"`
+}
+
+// 分页参数
+type Pagination struct {
+	PageNum  int64  `json:"page_num"`
+	PageSize int64  `json:"page_size"`
+	OrderBy  string `json:"order_by"`
+}
+type PaginationParams struct {
+	Search   string   `json:"search"`
+	PageNum  int64    `json:"page_num"`
+	PageSize int64    `json:"page_size"`
+	Total    int64    `json:"total"`
+	Date     []string `json:"date"`
+}
+
+type CommonDataResp struct {
+	Total int64 `json:"total"`
+	Data  any   `json:"data"`
 }
 
 // mysql 表名

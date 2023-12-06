@@ -9,6 +9,7 @@ declare interface Goods {
     subject: string;       // 标题
     total_amount: string;  // 总金额
     traffic_reset_method: string; //流量重置方式,Stack,NotStack
+    reset_day: number; //流量重置日
     //
     total_bandwidth: number; //总流量
     expiration_date: number; //有效期

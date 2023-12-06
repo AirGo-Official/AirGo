@@ -61,11 +61,12 @@ type AGAccess struct {
 	Route string `json:"route"`
 }
 type AGUserInfo struct {
-	ID            int64     `json:"id"`
-	UUID          uuid.UUID `json:"uuid"`
-	Passwd        string    `json:"passwd"`
-	UserName      string    `json:"user_name"`
-	NodeConnector int64     `json:"node_connector"` //连接客户端数
+	ID             int64     `json:"id"`
+	UUID           uuid.UUID `json:"uuid"`
+	Passwd         string    `json:"passwd"`
+	UserName       string    `json:"user_name"`
+	NodeConnector  int64     `json:"node_connector"` //连接客户端数
+	NodeSpeedLimit int64     `json:"node_speedLimit"`
 }
 
 type AGUserTraffic struct {

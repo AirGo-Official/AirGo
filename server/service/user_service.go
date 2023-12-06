@@ -28,7 +28,7 @@ func Register(u *model.User) error {
 			UUID:           uuid.NewV4(),
 			UserName:       u.UserName,
 			NickName:       u.UserName,
-			Avatar:         "",                                      //头像
+			Avatar:         u.Avatar,                                //头像
 			Password:       encrypt_plugin.BcryptEncode(u.Password), //密码
 			RoleGroup:      []model.Role{{ID: 2}},                   //默认角色：普通用户角色
 			InvitationCode: encrypt_plugin.RandomString(8),          //邀请码
@@ -40,18 +40,9 @@ func Register(u *model.User) error {
 		//通知
 		if global.Server.Notice.WhenUserRegistered {
 			global.GoroutinePool.Submit(func() {
-				if global.Server.Notice.TGAdmin == "" {
-					return
-				}
-				tgIDs := strings.Fields(global.Server.Notice.TGAdmin)
-				for _, v := range tgIDs {
-					chatID, _ := strconv.ParseInt(v, 10, 64)
-					TGBotSendMessage(chatID, "新注册用户："+newUser.UserName)
-				}
-
+				UnifiedPushMessage("新注册用户：" + newUser.UserName)
 			})
 		}
-
 		return CreateUser(NewUserSubscribe(&newUser))
 	} else {
 		return err
@@ -155,6 +146,7 @@ func HandleUserSubscribe(u *model.User, goods *model.Goods) *model.User {
 	u.SubscribeInfo.GoodsID = goods.ID           //当前订购的套餐
 	u.SubscribeInfo.GoodsSubject = goods.Subject //套餐标题
 	u.SubscribeInfo.SubStatus = true             //订阅状态
+
 	t := time.Now().AddDate(0, 0, int(goods.ExpirationDate))
 	u.SubscribeInfo.ExpiredAt = &t //过期时间
 	if goods.NodeConnector != 0 {
@@ -171,7 +163,7 @@ func HandleUserSubscribe(u *model.User, goods *model.Goods) *model.User {
 		u.SubscribeInfo.U = 0
 		u.SubscribeInfo.D = 0
 	}
-
+	u.SubscribeInfo.ResetDay = goods.ResetDay //流量重置日
 	return u
 }
 
@@ -195,8 +187,21 @@ func UpdateUserTrafficInfo(userArr []model.User, userIds []int64) error {
 
 // 用户流量，有效期 检测任务
 func UserExpiryCheck() error {
-	//fmt.Println("开始用户流量，有效期 检测任务")
-	return global.DB.Exec("update user set sub_status = 0 where expired_at < ? or ( u + d ) > t", time.Now()).Error
+	err := global.DB.Exec("UPDATE user SET sub_status = 0 WHERE expired_at < ? or ( u + d ) > t", time.Now()).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 用户流量重置任务
+func UserTrafficReset() error {
+	day := time.Now().Day()
+	err := global.DB.Exec("UPDATE user SET u = 0, d = 0 WHERE reset_day = ?", day).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // 修改混淆
@@ -207,22 +212,25 @@ func ChangeSubHost(uID int64, host string) error {
 	return global.DB.Model(&model.User{ID: uID}).Updates(u).Error
 }
 
-// 获取自身信息
+// 获取信息
 func GetUserInfo(uID int64) (*model.User, error) {
 	var user model.User
 	return &user, global.DB.First(&user, uID).Error
 }
 
-// 获取用户列表,分页
-func GetUserlist(params *model.PaginationParams) (*model.UsersWithTotal, error) {
-	var userArr model.UsersWithTotal
-	var err error
-	if params.Search != "" {
-		err = global.DB.Model(&model.User{}).Where("user_name like ?", ("%" + params.Search + "%")).Count(&userArr.Total).Limit(int(params.PageSize)).Offset((int(params.PageNum) - 1) * int(params.PageSize)).Preload("RoleGroup").Find(&userArr.UserList).Error
-	} else {
-		err = global.DB.Model(&model.User{}).Count(&userArr.Total).Limit(int(params.PageSize)).Offset((int(params.PageNum) - 1) * int(params.PageSize)).Preload("RoleGroup").Find(&userArr.UserList).Error
+// 获取用户列表
+func GetUserlist(params *model.FieldParamsReq) (*model.CommonDataResp, error) {
+	var data model.CommonDataResp
+	var userList []model.User
+	_, dataSql := CommonSqlFindSqlHandler(params)
+	dataSql = dataSql[strings.Index(dataSql, "WHERE ")+6:]
+	err := global.DB.Model(&model.User{}).Count(&data.Total).Where(dataSql).Preload("RoleGroup").Find(&userList).Error
+	if err != nil {
+		global.Logrus.Error("GetUserlist error:", err.Error())
+		return nil, err
 	}
-	return &userArr, err
+	data.Data = userList
+	return &data, nil
 }
 
 // 更新用户信息

@@ -113,7 +113,7 @@
             <el-form-item label="限速">
               <el-row :gutter="0">
                 <el-col :span="20">
-                  <el-input v-model.number="userManageData.dialog.user.subscribe_info.node_speedlimit" type="number"/>
+                  <el-input-number v-model.number="userManageData.dialog.user.subscribe_info.node_speedlimit"/>
                 </el-col>
                 <el-col :span="2" style="text-align: center"><span>-</span></el-col>
                 <el-col :span="2">
@@ -127,13 +127,23 @@
             <el-form-item label="连接数">
               <el-row :gutter="0">
                 <el-col :span="20">
-                  <el-input v-model.number="userManageData.dialog.user.subscribe_info.node_connector" type="number"/>
+                  <el-input-number v-model.number="userManageData.dialog.user.subscribe_info.node_connector"/>
                 </el-col>
                 <el-col :span="2" style="text-align: center"><span>-</span></el-col>
                 <el-col :span="2">
                   <span>个</span>
                 </el-col>
               </el-row>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
+            <el-form-item label="流量重置日">
+              <el-input-number v-model="userManageData.dialog.user.subscribe_info.reset_day"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
+            <el-form-item label="我的余额">
+              <el-input-number v-model.number="userManageData.dialog.user.remain" type="number"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
@@ -150,13 +160,6 @@
               </el-input>
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
-            <el-form-item label="我的余额">
-              <el-input v-model.number="userManageData.dialog.user.remain" type="number"></el-input>
-            </el-form-item>
-          </el-col>
-
-
         </el-row>
       </el-form>
       <template #footer>
@@ -258,7 +261,7 @@ const onSubmit = () => {
     userStore.updateUser(userManageData.value.dialog.user)
   }
   setTimeout(() => {
-    userStore.getUserList(state.params)
+    emit('refresh')
   }, 500)
   closeDialog();
 };

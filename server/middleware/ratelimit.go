@@ -23,7 +23,7 @@ func RateLimitIP() gin.HandlerFunc {
 }
 func RateLimitVisit() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		uID, _ := ctx.Get("uID")
+		uID, _ := ctx.Get(global.CtxSetUserID)
 		uIDStr := strconv.FormatInt(uID.(int64), 10)
 		if ok := global.RateLimit.VisitRole.AllowVisit(uIDStr); !ok {
 			global.Logrus.Error(uIDStr+"访问量超出,其剩余访问次数情况如下:", global.RateLimit.IPRole.RemainingVisits(uIDStr))

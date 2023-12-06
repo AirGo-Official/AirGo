@@ -591,8 +591,6 @@ const openDialog = (title: string, row?: NodeInfo) => {
     state.isShowDialog = true
   } else {
     state.title = "修改节点"
-    console.log("修改节点")
-    console.log("修改节点", row?.node_type)
     switch (row?.node_type) {
       case "vless":
         state.noteType = "vless"

@@ -1,11 +1,11 @@
 import {defineStore, storeToRefs} from 'pinia';
 //import Cookies from 'js-cookie';
 import {Local, Session} from '/@/utils/storage';
-import {ElMessage} from "element-plus";
 import {useServerStore} from "/@/stores/serverStore";
 import {usePublicStore} from "/@/stores/publicStore";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
+
 export const useUserStore = defineStore('userInfo', {
     state: () => ({
         //登录页面数据
@@ -54,6 +54,7 @@ export const useUserStore = defineStore('userInfo', {
                 t: 0,
                 u: 0,
                 d: 0,
+                reset_day: 0,
             }
         } as SysUser,
         //用户管理页面数据
@@ -81,6 +82,7 @@ export const useUserStore = defineStore('userInfo', {
                         d: 0,
                         node_speedlimit: 0,
                         node_connector: 3,
+                        reset_day: 0,
                     }
                 } as SysUser,
                 check_list: ['普通用户'], //选中的角色
@@ -104,7 +106,7 @@ export const useUserStore = defineStore('userInfo', {
             const serverStoreData = storeToRefs(serverStore)
             const apiStore = useApiStore()
             const apiStoreData = storeToRefs(apiStore)
-            return serverStoreData.publicServerConfig.value.backend_url + apiStoreData.staticApi.value.user_getSub.path +"?link=" +state.userInfos.subscribe_info.subscribe_url
+            return serverStoreData.publicServerConfig.value.backend_url + apiStoreData.staticApi.value.user_getSub.path + "?link=" + state.userInfos.subscribe_info.subscribe_url
         },
 
     },
@@ -128,6 +130,7 @@ export const useUserStore = defineStore('userInfo', {
                     d: 0,
                     node_speedlimit: 0,
                     node_connector: 3,
+                    reset_day: 0,
                 }
             } as SysUser
             this.userManageData.dialog.check_list = ['普通用户']
@@ -136,7 +139,7 @@ export const useUserStore = defineStore('userInfo', {
         //注册
         async register(form?: object) {
             const referrerCode: string = Local.get('invitation')
-            if (referrerCode.length === 8) {
+            if (referrerCode !== null) {
                 this.registerData.referrer_code = referrerCode
             }
             const publicStore = usePublicStore()
@@ -173,7 +176,8 @@ export const useUserStore = defineStore('userInfo', {
         async getUserList(data?: object) {
             const apiStore = useApiStore()
             const res = await request(apiStore.api.user_getUserList, data)
-            this.userManageData.users = res.data
+            this.userManageData.users.user_list = res.data.data
+            this.userManageData.users.total = res.data.total
         },
         //新建用户
         async newUser(data?: object) {
@@ -199,6 +203,11 @@ export const useUserStore = defineStore('userInfo', {
         async submitResetPassword() {
             const apiStore = useApiStore()
             return await request(apiStore.staticApi.user_resetUserPassword, this.loginData)
-        }
+        },
+        //发送验证码
+        async sendEmailCode(email: string) {
+            const apiStore = useApiStore()
+            return await request(apiStore.staticApi.public_getEmailCode, {user_name: email})
+        },
     },
 });
