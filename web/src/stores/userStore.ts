@@ -55,8 +55,14 @@ export const useUserStore = defineStore('userInfo', {
                 u: 0,
                 d: 0,
                 reset_day: 0,
-            }
+            },
+            online_user_item: {
+                node_connector: 0,
+                node_ip_map: {},
+            } as OnlineUserItem,
         } as SysUser,
+        //在线设备数提示信息
+        onlineDeviceInfo: '',
         //用户管理页面数据
         userManageData: {
             users: {
@@ -90,9 +96,23 @@ export const useUserStore = defineStore('userInfo', {
         },
     }),
     getters: {
-        used: (state): number => {
+        //使用流量，GB
+        usedTraffic: (state): number => {
+            return +((state.userInfos.subscribe_info.u + state.userInfos.subscribe_info.d) / 1024 / 1024 / 1024).toFixed(2)
+        },
+        //剩余流量，GB
+        residualTraffic: (state): number => {
             return +((state.userInfos.subscribe_info.t - state.userInfos.subscribe_info.u - state.userInfos.subscribe_info.d) / 1024 / 1024 / 1024).toFixed(2)
         },
+        //总流量，GB
+        totalTraffic: (state): number => {
+            return +(state.userInfos.subscribe_info.t / 1024 / 1024 / 1024).toFixed(2)
+        },
+        //剩余流量百分比，如：34.56  78.90
+        residualTrafficPercent: (state): number => {
+            return +(((state.userInfos.subscribe_info.t - state.userInfos.subscribe_info.d - state.userInfos.subscribe_info.u) / state.userInfos.subscribe_info.t) * 100).toFixed(2)
+        },
+        //订阅过期时间
         expired: (state): string => {
             if (state.userInfos.subscribe_info.expired_at === null) {
                 return ""
@@ -100,7 +120,7 @@ export const useUserStore = defineStore('userInfo', {
                 return state.userInfos.subscribe_info.expired_at.slice(0, 10)
             }
         },
-        //订阅
+        //订阅链接
         subUrl: (state): string => {
             const serverStore = useServerStore()
             const serverStoreData = storeToRefs(serverStore)
@@ -108,7 +128,16 @@ export const useUserStore = defineStore('userInfo', {
             const apiStoreData = storeToRefs(apiStore)
             return serverStoreData.publicServerConfig.value.backend_url + apiStoreData.staticApi.value.user_getSub.path + "?link=" + state.userInfos.subscribe_info.subscribe_url
         },
-
+        //在线设备数
+        onlineDevice: (state): number => {
+            let n = 0
+            for (let key in state.userInfos.online_user_item.node_ip_map) {
+                // @ts-ignore
+                let onlineNodeInfo: OnlineNodeInfo = state.userInfos.online_user_item.node_ip_map[key]
+                n += onlineNodeInfo.node_ip.length
+            }
+            return n
+        },
     },
     actions: {
         // 重置数据
@@ -209,5 +238,14 @@ export const useUserStore = defineStore('userInfo', {
             const apiStore = useApiStore()
             return await request(apiStore.staticApi.public_getEmailCode, {user_name: email})
         },
+        //在线设备数信息
+        showOnlineDeviceInfo() {
+            this.onlineDeviceInfo = ''
+            for (let key in this.userInfos.online_user_item.node_ip_map) {
+                // @ts-ignore
+                let onlineNodeInfo: OnlineNodeInfo = this.userInfos.online_user_item.node_ip_map[key]
+                this.onlineDeviceInfo += '节点ID：' + key.toString() + '，在线IP：' + onlineNodeInfo.node_ip.join(" | ") + "\n"
+            }
+        }
     },
 });

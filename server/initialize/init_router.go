@@ -64,6 +64,7 @@ func InitRouter() {
 		AirGoRouter.POST("/node/reportNodeStatus", api.AGReportNodeStatus)
 		AirGoRouter.GET("/user/getUserlist", api.AGGetUserlist)
 		AirGoRouter.POST("/user/reportUserTraffic", api.AGReportUserTraffic)
+		AirGoRouter.POST("/user/ReportNodeOnlineUsers", api.AGReportNodeOnlineUsers)
 	}
 
 	// 路由组

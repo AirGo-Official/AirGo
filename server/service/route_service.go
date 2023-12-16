@@ -115,7 +115,7 @@ func getChildrenRouteNodeTree(routeNode *model.RouteNode, routeNodeMap map[int64
 // 查询动态路由是否存在 by path
 func NotExistDynamicRoute(route *model.DynamicRoute) bool {
 	var dr model.DynamicRoute
-	err := global.DB.Where(&model.DynamicRoute{Path: route.Path}).First(&dr).Error //注意Model Where 的区别
+	err := global.DB.Where(&model.DynamicRoute{Path: route.Path}).First(&dr).Error
 	return errors.Is(err, gorm.ErrRecordNotFound)
 }
 

@@ -12,20 +12,34 @@
               </div>
             </template>
             <div class="card-text">
-              <el-tag class="card-text-left" type="info">订阅状态:</el-tag>
+              <el-tag class="card-text-left">订阅状态:</el-tag>
               <el-button type="primary" class="card-text-right" style="font-size:20px" v-if="userInfos.subscribe_info.sub_status">有效</el-button>
               <el-button type="info" class="card-text-right" style="font-size:20px"  v-else>已过期</el-button>
+              <el-popover
+                  placement="top-start"
+                  title="在线设备IP"
+                  width="80%"
+                  trigger="hover"
+                  :content="userStoreData.onlineDeviceInfo.value"
+              >
+                <template #reference>
+                  <el-button type="info" @click="showOnlineDeviceInfo" class="card-text-right">在线：{{userStoreData.onlineDevice.value}}/{{userInfos.subscribe_info.node_connector}}</el-button>
+                </template>
+              </el-popover>
             </div>
             <div class="card-text">
-              <el-tag class="card-text-left" type="info">剩余流量:</el-tag>
-              <span class="card-text-right">{{
-                  ((userInfos.subscribe_info.t - userInfos.subscribe_info.d - userInfos.subscribe_info.u) / 1024 / 1024 / 1024).toFixed(2)
-                }}GB</span>
+              <el-tag class="card-text-left">到期时间:</el-tag>
+              <span class="card-text-right">{{ DateStrtoTime(userInfos.subscribe_info.expired_at) }}</span>
             </div>
             <div class="card-text">
-              <el-tag class="card-text-left" type="info">到期时间:</el-tag>
-              <span class="card-text-right">{{ DateStrtoTime(userInfos.subscribe_info.expired_at).slice(0, 10) }}</span>
+              <el-tag class="card-text-left" >流量剩余:</el-tag>
+              <span class="card-text-right">{{userStoreData.residualTraffic.value}}GB/{{userStoreData.totalTraffic.value}}GB</span>
             </div>
+            <div >
+              <el-progress :text-inside="true" :stroke-width="26" :percentage="userStoreData.residualTrafficPercent.value">
+              </el-progress>
+            </div>
+
           </el-card>
         </div>
       </el-col>
@@ -146,6 +160,7 @@ const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
 const userStore = useUserStore()
 const {userInfos} = storeToRefs(userStore)
+const userStoreData = storeToRefs(userStore)
 const {copyText} = commonFunction();
 
 const articleStore =useArticleStore()
@@ -256,6 +271,11 @@ const onInitQrcode = () => {
     colorLight: 'rgb(255,255,255)',
   });
 }
+//
+const showOnlineDeviceInfo=()=>{
+  userStore.showOnlineDeviceInfo()
+
+}
 // 页面加载时
 onMounted(() => {
   getArticleID1();
@@ -289,7 +309,7 @@ onMounted(() => {
 .card-text {
   display: flex;
   justify-content: space-between;
-  height: 60px
+  height: 40px;
 }
 
 .card-text-left {
@@ -300,7 +320,7 @@ onMounted(() => {
 .card-text-right {
   margin-top: auto;
   margin-bottom: auto;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .card-header-left {

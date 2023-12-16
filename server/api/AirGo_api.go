@@ -19,7 +19,11 @@ func AGGetNodeInfo(ctx *gin.Context) {
 		return
 	}
 	id := ctx.Query("id")
-	node, _, err := service.CommonSqlFind[model.Node, string, model.AGNodeInfo](fmt.Sprintf("id = %s", id))
+	//node, _, err := service.CommonSqlFind[model.Node, string, model.AGNodeInfo](fmt.Sprintf("id = %s", id))
+
+	var node model.Node
+	err := global.DB.Where("id = ?", id).Preload("Access").First(&node).Error
+
 	if err != nil {
 		global.Logrus.Error("AGGetNodeInfo error,id="+id, err.Error())
 		return
@@ -119,29 +123,68 @@ func AGGetUserlist(ctx *gin.Context) {
 		global.Logrus.Error("error,id="+id, err.Error())
 		return
 	}
-	//处理全局限制用户；连接数，待写
+	//处理用户连接数，只要没超过限制就下发
+	var newUsers []model.AGUserInfo
+	for _, user := range users {
+		global.OnlineUsers.Lock.RLock()
+		//当前用户
+		u, ok := global.OnlineUsers.UsersMap[user.ID]
+		global.OnlineUsers.Lock.RUnlock()
+		//fmt.Println("当前在线客户端：", u)
+		if !ok {
+			global.OnlineUsers.Lock.RLock()
+			global.OnlineUsers.UsersMap[user.ID] = model.OnlineUserItem{
+				NodeConnector: user.NodeConnector,
+				NodeIPMap:     make(map[int64]model.OnlineNodeInfo),
+			}
+			global.OnlineUsers.Lock.RUnlock()
+			newUsers = append(newUsers, user)
+
+		} else {
+			u.NodeConnector = user.NodeConnector
+			global.OnlineUsers.Lock.RLock()
+			global.OnlineUsers.UsersMap[user.ID] = u //更新在线用户信息
+			global.OnlineUsers.Lock.RUnlock()
+			//处理当前用户连接数
+			var current int
+			for nodeID, onLineNodeInfo := range u.NodeIPMap {
+				if nodeID == nodeIDInt {
+					continue //排除当前节点已有的客户端
+				}
+				current = current + len(onLineNodeInfo.NodeIP)
+			}
+			newConnector := u.NodeConnector - int64(current) //新设备连接数
+			//fmt.Println("新设备连接数：", newConnector)
+			if newConnector >= 1 {
+				user.NodeConnector = newConnector //下发新的设备连接数
+			}
+			newUsers = append(newUsers, user)
+		}
+	}
+
 	//处理ss加密
 	switch node.NodeType {
 	case "shadowsocks":
 		switch strings.HasPrefix(node.Scy, "2022") {
 		case true:
-			for k, _ := range users {
-				p := users[k].UUID.String()
+			for k, _ := range newUsers {
+				p := newUsers[k].UUID.String()
 				if node.Scy == "2022-blake3-aes-128-gcm" {
 					p = p[:16]
 				}
 				p = base64.StdEncoding.EncodeToString([]byte(p))
-				users[k].Passwd = p
+				newUsers[k].Passwd = p
 			}
 		default:
-			for k, _ := range users {
-				users[k].Passwd = users[k].UUID.String()
+			for k, _ := range newUsers {
+				newUsers[k].Passwd = newUsers[k].UUID.String()
 			}
 		}
 	default:
 	}
-	EtagHandler(users, ctx)
+	EtagHandler(newUsers, ctx)
 }
+
 func ssEncryptionHandler(node model.Node, user *model.AGUserInfo) {
 	switch node.NodeType {
 	case "shadowsocks":
@@ -257,4 +300,37 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	})
 	ctx.String(200, "success")
 
+}
+
+func AGReportNodeOnlineUsers(ctx *gin.Context) {
+	//验证key
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
+		return
+	}
+	var AGOnlineUser model.AGOnlineUser
+	err := ctx.ShouldBind(&AGOnlineUser)
+	if err != nil {
+		global.Logrus.Error("error", err.Error())
+		return
+	}
+	//fmt.Println("上报在线设备：", AGOnlineUser)
+	if len(AGOnlineUser.UserNodeMap) == 0 {
+		goto re
+	}
+	for uid, _ := range AGOnlineUser.UserNodeMap {
+		global.OnlineUsers.Lock.RLock()
+		_, ok := global.OnlineUsers.UsersMap[uid] //这里只负责存，只要AGGetUserlist逻辑没问题则不会超出限制
+		global.OnlineUsers.Lock.RUnlock()
+		if ok {
+			global.OnlineUsers.Lock.RLock()
+			global.OnlineUsers.UsersMap[uid].NodeIPMap[AGOnlineUser.NodeID] = model.OnlineNodeInfo{
+				NodeIP:         AGOnlineUser.UserNodeMap[uid],
+				LastUpdateTime: time.Now(),
+			}
+			global.OnlineUsers.Lock.RUnlock()
+		}
+
+	}
+re:
+	ctx.String(200, "success")
 }

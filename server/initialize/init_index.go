@@ -47,9 +47,9 @@ func InitializeAll() {
 
 	InitContextGroup() //
 	InitTGBot()        //初始化tg bot
+	InitOnlineUsers()  //
 	InitCrontab()      //定时任务
-	//InitOnlineUsers()  //
-	InitRouter() //初始总路由，放在最后
+	InitRouter()       //初始总路由，放在最后
 
 }
 
@@ -176,5 +176,7 @@ func InitTGBot() {
 	service.TGBotStartListen()
 }
 func InitOnlineUsers() {
-
+	global.OnlineUsers = &model.OnlineUsers{
+		UsersMap: make(map[int64]model.OnlineUserItem),
+	}
 }

@@ -30,8 +30,10 @@ type User struct {
 	RoleGroup []Role `json:"role_group" gorm:"many2many:user_and_role;"` //多对多
 	//订单
 	Orders []Orders `json:"orders" gorm:"foreignKey:UserID;references:ID"` //has many
-	//附加订阅信息
+	//订阅信息
 	SubscribeInfo SubscribeInfo `json:"subscribe_info" gorm:"embedded;comment:附加订阅信息"`
+	//该用户当前在线信息
+	OnlineUserItem OnlineUserItem `json:"online_user_item" gorm:"-"`
 }
 
 // 附加订阅信息
@@ -92,9 +94,11 @@ type OnlineUsers struct {
 	Lock     sync.RWMutex
 	UsersMap map[int64]OnlineUserItem
 }
-
 type OnlineUserItem struct {
-	NodeConnector  int64           //连接客户端数
-	NodeMap        map[int64]int64 //
-	LastUpdateTime time.Time       //上次统计连接数的时间，数据来源：节点上报
+	NodeConnector int64                    `json:"node_connector"` //连接客户端数
+	NodeIPMap     map[int64]OnlineNodeInfo `json:"node_ip_map"`
+}
+type OnlineNodeInfo struct {
+	NodeIP         []string  `json:"node_ip"`
+	LastUpdateTime time.Time `json:"last_update_time"`
 }

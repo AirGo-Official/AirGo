@@ -142,6 +142,13 @@ func Login(c *gin.Context) {
 			})
 		}
 	}
+	//插入该用户当前在线信息
+	global.OnlineUsers.Lock.RLock()
+	userMapItem, ok := global.OnlineUsers.UsersMap[user.ID]
+	global.OnlineUsers.Lock.RUnlock()
+	if ok {
+		user.OnlineUserItem = userMapItem
+	}
 	response.OK("Login success", gin.H{
 		"user":  user,
 		"token": token,
@@ -183,6 +190,13 @@ func GetUserInfo(ctx *gin.Context) {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetUserInfo error:"+err.Error(), nil, ctx)
 		return
+	}
+	//插入该用户当前在线信息
+	global.OnlineUsers.Lock.RLock()
+	userMapItem, ok := global.OnlineUsers.UsersMap[uIDInt]
+	global.OnlineUsers.Lock.RUnlock()
+	if ok {
+		u.OnlineUserItem = userMapItem
 	}
 	response.OK("GetUserInfo success", u, ctx)
 

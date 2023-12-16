@@ -228,17 +228,44 @@ func ClashMeta(nodes *[]model.Node) string {
 	clashYaml.Secret = ""
 	clashYaml.Proxies = proxiesArr
 	clashYaml.ProxyGroups = append(clashYaml.ProxyGroups, proxyGroup1, proxyGroup2, proxyGroup3)
-	clashYaml.Rules = []string{ //注：规则写的简单，后期再优化
-		"DOMAIN-SUFFIX,local,DIRECT",
-		"IP-CIDR,127.0.0.0/8,DIRECT",
-		"IP-CIDR,172.16.0.0/12,DIRECT",
-		"IP-CIDR,192.168.0.0/16,DIRECT",
-		"IP-CIDR,10.0.0.0/8,DIRECT",
-		"IP-CIDR,17.0.0.0/8,DIRECT",
-		"IP-CIDR,100.64.0.0/10,DIRECT",
-		"IP-CIDR,224.0.0.0/4,DIRECT",
-		"IP-CIDR6,fe80::/10,DIRECT",
-		"MATCH," + global.Server.Subscribe.SubName,
+	clashYaml.RuleProviders.CN = model.RuleProvidersItem{
+		Behavior: "domain",
+		Interval: 86400,
+		Path:     "./rule-set/cn_domain.yaml",
+		Type:     "http",
+		Url:      "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/cn_domain.yaml",
+	}
+
+	clashYaml.RuleProviders.Proxy = model.RuleProvidersItem{
+		Behavior: "domain",
+		Interval: 86400,
+		Path:     "./rule-set/proxy.yaml",
+		Type:     "http",
+		Url:      "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/proxy.yaml",
+	}
+	clashYaml.Rules = []string{
+		"- RULE-SET,cn,DIRECT",
+		"- RULE-SET,proxy," + global.Server.Subscribe.SubName,
+		"- GEOSITE,category-ads-all,REJECT",
+
+		"- GEOSITE,private,DIRECT",
+		"- GEOSITE,onedrive,DIRECT",
+		"- GEOSITE,microsoft@cn,DIRECT",
+		"- GEOSITE,apple-cn,DIRECT",
+		"- GEOSITE,steam@cn,DIRECT",
+		"- GEOSITE,category-games@cn,DIRECT",
+		"- GEOSITE,cn,DIRECT",
+		"- GEOIP,CN,DIRECT",
+		"- GEOIP,private,DIRECT,no-resolve",
+
+		"- GEOSITE,youtube," + global.Server.Subscribe.SubName,
+		"- GEOSITE,google," + global.Server.Subscribe.SubName,
+		"- GEOSITE,twitter," + global.Server.Subscribe.SubName,
+		"- GEOSITE,pixiv," + global.Server.Subscribe.SubName,
+		"- GEOSITE,category-scholar-!cn," + global.Server.Subscribe.SubName,
+		"- GEOSITE,biliintl," + global.Server.Subscribe.SubName,
+		"- GEOSITE,geolocation-!cn," + global.Server.Subscribe.SubName,
+		"- GEOIP,telegram," + global.Server.Subscribe.SubName,
 	}
 	res, err := yaml.Marshal(clashYaml)
 	if err != nil {
@@ -269,7 +296,6 @@ func Shadowrocket(nodes *[]model.Node) string {
 				nodeArr = append(nodeArr, res)
 			}
 		case global.NodeTypeHysteria:
-			fmt.Printf("hy2")
 			if res := Hy2UrlForShadowrocket(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
@@ -436,13 +462,11 @@ func Surge(nodes *[]model.Node) string {
 	cfg := ini.Empty()
 	err := cfg.ReflectFrom(&surgeConf)
 	if err != nil {
-		fmt.Println("ReflectFrom failed: ", err)
 		return ""
 	}
 	bf := bytes.NewBuffer([]byte{})
 	_, err = cfg.WriteTo(bf)
 	if err != nil {
-		fmt.Println("SaveTo failed: ", err)
 		return ""
 	}
 	text := bf.String()
@@ -527,7 +551,6 @@ func Quantumult(nodes *[]model.Node) string {
 
 		}
 	}
-	fmt.Println(strings.Join(nodeArr, "\n"))
 	return strings.Join(nodeArr, "\n")
 }
 

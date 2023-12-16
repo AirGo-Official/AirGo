@@ -142,26 +142,26 @@ func UpdateUserSubscribe(order *model.Orders) error {
 
 // 处理用户订阅信息
 func HandleUserSubscribe(u *model.User, goods *model.Goods) *model.User {
-
 	u.SubscribeInfo.GoodsID = goods.ID           //当前订购的套餐
 	u.SubscribeInfo.GoodsSubject = goods.Subject //套餐标题
 	u.SubscribeInfo.SubStatus = true             //订阅状态
-
-	t := time.Now().AddDate(0, 0, int(goods.ExpirationDate))
-	u.SubscribeInfo.ExpiredAt = &t //过期时间
-	if goods.NodeConnector != 0 {
-		u.SubscribeInfo.NodeConnector = goods.NodeConnector //连接客户端数
-	}
 	if u.SubscribeInfo.SubscribeUrl == "" {
 		u.SubscribeInfo.SubscribeUrl = encrypt_plugin.RandomString(8) //随机字符串订阅url
 	}
-	switch goods.TrafficResetMethod {
+	if goods.NodeConnector != 0 {
+		u.SubscribeInfo.NodeConnector = goods.NodeConnector //连接客户端数
+	}
+	switch goods.TrafficResetMethod { //判断是否叠加
 	case "Stack":
 		u.SubscribeInfo.T = u.SubscribeInfo.T + goods.TotalBandwidth*1024*1024*1024 // GB->MB->KB->B
+		t := u.SubscribeInfo.ExpiredAt.AddDate(0, 0, int(goods.ExpirationDate))
+		u.SubscribeInfo.ExpiredAt = &t //过期时间
 	default:
 		u.SubscribeInfo.T = goods.TotalBandwidth * 1024 * 1024 * 1024 // GB->MB->KB->B
 		u.SubscribeInfo.U = 0
 		u.SubscribeInfo.D = 0
+		t := time.Now().AddDate(0, 0, int(goods.ExpirationDate))
+		u.SubscribeInfo.ExpiredAt = &t //过期时间
 	}
 	u.SubscribeInfo.ResetDay = goods.ResetDay //流量重置日
 	return u

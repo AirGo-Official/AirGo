@@ -44,7 +44,7 @@ func GetRouteList(ctx *gin.Context) {
 	}
 	route := service.GetDynamicRoute(routeSlice)
 	global.GoroutinePool.Submit(func() {
-		global.LocalCache.Set(fmt.Sprintf("%d%s", uIdInt, global.UserRouteList), *route, 168*time.Hour)
+		global.LocalCache.Set(fmt.Sprintf("%d%s", uIdInt, global.UserRouteList), *route, 5*time.Minute)
 	})
 	response.OK("GetRouteList success", route, ctx)
 }
@@ -66,7 +66,7 @@ func GetAllRouteList(ctx *gin.Context) {
 	}
 	route := service.GetDynamicRoute(routeSlice)
 	global.GoroutinePool.Submit(func() {
-		global.LocalCache.Set(global.AllRouteList, *route, 168*time.Hour)
+		global.LocalCache.Set(global.AllRouteList, *route, 5*time.Minute)
 	})
 	response.OK("GetAllRouteList success", route, ctx)
 

@@ -21,14 +21,6 @@
               <el-input v-model="state.menuForm.parent_id"></el-input>
             </el-form-item>
           </el-col>
-          <!--					<el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="mb20">-->
-          <!--						<el-form-item label="菜单类型">-->
-          <!--							<el-radio-group v-model="state.menuForm.menuType">-->
-          <!--								<el-radio label="menu">菜单</el-radio>-->
-          <!--								<el-radio label="btn">按钮</el-radio>-->
-          <!--							</el-radio-group>-->
-          <!--						</el-form-item>-->
-          <!--					</el-col>-->
           <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" class="mb20">
             <el-form-item label="菜单名称">
               <el-input v-model="state.menuForm.meta.title" placeholder="例如：用户管理"

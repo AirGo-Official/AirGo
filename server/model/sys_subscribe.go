@@ -30,8 +30,21 @@ type ClashYaml struct {
 	Secret             string            `yaml:"secret"`
 	Proxies            []ClashProxy      `yaml:"proxies"`
 	ProxyGroups        []ClashProxyGroup `yaml:"proxy-groups"`
+	RuleProviders      RuleProviders     `yaml:"rule-providers"`
 	Rules              []string          `yaml:"rules"`
 }
+type RuleProviders struct {
+	CN    RuleProvidersItem `yaml:"cn"`
+	Proxy RuleProvidersItem `yaml:"proxy"`
+}
+type RuleProvidersItem struct {
+	Behavior string `yaml:"behavior"`
+	Interval int64  `yaml:"interval"`
+	Path     string `yaml:"path"`
+	Type     string `yaml:"type"`
+	Url      string `yaml:"url"`
+}
+
 type ClashProxy struct {
 	//基础参数
 	Name    string `yaml:"name" json:"name"`

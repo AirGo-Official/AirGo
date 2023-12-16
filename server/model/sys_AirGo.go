@@ -97,6 +97,11 @@ type AGREALITYx25519 struct {
 	PrivateKey string `json:"private_key"`
 }
 
+type AGOnlineUser struct {
+	NodeID      int64
+	UserNodeMap map[int64][]string //key:uid value:node ip array
+}
+
 // 数据库 traffic_log 流量统计表
 type TrafficLog struct {
 	CreatedAt time.Time `json:"created_at"`

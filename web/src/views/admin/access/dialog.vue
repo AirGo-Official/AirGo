@@ -4,7 +4,7 @@
       <el-form-item label="名称">
         <el-input v-model="accessStoreData.current_routes.value.name"/>
       </el-form-item>
-      <el-form-item label="禁止路由(多个数据请换行，不包括http://和https://，不包括/路径)">
+      <el-form-item label="禁止路由, 多个数据请换行">
         <el-input v-model="accessStoreData.current_routes.value.route" type="textarea" autosize/>
       </el-form-item>
     </el-form>

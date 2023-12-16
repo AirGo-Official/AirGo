@@ -201,7 +201,6 @@ const defaultFieldParams = (start: string, end: string) => {
     {field: 'created_at', field_chinese_name: '', field_type: '', condition: '<', condition_value: end, operator: 'AND',}
   ] as FieldParams[]
   reportStoreData.reportParams.value.pagination = {page_num: 1, page_size: 30, order_by: 'node_order',} as Pagination
-
 }
 
 //查询节点

@@ -40,6 +40,28 @@ const (
 2. 邀请返利
 
 **更多套餐请查看商店**`
+	rule1 = `
+api.vv1234.cn
+shua.leyz.top
+llss.atewm.cn
+siriling.github.io
+shidahuilang.github.io
+fu-c-k.github.io
+db.laomoe.com
+loss.98cat.cn
+net.ljxnet.cn
+`
+	rule2 = `
+(.*\.||)(speedtest)\.(com|cn|net)
+(.*\.||)(LibreSpeed)\.(com|cn|net)
+(.*\.||)(fast)\.(com|cn|net)
+(.*.||)(gov|12377|12315|talk.news.pts.org|cread­ers|zhuich­aguoji|efcc.org|cy­ber­po­lice|abolu­owang|tu­idang|epochtimes|dafa­hao|falundafa|minghui|falu­naz|zhengjian|110.qq|mingjingnews|in­medi­ahk|xin­sheng|banned­book|nt­dtv|falun­gong|12321|se­cretchina|epochweekly|cn.rfi).(cn|com|org|net|club|net|fr|tw|hk)
+(..)(dafahao|minghui|falungong|dongtaiwang|epochtimes|ntdtv|falundafa|wujieliulan|zhengjian).(org|com|net) (..)(dafa­hao|minghui|dong­tai­wang|epochtimes|nt­dtv|falundafa|wu­jieli­u­lan|zhengjian).(org|com|net) (.*.)(dafa­hao|minghui|dong­tai­wang|epochtimes|nt­dtv|falundafa|wu­jieli­u­lan|zhengjian).(org|com|net)
+(.*\.)(pincong)\.(rocks)
+(.*.)(64tianwang|beijingspring|boxun|broadpressinc|chengmingmag|chenpokong|chinaaffairs|chinadigitaltimes|chinesepen|dafahao|dalailamaworld|dalianmeng|dongtaiwang|epochweekly|erabaru|fgmtv|hrichina|huanghuagang|hxwq|jiangweiping|lagranepoca|lantosfoundation|minghui|minzhuzhongguo|ned|ninecommentaries|ogate|renminbao|rfa|secretchina|shenyun|shenyunperformingarts|shenzhoufilm|soundofhope|tiantibooks|tibetpost|truthmoviegroup.wixsite|tuidang|uhrp|uyghuramerican|voachinese|vot|weijingsheng|wujieliulan|xizang-zhiye|zhengjian|zhuichaguoji).(org|com|net)
+(.*\.)(gov|12377|12315|talk.news.pts|zhuichaguoji|efcc|cyberpolice|tuidang|falundafa|falunaz|110.qq|mingjingnews|inmediahk|xinsheng|12321|epochweekly|cn.rfi|mingjing|chinaaid|botanwang|xinsheng|rfi|breakgfw|chengmingmag|jinpianwang|xizang-zhiye|breakgfw|qi-gong|voachinese|mhradio|rfa|edoors|edoors|renminbao|soundofhope|zhengjian|dafahao|minghui|dongtaiwang|epochtimes|ntdtv|falundafa|wujieliulan|aboluowang|bannedbook|secretchina|dajiyuan|boxun|chinadigitaltimes|huaglad|dwnews|creaders|oneplusnews|rfa|nextdigital|pincong|gtv|kwok7)\.(cn|com|org|net|club|net|fr|tw|hk|eu|info|me|rocks)
+(.*.||)(tuidang.ddns|xinsheng|pincong|pages|newhighlandvision).(cn|com|org|net|club|net|fr|tw|hk|rocks|dev)
+`
 )
 
 // Gorm 初始化数据库并产生数据库全局变量
@@ -551,11 +573,15 @@ func InsertIntoArticle() error {
 	return nil
 }
 func InsertIntoAccess() error {
-	accessData := model.Access{
-		ID:    1,
-		Name:  "禁用流量消耗器",
-		Route: "api.vv1234.cn\nshua.leyz.top\nllss.atewm.cn\nsiriling.github.io\nshidahuilang.github.io\nfu-c-k.github.io\ndb.laomoe.com\nloss.98cat.cn\nnet.ljxnet.cn",
-	}
+	accessData := []model.Access{
+		{
+			Name:  "禁用流量消耗器",
+			Route: rule1,
+		},
+		{
+			Name:  "禁用一些敏感网站和测速网站",
+			Route: rule2,
+		}}
 	if err := global.DB.Create(&accessData).Error; err != nil {
 		return errors.New("access表数据初始化失败!")
 	}

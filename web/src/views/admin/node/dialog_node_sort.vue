@@ -36,6 +36,7 @@ import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
 import {useReportStore} from "/@/stores/reportStore";
+import {onBeforeMount} from "vue/dist/vue";
 
 const nodeStore = useNodeStore()
 const {nodeManageData} = storeToRefs(nodeStore)
@@ -51,15 +52,39 @@ const state = reactive({
   type: "",
   title: "节点排序",
   isShowDialog: false,
+  //高级查询的条件参数
+  reportParams: {
+    table_name: 'node',
+    field_params_list: [] as FieldParams[],
+    pagination: {
+      page_num: 1,
+      page_size: 300,
+      order_by: 'node_order',
+    } as Pagination,//分页参数
+  },
 })
-//
+//获取全部节点
 const getAllNode=()=>{
-nodeStore.getAllNode()
+  // defaultFieldParams()
+  // nodeStore.getNodeWithTraffic(reportStoreData.reportParams.value)
+  request(apiStoreData.api.value.report_reportSubmit, state.reportParams).then((res)=>{
+    nodeManageData.value.nodes.node_list=res.data.data
+    nodeManageData.value.nodes.total=res.data.total
+  })
 }
+//初始化查询参数
+// const defaultFieldParams = () => {
+//   state.reportParams.table_name = 'node'
+//   state.reportParams.field_params_list = [
+//     // {field: 'id', field_chinese_name: '', field_type: '', condition: '<>', condition_value: '', operator: ''},
+//   ] as FieldParams[]
+//   state.reportParams.pagination = {page_num: 1, page_size: 300, order_by: 'node_order',} as Pagination
+//
+// }
 // 打开弹窗
 const openDialog = () => {
   state.isShowDialog = true
-  //重新获取全部节点
+  //获取全部节点
   getAllNode()
   nextTick(() => {
     initSortable("nodeSort")
@@ -80,7 +105,7 @@ const nodeSortHandler = (data: Array<any>) => {
 const onSubmit = () => {
   state.isShowDialog = false
   request(apiStoreData.api.value.node_nodeSort, nodeSortHandler(nodeManageData.value.nodes.node_list)).then((res) => {
-    emit('refresh')
+    // emit('refresh')
   })
 }
 
