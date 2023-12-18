@@ -124,7 +124,7 @@
       </el-pagination>
     </el-card>
     <UserDialog ref="userDialogRef" @refresh="getUserList"/>
-    <UserTrafficDialog ref="userTrafficDialogRef"></UserTrafficDialog>
+    <UserTrafficDialog ref="userTrafficDialogRef" @defaultParams="defaultFieldParams"></UserTrafficDialog>
   </div>
 </template>
 

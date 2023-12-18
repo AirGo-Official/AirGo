@@ -76,6 +76,7 @@ const reportStore = useReportStore()
 const reportStoreData = storeToRefs(reportStore)
 const trafficStore = useTrafficStore()
 const trafficStoreData = storeToRefs(trafficStore)
+const emit = defineEmits(['defaultParams'])
 
 
 const state = reactive({
@@ -112,6 +113,8 @@ const openDialog = () => {
 // 关闭弹窗
 const closeDialog = () => {
   state.isShowDialog = false
+  emit('defaultParams')
+
 };
 
 //确认提交
