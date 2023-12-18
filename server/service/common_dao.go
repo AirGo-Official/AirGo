@@ -108,6 +108,30 @@ func CommonSqlFindSqlHandler(fieldParams *model.FieldParamsReq) (string, string)
 	dataSql := fmt.Sprintf("SELECT * FROM %s WHERE %s ORDER BY %s LIMIT %d OFFSET %d", fieldParams.TableName, sql, orderBy, fieldParams.Pagination.PageSize, fieldParams.Pagination.PageSize*(fieldParams.Pagination.PageNum-1))
 	return totalSql, dataSql
 }
+func CommonSqlFindNoOrderByNoLimitSqlHandler(fieldParams *model.FieldParamsReq) (string, string) {
+	var sqlArr []string
+	for _, v := range fieldParams.FieldParamsList {
+		if v.Condition == "" && v.ConditionValue == "" {
+			continue
+		}
+		switch v.Condition {
+		case "like":
+			sqlArr = append(sqlArr, v.Operator+" "+v.Field+"  "+v.Condition+" '%"+v.ConditionValue+"%'")
+		default:
+			sqlArr = append(sqlArr, v.Operator+" "+v.Field+" "+v.Condition+" '"+v.ConditionValue+"'")
+		}
+	}
+	sql := strings.Join(sqlArr, " ")
+	//判断sql是否为空
+	sqlTemp := strings.TrimSpace(sql)
+	sqlTemp = strings.ReplaceAll(sql, "'", "")
+	if sqlTemp == "" {
+		sql = "id > 0"
+	}
+	totalSql := fmt.Sprintf("SELECT COUNT(id) FROM %s WHERE %s", fieldParams.TableName, sql)
+	dataSql := fmt.Sprintf("SELECT * FROM %s WHERE %s", fieldParams.TableName, sql)
+	return totalSql, dataSql
+}
 
 // 通用删除
 func CommonSqlDelete[T1, T2 any](params T2) error {
@@ -140,8 +164,8 @@ func CommonSqlUpdate[T1, T2 any](data T2, params string) error {
 func CommonSqlUpdateMultiLine[T1 any](data T1, name string, columns []string) error {
 	var err error
 	err = global.DB.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: name}},
-		DoUpdates: clause.AssignmentColumns(columns),
+		Columns:   []clause.Column{{Name: name}},     //冲突字段
+		DoUpdates: clause.AssignmentColumns(columns), //需要更新的字段
 	}).Create(&data).Error
 	return err
 }

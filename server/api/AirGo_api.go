@@ -214,27 +214,47 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	err := ctx.ShouldBind(&AGUserTraffic)
 	if err != nil {
 		global.Logrus.Error("error", err.Error())
+		ctx.AbortWithStatus(400)
 		return
 	}
 	//查询节点倍率
 	node, _, err := service.CommonSqlFind[model.Node, string, model.Node](fmt.Sprintf("id = %d", AGUserTraffic.ID))
-	if node.TrafficRate <= 0 || err != nil {
+	if err != nil {
+		global.Logrus.Error("error", err.Error())
+		ctx.AbortWithStatus(400)
+		return
+	}
+	if node.TrafficRate < 0 {
 		node.TrafficRate = 1
 	}
 	// 处理流量统计
 	var userIds []int64
 	var userArr []model.User
 	var trafficLog = model.TrafficLog{
-		NodeID: AGUserTraffic.ID,
+		NodeID: node.ID,
 	}
+	var userTrafficLog []model.UserTrafficLog
 	for _, v := range AGUserTraffic.UserTraffic {
 		//每个用户流量
-		var user model.User
 		userIds = append(userIds, v.UID)
-		user.ID = v.UID
-		user.SubscribeInfo.U = v.Upload * node.TrafficRate
-		user.SubscribeInfo.D = v.Download * node.TrafficRate
-		userArr = append(userArr, user)
+		//需要更新的用户订阅信息
+		userArr = append(userArr, model.User{
+			ID: v.UID,
+			SubscribeInfo: model.SubscribeInfo{
+				U: v.Upload * node.TrafficRate,
+				D: v.Download * node.TrafficRate,
+			},
+		})
+		//需要插入的用户流量统计
+		userTrafficLog = append(userTrafficLog, model.UserTrafficLog{
+			UserID:      v.UID,
+			UserName:    v.Email,
+			NodeID:      node.ID,
+			Remarks:     node.Remarks,
+			TrafficRate: node.TrafficRate,
+			U:           v.Upload,
+			D:           v.Download,
+		})
 		//该节点总流量
 		trafficLog.D = trafficLog.U + v.Upload
 		trafficLog.U = trafficLog.D + v.Download
@@ -265,7 +285,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 			global.LocalCache.Set(strconv.FormatInt(AGUserTraffic.ID, 10)+global.NodeStatus, nodeStatus, 2*time.Minute)
 		}
 	})
-	//插入流量统计统计
+	//插入节点流量统计
 	global.GoroutinePool.Submit(func() {
 		//查询当天的数据
 		now := time.Now()
@@ -285,6 +305,14 @@ func AGReportUserTraffic(ctx *gin.Context) {
 				global.Logrus.Error("插入流量统计统计error:", err)
 				return
 			}
+		}
+	})
+	//插入用户流量统计
+	global.GoroutinePool.Submit(func() {
+		err = service.CommonSqlSave[[]model.UserTrafficLog](userTrafficLog)
+		if err != nil {
+			global.Logrus.Error("插入用户流量统计,error:", err)
+			return
 		}
 	})
 	//更新用户流量信息

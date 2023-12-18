@@ -24,9 +24,9 @@ func GetNodeTraffic(params *model.FieldParamsReq) (*model.NodesWithTotal, error)
 	//注意：	params.FieldParamsList 数组前两项传时间，第三个开始传查询参数
 	params.FieldParamsList = append([]model.FieldParamsItem{}, params.FieldParamsList[2:]...)
 	_, dataSql := CommonSqlFindSqlHandler(params)
-	dataSql = dataSql[strings.Index(dataSql, "WHERE ")+6:]
+	dataSql = dataSql[strings.Index(dataSql, "WHERE ")+6:] //去掉`WHERE `
 	if dataSql == "" {
-		dataSql = "id > 0"
+		dataSql = "id > 0" //当前端什么参数没有传时，默认添加一个参数
 	}
 	err = global.DB.Model(&model.Node{}).Count(&nodesWithTotal.Total).Where(dataSql).Preload("TrafficLogs", global.DB.Where("created_at > ? and created_at < ?", startTime, endTime)).Preload("Access").Find(&nodesWithTotal.NodeList).Error
 	if err != nil {

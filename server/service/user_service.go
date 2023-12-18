@@ -352,3 +352,35 @@ func ClockIn(uID int64) (int, int, error) {
 	return t, day, err
 
 }
+
+func GetUserTraffic(params *model.FieldParamsReq) (*model.UserTrafficLog, error) {
+	var userTraffic model.UserTrafficLog
+	_, dataSql := CommonSqlFindNoOrderByNoLimitSqlHandler(params)
+	dataSql = dataSql[strings.Index(dataSql, "WHERE ")+6:] //去掉`WHERE `
+	if dataSql == "" {
+		return nil, errors.New("invalid parameter")
+	}
+	//fmt.Println("dataSql:", dataSql)
+	err := global.DB.Model(&model.UserTrafficLog{}).Where(dataSql).Select("user_id, user_name,SUM(u) AS u, SUM(d) AS d").Find(&userTraffic).Error
+	return &userTraffic, err
+}
+
+func GetAllUserTraffic(params *model.FieldParamsReq) (*model.CommonDataResp, error) {
+	//约定：params.FieldParamsList 数组前两项传时间，第三个开始传查询参数
+	var userTraffic []model.UserTrafficLog
+	var total int64
+	_, dataSql := CommonSqlFindNoOrderByNoLimitSqlHandler(params)
+	dataSql = dataSql[strings.Index(dataSql, "WHERE ")+6:] //去掉`WHERE `
+	if dataSql == "" {
+		return nil, errors.New("invalid parameter")
+	}
+	//fmt.Println("dataSql:", dataSql)
+	err := global.DB.Model(&model.UserTrafficLog{}).Where(dataSql).Select("user_id, user_name, node_id, remarks, SUM(u) AS u, SUM(d) AS d").Order(params.Pagination.OrderBy).Group("user_id").Count(&total).Limit(int(params.Pagination.PageSize)).Offset((int(params.Pagination.PageNum) - 1) * int(params.Pagination.PageSize)).Find(&userTraffic).Error
+	if err != nil {
+		return nil, err
+	}
+	return &model.CommonDataResp{
+		Total: total,
+		Data:  userTraffic,
+	}, nil
+}

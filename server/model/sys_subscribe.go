@@ -58,20 +58,21 @@ type ClashProxy struct {
 	Alterid int64  `yaml:"alterId" json:"alterId"`
 	Cipher  string `yaml:"cipher" json:"cipher"`
 	//trojan 参数
-	Password string `yaml:"password" json:"password"`
+	Password string `yaml:"password,omitempty" json:"password"`
 	//vless流控
 	Flow string `yaml:"flow" json:"flow"`
 
-	Tls               bool        `yaml:"tls" json:"tls"`
-	Sni               string      `yaml:"sni" json:"sni"`
-	ClientFingerprint string      `yaml:"client-fingerprint" json:"client-fingerprint"` //Available: "chrome","firefox","safari","ios","random", currently only support TLS transport in TCP/GRPC/WS/HTTP for VLESS/Vmess and trojan.
-	Alpn              []string    `yaml:"alpn" json:"alpn"`                             //h2 http/1.1
-	Servername        string      `yaml:"servername" json:"servername"`                 //REALITY servername
-	SkipCertVerify    bool        `yaml:"skip-cert-verify" json:"skip-cert-verify"`
-	WsOpts            WsOpts      `yaml:"ws-opts" json:"ws-opts"`
-	RealityOpts       RealityOpts `yaml:"reality-opts" json:"reality-opts"`
-	GrpcOpts          GrpcOpts    `yaml:"grpc-opts" json:"grpc-opts"`
-	H2Opts            H2Opts      `yaml:"h2-opts" json:"h2-opts"`
+	Tls               bool        `yaml:"tls,omitempty" json:"tls"`
+	Sni               string      `yaml:"sni,omitempty" json:"sni"`
+	ClientFingerprint string      `yaml:"client-fingerprint,omitempty" json:"client-fingerprint"` //Available: "chrome","firefox","safari","ios","random", currently only support TLS transport in TCP/GRPC/WS/HTTP for VLESS/Vmess and trojan.
+	Alpn              []string    `yaml:"alpn,omitempty" json:"alpn"`                             //h2 http/1.1
+	Servername        string      `yaml:"servername,omitempty" json:"servername"`                 //REALITY servername
+	SkipCertVerify    bool        `yaml:"skip-cert-verify,omitempty" json:"skip-cert-verify"`
+	WsOpts            WsOpts      `yaml:"ws-opts,omitempty" json:"ws-opts"`
+	HttpOpts          HttpOpts    `yaml:"http-opts,omitempty" json:"http-opts"`
+	RealityOpts       RealityOpts `yaml:"reality-opts,omitempty" json:"reality-opts"`
+	GrpcOpts          GrpcOpts    `yaml:"grpc-opts,omitempty" json:"grpc-opts"`
+	H2Opts            H2Opts      `yaml:"h2-opts,omitempty" json:"h2-opts"`
 }
 
 type WsOpts struct {
@@ -98,7 +99,7 @@ type H2Opts struct {
 }
 type HttpOpts struct {
 	Method  string                `yaml:"method"` //GET
-	Path    map[string][]string   `yaml:"path"`
+	Path    []string              `yaml:"path"`
 	Headers map[string]Connection `yaml:"headers"`
 }
 type Connection []string
@@ -209,4 +210,8 @@ type ProxyGroup struct {
 }
 type Rule struct {
 	RuleText string `ini:"RuleText"`
+}
+
+type test struct {
+	name int `json:"name,omitempty"`
 }

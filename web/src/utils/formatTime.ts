@@ -9,6 +9,63 @@ export function DateStrtoTime(strTime: string) {
 }
 
 /**
+ * 获取某个月的时间范围
+ * @param n,n=0当月，n=1上月
+ * @constructor
+ */
+export function GetDurationMonth(n: number) {
+    let currentDate = new Date();
+    let Y = currentDate.getFullYear();
+    let M = currentDate.getMonth();
+    // let MonthDayNum = new Date(currentY,currentM,0).getDate();  //计算当月的天数
+    let startDate = new Date(Y, M - n, 1);
+    let endDate = new Date(Y, M + 1 - n, 0, 23, 59, 59);
+    // console.log("开始：", startDate)
+    // console.log("结束：", endDate)
+    let start = formatDate(startDate, "YYYY-mm-dd HH:MM:SS")
+    let end = formatDate(endDate, "YYYY-mm-dd HH:MM:SS")
+    return [start,end]
+}
+
+/**
+ * 获取当天时间范围
+ * @constructor
+ */
+export function GetDurationDay() {
+    let currentDate = new Date();
+    let Y = currentDate.getFullYear();
+    let M = currentDate.getMonth();
+    let D = currentDate.getDate()
+    // let MonthDayNum = new Date(currentY,currentM,0).getDate();  //计算当月的天数
+    let startDate = new Date(Y, M, D);
+    let endDate = new Date(Y, M, D, 23, 59, 59);
+    // console.log("开始：", startDate)
+    // console.log("结束：", endDate)
+    let start = formatDate(startDate, "YYYY-mm-dd HH:MM:SS")
+    let end = formatDate(endDate, "YYYY-mm-dd HH:MM:SS")
+    return [start,end]
+}
+
+/**
+ * 获取n天前到今天的时间间隔
+ * @param n
+ * @constructor
+ */
+export function GetDurationWithNDay(n:number) {
+    let currentDate = new Date();
+    let Y = currentDate.getFullYear();
+    let M = currentDate.getMonth();
+    let D = currentDate.getDate()
+    let startDate = new Date(Y, M, D-n+1);
+    let endDate = new Date(Y, M, D, 23, 59, 59);
+    // console.log("开始：", startDate)
+    // console.log("结束：", endDate)
+    let start = formatDate(startDate, "YYYY-mm-dd HH:MM:SS")
+    let end = formatDate(endDate, "YYYY-mm-dd HH:MM:SS")
+    return [start,end]
+}
+
+/**
  * 得到标准时区的时间的函数，参数i为时区值数字，比如北京为东八区则输进8,西5输入-5
  * @param i
  * @constructor

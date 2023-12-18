@@ -1,20 +1,22 @@
 <template>
   <div>
     <el-row :gutter="10" class="home-card-two mb15">
-<!--      套餐详情-->
-      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+      <!--      套餐详情-->
+      <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
         <div class="home-card-item">
           <el-card class="box-card" style="height: 300px">
             <template #header>
               <div class="card-header">
                 <el-text class="card-header-left">套餐详情</el-text>
-                <el-text size="large" type="primary">{{userInfos.subscribe_info.goods_subject}}</el-text>
+                <el-text size="large" type="primary">{{ userInfos.subscribe_info.goods_subject }}</el-text>
               </div>
             </template>
             <div class="card-text">
               <el-tag class="card-text-left">订阅状态:</el-tag>
-              <el-button type="primary" class="card-text-right" style="font-size:20px" v-if="userInfos.subscribe_info.sub_status">有效</el-button>
-              <el-button type="info" class="card-text-right" style="font-size:20px"  v-else>已过期</el-button>
+              <el-button type="primary" class="card-text-right" style="font-size:20px"
+                         v-if="userInfos.subscribe_info.sub_status">有效
+              </el-button>
+              <el-button type="info" class="card-text-right" style="font-size:20px" v-else>已过期</el-button>
               <el-popover
                   placement="top-start"
                   title="在线设备IP"
@@ -23,7 +25,9 @@
                   :content="userStoreData.onlineDeviceInfo.value"
               >
                 <template #reference>
-                  <el-button type="info" @click="showOnlineDeviceInfo" class="card-text-right">在线：{{userStoreData.onlineDevice.value}}/{{userInfos.subscribe_info.node_connector}}</el-button>
+                  <el-button type="info" @click="showOnlineDeviceInfo" class="card-text-right">
+                    在线：{{ userStoreData.onlineDevice.value }}/{{ userInfos.subscribe_info.node_connector }}
+                  </el-button>
                 </template>
               </el-popover>
             </div>
@@ -32,40 +36,90 @@
               <span class="card-text-right">{{ DateStrtoTime(userInfos.subscribe_info.expired_at) }}</span>
             </div>
             <div class="card-text">
-              <el-tag class="card-text-left" >流量剩余:</el-tag>
-              <span class="card-text-right">{{userStoreData.residualTraffic.value}}GB/{{userStoreData.totalTraffic.value}}GB</span>
+              <el-tag class="card-text-left">流量剩余:</el-tag>
+              <span
+                  class="card-text-right">{{
+                  userStoreData.residualTraffic.value
+                }}GB/{{ userStoreData.totalTraffic.value }}GB</span>
             </div>
-            <div >
-              <el-progress :text-inside="true" :stroke-width="26" :percentage="userStoreData.residualTrafficPercent.value">
+            <div>
+              <el-progress :text-inside="true" :stroke-width="26"
+                           :percentage="userStoreData.residualTrafficPercent.value">
               </el-progress>
             </div>
 
           </el-card>
         </div>
       </el-col>
+      <!--      流量统计-->
+      <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+        <div class="home-card-item">
+          <el-card class="box-card" style="height: 150px">
+            <el-radio-group v-model="state.tabValue" @change="getUserTraffic" style="margin-bottom: 30px">
+              <el-radio-button label="today">今日流量</el-radio-button>
+              <el-radio-button label="this_week">本周流量</el-radio-button>
+              <el-radio-button label="this_month">本月流量</el-radio-button>
+              <el-radio-button label="last_month">上月流量</el-radio-button>
+            </el-radio-group>
+            <el-row>
+              <el-col :span="12">
+                <el-statistic :value="trafficStoreData.upTraffic.value" :precision="2">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      上行流量
+                      <el-icon style="margin-left: 4px;color: blue" :size="12">
+                        <SortUp />
+                      </el-icon>
+                    </div>
+                  </template>
+                  <template #suffix> /GB</template>
+                </el-statistic>
+              </el-col>
+              <el-col :span="12">
+                <el-statistic :value="trafficStoreData.downTraffic.value" :precision="2">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      下行流量
+                      <el-icon style="margin-left: 4px;color: blue" :size="12">
+                        <SortDown />
+                      </el-icon>
+                    </div>
+                  </template>
+                  <template #suffix> /GB</template>
+                </el-statistic>
+
+              </el-col>
+            </el-row>
+          </el-card>
+        </div>
+      </el-col>
       <!--      订阅连接-->
-      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+      <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
         <div class="home-card-item">
           <el-card class="box-card" style="height: 300px">
             <template #header>
               <div class="card-header">
                 <el-text class="card-header-left">订阅地址</el-text>
-                <el-button type="primary" size="large" text plain class="button" @click="onResetSub">重置订阅链接</el-button>
+                <el-button type="primary" size="large" text plain class="button" @click="onResetSub">重置订阅链接
+                </el-button>
               </div>
             </template>
             <div style="text-align: center">
               <div>
-                <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('')">
+                <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                           @click="Sub('')">
                   复制通用订阅
                 </el-button>
               </div>
               <div>
-                <el-button size="large" color="deeppink" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="QRSub()">
+                <el-button size="large" color="deeppink" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                           @click="QRSub()">
                   二维码订阅
                 </el-button>
               </div>
               <div>
-                <el-button size="large" color="brown" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="state.isShowSubDialog=true">
+                <el-button size="large" color="brown" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                           @click="state.isShowSubDialog=true">
                   手动选择订阅
                 </el-button>
               </div>
@@ -74,9 +128,9 @@
         </div>
       </el-col>
 
-<!--      自定义内容-->
+      <!--      自定义内容-->
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-        <div class="home-card-item" >
+        <div class="home-card-item">
           <el-card class="box-card">
             <div class="box-card">
               <v-md-preview :text="articleStoreData.articleID1.value.content"></v-md-preview>
@@ -90,52 +144,59 @@
     </el-dialog>
     <el-dialog v-model="state.isShowSubDialog">
       <div>
-        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('NekoBox')">
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                   @click="Sub('NekoBox')">
           NekoBox 订阅
         </el-button>
       </div>
       <div>
-        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('v2rayNG')">
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                   @click="Sub('v2rayNG')">
           v2rayNG 订阅
         </el-button>
       </div>
       <div>
-        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('v2rayN')">
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                   @click="Sub('v2rayN')">
           v2rayN 订阅
         </el-button>
       </div>
       <div>
-        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('Clash')">
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                   @click="Sub('Clash')">
           Clash 订阅
         </el-button>
       </div>
       <div>
-        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('Shadowrocket')">
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                   @click="Sub('Shadowrocket')">
           Shadowrocket 订阅
         </el-button>
       </div>
       <div>
-        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('Surge')">
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                   @click="Sub('Surge')">
           Surge 订阅
         </el-button>
       </div>
       <div>
-        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('Quantumult')">
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                   @click="Sub('Quantumult')">
           Quantumult 订阅
         </el-button>
       </div>
       <div>
-        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%" @click="Sub('V2rayU')">
+        <el-button size="large" color="blue" style="margin-top: 10px;margin-bottom: 10px;width: 100%"
+                   @click="Sub('V2rayU')">
           V2rayU 订阅
         </el-button>
       </div>
 
 
-
     </el-dialog>
     <el-dialog v-model="state.isShowQRSubDialog" width="350px">
       <!-- 二维码弹窗 -->
-      <div >
+      <div>
         <div id="qrcode" ref="qrcodeRef"></div>
       </div>
     </el-dialog>
@@ -144,17 +205,18 @@
 
 <script setup lang="ts">
 
-import {DateStrtoTime} from "/@/utils/formatTime";
+import {DateStrtoTime, GetDurationDay, GetDurationMonth, GetDurationWithNDay} from "/@/utils/formatTime";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
 import {useUserStore} from "/@/stores/userStore";
 import {onMounted, reactive, ref} from 'vue';
 import {ElMessage} from 'element-plus';
-import {Select} from '@element-plus/icons-vue'
 import commonFunction from '/@/utils/commonFunction';
 import {useArticleStore} from "/@/stores/articleStore";
 import QRCode from "qrcodejs2-fixes";
+import {useTrafficStore} from "/@/stores/trafficStore";
+import {useReportStore} from "/@/stores/reportStore";
 
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
@@ -163,38 +225,48 @@ const {userInfos} = storeToRefs(userStore)
 const userStoreData = storeToRefs(userStore)
 const {copyText} = commonFunction();
 
-const articleStore =useArticleStore()
+const articleStore = useArticleStore()
 const articleStoreData = storeToRefs(articleStore)
 const qrcodeRef = ref();
+const trafficStore = useTrafficStore()
+const trafficStoreData = storeToRefs(trafficStore)
+const reportStore = useReportStore()
+const reportStoreData = storeToRefs(reportStore)
 
 //定义参数
 const state = reactive({
   host: {
     host: '',
   },
-  isShowDialog:false,
-  isShowSubDialog:false,
-  isShowQRSubDialog:false,
+  isShowDialog: false,
+  isShowSubDialog: false,
+  isShowQRSubDialog: false,
   QRcode: null,
+  tabValue: 'today',
+  duration: [''],
+  todayDuration: [''],
+  thisWeekDuration: [''],
+  thisMonthDuration: [''],
+  lastMonthDuration: [''],
 })
 
 //获取首页自定义内容
-const getArticleID1=()=>{
-  articleStore.getArticleList({search:"id=1 AND status=true",page_num:1,page_size:1}).then((res)=>{
+const getArticleID1 = () => {
+  articleStore.getArticleList({search: "id=1 AND status=true", page_num: 1, page_size: 1}).then((res) => {
     //保存
-    articleStoreData.articleID1.value=res.data.article_list[0]
+    articleStoreData.articleID1.value = res.data.article_list[0]
   })
 }
 //获取首页弹窗内容
-const getArticleID2=()=>{
-  articleStore.getArticleList({search:"id=2 AND status=true",page_num:1,page_size:1}).then((res)=>{
-    if ((res.data.article_list as Article[]).length === 0){
+const getArticleID2 = () => {
+  articleStore.getArticleList({search: "id=2 AND status=true", page_num: 1, page_size: 1}).then((res) => {
+    if ((res.data.article_list as Article[]).length === 0) {
       return
     }
     //保存
-    articleStoreData.articleID2.value=res.data.article_list[0]
+    articleStoreData.articleID2.value = res.data.article_list[0]
     //显示弹窗
-    if (articleStoreData.articleID2.value.content !== ''){
+    if (articleStoreData.articleID2.value.content !== '') {
       state.isShowDialog = true
     }
   })
@@ -250,11 +322,11 @@ const Sub = (type: string) => {
   }
 }
 //二维码订阅
-const QRSub=()=>{
-  state.isShowQRSubDialog=true
-  setTimeout(()=>{
+const QRSub = () => {
+  state.isShowQRSubDialog = true
+  setTimeout(() => {
     onInitQrcode()
-  },200)
+  }, 200)
 
 
 }
@@ -271,15 +343,53 @@ const onInitQrcode = () => {
     colorLight: 'rgb(255,255,255)',
   });
 }
-//
-const showOnlineDeviceInfo=()=>{
+//显示在线客户端
+const showOnlineDeviceInfo = () => {
   userStore.showOnlineDeviceInfo()
-
+}
+//初始化时间间隔
+const initDuration = () => {
+  state.todayDuration = GetDurationDay()
+  state.thisWeekDuration = GetDurationWithNDay(7)
+  state.thisMonthDuration = GetDurationMonth(0)
+  state.lastMonthDuration = GetDurationMonth(1)
+}
+//初始化查询参数
+const defaultFieldParams = () => {
+  switch (state.tabValue){
+    case "today":
+      state.duration=state.todayDuration
+      break
+    case "this_week":
+      state.duration=state.thisWeekDuration
+      break
+    case "this_month":
+      state.duration=state.thisMonthDuration
+      break
+    case "last_month":
+      state.duration=state.lastMonthDuration
+      break
+  }
+  reportStoreData.reportParams.value.table_name = 'user_traffic_log'
+  reportStoreData.reportParams.value.field_params_list = [
+    {field: 'created_at', condition: '>', condition_value: state.duration[0], operator: '',} as FieldParams,
+    {field: 'created_at', condition: '<', condition_value: state.duration[1], operator: 'AND',} as FieldParams,
+  ]
+}
+//查询用户流量
+const getUserTraffic = () => {
+  //初始化查询数据
+  defaultFieldParams()
+  trafficStore.getUserTrafficLog(reportStoreData.reportParams.value)
 }
 // 页面加载时
 onMounted(() => {
   getArticleID1();
   getArticleID2();
+  //初始化今天，本周，本月时间间隔，用来查询流量
+  initDuration()
+  //查询用户流量
+  getUserTraffic()
 });
 
 </script>
@@ -300,7 +410,7 @@ onMounted(() => {
 }
 
 .el-card {
-  background-image: url("../../assets/bgc/bg-1.svg");
+  //background-image: url("../../assets/bgc/bg-1.svg");
   background-repeat: no-repeat;
   background-position: 100%, 100%;
   //background: rgba(0,0,0,0.3);

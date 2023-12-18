@@ -78,6 +78,8 @@ func InitRouter() {
 		userRouter.POST("/changeUserPassword", api.ChangeUserPassword) //修改密码
 		userRouter.GET("/resetSub", api.ResetSub)                      //重置订阅
 		userRouter.GET("/clockin", api.ClockIn)                        //打卡
+		userRouter.POST("/getUserTraffic", api.GetUserTraffic)         //查询流量记录
+		userRouter.POST("/getAllUserTraffic", api.GetAllUserTraffic)   //查询流量记录
 	}
 	userAdminRouter := RouterGroup.Group("/user").Use(middleware.ParseJwt(), middleware.Casbin())
 	{

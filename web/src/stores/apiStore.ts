@@ -28,6 +28,8 @@ export const useApiStore = defineStore("apiStore", {
             user_changeUserPassword: {path: apiPre + "/user/changeUserPassword", method: "post"} as ApiItem,
             user_resetSub: {path: apiPre + "/user/resetSub", method: "get"} as ApiItem,
             user_clockin: {path: apiPre + "/user/clockin", method: "get"} as ApiItem,
+            user_getUserTraffic: {path: apiPre + "/user/getUserTraffic", method: "post"} as ApiItem,
+            user_getAllUserTraffic: {path: apiPre + "/user/getAllUserTraffic", method: "post"} as ApiItem,
 
             user_getUserList: {path: apiPre + "/user/getUserList", method: "post"} as ApiItem,
             user_newUser: {path: apiPre + "/user/newUser", method: "post"} as ApiItem,

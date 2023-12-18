@@ -38,8 +38,12 @@ func CrontabUserExpiration() {
 }
 func CrontabClearTraffic() {
 	y, m, _ := time.Now().Date()
-	startTime := time.Date(y, m-2, 1, 0, 0, 0, 0, time.Local)
+	startTime := time.Date(y, m-2, 1, 0, 0, 0, 0, time.Local) //清除2个月之前的数据
 	err := global.DB.Where("created_at < ?", startTime).Delete(&model.TrafficLog{}).Error
+	if err != nil {
+		global.Logrus.Error("清理数据库(traffic)定时任务 error:", err)
+	}
+	err = global.DB.Where("created_at < ?", startTime).Delete(&model.UserTrafficLog{}).Error
 	if err != nil {
 		global.Logrus.Error("清理数据库(traffic)定时任务 error:", err)
 	}
@@ -65,11 +69,12 @@ func CrontabOnlineUsers() {
 	//fmt.Println("检查在线用户定时任务:", time.Now())
 	global.OnlineUsers.Lock.RLock()
 	for uid, OnlineUserItem := range global.OnlineUsers.UsersMap {
-		for nodeID, OnlineNodeInfo := range OnlineUserItem.NodeIPMap {
+		for _, OnlineNodeInfo := range OnlineUserItem.NodeIPMap {
 			if time.Now().Sub(OnlineNodeInfo.LastUpdateTime) > 2*time.Minute && len(OnlineNodeInfo.NodeIP) > 0 { //超过2分钟没有上报信息，则视为离线
 				//fmt.Printf("用户ID：%d, 离线节点ID: %d", uid, nodeID)
-				OnlineNodeInfo.NodeIP = []string{}
-				global.OnlineUsers.UsersMap[uid].NodeIPMap[nodeID] = OnlineNodeInfo
+				//OnlineNodeInfo.NodeIP = []string{}
+				//global.OnlineUsers.UsersMap[uid].NodeIPMap[nodeID] = OnlineNodeInfo
+				delete(global.OnlineUsers.UsersMap, uid)
 			}
 		}
 	}

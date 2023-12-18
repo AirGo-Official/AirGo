@@ -2,7 +2,6 @@ package model
 
 import (
 	uuid "github.com/satori/go.uuid"
-	"time"
 )
 
 type AGNodeStatus struct {
@@ -100,13 +99,4 @@ type AGREALITYx25519 struct {
 type AGOnlineUser struct {
 	NodeID      int64
 	UserNodeMap map[int64][]string //key:uid value:node ip array
-}
-
-// 数据库 traffic_log 流量统计表
-type TrafficLog struct {
-	CreatedAt time.Time `json:"created_at"`
-	ID        int64     `json:"id"      gorm:"primary_key"`
-	NodeID    int64     `json:"node_id" gorm:"comment:节点ID"`
-	U         int64     `json:"u"       gorm:"comment:上行流量 bit"`
-	D         int64     `json:"d"       gorm:"comment:下行流量 bit"`
 }

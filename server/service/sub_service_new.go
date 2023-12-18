@@ -17,6 +17,7 @@ import (
 )
 
 func GetUserSubNew(url string, clientType string) string {
+	fmt.Println("clientType:", clientType)
 	var nodeArr, nodeList []model.Node
 	//查找用户
 	var u model.User
@@ -105,7 +106,7 @@ func GetUserSubNew(url string, clientType string) string {
 subHandler:
 	//根据clientType生成不同客户端订阅
 	switch clientType {
-	case "v2rayNG", "V2rayU", "V2rayN":
+	case "v2rayNG", "V2rayU", "v2rayN":
 		return v2rayNG(&nodeArr)
 
 	case "NekoBox":
@@ -132,30 +133,24 @@ subHandler:
 func v2rayNG(nodes *[]model.Node) string {
 	var nodeArr []string
 	for _, v := range *nodes {
-
 		switch v.NodeType {
 		case global.NodeTypeVmess:
 			if res := VmessUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
-
 		case global.NodeTypeVless, global.NodeTypeTrojan:
 			if res := VlessTrojanHysteriaUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
-
 		case global.NodeTypeShadowsocks:
-
 			if res := ShadowsocksUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
 		default:
 			continue
 		}
-
 	}
 	return base64.StdEncoding.EncodeToString([]byte(strings.Join(nodeArr, "\r\n")))
-
 }
 
 func NekoBox(nodes *[]model.Node) string {
@@ -244,28 +239,28 @@ func ClashMeta(nodes *[]model.Node) string {
 		Url:      "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/proxy.yaml",
 	}
 	clashYaml.Rules = []string{
-		"- RULE-SET,cn,DIRECT",
-		"- RULE-SET,proxy," + global.Server.Subscribe.SubName,
-		"- GEOSITE,category-ads-all,REJECT",
+		"RULE-SET,cn,DIRECT",
+		"RULE-SET,proxy," + global.Server.Subscribe.SubName,
+		"GEOSITE,category-ads-all,REJECT",
 
-		"- GEOSITE,private,DIRECT",
-		"- GEOSITE,onedrive,DIRECT",
-		"- GEOSITE,microsoft@cn,DIRECT",
-		"- GEOSITE,apple-cn,DIRECT",
-		"- GEOSITE,steam@cn,DIRECT",
-		"- GEOSITE,category-games@cn,DIRECT",
-		"- GEOSITE,cn,DIRECT",
-		"- GEOIP,CN,DIRECT",
-		"- GEOIP,private,DIRECT,no-resolve",
+		"GEOSITE,private,DIRECT",
+		"GEOSITE,onedrive,DIRECT",
+		"GEOSITE,microsoft@cn,DIRECT",
+		"GEOSITE,apple-cn,DIRECT",
+		"GEOSITE,steam@cn,DIRECT",
+		"GEOSITE,category-games@cn,DIRECT",
+		"GEOSITE,cn,DIRECT",
+		"GEOIP,CN,DIRECT",
+		"GEOIP,private,DIRECT,no-resolve",
 
-		"- GEOSITE,youtube," + global.Server.Subscribe.SubName,
-		"- GEOSITE,google," + global.Server.Subscribe.SubName,
-		"- GEOSITE,twitter," + global.Server.Subscribe.SubName,
-		"- GEOSITE,pixiv," + global.Server.Subscribe.SubName,
-		"- GEOSITE,category-scholar-!cn," + global.Server.Subscribe.SubName,
-		"- GEOSITE,biliintl," + global.Server.Subscribe.SubName,
-		"- GEOSITE,geolocation-!cn," + global.Server.Subscribe.SubName,
-		"- GEOIP,telegram," + global.Server.Subscribe.SubName,
+		"GEOSITE,youtube," + global.Server.Subscribe.SubName,
+		"GEOSITE,google," + global.Server.Subscribe.SubName,
+		"GEOSITE,twitter," + global.Server.Subscribe.SubName,
+		"GEOSITE,pixiv," + global.Server.Subscribe.SubName,
+		"GEOSITE,category-scholar-!cn," + global.Server.Subscribe.SubName,
+		"GEOSITE,biliintl," + global.Server.Subscribe.SubName,
+		"GEOSITE,geolocation-!cn," + global.Server.Subscribe.SubName,
+		"GEOIP,telegram," + global.Server.Subscribe.SubName,
 	}
 	res, err := yaml.Marshal(clashYaml)
 	if err != nil {
@@ -705,25 +700,42 @@ func ClashGenerate(node model.Node) model.ClashProxy {
 		proxy.Type = "ss"
 		proxy.Cipher = node.Scy
 		proxy.Password = node.UUID
-
 	}
 	proxy.Name = node.Remarks
 	proxy.Server = node.Address
 	proxy.Port = int(node.Port)
 	proxy.Udp = true
-	proxy.Network = node.Network
+	proxy.Network = node.Network //传输协议
 	proxy.SkipCertVerify = node.AllowInsecure
 	switch proxy.Network {
 	case "ws":
-		proxy.WsOpts.Path = node.Path
-		proxy.WsOpts.Headers = make(map[string]string, 1)
-		proxy.WsOpts.Headers["Host"] = node.Host
+		proxy.WsOpts = model.WsOpts{
+			Path: node.Path,
+			Headers: map[string]string{
+				"Host": node.Host,
+			},
+		}
 	case "grpc":
-		proxy.GrpcOpts.GrpcServiceName = "grpc"
+		proxy.GrpcOpts = model.GrpcOpts{
+			GrpcServiceName: node.ServiceName,
+		}
 	case "tcp":
+		if node.Type == "http" {
+			proxy.Network = "http"
+			proxy.HttpOpts = model.HttpOpts{
+				Method: "GET",
+				Path:   []string{node.Path},
+				Headers: map[string]model.Connection{
+					"Host":       []string{node.Host},
+					"Connection": []string{"keep-alive"},
+				},
+			}
+		}
 	case "h2":
-		proxy.H2Opts.Path = node.Path
-		proxy.H2Opts.Host = append(proxy.H2Opts.Host, node.Host)
+		proxy.H2Opts = model.H2Opts{
+			Host: []string{node.Host},
+			Path: node.Path,
+		}
 	}
 	switch node.Security {
 	case "tls":

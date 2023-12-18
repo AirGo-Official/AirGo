@@ -367,7 +367,6 @@ func GetSub(ctx *gin.Context) {
 
 	clientType := ""
 	ua := ctx.Request.Header.Get("User-Agent")
-
 	if strings.HasPrefix(ua, "NekoBox") {
 		clientType = "NekoBox"
 		goto next
@@ -384,12 +383,10 @@ func GetSub(ctx *gin.Context) {
 		clientType = "Clash"
 		goto next
 	}
-
 	if strings.HasPrefix(ua, "Shadowrocket") {
 		clientType = "Shadowrocket"
 		goto next
 	}
-
 	if strings.HasPrefix(ua, "Surge") {
 		clientType = "Surge"
 		goto next
@@ -398,7 +395,6 @@ func GetSub(ctx *gin.Context) {
 		clientType = "Quantumult"
 		goto next
 	}
-
 	if strings.HasPrefix(ua, "V2rayU") {
 		clientType = "V2rayU"
 		goto next
@@ -465,4 +461,45 @@ func ClockIn(ctx *gin.Context) {
 	zeroTime := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
 	global.LocalCache.Set(fmt.Sprintf("%d", uIDInt)+"clockin", nil, zeroTime.Sub(now))
 	response.OK("ClockIn success", fmt.Sprintf("day: +%d，flow：+%dMB", day, t), ctx)
+}
+
+// 查询流量记录
+func GetUserTraffic(ctx *gin.Context) {
+	var params model.FieldParamsReq
+	err := ctx.ShouldBind(&params)
+	if err != nil {
+		response.Fail("GetUserTicketList error:"+err.Error(), nil, ctx)
+		return
+	}
+	uID, _ := GetUserIDFromGinContext(ctx)
+	params.FieldParamsList = append(params.FieldParamsList, model.FieldParamsItem{
+		Operator:       "AND",
+		Field:          "user_id",
+		FieldType:      "",
+		Condition:      "=",
+		ConditionValue: fmt.Sprintf("%d", uID),
+	})
+	traffic, err := service.GetUserTraffic(&params)
+	if err != nil {
+		response.Fail("GetUserTraffic error:"+err.Error(), nil, ctx)
+		return
+	}
+	response.OK("GetUserTraffic success", traffic, ctx)
+}
+
+// 查询流量记录
+func GetAllUserTraffic(ctx *gin.Context) {
+	var params model.FieldParamsReq
+	err := ctx.ShouldBind(&params)
+	if err != nil {
+		response.Fail("GetAllUserTraffic error:"+err.Error(), nil, ctx)
+		return
+	}
+	fmt.Println("params:", params)
+	res, err := service.GetAllUserTraffic(&params)
+	if err != nil {
+		response.Fail("GetAllUserTraffic error:"+err.Error(), nil, ctx)
+		return
+	}
+	response.OK("GetAllUserTraffic success", res, ctx)
 }

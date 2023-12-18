@@ -1,5 +1,5 @@
 <template>
-  <div class="container layout-padding">
+  <div >
     <el-card shadow="hover" class="layout-padding-auto">
       <div class="mb15">
         <el-input v-model="reportStoreData.reportParams.value.field_params_list[0].condition_value" size="default"
@@ -17,11 +17,17 @@
           </el-icon>
           新增用户
         </el-button>
-        <el-button size="default" type="primary" class="ml10" @click="onShowCollapse">
+        <el-button size="default" color="blue" class="ml10" @click="onShowCollapse">
           <el-icon>
             <ele-Search/>
           </el-icon>
           高级查询
+        </el-button>
+        <el-button size="default" color="green" class="ml10" @click="openUserTrafficDialog">
+          <el-icon>
+           <Switch />
+          </el-icon>
+          流量统计
         </el-button>
         <div v-if="state.isShowCollapse">
           <!--          report组件-->
@@ -118,6 +124,7 @@
       </el-pagination>
     </el-card>
     <UserDialog ref="userDialogRef" @refresh="getUserList"/>
+    <UserTrafficDialog ref="userTrafficDialogRef"></UserTrafficDialog>
   </div>
 </template>
 
@@ -143,8 +150,11 @@ const reportStore = useReportStore()
 const reportStoreData = storeToRefs(reportStore)
 const UserDialog = defineAsyncComponent(() => import('/@/views/admin/user/dialog.vue'));
 const ReportComponent = defineAsyncComponent(() => import('/@/components/report/index.vue'))
+const UserTrafficDialog = defineAsyncComponent(() => import('/@/views/admin/user/dialog_user_traffic.vue'))
 const userDialogRef = ref();
 const reportRef = ref()
+const userTrafficDialogRef = ref()
+
 
 // 定义变量内容
 const state = reactive({
@@ -173,6 +183,10 @@ const onOpenAddUser = (type: string) => {
 const onOpenEditUser = (type: string, row: SysUser) => {
   userDialogRef.value.openDialog(type, row);
 };
+//
+const openUserTrafficDialog=()=>{
+  userTrafficDialogRef.value.openDialog();
+}
 //
 const findUser = () => {
   reportStoreData.reportParams.value.field_params_list[0].condition = 'like'
@@ -266,6 +280,7 @@ const onShowCollapse = () => {
     overflow: auto;
 
     .el-table {
+      overflow: auto;
       flex: 1;
     }
   }
