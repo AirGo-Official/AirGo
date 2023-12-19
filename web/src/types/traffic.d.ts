@@ -3,9 +3,9 @@ declare interface UserTrafficLog {
     id: number
     user_id: number
     user_name: string
-    node_id: number
-    remarks: string
-    traffic_rate: number
+    // node_id: number
+    // remarks: string
+    // traffic_rate: number
     u: number
     d: number
 }

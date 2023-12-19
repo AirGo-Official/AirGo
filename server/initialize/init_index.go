@@ -90,8 +90,13 @@ func InitializeUpdate() {
 		},
 		//临时代码，处理之前版本删除节点遗留的数据库垃圾数据
 		func() error {
-			fmt.Println("处理遗留垃圾数据")
+			fmt.Println("处理遗留垃圾数据-无效节点信息")
 			return service.DeleteNodeTemp()
+		},
+		//临时代码，删除用户流量统计
+		func() error {
+			fmt.Println("处理遗留垃圾数据-用户流量统计")
+			return service.DeleteUserTrafficTemp()
 		},
 	}
 	for _, v := range funcs {

@@ -11,13 +11,13 @@ type TrafficLog struct {
 	D         int64     `json:"d"       gorm:"comment:下行流量 bit"`
 }
 type UserTrafficLog struct {
-	CreatedAt   time.Time `json:"created_at"`
-	ID          int64     `json:"id"        gorm:"primary_key"`
-	UserID      int64     `json:"user_id"   gorm:"comment:用户ID"`
-	UserName    string    `json:"user_name" gorm:"comment:用户名"`
-	NodeID      int64     `json:"node_id"   gorm:"comment:节点ID"`
-	Remarks     string    `json:"remarks"   gorm:"comment:节点别名"`
-	TrafficRate int64     `json:"traffic_rate" gorm:"comment:节点倍率"`
-	U           int64     `json:"u"            gorm:"comment:上行流量 bit"`
-	D           int64     `json:"d"            gorm:"comment:下行流量 bit"`
+	CreatedAt time.Time `json:"created_at"`
+	ID        int64     `json:"id"        gorm:"primary_key"`
+	UserID    int64     `json:"user_id"   gorm:"comment:用户ID"`
+	UserName  string    `json:"user_name" gorm:"comment:用户名"`
+	//NodeID      int64     `json:"node_id"   gorm:"comment:节点ID"`
+	//Remarks     string    `json:"remarks"   gorm:"comment:节点别名"`
+	//TrafficRate int64     `json:"traffic_rate" gorm:"comment:节点倍率"`
+	U int64 `json:"u"            gorm:"comment:上行流量 bit"`
+	D int64 `json:"d"            gorm:"comment:下行流量 bit"`
 }

@@ -132,19 +132,19 @@ func AGGetUserlist(ctx *gin.Context) {
 		global.OnlineUsers.Lock.RUnlock()
 		//fmt.Println("当前在线客户端：", u)
 		if !ok {
-			global.OnlineUsers.Lock.RLock()
+			global.OnlineUsers.Lock.Lock()
 			global.OnlineUsers.UsersMap[user.ID] = model.OnlineUserItem{
 				NodeConnector: user.NodeConnector,
 				NodeIPMap:     make(map[int64]model.OnlineNodeInfo),
 			}
-			global.OnlineUsers.Lock.RUnlock()
+			global.OnlineUsers.Lock.Unlock()
 			newUsers = append(newUsers, user)
 
 		} else {
 			u.NodeConnector = user.NodeConnector
-			global.OnlineUsers.Lock.RLock()
+			global.OnlineUsers.Lock.Lock()
 			global.OnlineUsers.UsersMap[user.ID] = u //更新在线用户信息
-			global.OnlineUsers.Lock.RUnlock()
+			global.OnlineUsers.Lock.Unlock()
 			//处理当前用户连接数
 			var current int
 			for nodeID, onLineNodeInfo := range u.NodeIPMap {
@@ -233,7 +233,8 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	var trafficLog = model.TrafficLog{
 		NodeID: node.ID,
 	}
-	var userTrafficLog []model.UserTrafficLog
+	//var userTrafficLog []model.UserTrafficLog
+	userTrafficLogMap := make(map[int64]model.UserTrafficLog)
 	for _, v := range AGUserTraffic.UserTraffic {
 		//每个用户流量
 		userIds = append(userIds, v.UID)
@@ -246,15 +247,21 @@ func AGReportUserTraffic(ctx *gin.Context) {
 			},
 		})
 		//需要插入的用户流量统计
-		userTrafficLog = append(userTrafficLog, model.UserTrafficLog{
-			UserID:      v.UID,
-			UserName:    v.Email,
-			NodeID:      node.ID,
-			Remarks:     node.Remarks,
-			TrafficRate: node.TrafficRate,
-			U:           v.Upload,
-			D:           v.Download,
-		})
+		//userTrafficLog = append(userTrafficLog, model.UserTrafficLog{
+		//	UserID:      v.UID,
+		//	UserName:    v.Email,
+		//	NodeID:      node.ID,
+		//	Remarks:     node.Remarks,
+		//	TrafficRate: node.TrafficRate,
+		//	U:           v.Upload,
+		//	D:           v.Download,
+		//})
+		userTrafficLogMap[v.UID] = model.UserTrafficLog{
+			UserID:   v.UID,
+			UserName: v.Email,
+			U:        v.Upload,
+			D:        v.Download,
+		}
 		//该节点总流量
 		trafficLog.D = trafficLog.U + v.Upload
 		trafficLog.U = trafficLog.D + v.Download
@@ -289,7 +296,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	global.GoroutinePool.Submit(func() {
 		//查询当天的数据
 		now := time.Now()
-		zeroTime := time.Date(now.Year(), now.Month(), now.Day()-1, 0, 0, 0, 0, now.Location())
+		zeroTime := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 		traffic, _, _ := service.CommonSqlLast[model.TrafficLog, string, model.TrafficLog](fmt.Sprintf("node_id = %d AND created_at > '%v'", AGUserTraffic.ID, zeroTime))
 		if traffic.ID == 0 {
 			err = service.CommonSqlCreate[model.TrafficLog](trafficLog)
@@ -309,8 +316,12 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	})
 	//插入用户流量统计
 	global.GoroutinePool.Submit(func() {
-		err = service.CommonSqlSave[[]model.UserTrafficLog](userTrafficLog)
+		//err = service.CommonSqlSave[[]model.UserTrafficLog](userTrafficLog)
+		err = service.UpdateUserTrafficLog(userTrafficLogMap, userIds)
 		if err != nil {
+			//time="2023-12-19 17:50:13" level=error msg="插入用户流量统计,
+			//error:empty slice found" func=github.com/ppoonk/AirGo/api.AGReportUserTraffic.func3
+			//file="/home/runner/work/AirGo/AirGo/server/api/AirGo_api.go:325"
 			global.Logrus.Error("插入用户流量统计,error:", err)
 			return
 		}
@@ -350,12 +361,12 @@ func AGReportNodeOnlineUsers(ctx *gin.Context) {
 		_, ok := global.OnlineUsers.UsersMap[uid] //这里只负责存，只要AGGetUserlist逻辑没问题则不会超出限制
 		global.OnlineUsers.Lock.RUnlock()
 		if ok {
-			global.OnlineUsers.Lock.RLock()
+			global.OnlineUsers.Lock.Lock()
 			global.OnlineUsers.UsersMap[uid].NodeIPMap[AGOnlineUser.NodeID] = model.OnlineNodeInfo{
 				NodeIP:         AGOnlineUser.UserNodeMap[uid],
 				LastUpdateTime: time.Now(),
 			}
-			global.OnlineUsers.Lock.RUnlock()
+			global.OnlineUsers.Lock.Unlock()
 		}
 
 	}

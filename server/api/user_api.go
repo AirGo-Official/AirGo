@@ -403,7 +403,7 @@ func GetSub(ctx *gin.Context) {
 		clientType = ctx.Query("type")
 	}
 	if clientType == "" {
-		clientType = "v2rayNG"
+		clientType = "NekoBox"
 	}
 
 next:
@@ -495,7 +495,6 @@ func GetAllUserTraffic(ctx *gin.Context) {
 		response.Fail("GetAllUserTraffic error:"+err.Error(), nil, ctx)
 		return
 	}
-	fmt.Println("params:", params)
 	res, err := service.GetAllUserTraffic(&params)
 	if err != nil {
 		response.Fail("GetAllUserTraffic error:"+err.Error(), nil, ctx)

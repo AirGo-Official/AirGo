@@ -184,6 +184,37 @@ func UpdateUserTrafficInfo(userArr []model.User, userIds []int64) error {
 	}).Create(&userArrQuery).Error
 
 }
+func UpdateUserTrafficLog(UserTrafficLogMap map[int64]model.UserTrafficLog, userIds []int64) error {
+	var query []model.UserTrafficLog
+	now := time.Now()
+	//当日0点
+	todayZero := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	err := global.DB.Where("created_at > ? AND user_id IN ?", todayZero, userIds).Find(&query).Error
+	if err != nil {
+		return err
+	}
+	for k, _ := range query {
+		if tl, ok := UserTrafficLogMap[query[k].UserID]; ok { //已存在，叠加流量
+			query[k].U += tl.U
+			query[k].D += tl.D
+			delete(UserTrafficLogMap, query[k].UserID) //删除
+		}
+	}
+	//不存在的数据，追加到最后面，一起插入数据库
+	if len(UserTrafficLogMap) > 0 {
+		for k, _ := range UserTrafficLogMap {
+			query = append(query, UserTrafficLogMap[k])
+		}
+	}
+	if len(query) == 0 {
+		return nil
+	}
+	return global.DB.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		DoUpdates: clause.AssignmentColumns([]string{"u", "d"}),
+	}).Create(&query).Error
+
+}
 
 // 用户流量，有效期 检测任务
 func UserExpiryCheck() error {
@@ -355,13 +386,19 @@ func ClockIn(uID int64) (int, int, error) {
 
 func GetUserTraffic(params *model.FieldParamsReq) (*model.UserTrafficLog, error) {
 	var userTraffic model.UserTrafficLog
+	var err error
 	_, dataSql := CommonSqlFindNoOrderByNoLimitSqlHandler(params)
 	dataSql = dataSql[strings.Index(dataSql, "WHERE ")+6:] //去掉`WHERE `
 	if dataSql == "" {
 		return nil, errors.New("invalid parameter")
 	}
 	//fmt.Println("dataSql:", dataSql)
-	err := global.DB.Model(&model.UserTrafficLog{}).Where(dataSql).Select("user_id, user_name,SUM(u) AS u, SUM(d) AS d").Find(&userTraffic).Error
+	if global.Config.SystemParams.DbType == "mysql" {
+		err = global.DB.Model(&model.UserTrafficLog{}).Where(dataSql).Select("user_id, any_value(user_name) AS user_name, SUM(u) AS u, SUM(d) AS d").Group("user_id").Find(&userTraffic).Error
+	} else {
+		err = global.DB.Model(&model.UserTrafficLog{}).Where(dataSql).Select("user_id, user_name, SUM(u) AS u, SUM(d) AS d").Group("user_id").Find(&userTraffic).Error
+	}
+
 	return &userTraffic, err
 }
 
@@ -369,13 +406,20 @@ func GetAllUserTraffic(params *model.FieldParamsReq) (*model.CommonDataResp, err
 	//约定：params.FieldParamsList 数组前两项传时间，第三个开始传查询参数
 	var userTraffic []model.UserTrafficLog
 	var total int64
+	var err error
 	_, dataSql := CommonSqlFindNoOrderByNoLimitSqlHandler(params)
 	dataSql = dataSql[strings.Index(dataSql, "WHERE ")+6:] //去掉`WHERE `
 	if dataSql == "" {
 		return nil, errors.New("invalid parameter")
 	}
 	//fmt.Println("dataSql:", dataSql)
-	err := global.DB.Model(&model.UserTrafficLog{}).Where(dataSql).Select("user_id, user_name, node_id, remarks, SUM(u) AS u, SUM(d) AS d").Order(params.Pagination.OrderBy).Group("user_id").Count(&total).Limit(int(params.Pagination.PageSize)).Offset((int(params.Pagination.PageNum) - 1) * int(params.Pagination.PageSize)).Find(&userTraffic).Error
+
+	if global.Config.SystemParams.DbType == "mysql" { //mysql only_full_group_by 问题
+		err = global.DB.Model(&model.UserTrafficLog{}).Where(dataSql).Select("user_id, any_value(user_name) AS user_name, SUM(u) u, SUM(d) AS d").Group("user_id").Count(&total).Order(params.Pagination.OrderBy).Limit(int(params.Pagination.PageSize)).Offset((int(params.Pagination.PageNum) - 1) * int(params.Pagination.PageSize)).Find(&userTraffic).Error
+	} else {
+		err = global.DB.Model(&model.UserTrafficLog{}).Where(dataSql).Select("user_id, user_name, SUM(u) u, SUM(d) AS d").Group("user_id").Count(&total).Order(params.Pagination.OrderBy).Limit(int(params.Pagination.PageSize)).Offset((int(params.Pagination.PageNum) - 1) * int(params.Pagination.PageSize)).Find(&userTraffic).Error
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -383,4 +427,10 @@ func GetAllUserTraffic(params *model.FieldParamsReq) (*model.CommonDataResp, err
 		Total: total,
 		Data:  userTraffic,
 	}, nil
+}
+
+// 临时代码，删除用户流量统计
+func DeleteUserTrafficTemp() error {
+	return global.DB.Where("id > 0").Delete(&model.UserTrafficLog{}).Error
+
 }

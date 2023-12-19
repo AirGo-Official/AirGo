@@ -106,10 +106,10 @@ func GetUserSubNew(url string, clientType string) string {
 subHandler:
 	//根据clientType生成不同客户端订阅
 	switch clientType {
-	case "v2rayNG", "V2rayU", "v2rayN":
+	case "v2rayNG", "V2rayU":
 		return v2rayNG(&nodeArr)
 
-	case "NekoBox":
+	case "NekoBox", "v2rayN":
 		return NekoBox(&nodeArr)
 
 	case "Clash":
@@ -261,6 +261,7 @@ func ClashMeta(nodes *[]model.Node) string {
 		"GEOSITE,biliintl," + global.Server.Subscribe.SubName,
 		"GEOSITE,geolocation-!cn," + global.Server.Subscribe.SubName,
 		"GEOIP,telegram," + global.Server.Subscribe.SubName,
+		"MATCH," + global.Server.Subscribe.SubName,
 	}
 	res, err := yaml.Marshal(clashYaml)
 	if err != nil {
