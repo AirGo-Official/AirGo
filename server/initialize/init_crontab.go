@@ -67,16 +67,20 @@ func CrontabUserTrafficReset() {
 }
 func CrontabOnlineUsers() {
 	//fmt.Println("检查在线用户定时任务:", time.Now())
-	global.OnlineUsers.Lock.RLock()
-	for uid, OnlineUserItem := range global.OnlineUsers.UsersMap {
-		for _, OnlineNodeInfo := range OnlineUserItem.NodeIPMap {
-			if time.Now().Sub(OnlineNodeInfo.LastUpdateTime) > 2*time.Minute && len(OnlineNodeInfo.NodeIP) > 0 { //超过2分钟没有上报信息，则视为离线
-				//fmt.Printf("用户ID：%d, 离线节点ID: %d", uid, nodeID)
-				//OnlineNodeInfo.NodeIP = []string{}
-				//global.OnlineUsers.UsersMap[uid].NodeIPMap[nodeID] = OnlineNodeInfo
-				delete(global.OnlineUsers.UsersMap, uid)
+	global.OnlineUsersMap.Range(func(key, value any) bool {
+		//uid := key.(int64)
+		onlineUserItem := value.(model.OnlineUserItem)
+		onlineUserItem.NodeIPMap.Range(func(key, value any) bool {
+			nodeID := key.(int64)
+			onlineNodeInfo := value.(model.OnlineNodeInfo)
+			//fmt.Println("now:", time.Now())
+			//fmt.Println("last:", onlineNodeInfo.LastUpdateTime)
+			if time.Now().Sub(onlineNodeInfo.LastUpdateTime) > 2*time.Minute {
+				//fmt.Println("删除在线客户点,节点ID：", nodeID)
+				onlineUserItem.NodeIPMap.Delete(nodeID)
 			}
-		}
-	}
-	global.OnlineUsers.Lock.RUnlock()
+			return true
+		})
+		return true
+	})
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/ppoonk/AirGo/service"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -126,40 +127,38 @@ func AGGetUserlist(ctx *gin.Context) {
 	//处理用户连接数，只要没超过限制就下发
 	var newUsers []model.AGUserInfo
 	for _, user := range users {
-		global.OnlineUsers.Lock.RLock()
-		//当前用户
-		u, ok := global.OnlineUsers.UsersMap[user.ID]
-		global.OnlineUsers.Lock.RUnlock()
-		//fmt.Println("当前在线客户端：", u)
-		if !ok {
-			global.OnlineUsers.Lock.Lock()
-			global.OnlineUsers.UsersMap[user.ID] = model.OnlineUserItem{
-				NodeConnector: user.NodeConnector,
-				NodeIPMap:     make(map[int64]model.OnlineNodeInfo),
-			}
-			global.OnlineUsers.Lock.Unlock()
-			newUsers = append(newUsers, user)
-
-		} else {
-			u.NodeConnector = user.NodeConnector
-			global.OnlineUsers.Lock.Lock()
-			global.OnlineUsers.UsersMap[user.ID] = u //更新在线用户信息
-			global.OnlineUsers.Lock.Unlock()
+		v, ok := global.OnlineUsersMap.Load(user.ID)
+		if ok {
+			//更新在线用户信息
+			onlineUserItem := v.(model.OnlineUserItem)
+			onlineUserItem.NodeConnector = user.NodeConnector
+			global.OnlineUsersMap.Store(user.ID, onlineUserItem)
 			//处理当前用户连接数
 			var current int
-			for nodeID, onLineNodeInfo := range u.NodeIPMap {
-				if nodeID == nodeIDInt {
-					continue //排除当前节点已有的客户端
+			onlineUserItem.NodeIPMap.Range(func(key, value any) bool {
+				nodeID := key.(int64)
+				//fmt.Println("当前节点ID:", nodeIDInt)
+				//fmt.Println("rnage 节点ID:", nodeID)
+				onlineNodeInfo := value.(model.OnlineNodeInfo)
+				if nodeID != nodeIDInt {
+					//除了当前节点已存在的连接数
+					current += len(onlineNodeInfo.NodeIP)
 				}
-				current = current + len(onLineNodeInfo.NodeIP)
-			}
-			newConnector := u.NodeConnector - int64(current) //新设备连接数
-			//fmt.Println("新设备连接数：", newConnector)
-			if newConnector >= 1 {
-				user.NodeConnector = newConnector //下发新的设备连接数
-			}
+				return true
+			})
+			//fmt.Println("总设备数：", user.NodeConnector)
+			//fmt.Println("在线设备数：", int64(current))
+			user.NodeConnector = user.NodeConnector - int64(current) //新设备连接数
+			//fmt.Println("新设备连接数：", user.NodeConnector)
+			newUsers = append(newUsers, user)
+		} else {
+			global.OnlineUsersMap.Store(user.ID, model.OnlineUserItem{
+				NodeConnector: user.NodeConnector,
+				NodeIPMap:     new(sync.Map),
+			})
 			newUsers = append(newUsers, user)
 		}
+
 	}
 
 	//处理ss加密
@@ -217,6 +216,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 		ctx.AbortWithStatus(400)
 		return
 	}
+	fmt.Println("上报用户流量：", AGUserTraffic)
 	//查询节点倍率
 	node, _, err := service.CommonSqlFind[model.Node, string, model.Node](fmt.Sprintf("id = %d", AGUserTraffic.ID))
 	if err != nil {
@@ -353,23 +353,16 @@ func AGReportNodeOnlineUsers(ctx *gin.Context) {
 		return
 	}
 	//fmt.Println("上报在线设备：", AGOnlineUser)
-	if len(AGOnlineUser.UserNodeMap) == 0 {
-		goto re
-	}
 	for uid, _ := range AGOnlineUser.UserNodeMap {
-		global.OnlineUsers.Lock.RLock()
-		_, ok := global.OnlineUsers.UsersMap[uid] //这里只负责存，只要AGGetUserlist逻辑没问题则不会超出限制
-		global.OnlineUsers.Lock.RUnlock()
+		v, ok := global.OnlineUsersMap.Load(uid)
 		if ok {
-			global.OnlineUsers.Lock.Lock()
-			global.OnlineUsers.UsersMap[uid].NodeIPMap[AGOnlineUser.NodeID] = model.OnlineNodeInfo{
+			onlineUserItem := v.(model.OnlineUserItem)
+			onlineUserItem.NodeIPMap.Store(AGOnlineUser.NodeID, model.OnlineNodeInfo{
 				NodeIP:         AGOnlineUser.UserNodeMap[uid],
 				LastUpdateTime: time.Now(),
-			}
-			global.OnlineUsers.Lock.Unlock()
+			})
+			global.OnlineUsersMap.Store(uid, onlineUserItem)
 		}
-
 	}
-re:
 	ctx.String(200, "success")
 }

@@ -1,10 +1,11 @@
-package service
+package rpc_node_logic
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ppoonk/AirGo/rpc/rpctest/rpc/hello"
+	"github.com/ppoonk/AirGo/rpc/server/node/rpc_node"
+
 	"google.golang.org/grpc/metadata"
 )
 
@@ -12,17 +13,16 @@ import (
 type HelloServer struct {
 }
 
-func (HelloServer) SayHello(ctx context.Context, request *hello.HelloReq) (pd *hello.HelloResp, err error) {
+func (HelloServer) SayHello(ctx context.Context, request *rpc_node.HelloReq) (pd *rpc_node.HelloResp, err error) {
 
 	//获取元数据信息
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errors.New("未传输token")
 	}
-
 	fmt.Println("获取元数据信息：", md)
 	fmt.Println("入参：", request.Name)
-	pd = new(hello.HelloResp)
+	pd = new(rpc_node.HelloResp)
 	pd.Name = "你好" + request.Name
 	pd.Age = "ok" + request.Age
 	return

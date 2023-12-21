@@ -56,10 +56,10 @@ export const useUserStore = defineStore('userInfo', {
                 d: 0,
                 reset_day: 0,
             },
-            online_user_item: {
+            online_user_info: {
                 node_connector: 0,
                 node_ip_map: {},
-            } as OnlineUserItem,
+            } as OnlineUserInfo,
         } as SysUser,
         //在线设备数提示信息
         onlineDeviceInfo: '',
@@ -131,9 +131,9 @@ export const useUserStore = defineStore('userInfo', {
         //在线设备数
         onlineDevice: (state): number => {
             let n = 0
-            for (let key in state.userInfos.online_user_item.node_ip_map) {
+            for (let key in state.userInfos.online_user_info.node_ip_map) {
                 // @ts-ignore
-                let onlineNodeInfo: OnlineNodeInfo = state.userInfos.online_user_item.node_ip_map[key]
+                let onlineNodeInfo: OnlineNodeInfo = state.userInfos.online_user_info.node_ip_map[key]
                 n += onlineNodeInfo.node_ip.length
             }
             return n
@@ -241,9 +241,9 @@ export const useUserStore = defineStore('userInfo', {
         //在线设备数信息
         showOnlineDeviceInfo() {
             this.onlineDeviceInfo = ''
-            for (let key in this.userInfos.online_user_item.node_ip_map) {
+            for (let key in this.userInfos.online_user_info.node_ip_map) {
                 // @ts-ignore
-                let onlineNodeInfo: OnlineNodeInfo = this.userInfos.online_user_item.node_ip_map[key]
+                let onlineNodeInfo: OnlineNodeInfo = this.userInfos.online_user_info.node_ip_map[key]
                 this.onlineDeviceInfo += '节点ID：' + key.toString() + '，在线IP：' + onlineNodeInfo.node_ip.join(" | ") + "\n"
             }
         }

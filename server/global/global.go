@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/viper"
 	"gopkg.in/gomail.v2"
 	"gorm.io/gorm"
+	"sync"
 )
 
 var (
@@ -33,7 +34,7 @@ var (
 	Crontab            *cron.Cron                      //定时任务
 	TGBot              *tgbotapi.BotAPI                //tg bot
 	ContextGroup       *model.ContextGroup             //
-	OnlineUsers        *model.OnlineUsers
+	OnlineUsersMap     *sync.Map                       //
 )
 
 const (

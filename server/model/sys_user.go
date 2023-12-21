@@ -33,7 +33,7 @@ type User struct {
 	//订阅信息
 	SubscribeInfo SubscribeInfo `json:"subscribe_info" gorm:"embedded;comment:附加订阅信息"`
 	//该用户当前在线信息
-	OnlineUserItem OnlineUserItem `json:"online_user_item" gorm:"-"`
+	OnlineUserInfo OnlineUserInfo `json:"online_user_info" gorm:"-"`
 }
 
 // 附加订阅信息
@@ -89,14 +89,15 @@ type UserChangePassword struct {
 	EmailCode  string `json:"email_code"`
 }
 
-// 全部在线用户
-type OnlineUsers struct {
-	Lock     sync.RWMutex
-	UsersMap map[int64]OnlineUserItem
-}
-type OnlineUserItem struct {
+// 用户在线设备信息
+type OnlineUserInfo struct {
 	NodeConnector int64                    `json:"node_connector"` //连接客户端数
 	NodeIPMap     map[int64]OnlineNodeInfo `json:"node_ip_map"`
+}
+
+type OnlineUserItem struct {
+	NodeConnector int64     `json:"node_connector"` //连接客户端数
+	NodeIPMap     *sync.Map `json:"node_ip_map"`    //key: nodeID int64   value: OnlineNodeInfo
 }
 type OnlineNodeInfo struct {
 	NodeIP         []string  `json:"node_ip"`

@@ -1,0 +1,18 @@
+syntax = "proto3";
+package rpc_node;
+option go_package = "/rpc_node";
+//import "rpc/proto/common.proto";
+service HelloService {
+  rpc SayHello (HelloReq) returns (HelloResp) {}
+}
+
+message HelloReq {
+  string Name = 1;
+  string Age = 2;
+}
+message HelloResp {
+  string Name = 1;
+  string Age = 2;
+}
+
+// protoc --go_out=./rpc/server/node --go-grpc_out=./rpc/server/node ./rpc/server/node/proto/node.proto

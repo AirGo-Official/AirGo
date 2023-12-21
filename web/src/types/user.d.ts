@@ -30,7 +30,7 @@ declare interface SysUser {
         node_speedlimit: number;
         node_connector: number;
     }
-    online_user_item: OnlineUserItem;
+    online_user_info: OnlineUserInfo;
 }
 
 // 登录
@@ -53,7 +53,7 @@ declare interface RegisterForm {
 }
 
 //
-declare interface OnlineUserItem {
+declare interface OnlineUserInfo {
     node_connector: number;
     node_ip_map: {},
 }

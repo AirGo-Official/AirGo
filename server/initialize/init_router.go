@@ -23,7 +23,7 @@ import (
 func InitRouter() {
 	gin.SetMode(gin.ReleaseMode) //ReleaseMode TestMode DebugMode
 	Router := gin.Default()
-	//Router.Use(middleware.Rpc())
+	Router.Use(middleware.Rpc())
 	Router.Use(middleware.Serve("/", middleware.EmbedFolder(web.Static, "web"))) // targetPtah=web 是embed和web文件夹的相对路径
 	Router.Use(middleware.Cors(), middleware.Recovery())
 

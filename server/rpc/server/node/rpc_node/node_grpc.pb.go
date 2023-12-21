@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.19.4
-// source: rpc/singbox/proto/hello.proto
+// source: rpc/server/node/proto/node.proto
 
-package hello
+package rpc_node
 
 import (
 	context "context"
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	HelloService_SayHello_FullMethodName = "/hello.HelloService/SayHello"
+	HelloService_SayHello_FullMethodName = "/rpc_node.HelloService/SayHello"
 )
 
 // HelloServiceClient is the client API for HelloService service.
@@ -51,6 +51,7 @@ func (c *helloServiceClient) SayHello(ctx context.Context, in *HelloReq, opts ..
 // for forward compatibility
 type HelloServiceServer interface {
 	SayHello(context.Context, *HelloReq) (*HelloResp, error)
+
 }
 
 // UnimplementedHelloServiceServer must be embedded to have forward compatible implementations.
@@ -95,7 +96,7 @@ func _HelloService_SayHello_Handler(srv interface{}, ctx context.Context, dec fu
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var HelloService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "hello.HelloService",
+	ServiceName: "rpc_node.HelloService",
 	HandlerType: (*HelloServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -104,5 +105,5 @@ var HelloService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "rpc/singbox/proto/hello.proto",
+	Metadata: "rpc/server/node/proto/node.proto",
 }

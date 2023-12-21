@@ -15,6 +15,7 @@ import (
 	"github.com/ppoonk/AirGo/utils/websocket_plugin"
 	"github.com/songzhibin97/gkit/cache/local_cache"
 	"github.com/yudeguang/ratelimit"
+	"sync"
 	"time"
 )
 
@@ -181,7 +182,5 @@ func InitTGBot() {
 	service.TGBotStartListen()
 }
 func InitOnlineUsers() {
-	global.OnlineUsers = &model.OnlineUsers{
-		UsersMap: make(map[int64]model.OnlineUserItem),
-	}
+	global.OnlineUsersMap = new(sync.Map)
 }

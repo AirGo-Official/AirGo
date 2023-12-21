@@ -143,12 +143,22 @@ func Login(c *gin.Context) {
 		}
 	}
 	//插入该用户当前在线信息
-	global.OnlineUsers.Lock.RLock()
-	userMapItem, ok := global.OnlineUsers.UsersMap[user.ID]
-	global.OnlineUsers.Lock.RUnlock()
+	v, ok := global.OnlineUsersMap.Load(user.ID)
 	if ok {
-		user.OnlineUserItem = userMapItem
+		onlineUserItem := v.(model.OnlineUserItem)
+		var nodeIPMap map[int64]model.OnlineNodeInfo
+		onlineUserItem.NodeIPMap.Range(func(key, value any) bool {
+			nodeID := key.(int64)
+			one := value.(model.OnlineNodeInfo)
+			nodeIPMap[nodeID] = one
+			return true
+		})
+		user.OnlineUserInfo = model.OnlineUserInfo{
+			NodeConnector: onlineUserItem.NodeConnector,
+			NodeIPMap:     nodeIPMap,
+		}
 	}
+
 	response.OK("Login success", gin.H{
 		"user":  user,
 		"token": token,
@@ -185,21 +195,29 @@ func GetUserInfo(ctx *gin.Context) {
 		response.Fail("user id error", nil, ctx)
 		return
 	}
-	u, err := service.GetUserInfo(uIDInt)
+	user, err := service.GetUserInfo(uIDInt)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetUserInfo error:"+err.Error(), nil, ctx)
 		return
 	}
 	//插入该用户当前在线信息
-	global.OnlineUsers.Lock.RLock()
-	userMapItem, ok := global.OnlineUsers.UsersMap[uIDInt]
-	global.OnlineUsers.Lock.RUnlock()
+	v, ok := global.OnlineUsersMap.Load(uIDInt)
 	if ok {
-		u.OnlineUserItem = userMapItem
+		onlineUserItem := v.(model.OnlineUserItem)
+		nodeIPMap := make(map[int64]model.OnlineNodeInfo)
+		onlineUserItem.NodeIPMap.Range(func(key, value any) bool {
+			nodeID := key.(int64)
+			one := value.(model.OnlineNodeInfo)
+			nodeIPMap[nodeID] = one
+			return true
+		})
+		user.OnlineUserInfo = model.OnlineUserInfo{
+			NodeConnector: onlineUserItem.NodeConnector,
+			NodeIPMap:     nodeIPMap,
+		}
 	}
-	response.OK("GetUserInfo success", u, ctx)
-
+	response.OK("GetUserInfo success", user, ctx)
 }
 
 // 获取用户列表
