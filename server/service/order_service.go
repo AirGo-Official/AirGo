@@ -54,3 +54,7 @@ func GetOrderStatistics(startTime, endTime time.Time) (*model.OrderStatistics, e
 	}
 	return &orderStatistic, err
 }
+
+func DeleteUserAllOrder(user *model.User) error {
+	return global.DB.Where("user_id = ?", user.ID).Delete(&model.Orders{}).Error
+}

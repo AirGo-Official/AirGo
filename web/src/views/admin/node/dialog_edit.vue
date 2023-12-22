@@ -500,10 +500,10 @@
           />
         </el-form-item>
         <el-form-item label="节点限速">
-          <el-input type="number" v-model.number="dialogData.hysteriaInfo.node_speedlimit"/>
+          <el-input-number v-model.number="dialogData.hysteriaInfo.node_speedlimit"/>
         </el-form-item>
         <el-form-item label="节点倍率">
-          <el-input type="number" v-model.number="dialogData.hysteriaInfo.traffic_rate"/>
+          <el-input-number v-model.number="dialogData.hysteriaInfo.traffic_rate"/>
         </el-form-item>
         <el-form-item label="启用中转">
           <el-switch

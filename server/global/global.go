@@ -21,7 +21,7 @@ var (
 	Config             model.Config                    //全局配置（本地yaml）
 	VP                 *viper.Viper                    //
 	LocalCache         local_cache.Cache               //本地kv cache
-	Casbin             *casbin.CachedEnforcer          //casbin
+	Casbin             *casbin.SyncedCachedEnforcer    //casbin
 	Server             model.Server                    //全局配置（数据库）
 	Theme              model.Theme                     //全局主题配置
 	Base64Captcha      *base64Captcha.Captcha          //Base64Captcha

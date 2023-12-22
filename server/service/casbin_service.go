@@ -11,14 +11,18 @@ import (
 	"github.com/ppoonk/AirGo/model"
 	"strconv"
 	"strings"
+	"sync"
 )
+
+var cachedEnforcer *casbin.CachedEnforcer
+var once sync.Once
 
 func Show(data any) {
 	b, _ := json.Marshal(data)
 	fmt.Println(string(b))
 }
 
-func Casbin() *casbin.CachedEnforcer {
+func Casbin() *casbin.SyncedCachedEnforcer {
 	//sub角色id，obj请求的路径，act请求的方法
 	text := `
 	[request_definition]
@@ -43,13 +47,10 @@ func Casbin() *casbin.CachedEnforcer {
 		return nil
 	}
 	a, _ := gormadapter.NewAdapterByDB(global.DB)
-	cachedEnforcer, _ := casbin.NewCachedEnforcer(m, a) //生成casbin实施实例
-	cachedEnforcer.SetExpireTime(60 * 60)
-	err = cachedEnforcer.LoadPolicy()
-	if err != nil {
-		global.Logrus.Error("cachedEnforcer.LoadPolicy error:", err)
-	}
-	return cachedEnforcer
+	syncedCachedEnforcer, _ := casbin.NewSyncedCachedEnforcer(m, a)
+	syncedCachedEnforcer.SetExpireTime(60 * 60)
+	_ = syncedCachedEnforcer.LoadPolicy()
+	return syncedCachedEnforcer
 }
 
 // 更新casbin权限

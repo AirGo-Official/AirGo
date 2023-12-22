@@ -17,7 +17,7 @@ func Purchase(ctx *gin.Context) {
 		response.Fail("Purchase error:user id error", nil, ctx)
 		return
 	}
-	// 前端传的订单信息，前端下次优化：只传订单id和支付方式id
+	// 前端传的订单信息
 	var receiveOrder model.Orders
 	err := ctx.ShouldBind(&receiveOrder)
 	if err != nil || receiveOrder.OutTradeNo == "" {

@@ -2,9 +2,11 @@ package initialize
 
 import (
 	"errors"
+	"fmt"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	utils "github.com/ppoonk/AirGo/utils/encrypt_plugin"
+	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"time"
 
@@ -99,7 +101,7 @@ func GormSqlite() *gorm.DB {
 // 初始化Mysql数据库
 func GormMysql() *gorm.DB {
 	mysqlConfig := mysql.Config{
-		DSN:                       global.Config.Mysql.Username + ":" + global.Config.Mysql.Password + "@tcp(" + global.Config.Mysql.Address + ":" + global.Config.Mysql.Port + ")/" + global.Config.Mysql.Dbname + "?" + global.Config.Mysql.Config,
+		DSN:                       fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s", global.Config.Mysql.Username, global.Config.Mysql.Password, global.Config.Mysql.Address, global.Config.Mysql.Port, global.Config.Mysql.Dbname, global.Config.Mysql.Config),
 		DefaultStringSize:         191,
 		SkipInitializeWithVersion: false,
 	}
@@ -113,6 +115,27 @@ func GormMysql() *gorm.DB {
 		panic(err)
 	} else {
 		db.InstanceSet("gorm:table_options", "ENGINE="+global.Config.Mysql.Engine)
+		sqlDB, _ := db.DB()
+		sqlDB.SetMaxIdleConns(int(global.Config.Mysql.MaxIdleConns))
+		sqlDB.SetMaxOpenConns(int(global.Config.Mysql.MaxOpenConns))
+		return db
+	}
+}
+
+// 初始化 Postgresql 数据库
+func GormPgSql() *gorm.DB {
+	pgsqlConfig := postgres.Config{
+		DSN:                  "host=127.0.0.1 user=yourusername password=yourpassword dbname=userDB port=5432 sslmode=disable",
+		PreferSimpleProtocol: false,
+	}
+	if db, err := gorm.Open(postgres.New(pgsqlConfig), &gorm.Config{
+		SkipDefaultTransaction: true, //关闭事务
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	}); err != nil {
+		return nil
+	} else {
 		sqlDB, _ := db.DB()
 		sqlDB.SetMaxIdleConns(int(global.Config.Mysql.MaxIdleConns))
 		sqlDB.SetMaxOpenConns(int(global.Config.Mysql.MaxOpenConns))

@@ -150,7 +150,9 @@ func AGGetUserlist(ctx *gin.Context) {
 			//fmt.Println("在线设备数：", int64(current))
 			user.NodeConnector = user.NodeConnector - int64(current) //新设备连接数
 			//fmt.Println("新设备连接数：", user.NodeConnector)
-			newUsers = append(newUsers, user)
+			if user.NodeConnector > 0 {
+				newUsers = append(newUsers, user)
+			}
 		} else {
 			global.OnlineUsersMap.Store(user.ID, model.OnlineUserItem{
 				NodeConnector: user.NodeConnector,
@@ -216,7 +218,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 		ctx.AbortWithStatus(400)
 		return
 	}
-	fmt.Println("上报用户流量：", AGUserTraffic)
+	//fmt.Println("上报用户流量：", AGUserTraffic)
 	//查询节点倍率
 	node, _, err := service.CommonSqlFind[model.Node, string, model.Node](fmt.Sprintf("id = %d", AGUserTraffic.ID))
 	if err != nil {
@@ -242,20 +244,11 @@ func AGReportUserTraffic(ctx *gin.Context) {
 		userArr = append(userArr, model.User{
 			ID: v.UID,
 			SubscribeInfo: model.SubscribeInfo{
-				U: v.Upload * node.TrafficRate,
-				D: v.Download * node.TrafficRate,
+				U: int64(float64(v.Upload) * node.TrafficRate),
+				D: int64(float64(v.Download) * node.TrafficRate),
 			},
 		})
 		//需要插入的用户流量统计
-		//userTrafficLog = append(userTrafficLog, model.UserTrafficLog{
-		//	UserID:      v.UID,
-		//	UserName:    v.Email,
-		//	NodeID:      node.ID,
-		//	Remarks:     node.Remarks,
-		//	TrafficRate: node.TrafficRate,
-		//	U:           v.Upload,
-		//	D:           v.Download,
-		//})
 		userTrafficLogMap[v.UID] = model.UserTrafficLog{
 			UserID:   v.UID,
 			UserName: v.Email,
@@ -316,12 +309,8 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	})
 	//插入用户流量统计
 	global.GoroutinePool.Submit(func() {
-		//err = service.CommonSqlSave[[]model.UserTrafficLog](userTrafficLog)
 		err = service.UpdateUserTrafficLog(userTrafficLogMap, userIds)
 		if err != nil {
-			//time="2023-12-19 17:50:13" level=error msg="插入用户流量统计,
-			//error:empty slice found" func=github.com/ppoonk/AirGo/api.AGReportUserTraffic.func3
-			//file="/home/runner/work/AirGo/AirGo/server/api/AirGo_api.go:325"
 			global.Logrus.Error("插入用户流量统计,error:", err)
 			return
 		}

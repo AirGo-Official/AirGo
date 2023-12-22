@@ -42,7 +42,7 @@ func InitRouter() {
 		publicRouter.POST("/getEmailCode", api.GetMailCode)         //获取验证码
 		publicRouter.GET("/getBase64Captcha", api.GetBase64Captcha) //获取base64Captcha
 		publicRouter.GET("/epayNotify", api.EpayNotify)             //易支付异步回调
-		publicRouter.POST("/alipayNotify", api.AlipayNotify)        //支付宝异步验证支付结果，弃用
+		publicRouter.POST("/alipayNotify", api.AlipayNotify)        //支付宝异步验证支付结果
 		publicRouter.GET("/queryPackage", api.QueryPackage)         //运营商流量查询
 		publicRouter.GET("/getThemeConfig", api.GetThemeConfig)     //获取主题配置
 		publicRouter.GET("/getPublicSetting", api.GetPublicSetting) //获取公共系统设置

@@ -17,43 +17,6 @@ type AGNodeStatusItem struct {
 	Uptime uint64
 }
 
-type AGNodeInfo struct {
-	ID             int64  `json:"id"`
-	NodeSpeedlimit int64  `json:"node_speedlimit"` //节点限速/Mbps
-	TrafficRate    int64  `json:"traffic_rate"`    //倍率
-	NodeType       string `json:"node_type"`       //节点类型 vless,vmess,trojan
-	Remarks        string `json:"remarks"`         //别名
-	Address        string `json:"address"`         //地址
-	Port           int64  `json:"port"`            //端口
-
-	//vmess参数
-	Scy       string `json:"scy"`
-	ServerKey string `json:"server_key"`
-	Aid       int64  `json:"aid"`
-	//vless参数
-	VlessFlow string `json:"flow"` //流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
-
-	//传输参数
-	Network     string `json:"network"`      //传输协议 tcp,kcp,ws,h2,quic,grpc
-	Type        string `json:"type"`         //伪装类型 ws,h2：无    tcp,kcp：none，http    quic：none，srtp，utp，wechat-video，dtls，wireguard
-	Host        string `json:"host"`         //伪装域名
-	Path        string `json:"path"`         //path
-	GrpcMode    string `json:"mode"`         //grpc传输模式 gun，multi
-	ServiceName string `json:"service_name"` //
-
-	//传输层安全
-	Security    string `json:"security"` //传输层安全类型 none,tls,reality
-	Sni         string `json:"sni"`      //
-	Fingerprint string `json:"fp"`       //
-	Alpn        string `json:"alpn"`     //
-	Dest        string `json:"dest"`
-	PrivateKey  string `json:"private_key"`
-	PublicKey   string `json:"pbk"`
-	ShortId     string `json:"sid"`
-	SpiderX     string `json:"spx"`
-	//关联
-	Access []AGAccess `json:"access" gorm:"-"` //禁用gorm查询
-}
 type AGAccess struct {
 	ID    int64  `json:"id"`
 	Name  string `json:"name"`

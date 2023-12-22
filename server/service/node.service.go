@@ -52,7 +52,7 @@ func GetNodeTraffic(params *model.FieldParamsReq) (*model.NodesWithTotal, error)
 // 获取 node status，用于探针
 func GetNodesStatus() *[]model.NodeStatus {
 	var nodesIds []model.Node
-	global.DB.Model(&model.Node{}).Select("id", "remarks", "traffic_rate").Order("node_order").Find(&nodesIds)
+	global.DB.Model(&model.Node{}).Select("id", "remarks", "traffic_rate").Where("enabled = ?", true).Order("node_order").Find(&nodesIds)
 	var nodestatusArr []model.NodeStatus
 	for _, v := range nodesIds {
 		var nodeStatus = model.NodeStatus{}

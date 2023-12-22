@@ -287,6 +287,17 @@ func CreateUser(u *model.User) error {
 
 // 删除用户
 func DeleteUser(u *model.User) error {
+	//删除关联的角色组
+	err := DeleteUserRoleGroup(u)
+	if err != nil {
+		return err
+	}
+	//删除关联的订单
+	err = DeleteUserAllOrder(u)
+	if err != nil {
+		return err
+	}
+	//删除用户
 	return global.DB.Delete(&u).Error
 }
 

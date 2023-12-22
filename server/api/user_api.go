@@ -291,13 +291,6 @@ func DeleteUser(ctx *gin.Context) {
 		response.Fail("DeleteUser error:"+err.Error(), err.Error(), ctx)
 		return
 	}
-	//删除用户关联的角色
-	service.DeleteUserRoleGroup(&u)
-	if err != nil {
-		global.Logrus.Error(err)
-		response.Fail("DeleteUser error:"+err.Error(), nil, ctx)
-		return
-	}
 	// 删除用户
 	err = service.DeleteUser(&u)
 	if err != nil {
@@ -306,7 +299,6 @@ func DeleteUser(ctx *gin.Context) {
 		return
 	}
 	response.OK("DeleteUser success", nil, ctx)
-
 }
 
 // 修改密码
