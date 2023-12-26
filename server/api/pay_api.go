@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
@@ -28,7 +27,6 @@ func Purchase(ctx *gin.Context) {
 	receiveOrder.UserID = uIDInt //确认user id
 	sysOrder, _, err := service.CommonSqlFind[model.Orders, model.Orders, model.Orders](model.Orders{UserID: receiveOrder.UserID, OutTradeNo: receiveOrder.OutTradeNo})
 	if err != nil {
-
 		global.Logrus.Error(err.Error())
 		response.Fail("Purchase error:"+err.Error(), nil, ctx)
 		return
@@ -36,22 +34,11 @@ func Purchase(ctx *gin.Context) {
 	//0元购，跳过支付
 	totalAmountFloat64, _ := strconv.ParseFloat(sysOrder.TotalAmount, 10)
 	if totalAmountFloat64 == 0 {
-		sysOrder.TradeStatus = model.OrderCompleted //更新数据库订单状态,自定义结束状态completed
+		service.Show(sysOrder)
+		sysOrder.TradeStatus = model.OrderCompleted //更新数据库订单状态,自定义结束状态 Completed
 		sysOrder.ReceiptAmount = "0"                //实收金额
 		sysOrder.BuyerPayAmount = "0"               //付款金额
-
-		global.GoroutinePool.Submit(func() {
-			service.UpdateOrder(&sysOrder) //更新数据库状态
-		})
-		global.GoroutinePool.Submit(func() {
-			service.UpdateUserSubscribe(&sysOrder) //更新用户订阅信息
-		})
-		global.GoroutinePool.Submit(func() {
-			service.RemainHandle(sysOrder.UserID, sysOrder.RemainAmount) //处理用户余额
-		})
-		global.GoroutinePool.Submit(func() { //通知
-			service.UnifiedPushMessage(fmt.Sprintf("用户：%s\n购买订阅：%s\n销售价格：%s\n订单金额：%s\n支付方式：%s", sysOrder.UserName, sysOrder.Subject, sysOrder.Price, sysOrder.TotalAmount, sysOrder.PayType))
-		})
+		service.PaymentSuccessfullyOrderHandler(&sysOrder)
 		response.OK("Purchase success", nil, ctx)
 		return
 	}
@@ -162,15 +149,7 @@ func EpayNotify(ctx *gin.Context) {
 	sysOrder.ReceiptAmount = epayRes.Money  //实收金额
 	sysOrder.BuyerPayAmount = epayRes.Money //付款金额
 	sysOrder.TradeStatus = epayRes.TradeStatus
-	global.GoroutinePool.Submit(func() {
-		service.UpdateOrder(&sysOrder) //更新数据库订单信息
-	})
-	global.GoroutinePool.Submit(func() {
-		service.UpdateUserSubscribe(&sysOrder) //更新用户订阅信息
-	})
-	global.GoroutinePool.Submit(func() { //通知
-		service.UnifiedPushMessage(fmt.Sprintf("用户：%s\n购买订阅：%s\n销售价格：%s\n订单金额：%s\n支付方式：%s", sysOrder.UserName, sysOrder.Subject, sysOrder.Price, sysOrder.TotalAmount, sysOrder.PayType))
-	})
+	service.PaymentSuccessfullyOrderHandler(&sysOrder)
 	//返回success以表示服务器接收到了订单通知
 	ctx.String(200, "success")
 

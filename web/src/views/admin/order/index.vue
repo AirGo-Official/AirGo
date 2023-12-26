@@ -38,6 +38,13 @@
         <el-table-column prop="subject" label="商品标题" show-overflow-tooltip width="200" sortable="custom"/>
         <el-table-column prop="total_amount" label="订单金额" show-overflow-tooltip width="100" sortable="custom"/>
         <el-table-column prop="receipt_amount" label="实收金额" show-overflow-tooltip width="100" sortable="custom"/>
+        <el-table-column prop="deliver_type" label="发货状态" show-overflow-tooltip width="100" sortable="custom">
+          <template #default="{row}">
+            <el-tag type="info" v-if="row.deliver_type==='none'">无需发货</el-tag>
+            <el-tag type="success" v-if="row.deliver_type==='auto'">自动发货</el-tag>
+            <el-tag type="warning" v-if="row.deliver_type==='manual'">手动发货</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="trade_status" label="交易状态" show-overflow-tooltip sortable="custom" width="100">
           <template #default="scope">
             <el-tag type="success" v-if="scope.row.trade_status==='TRADE_SUCCESS'">支付成功</el-tag>
@@ -51,6 +58,9 @@
         </el-table-column>
         <el-table-column label="操作" width="100">
           <template #default="scope">
+            <el-button size="small" text type="primary"
+                       @click="onEditOrder(scope.row)">编辑
+            </el-button>
             <el-button v-if="scope.row.trade_status === 'WAIT_BUYER_PAY' || scope.row.trade_status ==='Created'"
                        size="small" text type="primary"
                        @click="onCompleteOrder(scope.row)">完成
@@ -69,6 +79,7 @@
                      @current-change="onHandleCurrentChange">
       </el-pagination>
     </el-card>
+    <DialogEditOrder ref="DialogEditOrderRef"></DialogEditOrder>
   </div>
 </template>
 
@@ -91,6 +102,10 @@ const reportRef = ref()
 const reportStore = useReportStore()
 const reportStoreData = storeToRefs(reportStore)
 
+const DialogEditOrder = defineAsyncComponent(() => import('/@/views/admin/order/dialog_edit.vue'))
+const DialogEditOrderRef = ref()
+
+
 //定义参数
 const state = reactive({
   activeCollapseNames: '1', //当前激活的折叠面板
@@ -99,6 +114,10 @@ const state = reactive({
 //
 const onSearch = () => {
   orderStore.getAllOrder(reportStoreData.reportParams.value)
+}
+//编辑订单
+const onEditOrder=(row: Order)=>{
+  DialogEditOrderRef.value.openDialog(row)
 }
 //完成未支付订单
 const onCompleteOrder=(row: Order)=> {

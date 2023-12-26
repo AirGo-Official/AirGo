@@ -20,7 +20,6 @@ func InitCrontab() {
 		FuncItem{CrontabClearTraffic, "0 0 0 */10 * *", "清理数据库(traffic)定时任务"},
 		FuncItem{CrontabCheckNodeStatus, "0 */2 * * * *", "检查节点状态定时任务"},
 		FuncItem{CrontabUserTrafficReset, "1 0 0 * * *", "用户流量重置定时任务"},
-		FuncItem{CrontabOnlineUsers, "0 * * * * *", "检查在线用户定时任务"},
 	}
 	global.Crontab = cron.New(cron.WithSeconds())
 	for _, v := range funcs {
@@ -64,23 +63,4 @@ func CrontabUserTrafficReset() {
 	if err != nil {
 		global.Logrus.Error("用户流量重置任务 error:", err)
 	}
-}
-func CrontabOnlineUsers() {
-	//fmt.Println("检查在线用户定时任务:", time.Now())
-	global.OnlineUsersMap.Range(func(key, value any) bool {
-		//uid := key.(int64)
-		onlineUserItem := value.(model.OnlineUserItem)
-		onlineUserItem.NodeIPMap.Range(func(key, value any) bool {
-			nodeID := key.(int64)
-			onlineNodeInfo := value.(model.OnlineNodeInfo)
-			//fmt.Println("now:", time.Now())
-			//fmt.Println("last:", onlineNodeInfo.LastUpdateTime)
-			if time.Now().Sub(onlineNodeInfo.LastUpdateTime) > 2*time.Minute {
-				//fmt.Println("删除在线客户点,节点ID：", nodeID)
-				onlineUserItem.NodeIPMap.Delete(nodeID)
-			}
-			return true
-		})
-		return true
-	})
 }

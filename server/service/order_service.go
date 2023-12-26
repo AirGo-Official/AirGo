@@ -58,3 +58,48 @@ func GetOrderStatistics(startTime, endTime time.Time) (*model.OrderStatistics, e
 func DeleteUserAllOrder(user *model.User) error {
 	return global.DB.Where("user_id = ?", user.ID).Delete(&model.Orders{}).Error
 }
+
+// 处理需要发货的订单
+func DeliverOrder(order *model.Orders) error {
+	//查询商品信息
+	goods, err := FindGoodsByGoodsID(order.GoodsID)
+	if err != nil {
+		return err
+	}
+	switch goods.DeliverType {
+	case model.DeliverTypeNone:
+	case model.DeliverTypeManual:
+	case model.DeliverTypeAuto:
+		order.DeliverText = goods.DeliverText
+	}
+	return UpdateOrder(order) //更新数据库订单状态
+}
+
+// 处理支付成功后的订单
+func PaymentSuccessfullyOrderHandler(order *model.Orders) {
+	switch order.GoodsType {
+	case model.GoodsTypeGeneral: //普通商品
+		DeliverOrder(order)
+	case model.GoodsTypeSubscribe: //订阅
+		global.GoroutinePool.Submit(func() {
+			_ = UpdateUserSubscribe(order) //更新用户订阅信息
+		})
+		global.GoroutinePool.Submit(func() {
+			_ = RemainHandle(order.UserID, order.RemainAmount) //处理用户余额
+		})
+		global.GoroutinePool.Submit(func() {
+			_ = UpdateOrder(order) //更新数据库订单状态
+		})
+	case model.GoodsTypeRecharge: //充值
+		global.GoroutinePool.Submit(func() {
+			_ = RechargeHandle(order) //处理用户余额
+		})
+		global.GoroutinePool.Submit(func() {
+			_ = UpdateOrder(order) //更新数据库订单状态
+		})
+	}
+	//通知
+	global.GoroutinePool.Submit(func() {
+		UnifiedPushMessage(fmt.Sprintf("用户：%s\n购买：%s\n销售价格：%s\n订单金额：%s\n支付方式：%s", order.UserName, order.Subject, order.Price, order.TotalAmount, order.PayType))
+	})
+}

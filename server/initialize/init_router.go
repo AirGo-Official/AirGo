@@ -147,7 +147,7 @@ func InitRouter() {
 	}
 	shopAdminRouter := RouterGroup.Group("/shop").Use(middleware.ParseJwt(), middleware.Casbin())
 	{
-		shopAdminRouter.GET("/getAllEnabledGoods", api.GetAllEnabledGoods) // 查询全部已启用商品
+		shopAdminRouter.GET("/getAllEnabledGoods", api.GetAllEnabledGoods) //查询全部已启用商品
 		shopAdminRouter.GET("/getAllGoods", api.GetAllGoods)               //查询全部商品
 		shopAdminRouter.POST("/newGoods", api.NewGoods)                    //新建商品
 		shopAdminRouter.POST("/deleteGoods", api.DeleteGoods)              //删除商品
@@ -165,6 +165,7 @@ func InitRouter() {
 		orderAdminRouter.POST("/getAllOrder", api.GetAllOrder)                         //获取全部订单，分页获取
 		orderAdminRouter.POST("/completedOrder", api.CompletedOrder)                   //完成订单
 		orderAdminRouter.POST("/getMonthOrderStatistics", api.GetMonthOrderStatistics) //获取订单统计
+		orderAdminRouter.POST("/updateUserOrder", api.UpdateUserOrder)                 //更新用户订单
 	}
 	//支付
 	payRouter := RouterGroup.Group("/pay").Use(middleware.RateLimitIP(), middleware.ParseJwt(), middleware.Casbin(), middleware.RateLimitVisit())

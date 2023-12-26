@@ -371,11 +371,9 @@ func InsertIntoGoods() error {
 	return nil
 }
 func InsertIntoNode() error {
-	key1 := utils.RandomString(32)
-	key2 := utils.RandomString(32)
 	nodeData := []model.Node{
-		{ID: 1, Remarks: "测试节点1", Address: "www.10010.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, ServerKey: key1, TrafficRate: 1},
-		{ID: 2, Remarks: "测试节点2", Address: "www.10086.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, ServerKey: key2, TrafficRate: 1},
+		{ID: 1, Remarks: "测试节点1", Address: "www.10010.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, TrafficRate: 1},
+		{ID: 2, Remarks: "测试节点2", Address: "www.10086.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, TrafficRate: 1},
 	}
 	if err := global.DB.Create(&nodeData).Error; err != nil {
 		return errors.New("node表数据初始化失败!")
@@ -463,106 +461,107 @@ func InsertIntoCasbinRule() error {
 		{ID: 49, Ptype: "p", V0: "1", V1: apiPre + "/order/getOrderByUserID", V2: "POST"},
 		{ID: 50, Ptype: "p", V0: "1", V1: apiPre + "/order/completedOrder", V2: "POST"},
 		{ID: 51, Ptype: "p", V0: "1", V1: apiPre + "/order/getMonthOrderStatistics", V2: "POST"},
+		{ID: 52, Ptype: "p", V0: "1", V1: apiPre + "/order/updateUserOrder", V2: "POST"},
 
 		//server
-		{ID: 52, Ptype: "p", V0: "1", V1: apiPre + "/server/updateThemeConfig", V2: "POST"},
-		{ID: 53, Ptype: "p", V0: "1", V1: apiPre + "/server/getSetting", V2: "GET"},
-		{ID: 54, Ptype: "p", V0: "1", V1: apiPre + "/server/updateSetting", V2: "POST"},
+		{ID: 53, Ptype: "p", V0: "1", V1: apiPre + "/server/updateThemeConfig", V2: "POST"},
+		{ID: 54, Ptype: "p", V0: "1", V1: apiPre + "/server/getSetting", V2: "GET"},
+		{ID: 55, Ptype: "p", V0: "1", V1: apiPre + "/server/updateSetting", V2: "POST"},
 
 		//upload
-		{ID: 55, Ptype: "p", V0: "1", V1: apiPre + "/upload/newPictureUrl", V2: "POST"},
-		{ID: 56, Ptype: "p", V0: "1", V1: apiPre + "/upload/getPictureList", V2: "POST"},
+		{ID: 56, Ptype: "p", V0: "1", V1: apiPre + "/upload/newPictureUrl", V2: "POST"},
+		{ID: 57, Ptype: "p", V0: "1", V1: apiPre + "/upload/getPictureList", V2: "POST"},
 
 		//ws
-		{ID: 57, Ptype: "p", V0: "1", V1: apiPre + "/websocket/msg", V2: "GET"},
+		{ID: 58, Ptype: "p", V0: "1", V1: apiPre + "/websocket/msg", V2: "GET"},
 
 		//article
-		{ID: 58, Ptype: "p", V0: "1", V1: apiPre + "/article/newArticle", V2: "POST"},
-		{ID: 59, Ptype: "p", V0: "1", V1: apiPre + "/article/deleteArticle", V2: "POST"},
-		{ID: 60, Ptype: "p", V0: "1", V1: apiPre + "/article/updateArticle", V2: "POST"},
-		{ID: 61, Ptype: "p", V0: "1", V1: apiPre + "/article/getArticle", V2: "POST"},
+		{ID: 59, Ptype: "p", V0: "1", V1: apiPre + "/article/newArticle", V2: "POST"},
+		{ID: 60, Ptype: "p", V0: "1", V1: apiPre + "/article/deleteArticle", V2: "POST"},
+		{ID: 61, Ptype: "p", V0: "1", V1: apiPre + "/article/updateArticle", V2: "POST"},
+		{ID: 62, Ptype: "p", V0: "1", V1: apiPre + "/article/getArticle", V2: "POST"},
 
 		//report
-		{ID: 62, Ptype: "p", V0: "1", V1: apiPre + "/report/getDB", V2: "GET"},
-		{ID: 63, Ptype: "p", V0: "1", V1: apiPre + "/report/getTables", V2: "POST"},
-		{ID: 64, Ptype: "p", V0: "1", V1: apiPre + "/report/getColumn", V2: "POST"},
-		{ID: 65, Ptype: "p", V0: "1", V1: apiPre + "/report/reportSubmit", V2: "POST"},
+		{ID: 63, Ptype: "p", V0: "1", V1: apiPre + "/report/getDB", V2: "GET"},
+		{ID: 64, Ptype: "p", V0: "1", V1: apiPre + "/report/getTables", V2: "POST"},
+		{ID: 65, Ptype: "p", V0: "1", V1: apiPre + "/report/getColumn", V2: "POST"},
+		{ID: 66, Ptype: "p", V0: "1", V1: apiPre + "/report/reportSubmit", V2: "POST"},
 
 		//coupon
-		{ID: 66, Ptype: "p", V0: "1", V1: apiPre + "/coupon/newCoupon", V2: "POST"},
-		{ID: 67, Ptype: "p", V0: "1", V1: apiPre + "/coupon/deleteCoupon", V2: "POST"},
-		{ID: 68, Ptype: "p", V0: "1", V1: apiPre + "/coupon/updateCoupon", V2: "POST"},
-		{ID: 69, Ptype: "p", V0: "1", V1: apiPre + "/coupon/getCoupon", V2: "POST"},
+		{ID: 67, Ptype: "p", V0: "1", V1: apiPre + "/coupon/newCoupon", V2: "POST"},
+		{ID: 68, Ptype: "p", V0: "1", V1: apiPre + "/coupon/deleteCoupon", V2: "POST"},
+		{ID: 69, Ptype: "p", V0: "1", V1: apiPre + "/coupon/updateCoupon", V2: "POST"},
+		{ID: 70, Ptype: "p", V0: "1", V1: apiPre + "/coupon/getCoupon", V2: "POST"},
 
 		//isp
-		{ID: 70, Ptype: "p", V0: "1", V1: apiPre + "/isp/sendCode", V2: "POST"},
-		{ID: 71, Ptype: "p", V0: "1", V1: apiPre + "/isp/ispLogin", V2: "POST"},
-		{ID: 72, Ptype: "p", V0: "1", V1: apiPre + "/isp/getMonitorByUserID", V2: "POST"},
+		{ID: 71, Ptype: "p", V0: "1", V1: apiPre + "/isp/sendCode", V2: "POST"},
+		{ID: 72, Ptype: "p", V0: "1", V1: apiPre + "/isp/ispLogin", V2: "POST"},
+		{ID: 73, Ptype: "p", V0: "1", V1: apiPre + "/isp/getMonitorByUserID", V2: "POST"},
 
 		//pay
-		{ID: 73, Ptype: "p", V0: "1", V1: apiPre + "/pay/getEnabledPayList", V2: "GET"},
-		{ID: 74, Ptype: "p", V0: "1", V1: apiPre + "/pay/getPayList", V2: "GET"},
-		{ID: 75, Ptype: "p", V0: "1", V1: apiPre + "/pay/newPay", V2: "POST"},
-		{ID: 76, Ptype: "p", V0: "1", V1: apiPre + "/pay/deletePay", V2: "POST"},
-		{ID: 77, Ptype: "p", V0: "1", V1: apiPre + "/pay/updatePay", V2: "POST"},
+		{ID: 74, Ptype: "p", V0: "1", V1: apiPre + "/pay/getEnabledPayList", V2: "GET"},
+		{ID: 75, Ptype: "p", V0: "1", V1: apiPre + "/pay/getPayList", V2: "GET"},
+		{ID: 76, Ptype: "p", V0: "1", V1: apiPre + "/pay/newPay", V2: "POST"},
+		{ID: 77, Ptype: "p", V0: "1", V1: apiPre + "/pay/deletePay", V2: "POST"},
+		{ID: 78, Ptype: "p", V0: "1", V1: apiPre + "/pay/updatePay", V2: "POST"},
 
 		//access
-		{ID: 78, Ptype: "p", V0: "1", V1: apiPre + "/access/newRoutes", V2: "POST"},
-		{ID: 79, Ptype: "p", V0: "1", V1: apiPre + "/access/updateRoutes", V2: "POST"},
-		{ID: 80, Ptype: "p", V0: "1", V1: apiPre + "/access/deleteRoutes", V2: "POST"},
-		{ID: 81, Ptype: "p", V0: "1", V1: apiPre + "/access/getRoutesList", V2: "POST"},
+		{ID: 79, Ptype: "p", V0: "1", V1: apiPre + "/access/newRoutes", V2: "POST"},
+		{ID: 80, Ptype: "p", V0: "1", V1: apiPre + "/access/updateRoutes", V2: "POST"},
+		{ID: 81, Ptype: "p", V0: "1", V1: apiPre + "/access/deleteRoutes", V2: "POST"},
+		{ID: 82, Ptype: "p", V0: "1", V1: apiPre + "/access/getRoutesList", V2: "POST"},
 
 		//migration
-		{ID: 82, Ptype: "p", V0: "1", V1: apiPre + "/migration/fromOther", V2: "POST"},
+		{ID: 83, Ptype: "p", V0: "1", V1: apiPre + "/migration/fromOther", V2: "POST"},
 
 		//ticket
-		{ID: 83, Ptype: "p", V0: "1", V1: apiPre + "/ticket/newTicket", V2: "POST"},
-		{ID: 84, Ptype: "p", V0: "1", V1: apiPre + "/ticket/deleteTicket", V2: "POST"},
-		{ID: 85, Ptype: "p", V0: "1", V1: apiPre + "/ticket/updateTicket", V2: "POST"},
-		{ID: 86, Ptype: "p", V0: "1", V1: apiPre + "/ticket/updateUserTicket", V2: "POST"},
-		{ID: 87, Ptype: "p", V0: "1", V1: apiPre + "/ticket/getUserTicketList", V2: "POST"},
-		{ID: 88, Ptype: "p", V0: "1", V1: apiPre + "/ticket/getTicketList", V2: "POST"},
-		{ID: 89, Ptype: "p", V0: "1", V1: apiPre + "/ticket/sendTicketMessage", V2: "POST"},
-		{ID: 90, Ptype: "p", V0: "1", V1: apiPre + "/ticket/getTicketMessage", V2: "POST"},
+		{ID: 84, Ptype: "p", V0: "1", V1: apiPre + "/ticket/newTicket", V2: "POST"},
+		{ID: 85, Ptype: "p", V0: "1", V1: apiPre + "/ticket/deleteTicket", V2: "POST"},
+		{ID: 86, Ptype: "p", V0: "1", V1: apiPre + "/ticket/updateTicket", V2: "POST"},
+		{ID: 87, Ptype: "p", V0: "1", V1: apiPre + "/ticket/updateUserTicket", V2: "POST"},
+		{ID: 88, Ptype: "p", V0: "1", V1: apiPre + "/ticket/getUserTicketList", V2: "POST"},
+		{ID: 89, Ptype: "p", V0: "1", V1: apiPre + "/ticket/getTicketList", V2: "POST"},
+		{ID: 90, Ptype: "p", V0: "1", V1: apiPre + "/ticket/sendTicketMessage", V2: "POST"},
+		{ID: 91, Ptype: "p", V0: "1", V1: apiPre + "/ticket/getTicketMessage", V2: "POST"},
 
 		//普通用户权限
-		{ID: 91, Ptype: "p", V0: "2", V1: apiPre + "/user/changeUserPassword", V2: "POST"},
-		{ID: 92, Ptype: "p", V0: "2", V1: apiPre + "/user/getUserInfo", V2: "GET"},
-		{ID: 93, Ptype: "p", V0: "2", V1: apiPre + "/user/resetSub", V2: "GET"},
-		{ID: 94, Ptype: "p", V0: "2", V1: apiPre + "/user/changeSubHost", V2: "POST"},
-		{ID: 95, Ptype: "p", V0: "2", V1: apiPre + "/user/clockin", V2: "GET"},
-		{ID: 96, Ptype: "p", V0: "2", V1: apiPre + "/user/getUserTraffic", V2: "POST"},
-		{ID: 97, Ptype: "p", V0: "2", V1: apiPre + "/user/getAllUserTraffic", V2: "POST"},
+		{ID: 92, Ptype: "p", V0: "2", V1: apiPre + "/user/changeUserPassword", V2: "POST"},
+		{ID: 93, Ptype: "p", V0: "2", V1: apiPre + "/user/getUserInfo", V2: "GET"},
+		{ID: 94, Ptype: "p", V0: "2", V1: apiPre + "/user/resetSub", V2: "GET"},
+		{ID: 95, Ptype: "p", V0: "2", V1: apiPre + "/user/changeSubHost", V2: "POST"},
+		{ID: 96, Ptype: "p", V0: "2", V1: apiPre + "/user/clockin", V2: "GET"},
+		{ID: 97, Ptype: "p", V0: "2", V1: apiPre + "/user/getUserTraffic", V2: "POST"},
+		{ID: 98, Ptype: "p", V0: "2", V1: apiPre + "/user/getAllUserTraffic", V2: "POST"},
 
-		{ID: 98, Ptype: "p", V0: "2", V1: apiPre + "/menu/getRouteList", V2: "GET"},
-		{ID: 99, Ptype: "p", V0: "2", V1: apiPre + "/menu/getRouteTree", V2: "GET"},
+		{ID: 99, Ptype: "p", V0: "2", V1: apiPre + "/menu/getRouteList", V2: "GET"},
+		{ID: 100, Ptype: "p", V0: "2", V1: apiPre + "/menu/getRouteTree", V2: "GET"},
 
-		{ID: 100, Ptype: "p", V0: "2", V1: apiPre + "/order/getOrderInfo", V2: "POST"},
-		{ID: 101, Ptype: "p", V0: "2", V1: apiPre + "/order/getOrderByUserID", V2: "POST"},
+		{ID: 101, Ptype: "p", V0: "2", V1: apiPre + "/order/getOrderInfo", V2: "POST"},
+		{ID: 102, Ptype: "p", V0: "2", V1: apiPre + "/order/getOrderByUserID", V2: "POST"},
 
-		{ID: 102, Ptype: "p", V0: "2", V1: apiPre + "/shop/preCreatePay", V2: "POST"},
-		{ID: 103, Ptype: "p", V0: "2", V1: apiPre + "/shop/purchase", V2: "POST"},
-		{ID: 104, Ptype: "p", V0: "2", V1: apiPre + "/shop/getAllEnabledGoods", V2: "GET"},
-		{ID: 105, Ptype: "p", V0: "2", V1: apiPre + "/shop/findGoods", V2: "POST"},
+		{ID: 103, Ptype: "p", V0: "2", V1: apiPre + "/shop/preCreatePay", V2: "POST"},
+		{ID: 104, Ptype: "p", V0: "2", V1: apiPre + "/shop/purchase", V2: "POST"},
+		{ID: 105, Ptype: "p", V0: "2", V1: apiPre + "/shop/getAllEnabledGoods", V2: "GET"},
+		{ID: 106, Ptype: "p", V0: "2", V1: apiPre + "/shop/findGoods", V2: "POST"},
 
-		{ID: 106, Ptype: "p", V0: "2", V1: apiPre + "/websocket/msg", V2: "GET"},
+		{ID: 107, Ptype: "p", V0: "2", V1: apiPre + "/websocket/msg", V2: "GET"},
 
-		{ID: 107, Ptype: "p", V0: "2", V1: apiPre + "/upload/newPictureUrl", V2: "POST"},
-		{ID: 108, Ptype: "p", V0: "2", V1: apiPre + "/upload/getPictureList", V2: "POST"},
+		{ID: 108, Ptype: "p", V0: "2", V1: apiPre + "/upload/newPictureUrl", V2: "POST"},
+		{ID: 109, Ptype: "p", V0: "2", V1: apiPre + "/upload/getPictureList", V2: "POST"},
 
-		{ID: 109, Ptype: "p", V0: "2", V1: apiPre + "/article/getArticle", V2: "POST"},
+		{ID: 110, Ptype: "p", V0: "2", V1: apiPre + "/article/getArticle", V2: "POST"},
 
-		{ID: 110, Ptype: "p", V0: "2", V1: apiPre + "/isp/sendCode", V2: "POST"},
-		{ID: 111, Ptype: "p", V0: "2", V1: apiPre + "/isp/ispLogin", V2: "POST"},
-		{ID: 112, Ptype: "p", V0: "2", V1: apiPre + "/isp/getMonitorByUserID", V2: "POST"},
+		{ID: 111, Ptype: "p", V0: "2", V1: apiPre + "/isp/sendCode", V2: "POST"},
+		{ID: 112, Ptype: "p", V0: "2", V1: apiPre + "/isp/ispLogin", V2: "POST"},
+		{ID: 113, Ptype: "p", V0: "2", V1: apiPre + "/isp/getMonitorByUserID", V2: "POST"},
 
-		{ID: 113, Ptype: "p", V0: "2", V1: apiPre + "/pay/getEnabledPayList", V2: "GET"},
+		{ID: 114, Ptype: "p", V0: "2", V1: apiPre + "/pay/getEnabledPayList", V2: "GET"},
 
-		{ID: 114, Ptype: "p", V0: "2", V1: apiPre + "/ticket/newTicket", V2: "POST"},
-		{ID: 115, Ptype: "p", V0: "2", V1: apiPre + "/ticket/getUserTicketList", V2: "POST"},
-		{ID: 116, Ptype: "p", V0: "2", V1: apiPre + "/ticket/updateUserTicket", V2: "POST"},
-		{ID: 117, Ptype: "p", V0: "2", V1: apiPre + "/ticket/sendTicketMessage", V2: "POST"},
-		{ID: 118, Ptype: "p", V0: "2", V1: apiPre + "/ticket/getTicketMessage", V2: "POST"},
+		{ID: 115, Ptype: "p", V0: "2", V1: apiPre + "/ticket/newTicket", V2: "POST"},
+		{ID: 116, Ptype: "p", V0: "2", V1: apiPre + "/ticket/getUserTicketList", V2: "POST"},
+		{ID: 117, Ptype: "p", V0: "2", V1: apiPre + "/ticket/updateUserTicket", V2: "POST"},
+		{ID: 118, Ptype: "p", V0: "2", V1: apiPre + "/ticket/sendTicketMessage", V2: "POST"},
+		{ID: 119, Ptype: "p", V0: "2", V1: apiPre + "/ticket/getTicketMessage", V2: "POST"},
 	}
 	if err := global.DB.Create(&casbinRuleData).Error; err != nil {
 		return errors.New("casbin_rule表数据初始化失败!")

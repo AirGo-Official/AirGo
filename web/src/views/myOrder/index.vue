@@ -1,7 +1,8 @@
 <template>
   <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
-      <el-table :data="orderPersonal.allOrders.order_list" stripe fit height="100%" style="width: 100%;" @sort-change="sortChange">
+      <el-table :data="orderPersonal.allOrders.order_list" stripe fit height="100%" style="width: 100%;"
+                @sort-change="sortChange">
         <el-table-column type="index" label="序号" fixed width="60px"/>
         <el-table-column prop="out_trade_no" label="订单号" width="200" sortable="custom"/>
         <el-table-column prop="id" label="订单ID" width="100px" sortable="custom"/>
@@ -26,8 +27,11 @@
             <el-tag type="danger" v-else>未知状态</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="200">
           <template #default="scope">
+            <el-button size="small" text type="primary"
+                       @click="showOrderInfo(scope.row)">详情
+            </el-button>
             <el-button v-if="scope.row.trade_status === 'WAIT_BUYER_PAY' || scope.row.trade_status === 'Created'"
                        size="small" text type="primary"
                        @click="toPay(scope.row)">去支付
@@ -50,6 +54,8 @@
     <PurchaseDialog ref="PurchaseDialogRef" @openQRDialog="openQRDialog"></PurchaseDialog>
     <!-- 引入二维码弹窗 -->
     <QRDialog ref="QRDialogRef"></QRDialog>
+    <!--    订单详情弹窗-->
+    <DialogShowOrderInfo ref="DialogShowOrderInfoRef"></DialogShowOrderInfo>
   </div>
 </template>
 
@@ -58,7 +64,6 @@ import {storeToRefs} from "pinia";
 import {defineAsyncComponent, onBeforeMount, onMounted, ref} from "vue";
 import {useOrderStore} from "/@/stores/orderStore";
 import {useShopStore} from "/@/stores/shopStore";
-import {isMobile} from "/@/utils/other";
 import {DateStrtoTime} from "/@/utils/formatTime"
 import {useReportStore} from "/@/stores/reportStore";
 
@@ -73,8 +78,11 @@ const QRDialogRef = ref()
 const reportStore = useReportStore()
 const reportStoreData = storeToRefs(reportStore)
 
+const DialogShowOrderInfo = defineAsyncComponent(() => import('/@/views/myOrder/show_order_info.vue'))
+const DialogShowOrderInfoRef = ref()
+
 //
-const getUserOrders=()=>{
+const getUserOrders = () => {
   orderStore.getOrder(reportStoreData.reportParams.value)
 }
 // 分页改变
@@ -92,14 +100,14 @@ const sortChange = (column: any) => {
   //处理嵌套字段
   let p = (column.prop as string)
   if (p.indexOf('.') !== -1) {
-    p = p.slice(p.indexOf('.')+1)
+    p = p.slice(p.indexOf('.') + 1)
   }
-  switch (column.order){
+  switch (column.order) {
     case 'ascending':
-      reportStoreData.reportParams.value.pagination.order_by=p+" ASC"
+      reportStoreData.reportParams.value.pagination.order_by = p + " ASC"
       break
     default:
-      reportStoreData.reportParams.value.pagination.order_by=p+" DESC"
+      reportStoreData.reportParams.value.pagination.order_by = p + " DESC"
       break
   }
   getUserOrders()
@@ -108,7 +116,14 @@ const sortChange = (column: any) => {
 const defaultFieldParams = () => {
   reportStoreData.reportParams.value.table_name = 'orders'
   reportStoreData.reportParams.value.field_params_list = [
-    {field: 'out_trade_no', field_chinese_name: '', field_type: '', condition: 'like', condition_value: '', operator: '',} as FieldParams]
+    {
+      field: 'out_trade_no',
+      field_chinese_name: '',
+      field_type: '',
+      condition: 'like',
+      condition_value: '',
+      operator: '',
+    } as FieldParams]
   reportStoreData.reportParams.value.pagination = {page_num: 1, page_size: 30, order_by: 'id DESC',} as Pagination
 }
 //
@@ -118,6 +133,11 @@ onBeforeMount(() => {
 onMounted(() => {
   getUserOrders()
 });
+//
+const showOrderInfo=(row:Order)=>{
+  DialogShowOrderInfoRef.value.openDialog(row)
+
+}
 
 //去支付流程
 const toPay = (row: Order) => {
@@ -140,6 +160,7 @@ const openQRDialog = () => {
     flex-direction: column;
     flex: 1;
     overflow: auto;
+
     .el-table {
       flex: 1;
     }

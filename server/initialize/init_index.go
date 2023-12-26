@@ -11,11 +11,11 @@ import (
 	"github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/logrus_plugin"
 	"github.com/ppoonk/AirGo/utils/mail_plugin"
+	queue "github.com/ppoonk/AirGo/utils/queue_plugin"
 	"github.com/ppoonk/AirGo/utils/time_plugin"
 	"github.com/ppoonk/AirGo/utils/websocket_plugin"
 	"github.com/songzhibin97/gkit/cache/local_cache"
 	"github.com/yudeguang/ratelimit"
-	"sync"
 	"time"
 )
 
@@ -48,7 +48,6 @@ func InitializeAll() {
 
 	InitContextGroup() //
 	InitTGBot()        //初始化tg bot
-	InitOnlineUsers()  //
 	InitCrontab()      //定时任务
 	InitRouter()       //初始总路由，放在最后
 
@@ -70,23 +69,30 @@ func InitializeUpdate() {
 	var funcs = []func() error{
 		func() error {
 			fmt.Println("升级数据库casbin_rule表")
-			return global.DB.Where("id > 0").Delete(&gormadapter.CasbinRule{}).Error
-		},
-		func() error {
+			err := global.DB.Where("id > 0").Delete(&gormadapter.CasbinRule{}).Error
+			if err != nil {
+				return err
+			}
 			return InsertIntoCasbinRule()
 		},
 		func() error {
-			fmt.Println("升级数据库菜单")
-			return global.DB.Where("id > 0").Delete(&model.DynamicRoute{}).Error
-		},
-		func() error {
-			return InsertIntoDynamicRoute()
-		},
-		func() error {
 			fmt.Println("升级角色和菜单")
-			return global.DB.Where("role_id > 0").Delete(&model.RoleAndMenu{}).Error
-		},
-		func() error {
+			//先删除role_and_menu
+			err := global.DB.Where("role_id > 0").Delete(&model.RoleAndMenu{}).Error
+			if err != nil {
+				return err
+			}
+			//再删除菜单
+			err = global.DB.Where("id > 0").Delete(&model.DynamicRoute{}).Error
+			if err != nil {
+				return err
+			}
+			//插入新的菜单
+			err = InsertIntoDynamicRoute()
+			if err != nil {
+				return err
+			}
+			//插入新的role_and_menu
 			return InsertIntoRoleAndMenu()
 		},
 		//临时代码，处理之前版本删除节点遗留的数据库垃圾数据
@@ -103,7 +109,6 @@ func InitializeUpdate() {
 	for _, v := range funcs {
 		err := v()
 		if err != nil {
-			global.Logrus.Error(err.Error())
 			fmt.Println("升级核心出错：", err.Error())
 			return
 		}
@@ -181,6 +186,6 @@ func InitContextGroup() {
 func InitTGBot() {
 	service.TGBotStartListen()
 }
-func InitOnlineUsers() {
-	global.OnlineUsersMap = new(sync.Map)
+func InitQueue() {
+	global.Queue = queue.NewQueue()
 }

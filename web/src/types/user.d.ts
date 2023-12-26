@@ -30,7 +30,6 @@ declare interface SysUser {
         node_speedlimit: number;
         node_connector: number;
     }
-    online_user_info: OnlineUserInfo;
 }
 
 // 登录
@@ -50,16 +49,6 @@ declare interface RegisterForm {
     email_code: string
     referrer_code: string
     base64_captcha: Base64CaptchaInfo
-}
-
-//
-declare interface OnlineUserInfo {
-    node_connector: number;
-    node_ip_map: {},
-}
-declare interface OnlineNodeInfo{
-    node_ip:[]
-    last_update_time:string
 }
 //
 declare interface Base64CaptchaInfo {

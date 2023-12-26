@@ -52,7 +52,7 @@ func GetNodeTraffic(params *model.FieldParamsReq) (*model.NodesWithTotal, error)
 // 获取 node status，用于探针
 func GetNodesStatus() *[]model.NodeStatus {
 	var nodesIds []model.Node
-	global.DB.Model(&model.Node{}).Select("id", "remarks", "traffic_rate").Where("enabled = ?", true).Order("node_order").Find(&nodesIds)
+	global.DB.Model(&model.Node{}).Select("id", "remarks", "traffic_rate").Where("enabled = ? AND enable_transfer = ?", true, false).Order("node_order").Find(&nodesIds)
 	var nodestatusArr []model.NodeStatus
 	for _, v := range nodesIds {
 		var nodeStatus = model.NodeStatus{}
@@ -83,6 +83,25 @@ func UpdateNode(node *model.Node) error {
 	global.DB.Model(&node).Association("Access").Replace(&node.Access)
 	//更新节点
 	err := global.DB.Save(&node).Error
+	//更新节点绑定的中转
+	if !node.EnableTransfer { //当前更新的节点是一个落地直连节点
+		var nodeArr []model.Node
+		global.DB.Debug().Where("transfer_node_id = ?", node.ID).Find(&nodeArr)
+		if len(nodeArr) > 0 {
+			for k, v := range nodeArr { //遍历中转节点
+				temp := *node
+				temp.ID = v.ID
+				temp.CreatedAt, temp.UpdatedAt = v.CreatedAt, v.UpdatedAt
+				temp.Remarks = v.Remarks
+				temp.EnableTransfer = true
+				temp.TransferNodeID = v.TransferNodeID
+				temp.TransferAddress = v.TransferAddress
+				temp.TransferPort = v.TransferPort
+				nodeArr[k] = temp
+			}
+			global.DB.Save(&nodeArr)
+		}
+	}
 	return err
 }
 

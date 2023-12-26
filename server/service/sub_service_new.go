@@ -17,7 +17,6 @@ import (
 )
 
 func GetUserSubNew(url string, clientType string) string {
-	fmt.Println("clientType:", clientType)
 	var nodeArr, nodeList []model.Node
 	//查找用户
 	var u model.User
@@ -32,7 +31,6 @@ func GetUserSubNew(url string, clientType string) string {
 	expiredTime := u.SubscribeInfo.ExpiredAt.Format("2006-01-02")
 	expiredBd1 := (float64(u.SubscribeInfo.T - u.SubscribeInfo.U - u.SubscribeInfo.D)) / 1024 / 1024 / 1024
 	expiredBd2 := strconv.FormatFloat(expiredBd1, 'f', 2, 64)
-
 	var firstNode, secondNode model.Node
 	if len(goods.Nodes) > 0 {
 		firstNode = goods.Nodes[0]

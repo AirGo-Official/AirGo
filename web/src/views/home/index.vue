@@ -17,19 +17,6 @@
                          v-if="userInfos.subscribe_info.sub_status">有效
               </el-button>
               <el-button type="info" class="card-text-right" style="font-size:20px" v-else>已过期</el-button>
-              <el-popover
-                  placement="top-start"
-                  title="在线设备IP"
-                  width="80%"
-                  trigger="hover"
-                  :content="userStoreData.onlineDeviceInfo.value"
-              >
-                <template #reference>
-                  <el-button type="info" @click="showOnlineDeviceInfo" class="card-text-right">
-                    在线：{{ userStoreData.onlineDevice.value }}/{{ userInfos.subscribe_info.node_connector }}
-                  </el-button>
-                </template>
-              </el-popover>
             </div>
             <div class="card-text">
               <el-tag class="card-text-left">到期时间:</el-tag>
@@ -342,10 +329,6 @@ const onInitQrcode = () => {
     colorDark: '#0a55f8',
     colorLight: 'rgb(255,255,255)',
   });
-}
-//显示在线客户端
-const showOnlineDeviceInfo = () => {
-  userStore.showOnlineDeviceInfo()
 }
 //初始化时间间隔
 const initDuration = () => {

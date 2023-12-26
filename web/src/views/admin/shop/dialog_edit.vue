@@ -15,38 +15,8 @@
           <span class="text-gray-500">RMB</span>
         </el-col>
       </el-form-item>
-      <el-form-item label="总流量">
-        <el-col :span="4">
-          <el-input-number v-model.number="goodsManageData.currentGoods.total_bandwidth" type="number"/>
-        </el-col>
-        <el-col :span="2" style="text-align: center">
-          <span>-</span>
-        </el-col>
-        <el-col :span="18">
-          <span class="text-gray-500">GB</span>
-        </el-col>
-      </el-form-item>
-      <el-form-item label="有效期">
-        <el-col :span="4">
-          <el-input-number v-model.number="goodsManageData.currentGoods.expiration_date" type="number"/>
-        </el-col>
-        <el-col :span="2" style="text-align: center">
-          <span>-</span>
-        </el-col>
-        <el-col :span="18">
-          <span class="text-gray-500">天</span>
-        </el-col>
-      </el-form-item>
-      <el-form-item label="流量重置日">
-        <el-col :span="4">
-          <el-input-number v-model.number="goodsManageData.currentGoods.reset_day" type="number"/>
-        </el-col>
-        <el-col :span="2" style="text-align: center">
-          <span>-</span>
-        </el-col>
-        <el-col :span="18">
-          <span class="text-gray-500">日</span>
-        </el-col>
+      <el-form-item label="描述">
+        <v-md-editor v-model="goodsManageData.currentGoods.des" height="400px"></v-md-editor>
       </el-form-item>
       <el-form-item label="是否显示">
         <el-col :span="4">
@@ -54,27 +24,89 @@
                      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
         </el-col>
       </el-form-item>
-      <el-form-item label="流量重置方式">
-        <el-radio-group v-model="goodsManageData.currentGoods.traffic_reset_method" class="ml-4">
-          <el-radio label="Stack" >叠加</el-radio>
-          <el-radio label="NotStack" >不叠加</el-radio>
+      <el-form-item label="商品类型">
+        <el-radio-group v-model="goodsManageData.currentGoods.goods_type">
+          <el-radio label="general">普通商品</el-radio>
+          <el-radio label="subscribe">订阅</el-radio>
+          <el-radio label="recharge">充值</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="关联节点">
-        <el-transfer
-            :data="nodeManageData.nodes.node_list"
-            v-model="goodsManageData.currentGoods.checked_nodes"
-            :right-default-checked="goodsManageData.currentGoods.checked_nodes"
-            :props="{
+      <!--      发货参数开始-->
+      <div v-if="goodsManageData.currentGoods.goods_type === 'general'">
+        <el-form-item label="发货类型">
+          <el-radio-group v-model="goodsManageData.currentGoods.deliver_type">
+            <el-radio label="none">无需发货</el-radio>
+            <el-radio label="manual">手动发货</el-radio>
+            <el-radio label="auto">自动发货</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="发货内容" v-if="goodsManageData.currentGoods.deliver_type === 'auto'">
+          <v-md-editor v-model="goodsManageData.currentGoods.deliver_text" height="400px"></v-md-editor>
+        </el-form-item>
+      </div>
+      <!--      发货参数结束-->
+      <!--      订阅商品开始-->
+      <div v-if="goodsManageData.currentGoods.goods_type === 'subscribe'">
+        <el-form-item label="总流量">
+          <el-col :span="4">
+            <el-input-number v-model.number="goodsManageData.currentGoods.total_bandwidth" type="number"/>
+          </el-col>
+          <el-col :span="2" style="text-align: center">
+            <span>-</span>
+          </el-col>
+          <el-col :span="18">
+            <span class="text-gray-500">GB</span>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="有效期">
+          <el-col :span="4">
+            <el-input-number v-model.number="goodsManageData.currentGoods.expiration_date" type="number"/>
+          </el-col>
+          <el-col :span="2" style="text-align: center">
+            <span>-</span>
+          </el-col>
+          <el-col :span="18">
+            <span class="text-gray-500">天</span>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="流量重置日">
+          <el-col :span="4">
+            <el-input-number v-model.number="goodsManageData.currentGoods.reset_day" type="number"/>
+          </el-col>
+          <el-col :span="2" style="text-align: center">
+            <span>-</span>
+          </el-col>
+          <el-col :span="18">
+            <span class="text-gray-500">日</span>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="流量重置方式">
+          <el-radio-group v-model="goodsManageData.currentGoods.traffic_reset_method" class="ml-4">
+            <el-radio label="Stack">叠加</el-radio>
+            <el-radio label="NotStack">不叠加</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="关联节点">
+          <el-transfer
+              :data="nodeManageData.nodes.node_list"
+              v-model="goodsManageData.currentGoods.checked_nodes"
+              :right-default-checked="goodsManageData.currentGoods.checked_nodes"
+              :props="{
                   key: 'id',
                   label: 'remarks',
                   }"
-            :titles="['全部节点', '选中节点']"
-        />
-      </el-form-item>
-      <el-form-item label="描述">
-        <v-md-editor v-model="goodsManageData.currentGoods.des" height="400px"></v-md-editor>
-      </el-form-item>
+              :titles="['全部节点', '选中节点']"
+          />
+        </el-form-item>
+      </div>
+      <!--      订阅商品结束-->
+      <!--      充值商品开始-->
+      <div v-if="goodsManageData.currentGoods.goods_type === 'recharge'">
+        <el-form-item label="充值金额">
+          <el-input v-model="goodsManageData.currentGoods.recharge_amount" placeholder="100.00"></el-input>
+        </el-form-item>
+      </div>
+      <!--      充值商品结束-->
     </el-form>
     <template #footer>
             <span class="dialog-footer">

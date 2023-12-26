@@ -50,7 +50,7 @@ func GetMailCode(ctx *gin.Context) {
 
 	_, ok = global.LocalCache.Get(u.UserName + "emailcode")
 	if ok {
-		response.Fail("The email verification code is frequently obtained. Please try again in 60 minutes!", nil, ctx)
+		response.Fail("The email verification code is frequently obtained. Please try again in 60 seconds!", nil, ctx)
 		return
 	}
 	//生成验证码

@@ -19,7 +19,7 @@ func CommonSqlFind[T1, T2, T3 any](params T2) (T3, int64, error) {
 		err = global.DB.Model(&modelType).Where(params).Find(&res).Error
 
 	} else {
-		err = global.DB.Model(&modelType).Count(&total).Where(&params).Find(&res).Error
+		err = global.DB.Debug().Model(&modelType).Count(&total).Where(&params).Find(&res).Error
 	}
 	return res, total, err
 }

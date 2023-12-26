@@ -6,6 +6,7 @@ import (
 	"github.com/mojocn/base64Captcha"
 	ants "github.com/panjf2000/ants/v2"
 	"github.com/ppoonk/AirGo/model"
+	queue "github.com/ppoonk/AirGo/utils/queue_plugin"
 	"github.com/ppoonk/AirGo/utils/websocket_plugin"
 	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
@@ -13,7 +14,6 @@ import (
 	"github.com/spf13/viper"
 	"gopkg.in/gomail.v2"
 	"gorm.io/gorm"
-	"sync"
 )
 
 var (
@@ -34,7 +34,7 @@ var (
 	Crontab            *cron.Cron                      //定时任务
 	TGBot              *tgbotapi.BotAPI                //tg bot
 	ContextGroup       *model.ContextGroup             //
-	OnlineUsersMap     *sync.Map                       //
+	Queue              *queue.Queue                    //mini queue
 )
 
 const (

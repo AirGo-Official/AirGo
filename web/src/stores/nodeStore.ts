@@ -194,6 +194,15 @@ export const useNodeStore = defineStore("nodeStore", {
                 access:[],
                 access_ids:[],
             } as NodeInfo,
+            transferInfo: {
+                remarks: '',
+                enabled: true,
+                node_type: 'transfer',
+                enable_transfer: true,
+                transfer_address: '',
+                transfer_port: 0,
+                transfer_node_id: 0,
+            } as NodeInfo,
         },
         //节点状态页面数据
         serverStatusData: {
@@ -266,6 +275,9 @@ export const useNodeStore = defineStore("nodeStore", {
                     break
                 case "hysteria":
                     n = this.dialogData.hysteriaInfo
+                    break
+                case "transfer":
+                    n = this.dialogData.transferInfo
                     break
             }
             return n

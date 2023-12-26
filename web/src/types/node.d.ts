@@ -18,6 +18,7 @@ declare interface NodeInfo {
     enable_transfer: boolean;//是否启用中转
     transfer_address: string;//中转ip
     transfer_port: number;   //中转port
+    transfer_node_id: number; //中转绑定的节点ID
     //流量
     total_up: number;
     total_down: number;

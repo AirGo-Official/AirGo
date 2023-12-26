@@ -15,12 +15,23 @@ export const useShopStore = defineStore("shopStore", {
             currentGoods: {
                 subject: "新套餐",
                 total_amount: "0.00",
+                good_order: 0,
+                status: true,
+                des: '<h3 style="color:#00BFFF">究竟什么样的终点，才配得上这一路的颠沛流离---管泽元</h3>\n<h3 style="color:#DDA0DD">世界聚焦于你---管泽元</h3>',
+                goods_type: 'subscribe',
+                deliver_type: 'none',
+                deliver_text: '',
+                //
                 total_bandwidth: 0,
                 expiration_date: 0,
                 traffic_reset_method:'NotStack',
+                reset_day: 0,
+                node_connector: 3,
+                //
+                recharge_amount: '',
                 // checked_nodes: [0], //套餐编辑时选中的节点
                 // nodes: [],
-                des: '<h3 style="color:#00BFFF">究竟什么样的终点，才配得上这一路的颠沛流离---管泽元</h3>\n<h3 style="color:#DDA0DD">世界聚焦于你---管泽元</h3>',
+
             } as Goods,
         },
         //全部商品
@@ -36,17 +47,24 @@ export const useShopStore = defineStore("shopStore", {
                 updated_at: "",
                 good_order: 0,
                 status: false,
-                traffic_reset_method:'',
-                reset_day: 0,
                 des: '',
                 subject: "",
                 total_amount: "",
-                product_code: "",
-                total_bandwidth: 0,
+                goods_type: '',
+                deliver_type: '',
+                deliver_text: '',
+                //
+                traffic_reset_method:'',
+                reset_day: 0,
                 expiration_date: 0,
+                node_connector: 0,
+                total_bandwidth: 0,
+                //
+                recharge_amount: '',
+                recharge_gift_amount: '',
+                //
                 checked_nodes: [0],
                 nodes: [],
-
             } as Goods,
             //当前商品订单
             currentOrder: {
@@ -91,8 +109,8 @@ export const useShopStore = defineStore("shopStore", {
     }),
     actions: {
         //加载时获取全部已启用商品
-        async getAllEnabledGoods() {
-            const res = await request(apiStoreData.api.value.shop_getAllEnabledGoods)
+        async getAllEnabledGoods(params:object) {
+            const res = await request(apiStoreData.api.value.shop_getAllEnabledGoods,params)
             this.goodsList = res.data
         },
         //获取全部订阅商品

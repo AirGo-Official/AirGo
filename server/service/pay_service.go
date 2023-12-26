@@ -163,18 +163,7 @@ func PollAliPay(order *model.Orders, client *alipay.Client) {
 			order.BuyerLogonId = rsp.BuyerLogonId     //买家支付宝账号
 			order.ReceiptAmount = rsp.ReceiptAmount   //实收金额
 			order.BuyerPayAmount = rsp.BuyerPayAmount //付款金额
-			global.GoroutinePool.Submit(func() {
-				UpdateOrder(order) //更新数据库状态
-			})
-			global.GoroutinePool.Submit(func() {
-				UpdateUserSubscribe(order) //更新用户订阅信息
-			})
-			global.GoroutinePool.Submit(func() {
-				RemainHandle(order.UserID, order.RemainAmount) //处理用户余额
-			})
-			global.GoroutinePool.Submit(func() { //通知
-				UnifiedPushMessage(fmt.Sprintf("用户：%s\n购买订阅：%s\n销售价格：%s\n订单金额：%s\n支付方式：%s", order.UserName, order.Subject, order.Price, order.TotalAmount, order.PayType))
-			})
+			PaymentSuccessfullyOrderHandler(order)
 			t.Stop()
 			return
 		}

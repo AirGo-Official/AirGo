@@ -3,20 +3,25 @@ declare interface Goods {
     created_at: string;
     updated_at: string;
     //
+    subject: string;       // 标题
+    total_amount: string;  // 总金额
     good_order: number;    //排序
     status: boolean; //是否启用
     des: string;     //商品描述
-    subject: string;       // 标题
-    total_amount: string;  // 总金额
-    traffic_reset_method: string; //流量重置方式,Stack,NotStack
-    reset_day: number; //流量重置日
-    //
+    goods_type: string;    //类型，general=普通商品 subscribe=订阅 recharge=充值
+    deliver_type: string;  //发货类型，none=不发货，auto=自动发货，manual=手动发货
+    deliver_text: string;  //发货内容;type:text
+    //订阅参数
     total_bandwidth: number; //总流量
     expiration_date: number; //有效期
+    traffic_reset_method: string; //流量重置方式,Stack,NotStack
+    reset_day: number;      //流量重置日
+    node_connector: number; //可连接客户端数量
+    //充值参数
+    recharge_amount: string;      //充值金额
     //
     checked_nodes: number[]; //套餐编辑时选中的节点
     nodes: Node[];
-
 }
 
 declare interface PayInfo {

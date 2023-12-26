@@ -2,17 +2,20 @@ declare interface Order {
     created_at: string;
     updated_at: string;
     id: number;
-    userID: number;
+    user_id: number;
     user_name: string;
     user: any;
 
     out_trade_no: string;
     goods_id: number;
+    goods_type: string;  //类型
+    deliver_type: string;//发货类型
+    deliver_text: string;//发货内容
     subject: string;
     price: string;
     pay_id: number;   //支付方式id
     pay_type: string; //支付方式，alipay,epay
-    coupon: number;
+    coupon_id: number;
     coupon_name: string;
     coupon_amount: string;
     deduction_amount: string;

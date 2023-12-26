@@ -1,12 +1,14 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	"github.com/ppoonk/AirGo/utils/response"
+	"time"
 )
 
 // 获取全部节点
@@ -29,13 +31,38 @@ func NewNode(ctx *gin.Context) {
 		response.Fail("NewNode error:"+err.Error(), nil, ctx)
 		return
 	}
-	node.ServerKey = encrypt_plugin.RandomString(32)
-	n, _, _ := service.CommonSqlFind[model.Node, model.Node, model.Node](model.Node{
-		Remarks: node.Remarks,
-	})
+	//fmt.Println("新建节点")
+	//service.Show(node)
+	n, _, _ := service.CommonSqlFirst[model.Node, string, model.Node](fmt.Sprintf("remarks = '%s'", node.Remarks))
 	if n.Remarks != "" {
 		response.Fail("Node name is duplicate", nil, ctx)
 		return
+	}
+	//根据节点类型，修改一些默认参数
+	switch node.NodeType {
+	case model.NodeTypeVmess:
+	case model.NodeTypeVless:
+	case model.NodeTypeTrojan:
+	case model.NodeTypeHysteria:
+	case model.NodeTypeShadowsocks:
+		node.ServerKey = encrypt_plugin.RandomString(32)
+	case model.NodeTypeTransfer:
+		//查询中转绑定节点
+		n, _, err = service.CommonSqlFirst[model.Node, string, model.Node](fmt.Sprintf("id = %d", node.TransferNodeID))
+		if err != nil {
+			global.Logrus.Error(err.Error())
+			response.Fail("NewNode error:"+err.Error(), nil, ctx)
+			return
+		}
+		//fmt.Println("查询中转绑定节点 n:", n)
+		n.ID = 0
+		n.CreatedAt, n.UpdatedAt = time.Now(), time.Now()
+		n.Remarks = node.Remarks
+		n.EnableTransfer = true
+		n.TransferNodeID = node.TransferNodeID
+		n.TransferAddress = node.TransferAddress
+		n.TransferPort = node.TransferPort
+		node = n
 	}
 	err = service.CommonSqlCreate[model.Node](node)
 	if err != nil {
@@ -73,6 +100,8 @@ func UpdateNode(ctx *gin.Context) {
 		response.Fail("UpdateNode error:"+err.Error(), nil, ctx)
 		return
 	}
+	fmt.Println("更新节点")
+	service.Show(node)
 	err = service.UpdateNode(&node)
 	if err != nil {
 		global.Logrus.Error(err.Error())

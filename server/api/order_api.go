@@ -98,6 +98,24 @@ func CompletedOrder(ctx *gin.Context) {
 
 }
 
+// 更新用户订单
+func UpdateUserOrder(ctx *gin.Context) {
+	var order model.Orders
+	err := ctx.ShouldBind(&order)
+	if err != nil {
+		global.Logrus.Error(err)
+		response.Fail("UpdateUserOrder error:"+err.Error(), nil, ctx)
+		return
+	}
+	err = service.UpdateOrder(&order) //更新数据库状态
+	if err != nil {
+		global.Logrus.Error(err)
+		response.Fail("UpdateUserOrder error:"+err.Error(), nil, ctx)
+		return
+	}
+	response.OK("UpdateUserOrder success", nil, ctx)
+}
+
 // 获取订单详情（计算价格等）
 func GetOrderInfo(ctx *gin.Context) {
 	order, msg := PreHandleOrder(ctx)
@@ -155,26 +173,44 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 	}
 	//构造系统订单参数
 	uIDStr := other_plugin.Sup(uIDInt, 6) //对长度不足n的后面补0
-	receiveOrder.GoodsID = goods.ID       //商品ID
 
-	receiveOrder.OutTradeNo = time.Now().Format("20060102150405") + uIDStr //系统订单号：时间戳+6位user id
-	receiveOrder.Subject = goods.Subject                                   //商品的标题
-	receiveOrder.Price = goods.TotalAmount                                 //商品的价格
-	receiveOrder.TotalAmount = goods.TotalAmount                           //订单的价格
-	receiveOrder.UserID = uIDInt                                           //用户ID
-	receiveOrder.UserName = uName                                          //用户名
-	//receiveOrder.PayType = receiveOrder.PayType //添加付款方式
+	sysOrder := model.Orders{
+		UserID:      uIDInt,
+		UserName:    uName,
+		OutTradeNo:  time.Now().Format("20060102150405") + uIDStr, //系统订单号：时间戳+6位user id
+		GoodsID:     goods.ID,
+		GoodsType:   goods.GoodsType,
+		DeliverType: goods.DeliverType,
+		//DeliverText:     "",
+		Subject:     goods.Subject,
+		Price:       goods.TotalAmount,
+		TotalAmount: goods.TotalAmount,
+		//ReceiptAmount:   "",
+		//BuyerPayAmount:  "",
+		//PayID:           0,
+		//PayType:         "",
+		//CouponID:        0,
+		//CouponName:      "",
+		//CouponAmount:    "",
+		//DeductionAmount: "",
+		//RemainAmount:    "",
+		//TradeStatus:     "",
+		//PayInfo:         model.PreCreatePayToFrontend{},
+		//TradeNo:         "",
+		//BuyerLogonId:    "",
+	}
+
 	//折扣码处理
 	total, _ := strconv.ParseFloat(goods.TotalAmount, 64)
-	if receiveOrder.CouponName != "" {
-		coupon, err := service.VerifyCoupon(&receiveOrder)
+	if sysOrder.CouponName != "" {
+		coupon, err := service.VerifyCoupon(&sysOrder)
 		if err != nil {
 			global.Logrus.Error(err.Error())
 			msg = err.Error()
 		}
 		if coupon.DiscountRate != 0 {
-			receiveOrder.CouponAmount = fmt.Sprintf("%.2f", total*coupon.DiscountRate)
-			receiveOrder.CouponID = coupon.ID
+			sysOrder.CouponAmount = fmt.Sprintf("%.2f", total*coupon.DiscountRate)
+			sysOrder.CouponID = coupon.ID
 			total = total - total*coupon.DiscountRate //total-折扣码
 		}
 	}
@@ -195,10 +231,10 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 					receiptAmount, _ := strconv.ParseFloat(order.ReceiptAmount, 64)
 					deductionAmount := receiptAmount * rate
 					if deductionAmount < total {
-						receiveOrder.DeductionAmount = fmt.Sprintf("%.2f", receiptAmount*rate)
+						sysOrder.DeductionAmount = fmt.Sprintf("%.2f", receiptAmount*rate)
 						total = total - deductionAmount
 					} else {
-						receiveOrder.DeductionAmount = fmt.Sprintf("%.2f", total)
+						sysOrder.DeductionAmount = fmt.Sprintf("%.2f", total)
 						total = 0
 					}
 				}
@@ -208,13 +244,13 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 	//余额抵扣，计算最终价格，TotalAmount=总价-折扣码的折扣-旧套餐的抵扣
 	if user.Remain > 0 {
 		if user.Remain < total {
-			receiveOrder.RemainAmount = fmt.Sprintf("%.2f", user.Remain)
+			sysOrder.RemainAmount = fmt.Sprintf("%.2f", user.Remain)
 			total = total - user.Remain
 		} else {
-			receiveOrder.RemainAmount = fmt.Sprintf("%.2f", total)
+			sysOrder.RemainAmount = fmt.Sprintf("%.2f", total)
 			total = 0
 		}
 	}
-	receiveOrder.TotalAmount = fmt.Sprintf("%.2f", total)
-	return &receiveOrder, msg
+	sysOrder.TotalAmount = fmt.Sprintf("%.2f", total)
+	return &sysOrder, msg
 }

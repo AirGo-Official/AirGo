@@ -23,6 +23,9 @@ type Orders struct {
 
 	OutTradeNo      string `json:"out_trade_no" gorm:"comment:商户订单号"`
 	GoodsID         int64  `json:"goods_id"     gorm:"comment:商品id"`
+	GoodsType       string `json:"goods_type"    gorm:"comment:类型，general=普通商品 subscribe=订阅 recharge=充值"`
+	DeliverType     string `json:"deliver_type"  gorm:"comment:发货类型，none=不发货，auto=自动发货，manual=手动发货"`
+	DeliverText     string `json:"deliver_text"  gorm:"comment:发货内容;type:text"`
 	Subject         string `json:"subject"      gorm:"comment:商品的标题/交易标题/订单标题/订单关键字"`
 	Price           string `json:"price"            gorm:"comment:商品的价格"`
 	TotalAmount     string `json:"total_amount"     gorm:"comment:订单金额"`

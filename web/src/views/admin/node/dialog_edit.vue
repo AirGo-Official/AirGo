@@ -23,6 +23,32 @@
       </el-form>
     </div>
     <el-divider content-position="left">基础参数</el-divider>
+
+    <div v-if="state.noteType === 'transfer'">
+      <el-form :model="dialogData.transferInfo" label-width="100px">
+        <el-form-item label="remarks">
+          <el-input v-model="dialogData.transferInfo.remarks"/>
+        </el-form-item>
+        <el-form-item label="address">
+          <el-input v-model="dialogData.transferInfo.transfer_address"/>
+        </el-form-item>
+        <el-form-item label="port">
+          <el-input-number v-model="dialogData.transferInfo.transfer_port"/>
+        </el-form-item>
+        <el-form-item label="node_id">
+          <el-select v-model="dialogData.transferInfo.transfer_node_id" class="m-2" placeholder="Select">
+            <el-option
+                v-for="item in nodeManageData.nodes.node_list"
+                :key="item.id"
+                :label="item.remarks"
+                :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+    </div>
+
     <div v-if="state.noteType === 'vless'">
       <el-form :model="dialogData.vlessInfo" label-width="100px">
         <el-form-item label="remarks">
@@ -186,19 +212,6 @@
           <el-form-item label="节点倍率">
             <el-input type="number" v-model.number="dialogData.vlessInfo.traffic_rate"/>
           </el-form-item>
-          <el-form-item label="启用中转">
-            <el-switch
-                size="small"
-                v-model="dialogData.vlessInfo.enable_transfer"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-            />
-          </el-form-item>
-          <el-form-item label="中转ip" v-if="dialogData.vlessInfo.enable_transfer">
-            <el-input v-model="dialogData.vlessInfo.transfer_address"/>
-          </el-form-item>
-          <el-form-item label="中转端口" v-if="dialogData.vlessInfo.enable_transfer">
-            <el-input v-model.number="dialogData.vlessInfo.transfer_port"/>
-          </el-form-item>
           <el-form-item label="访问控制">
             <el-transfer
                 :data="accessStoreData.routes_list.value.data"
@@ -345,19 +358,6 @@
           <el-form-item label="节点倍率">
             <el-input type="number" v-model.number="dialogData.vmessInfo.traffic_rate"/>
           </el-form-item>
-          <el-form-item label="启用中转">
-            <el-switch
-                size="small"
-                v-model="dialogData.vmessInfo.enable_transfer"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-            />
-          </el-form-item>
-          <el-form-item label="中转ip" v-if="dialogData.vmessInfo.enable_transfer">
-            <el-input v-model="dialogData.vmessInfo.transfer_address"/>
-          </el-form-item>
-          <el-form-item label="中转端口" v-if="dialogData.vmessInfo.enable_transfer">
-            <el-input v-model.number="dialogData.vmessInfo.transfer_port"/>
-          </el-form-item>
           <el-form-item label="访问控制">
             <el-transfer
                 :data="accessStoreData.routes_list.value.data"
@@ -440,19 +440,6 @@
         <el-form-item label="节点倍率">
           <el-input type="number" v-model.number="dialogData.shadowsocksInfo.traffic_rate"/>
         </el-form-item>
-        <el-form-item label="启用中转">
-          <el-switch
-              size="small"
-              v-model="dialogData.shadowsocksInfo.enable_transfer"
-              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-          />
-        </el-form-item>
-        <el-form-item label="中转ip" v-if="dialogData.shadowsocksInfo.enable_transfer">
-          <el-input v-model="dialogData.shadowsocksInfo.transfer_address"/>
-        </el-form-item>
-        <el-form-item label="中转端口" v-if="dialogData.shadowsocksInfo.enable_transfer">
-          <el-input v-model.number="dialogData.shadowsocksInfo.transfer_port"/>
-        </el-form-item>
         <el-form-item label="访问控制">
           <el-transfer
               :data="accessStoreData.routes_list.value.data"
@@ -505,19 +492,6 @@
         <el-form-item label="节点倍率">
           <el-input-number v-model.number="dialogData.hysteriaInfo.traffic_rate"/>
         </el-form-item>
-        <el-form-item label="启用中转">
-          <el-switch
-              size="small"
-              v-model="dialogData.hysteriaInfo.enable_transfer"
-              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-          />
-        </el-form-item>
-        <el-form-item label="中转ip" v-if="dialogData.hysteriaInfo.enable_transfer">
-          <el-input v-model="dialogData.hysteriaInfo.transfer_address"/>
-        </el-form-item>
-        <el-form-item label="中转端口" v-if="dialogData.hysteriaInfo.enable_transfer">
-          <el-input v-model.number="dialogData.hysteriaInfo.transfer_port"/>
-        </el-form-item>
         <el-form-item label="访问控制">
           <el-transfer
               :data="accessStoreData.routes_list.value.data"
@@ -556,13 +530,13 @@ const apiStoreData = storeToRefs(apiStore)
 
 
 const nodeStore = useNodeStore()
-const {dialogData} = storeToRefs(nodeStore)
+const {dialogData,nodeManageData} = storeToRefs(nodeStore)
 const emit = defineEmits(['refresh']);
 const state = reactive({
   title: "",
   noteType: 'vless',
   isShowDialog: false,
-  nodeTypelist: ["vless", "vmess", "shadowsocks", "hysteria"],
+  nodeTypelist: ["vless", "vmess", "shadowsocks", "hysteria", "transfer"],
   realityDefaultArr: [
     {dest: "www.speedtest.org:443", sni: "www.speedtest.org"},
     {dest: "www.lovelive-anime.jp:443", sni: "www.lovelive-anime.jp"},
@@ -582,15 +556,23 @@ const state = reactive({
 
 // 打开弹窗
 const openDialog = (title: string, row?: NodeInfo) => {
+  nodeStore.getAllNode()  //获取全部节点
   if (title === '新建节点') {
     dialogData.value.vlessInfo.id = 0 //编辑和添加公用一个store，清空id,否则服务器无法插入
     dialogData.value.vmessInfo.id = 0 //编辑和添加公用一个store，清空id,否则服务器无法插入
     dialogData.value.shadowsocksInfo.id = 0 //编辑和添加公用一个store，清空id,否则服务器无法插入
     dialogData.value.hysteriaInfo.id = 0 //编辑和添加公用一个store，清空id,否则服务器无法插入
+    dialogData.value.transferInfo.id = 0 //编辑和添加公用一个store，清空id,否则服务器无法插入
     state.title = "新建节点"
     state.isShowDialog = true
   } else {
     state.title = "修改节点"
+    if (row?.enable_transfer){
+      state.noteType = "transfer"
+      dialogData.value.transferInfo = row
+      state.isShowDialog = true
+      return
+    }
     switch (row?.node_type) {
       case "vless":
         state.noteType = "vless"

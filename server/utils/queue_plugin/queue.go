@@ -1,4 +1,4 @@
-package queue
+package Queue
 
 import (
 	"errors"
@@ -6,31 +6,31 @@ import (
 	"time"
 )
 
-type queue struct {
-	exit         chan bool
-	capacity     int
-	topics       map[string][]chan any // key： topic  value ： queue
-	sync.RWMutex                       // 同步锁
+type Queue struct {
+	exit     chan bool
+	capacity int
+	topics   map[string][]chan any
+	sync.RWMutex
 	//once         sync.Once
 }
 
-func NewQueue() *queue {
-	return &queue{
+func NewQueue() *Queue {
+	return &Queue{
 		exit:   make(chan bool),
 		topics: make(map[string][]chan any),
 	}
 }
 
-func (q *queue) ShowExit() chan bool {
+func (q *Queue) ShowExit() chan bool {
 	return q.exit
 
 }
 
-func (q *queue) SetConditions(capacity int) {
+func (q *Queue) SetConditions(capacity int) {
 	q.capacity = capacity
 }
 
-func (q *queue) Start() {
+func (q *Queue) Start() {
 	select {
 	case <-q.exit:
 		q.exit = make(chan bool)
@@ -38,7 +38,7 @@ func (q *queue) Start() {
 		return
 	}
 }
-func (q *queue) Close() {
+func (q *Queue) Close() {
 	select {
 	case <-q.exit:
 		return
@@ -51,10 +51,10 @@ func (q *queue) Close() {
 	return
 }
 
-func (q *queue) Publish(topic string, pub any) error {
+func (q *Queue) Publish(topic string, pub any) error {
 	select {
 	case <-q.exit:
-		return errors.New("queue is closed")
+		return errors.New("Queue is closed")
 	default:
 	}
 	q.RLock()
@@ -67,7 +67,7 @@ func (q *queue) Publish(topic string, pub any) error {
 	return nil
 }
 
-func (q *queue) Broadcast(msg any, subscribers []chan any) {
+func (q *Queue) Broadcast(msg any, subscribers []chan any) {
 	count := len(subscribers)
 	concurrency := 1
 	switch {
@@ -96,10 +96,10 @@ func (q *queue) Broadcast(msg any, subscribers []chan any) {
 	}
 }
 
-func (q *queue) Subscribe(topic string) (<-chan any, error) {
+func (q *Queue) Subscribe(topic string) (<-chan any, error) {
 	select {
 	case <-q.exit:
-		return nil, errors.New("queue is closed")
+		return nil, errors.New("Queue is closed")
 	default:
 	}
 	if q.capacity == 0 {
@@ -112,10 +112,10 @@ func (q *queue) Subscribe(topic string) (<-chan any, error) {
 	return ch, nil
 }
 
-func (q *queue) Unsubscribe(topic string, sub <-chan any) error {
+func (q *Queue) Unsubscribe(topic string, sub <-chan any) error {
 	select {
 	case <-q.exit:
-		return errors.New("queue is closed")
+		return errors.New("Queue is closed")
 	default:
 	}
 	q.RLock()
@@ -138,7 +138,7 @@ func (q *queue) Unsubscribe(topic string, sub <-chan any) error {
 	return nil
 }
 
-func (q *queue) GetPayLoad(sub <-chan any) any {
+func (q *Queue) GetPayLoad(sub <-chan any) any {
 	for val := range sub {
 		if val != nil {
 			return val

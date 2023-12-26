@@ -243,12 +243,6 @@ func ChangeSubHost(uID int64, host string) error {
 	return global.DB.Model(&model.User{ID: uID}).Updates(u).Error
 }
 
-// 获取信息
-func GetUserInfo(uID int64) (*model.User, error) {
-	var user model.User
-	return &user, global.DB.First(&user, uID).Error
-}
-
 // 获取用户列表
 func GetUserlist(params *model.FieldParamsReq) (*model.CommonDataResp, error) {
 	var data model.CommonDataResp
@@ -362,20 +356,43 @@ func ReferrerRebate(uID int64, receiptAmount string) {
 }
 
 // 处理用户余额
-func RemainHandle(uid int64, remain string) {
+func RemainHandle(uid int64, remain string) error {
 	remainFloat64, _ := strconv.ParseFloat(remain, 64)
 	if remainFloat64 == 0 {
-		return
+		return nil
 	}
-	user, _ := FindUserByID(uid)
+	user, err := FindUserByID(uid)
+	if err != nil {
+		return err
+	}
 	user.Remain = user.Remain - remainFloat64
-	SaveUser(user)
+	return SaveUser(user)
+}
+
+// 处理用户充值卡商品
+func RechargeHandle(order *model.Orders) error {
+	Show(order)
+	//查询商品信息
+	goods, _ := FindGoodsByGoodsID(order.GoodsID)
+	Show(goods)
+	orderRemainAmount, _ := strconv.ParseFloat(order.RemainAmount, 64)
+	rechargeFloat64, _ := strconv.ParseFloat(goods.RechargeAmount, 64)
+	user, err := FindUserByID(order.UserID)
+	if err != nil {
+		return err
+	}
+	user.Remain = user.Remain - orderRemainAmount + rechargeFloat64
+	if user.Remain < 0 {
+		user.Remain = 0
+	}
+	Show(order)
+	return SaveUser(user)
 }
 
 // 打卡
 func ClockIn(uID int64) (int, int, error) {
 	//查询用户信息
-	user, err := GetUserInfo(uID)
+	user, err := FindUserByID(uID)
 	if err != nil {
 		return 0, 0, err
 	}

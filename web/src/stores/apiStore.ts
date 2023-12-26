@@ -84,6 +84,7 @@ export const useApiStore = defineStore("apiStore", {
             order_getAllOrder: {path: apiPre + "/order/getAllOrder", method: "post"} as ApiItem,
             order_completedOrder: {path: apiPre + "/order/completedOrder", method: "post"} as ApiItem,
             order_getMonthOrderStatistics: {path: apiPre + "/order/getMonthOrderStatistics", method: "post"} as ApiItem,
+            order_updateUserOrder: {path: apiPre + "/order/updateUserOrder", method: "post"} as ApiItem,
 
             //pay
             pay_getEnabledPayList: {path: apiPre + "/pay/getEnabledPayList", method: "get"} as ApiItem,

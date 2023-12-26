@@ -56,10 +56,6 @@ export const useUserStore = defineStore('userInfo', {
                 d: 0,
                 reset_day: 0,
             },
-            online_user_info: {
-                node_connector: 0,
-                node_ip_map: {},
-            } as OnlineUserInfo,
         } as SysUser,
         //在线设备数提示信息
         onlineDeviceInfo: '',
@@ -127,16 +123,6 @@ export const useUserStore = defineStore('userInfo', {
             const apiStore = useApiStore()
             const apiStoreData = storeToRefs(apiStore)
             return serverStoreData.publicServerConfig.value.backend_url + apiStoreData.staticApi.value.user_getSub.path + "?link=" + state.userInfos.subscribe_info.subscribe_url
-        },
-        //在线设备数
-        onlineDevice: (state): number => {
-            let n = 0
-            for (let key in state.userInfos.online_user_info.node_ip_map) {
-                // @ts-ignore
-                let onlineNodeInfo: OnlineNodeInfo = state.userInfos.online_user_info.node_ip_map[key]
-                n += onlineNodeInfo.node_ip.length
-            }
-            return n
         },
     },
     actions: {
@@ -238,14 +224,5 @@ export const useUserStore = defineStore('userInfo', {
             const apiStore = useApiStore()
             return await request(apiStore.staticApi.public_getEmailCode, {user_name: email})
         },
-        //在线设备数信息
-        showOnlineDeviceInfo() {
-            this.onlineDeviceInfo = ''
-            for (let key in this.userInfos.online_user_info.node_ip_map) {
-                // @ts-ignore
-                let onlineNodeInfo: OnlineNodeInfo = this.userInfos.online_user_info.node_ip_map[key]
-                this.onlineDeviceInfo += '节点ID：' + key.toString() + '，在线IP：' + onlineNodeInfo.node_ip.join(" | ") + "\n"
-            }
-        }
     },
 });

@@ -8,7 +8,6 @@ import (
 	"github.com/ppoonk/AirGo/service"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -124,66 +123,27 @@ func AGGetUserlist(ctx *gin.Context) {
 		global.Logrus.Error("error,id="+id, err.Error())
 		return
 	}
-	//处理用户连接数，只要没超过限制就下发
-	var newUsers []model.AGUserInfo
-	for _, user := range users {
-		v, ok := global.OnlineUsersMap.Load(user.ID)
-		if ok {
-			//更新在线用户信息
-			onlineUserItem := v.(model.OnlineUserItem)
-			onlineUserItem.NodeConnector = user.NodeConnector
-			global.OnlineUsersMap.Store(user.ID, onlineUserItem)
-			//处理当前用户连接数
-			var current int
-			onlineUserItem.NodeIPMap.Range(func(key, value any) bool {
-				nodeID := key.(int64)
-				//fmt.Println("当前节点ID:", nodeIDInt)
-				//fmt.Println("rnage 节点ID:", nodeID)
-				onlineNodeInfo := value.(model.OnlineNodeInfo)
-				if nodeID != nodeIDInt {
-					//除了当前节点已存在的连接数
-					current += len(onlineNodeInfo.NodeIP)
-				}
-				return true
-			})
-			//fmt.Println("总设备数：", user.NodeConnector)
-			//fmt.Println("在线设备数：", int64(current))
-			user.NodeConnector = user.NodeConnector - int64(current) //新设备连接数
-			//fmt.Println("新设备连接数：", user.NodeConnector)
-			if user.NodeConnector > 0 {
-				newUsers = append(newUsers, user)
-			}
-		} else {
-			global.OnlineUsersMap.Store(user.ID, model.OnlineUserItem{
-				NodeConnector: user.NodeConnector,
-				NodeIPMap:     new(sync.Map),
-			})
-			newUsers = append(newUsers, user)
-		}
-
-	}
-
 	//处理ss加密
 	switch node.NodeType {
 	case "shadowsocks":
 		switch strings.HasPrefix(node.Scy, "2022") {
 		case true:
-			for k, _ := range newUsers {
-				p := newUsers[k].UUID.String()
+			for k, _ := range users {
+				p := users[k].UUID.String()
 				if node.Scy == "2022-blake3-aes-128-gcm" {
 					p = p[:16]
 				}
 				p = base64.StdEncoding.EncodeToString([]byte(p))
-				newUsers[k].Passwd = p
+				users[k].Passwd = p
 			}
 		default:
-			for k, _ := range newUsers {
-				newUsers[k].Passwd = newUsers[k].UUID.String()
+			for k, _ := range users {
+				users[k].Passwd = users[k].UUID.String()
 			}
 		}
 	default:
 	}
-	EtagHandler(newUsers, ctx)
+	EtagHandler(users, ctx)
 }
 
 func ssEncryptionHandler(node model.Node, user *model.AGUserInfo) {
@@ -340,18 +300,6 @@ func AGReportNodeOnlineUsers(ctx *gin.Context) {
 	if err != nil {
 		global.Logrus.Error("error", err.Error())
 		return
-	}
-	//fmt.Println("上报在线设备：", AGOnlineUser)
-	for uid, _ := range AGOnlineUser.UserNodeMap {
-		v, ok := global.OnlineUsersMap.Load(uid)
-		if ok {
-			onlineUserItem := v.(model.OnlineUserItem)
-			onlineUserItem.NodeIPMap.Store(AGOnlineUser.NodeID, model.OnlineNodeInfo{
-				NodeIP:         AGOnlineUser.UserNodeMap[uid],
-				LastUpdateTime: time.Now(),
-			})
-			global.OnlineUsersMap.Store(uid, onlineUserItem)
-		}
 	}
 	ctx.String(200, "success")
 }

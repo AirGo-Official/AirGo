@@ -4,6 +4,16 @@ import (
 	"time"
 )
 
+const (
+	//节点类型
+	NodeTypeVmess       = "vmess"
+	NodeTypeVless       = "vless"
+	NodeTypeTrojan      = "trojan"
+	NodeTypeHysteria    = "hysteria"
+	NodeTypeShadowsocks = "shadowsocks"
+	NodeTypeTransfer    = "transfer"
+)
+
 type Node struct {
 	ID        int64     `json:"id" gorm:"primarykey"`
 	CreatedAt time.Time `json:"created_at"`
@@ -16,7 +26,7 @@ type Node struct {
 	Enabled         bool    `json:"enabled"`                                  //是否为激活节点
 	NodeSpeedlimit  int64   `json:"node_speedlimit"`                          //节点限速/Mbps
 	TrafficRate     float64 `json:"traffic_rate"`                             //倍率
-	NodeType        string  `json:"node_type"`                                //节点类型 vless,vmess,trojan,shadowsocks
+	NodeType        string  `json:"node_type"`                                //节点类型 vless,vmess,trojan,shadowsocks,transfer=中转
 	IsSharedNode    bool    `json:"is_shared_node"`                           //共享节点，不修改uuid和host
 	V               string  `json:"v"   gorm:"default:2"`                     //
 	Scy             string  `json:"scy"`                                      //加密方式 none,auto,chacha20-poly1305,aes-128-gcm,aes-256-gcm,2022-blake3-aes-128-gcm,2022-blake3-aes-256-gcm,2022-blake3-chacha20-poly1305
@@ -47,6 +57,7 @@ type Node struct {
 	EnableTransfer  bool   `json:"enable_transfer" gorm:"default:false"` //是否启用中转
 	TransferAddress string `json:"transfer_address"`                     //中转ip
 	TransferPort    int64  `json:"transfer_port"`                        //中转port
+	TransferNodeID  int64  `json:"transfer_node_id"`                     //中转绑定的节点ID
 	//上行/下行
 	TotalUp   int64 `json:"total_up"        gorm:"-"` //Byte
 	TotalDown int64 `json:"total_down"      gorm:"-"` //Byte
