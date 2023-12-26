@@ -100,8 +100,6 @@ func UpdateNode(ctx *gin.Context) {
 		response.Fail("UpdateNode error:"+err.Error(), nil, ctx)
 		return
 	}
-	fmt.Println("更新节点")
-	service.Show(node)
 	err = service.UpdateNode(&node)
 	if err != nil {
 		global.Logrus.Error(err.Error())
@@ -179,7 +177,7 @@ func NewNodeShared(ctx *gin.Context) {
 
 // 获取共享节点列表
 func GetNodeSharedList(ctx *gin.Context) {
-	nodeArr, _, err := service.CommonSqlFind[model.NodeShared, string, []model.Node]("")
+	nodeArr, _, err := service.CommonSqlFind[model.NodeShared, string, []model.NodeShared]("")
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetNodeSharedList"+err.Error(), nil, ctx)

@@ -154,3 +154,5 @@ func DeleteNodeTemp() error {
 	}
 	return nil
 }
+
+//获取共享节点列表

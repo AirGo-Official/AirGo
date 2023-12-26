@@ -35,7 +35,7 @@
         <el-form-item label="port">
           <el-input-number v-model="dialogData.transferInfo.transfer_port"/>
         </el-form-item>
-        <el-form-item label="node_id">
+        <el-form-item label="node">
           <el-select v-model="dialogData.transferInfo.transfer_node_id" class="m-2" placeholder="Select">
             <el-option
                 v-for="item in nodeManageData.nodes.node_list"
@@ -206,6 +206,19 @@
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
             />
           </el-form-item>
+          <el-form-item label="启用中转">
+            <el-switch
+                size="small"
+                v-model="dialogData.vlessInfo.enable_transfer"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+            />
+          </el-form-item>
+          <el-form-item label="中转ip" v-if="dialogData.vlessInfo.enable_transfer">
+            <el-input v-model="dialogData.vlessInfo.transfer_address"/>
+          </el-form-item>
+          <el-form-item label="中转端口" v-if="dialogData.vlessInfo.enable_transfer">
+            <el-input v-model.number="dialogData.vlessInfo.transfer_port"/>
+          </el-form-item>
           <el-form-item label="节点限速">
             <el-input type="number" v-model.number="dialogData.vlessInfo.node_speedlimit"/>
           </el-form-item>
@@ -352,6 +365,19 @@
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
             />
           </el-form-item>
+          <el-form-item label="启用中转">
+            <el-switch
+                size="small"
+                v-model="dialogData.vmessInfo.enable_transfer"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+            />
+          </el-form-item>
+          <el-form-item label="中转ip" v-if="dialogData.vmessInfo.enable_transfer">
+            <el-input v-model="dialogData.vmessInfo.transfer_address"/>
+          </el-form-item>
+          <el-form-item label="中转端口" v-if="dialogData.vmessInfo.enable_transfer">
+            <el-input v-model.number="dialogData.vmessInfo.transfer_port"/>
+          </el-form-item>
           <el-form-item label="节点限速">
             <el-input type="number" v-model.number="dialogData.vmessInfo.node_speedlimit"/>
           </el-form-item>
@@ -434,6 +460,19 @@
               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           />
         </el-form-item>
+        <el-form-item label="启用中转">
+          <el-switch
+              size="small"
+              v-model="dialogData.shadowsocksInfo.enable_transfer"
+              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+          />
+        </el-form-item>
+        <el-form-item label="中转ip" v-if="dialogData.shadowsocksInfo.enable_transfer">
+          <el-input v-model="dialogData.shadowsocksInfo.transfer_address"/>
+        </el-form-item>
+        <el-form-item label="中转端口" v-if="dialogData.shadowsocksInfo.enable_transfer">
+          <el-input v-model.number="dialogData.shadowsocksInfo.transfer_port"/>
+        </el-form-item>
         <el-form-item label="节点限速">
           <el-input type="number" v-model.number="dialogData.shadowsocksInfo.node_speedlimit"/>
         </el-form-item>
@@ -476,8 +515,6 @@
               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           />
         </el-form-item>
-
-
         <el-divider content-position="left">其他参数</el-divider>
         <el-form-item label="是否启用">
           <el-switch
@@ -485,6 +522,19 @@
               v-model="dialogData.hysteriaInfo.enabled"
               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           />
+        </el-form-item>
+        <el-form-item label="启用中转">
+          <el-switch
+              size="small"
+              v-model="dialogData.hysteriaInfo.enable_transfer"
+              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+          />
+        </el-form-item>
+        <el-form-item label="中转ip" v-if="dialogData.hysteriaInfo.enable_transfer">
+          <el-input v-model="dialogData.hysteriaInfo.transfer_address"/>
+        </el-form-item>
+        <el-form-item label="中转端口" v-if="dialogData.hysteriaInfo.enable_transfer">
+          <el-input v-model.number="dialogData.hysteriaInfo.transfer_port"/>
         </el-form-item>
         <el-form-item label="节点限速">
           <el-input-number v-model.number="dialogData.hysteriaInfo.node_speedlimit"/>
@@ -556,7 +606,6 @@ const state = reactive({
 
 // 打开弹窗
 const openDialog = (title: string, row?: NodeInfo) => {
-  nodeStore.getAllNode()  //获取全部节点
   if (title === '新建节点') {
     dialogData.value.vlessInfo.id = 0 //编辑和添加公用一个store，清空id,否则服务器无法插入
     dialogData.value.vmessInfo.id = 0 //编辑和添加公用一个store，清空id,否则服务器无法插入
@@ -567,7 +616,7 @@ const openDialog = (title: string, row?: NodeInfo) => {
     state.isShowDialog = true
   } else {
     state.title = "修改节点"
-    if (row?.enable_transfer){
+    if (row?.enable_transfer && row?.transfer_node_id!==0){
       state.noteType = "transfer"
       dialogData.value.transferInfo = row
       state.isShowDialog = true

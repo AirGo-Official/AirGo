@@ -458,7 +458,7 @@ func NodeStatus(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 }
 func GetNodeStatus() string {
 	var NodeArr []model.Node
-	err := global.DB.Find(&NodeArr).Error
+	err := global.DB.Where("enabled = ? AND enable_transfer = ?", true, false).Find(&NodeArr).Error
 	if err != nil {
 		return ""
 	}
