@@ -1,21 +1,28 @@
-FROM --platform=$TARGETPLATFORM alpine:latest
+#FROM --platform=$BUILDPLATFORM ubuntu:latest AS build-web
+#WORKDIR /web
+#COPY /web /web
+#RUN set -ex \
+#    && apt update -y && apt install npm curl wget tar unzip -y \
+#    && npm install vite -g && npm install -g n && n lts \
+#    && npm -v && node -v \
+#    && npm install && npm run build
+
+FROM --platform=$BUILDPLATFORM golang:alpine AS build-server
+WORKDIR /server
+COPY server /server
 ARG TARGETOS
 ARG TARGETARCH
-#ARG BUILDPLATFORM
-#ARG TARGETPLATFORM
+RUN set -ex \
+    && GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 go build -o AirGo -trimpath -ldflags "-s -w" main.go
 
-#linux/arm,linux/arm64,linux/amd64
-
+FROM --platform=${TARGETPLATFORM} alpine:latest
 WORKDIR /air
+COPY --from=build-server /server/AirGo ./
+COPY --from=build-server /server/config.yaml ./
 
-VOLUME ["/air/config.yaml"]
+VOLUME ["/air"]
 
-COPY server/AirGo-$TARGETOS-$TARGETARCH /air/AirGo
-
+ENV TZ=Asia/Shanghai
 ENV LANG C.UTF-8
-
-EXPOSE 80 443
-
-CMD ["/air/AirGo", "-start"]
-
-# docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -f server/scripts/Dockerfile -t airgo .
+ENTRYPOINT [ "/air/AirGo" ]
+CMD ["-start"]

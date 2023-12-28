@@ -96,7 +96,7 @@ const onPurchase = (params?: object) => {
         } else {
           emits('openQRDialog')   //电脑端打开支付二维码弹窗
         }
-      } else if (pay_info.epay_info.epay_api_url !== "") {
+      } else if (pay_info.epay_info.epay_api_url !== "") { //易支付
         // 对象转url参数
         let params = qs.stringify(pay_info.epay_info.epay_pre_create_pay)
         window.location.href = pay_info.epay_info.epay_api_url + "?" + params

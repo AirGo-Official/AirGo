@@ -21,7 +21,7 @@ import (
 // @Router 	/api/public/getBase64Captcha [get]
 // @Success 200 {object} model.Base64CaptchaInfo
 func GetBase64Captcha(ctx *gin.Context) {
-	id, b64s, err := global.Base64Captcha.Generate()
+	id, b64s, _, err := global.Base64Captcha.Generate()
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("SendBase64Captcha"+err.Error(), nil, ctx)

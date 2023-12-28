@@ -3,20 +3,17 @@ package initialize
 import (
 	"errors"
 	"fmt"
+	gormadapter "github.com/casbin/gorm-adapter/v3"
+	"github.com/glebarez/sqlite"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	utils "github.com/ppoonk/AirGo/utils/encrypt_plugin"
-	"gorm.io/driver/postgres"
-	"gorm.io/driver/sqlite"
-	"time"
-
-	//"go-admin/initialize"
-	//github.com/satori/go.uuid
-	gormadapter "github.com/casbin/gorm-adapter/v3"
 	uuid "github.com/satori/go.uuid"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"time"
 )
 
 const (
@@ -81,6 +78,7 @@ func Gorm() *gorm.DB {
 
 // 初始化sqlite数据库
 func GormSqlite() *gorm.DB {
+	//db, err := sql.Open("sqlite", ":memory:")
 
 	if db, err := gorm.Open(sqlite.Open(global.Config.Sqlite.Path), &gorm.Config{
 		SkipDefaultTransaction: true, //关闭事务

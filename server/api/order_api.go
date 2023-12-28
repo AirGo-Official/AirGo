@@ -173,7 +173,6 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 	}
 	//构造系统订单参数
 	uIDStr := other_plugin.Sup(uIDInt, 6) //对长度不足n的后面补0
-
 	sysOrder := model.Orders{
 		UserID:      uIDInt,
 		UserName:    uName,
@@ -189,8 +188,8 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 		//BuyerPayAmount:  "",
 		//PayID:           0,
 		//PayType:         "",
-		//CouponID:        0,
-		//CouponName:      "",
+		//CouponID:        receiveOrder.CouponID,
+		CouponName: receiveOrder.CouponName,
 		//CouponAmount:    "",
 		//DeductionAmount: "",
 		//RemainAmount:    "",
@@ -199,9 +198,9 @@ func PreHandleOrder(ctx *gin.Context) (*model.Orders, string) {
 		//TradeNo:         "",
 		//BuyerLogonId:    "",
 	}
-
 	//折扣码处理
 	total, _ := strconv.ParseFloat(goods.TotalAmount, 64)
+	service.Show(sysOrder)
 	if sysOrder.CouponName != "" {
 		coupon, err := service.VerifyCoupon(&sysOrder)
 		if err != nil {
