@@ -158,7 +158,6 @@ download(){
   cd /usr/local/${appName}/
   tar -zxvf ${appName}.tar.gz
   chmod 777 -R /usr/local/${appName}
-  mv /usr/local/${appName}/${appName} /usr/local/${appName}/${appName}
 
 }
 add_service(){
@@ -298,17 +297,16 @@ update(){
 
   mkdir temp
   cd temp
- wget -N --no-check-certificate -O /usr/local/${appName}/${appName}.tar.gz ${downloadPrefix}${latestVersion}/${appName}-${latestVersion}-${system}-${arch}.tar.gz
+  wget -N --no-check-certificate -O ${appName}.tar.gz ${downloadPrefix}${latestVersion}/${appName}-${latestVersion}-${system}-${arch}.tar.gz
   if [[ $? -ne 0 ]]; then
       echo -e "${red}下载失败，请重试${plain}"
       exit 1
   fi
+  rm -rf /usr/local/${appName}/${appName}
   echo -e "开始解压..."
   tar -zxvf ${appName}.tar.gz
-  chmod 777 *
-  rm -rf /usr/local/${appName}/${appName}
   mv ${appName} /usr/local/${appName}/${appName}
-  chmod 777 /usr/local/${appName}
+  chmod 777 /usr/local/${appName}/${appName}
   cd ..
   rm -rf temp
 

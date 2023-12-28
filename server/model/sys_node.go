@@ -129,10 +129,10 @@ type NodeShared struct {
 	TotalUp   int64 `json:"total_up"        gorm:"-"` //Byte
 	TotalDown int64 `json:"total_down"      gorm:"-"` //Byte
 	//关联参数
-	Goods       []Goods      `json:"goods"         gorm:"many2many:goods_and_nodes"`       //多对多,关联商品
-	TrafficLogs []TrafficLog `json:"-"             gorm:"foreignKey:NodeID;references:ID"` //has many
-	Access      []Access     `json:"access"        gorm:"many2many:node_and_access"`       //访问控制
-	AccessIds   []int64      `json:"access_ids"    gorm:"-"`
+	//Goods       []Goods      `json:"goods"         gorm:"many2many:goods_and_nodes"`       //多对多,关联商品
+	//TrafficLogs []TrafficLog `json:"-"             gorm:"foreignKey:NodeID;references:ID"` //has many
+	//Access      []Access     `json:"access"        gorm:"many2many:node_and_access"`       //访问控制
+	//AccessIds   []int64      `json:"access_ids"    gorm:"-"`
 	//共享节点额外需要的参数
 	UUID string `json:"uuid" gorm:"comment:共享节点用户id"`
 }

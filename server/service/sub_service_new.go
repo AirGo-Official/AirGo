@@ -774,7 +774,7 @@ func VmessUrlForShadowrocket(node model.Node) string {
 
 	values := url.Values{}
 	//基础参数
-	values.Add("tfo", "1") //tcp快速打开
+	//values.Add("tfo", "1") //tcp快速打开
 	//values.Add("mux", "1")             //多路复用
 	values.Add("remark", node.Remarks) //节点名
 
@@ -851,7 +851,7 @@ func TrojanUrlForShadowrocket(node model.Node) string {
 	nodeUrl.User = url.UserPassword(node.UUID, "")
 	nodeUrl.Host = node.Address + ":" + strconv.FormatInt(node.Port, 10)
 	values := url.Values{}
-	values.Add("tfo", "1") //tcp快速打开
+	//values.Add("tfo", "1") //tcp快速打开
 	//values.Add("mux", "1") //多路复用
 
 	sni := node.Address
@@ -874,7 +874,7 @@ func Hy2UrlForShadowrocket(node model.Node) string {
 	nodeUrl.Host = node.Address + ":" + strconv.FormatInt(node.Port, 10)
 
 	values := url.Values{}
-	values.Add("tfo", "1") //tcp快速打开
+	//values.Add("tfo", "1") //tcp快速打开
 	//values.Add("mux", "1") //多路复用
 
 	sni := node.Address

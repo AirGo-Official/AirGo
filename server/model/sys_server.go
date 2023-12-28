@@ -58,7 +58,7 @@ type JWT struct {
 // RateLimitParams 限流参数
 type RateLimitParams struct {
 	IPRoleParam int64 `json:"ip_role_param" gorm:"default:600"`
-	VisitParam  int64 `json:"visit_param"   gorm:"default:60"`
+	VisitParam  int64 `json:"visit_param"   gorm:"default:600"`
 }
 type Subscribe struct {
 	EnableRegister          bool    `json:"enable_register"           gorm:"default:true;comment:是否开启注册"`
