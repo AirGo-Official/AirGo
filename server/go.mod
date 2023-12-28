@@ -7,7 +7,7 @@ require (
 	github.com/casbin/gorm-adapter/v3 v3.20.0
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/glebarez/sqlite v1.7.0
+	github.com/glebarez/sqlite v1.10.0
 	github.com/go-acme/lego/v4 v4.14.2
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/golang-jwt/jwt/v5 v5.2.0
