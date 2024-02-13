@@ -1,0 +1,80 @@
+name: Auto build release
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [windows, freebsd, openbsd, linux, darwin]
+        goarch: [amd64, 386, arm64, arm]
+        exclude:
+          - goarch: 386
+            goos: darwin
+          - goarch: arm
+            goos: darwin
+
+
+          - goarch: arm
+            goos: windows
+          - goarch: 386
+            goos: windows
+
+          - goarch: arm
+            goos: freebsd
+          - goarch: 386
+            goos: freebsd
+
+          - goarch: arm
+            goos: openbsd
+          - goarch: 386
+            goos: openbsd
+
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.9.0'
+
+      - name: Build web
+        run: |
+          cd web
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./src/layout/footer/index.vue
+          npm install
+          npm run build
+          rm -rf ../server/web/web
+          mv web ../server/web/
+
+      - name: Set version
+        run: |
+          cd server
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./main.go
+
+      - name: Build server
+        uses: wangyoucao577/go-release-action@master
+        with:
+          github_token: ${{ secrets.ACTION_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: 1.21.4
+          project_path: server
+          binary_name: AirGo
+          extra_files: LICENSE server/config.yaml
+          pre_command: export CGO_ENABLED=0
+          build_flags: -trimpath
+          ldflags: -s -w -extldflags -static

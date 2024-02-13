@@ -1,0 +1,17 @@
+system:
+  admin-email: admin@oicq.com
+  admin-password: adminadmin
+  http-port: 8899
+  https-port: 443
+  db-type: sqlite
+mysql:
+  address: xxx.com
+  port: 3306
+  config: charset=utf8mb4&parseTime=True&loc=Local
+  db-name: xxx
+  username: xxx
+  password: xxx
+  max-idle-conns: 10
+  max-open-conns: 100
+sqlite:
+  path: ./air.db

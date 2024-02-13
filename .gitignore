@@ -1,0 +1,8 @@
+web/node_modules
+.DS_Store
+.idea/
+server/logs
+server/main
+web/web
+.run
+

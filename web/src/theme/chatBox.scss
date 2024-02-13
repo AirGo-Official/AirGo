@@ -1,0 +1,115 @@
+
+.chatBox {
+  /*width: 60rem;*/
+  height: 100%;
+  /*margin: 2.5rem auto 0;*/
+  background-color: #fff;
+  overflow: hidden;
+  border-radius: 0.625rem;
+}
+.chatBox-top {
+  width: 100%;
+  height: 3.75rem;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  background-color: #2B3D63;
+}
+
+.chatBox-top-imgBox {
+  margin-left: 1.25rem;
+}
+
+.chatBox-top-text {
+  margin-left: 1.25rem;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.chatBox-middle {
+  width: 100%;
+  height: 31.25rem;
+  background-color: #fff;
+  border-bottom: 1px solid #2B3D63;
+}
+
+.chatBox-infoDesk {
+  width: 100%;
+}
+
+.chatBox-textarea {
+  width: 100%;
+}
+
+.chatBox-sendOut {
+  margin-top: 0.625rem;
+  width: 100%;
+  height: 3.125rem;
+  text-align: right;
+}
+
+.sendOut {
+  padding: 0 1.25rem;
+  height: 2.1875rem;
+  margin: 0.3125rem 1.25rem 0 0;
+}
+
+.chatInfo {
+  width: 94%;
+  height: 94%;
+  margin: 1.25rem auto;
+  overflow: auto;
+}
+
+.chatUser-box {
+  width: 100%;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: row;
+}
+
+
+.chatUser-box-img {
+  display: flex;
+}
+
+.chatUser-info {
+  margin: 0 1.25rem;
+}
+
+.chatUser-info-name {
+  font-size: 0.875rem;
+  color: #888;
+  display: flex;
+  flex-direction: row;
+}
+
+.nowDate {
+  margin: 0 0.625rem;
+}
+
+.chatUser-info-text {
+  margin-top: 0.3125rem;
+  max-width: 20rem;
+  padding: 0.5rem;
+  background-color: #E8E8E8;
+  border-radius: 0.5rem;
+  float: left;
+  table-layout:fixed;
+  word-break: break-all;
+  overflow:hidden;
+}
+
+.chatUser-info-text span{
+  font-size: 0.9375rem;
+  line-height: 1.5625rem;
+}
+.chatUser-box1 {
+  flex-direction: row-reverse;
+}
+.chatUser-info-name1 {
+  flex-direction: row-reverse;
+}
+.chatUser-info-text1 {
+  float: right;
+}

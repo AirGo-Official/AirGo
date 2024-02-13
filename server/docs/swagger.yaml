@@ -1,0 +1,44 @@
+definitions:
+  model.Base64CaptchaInfo:
+    properties:
+      b64s:
+        description: 响应时存base64数据，请求时存前端看到的验证码。响应，请求共用该结构体
+        type: string
+      id:
+        type: string
+    type: object
+info:
+  contact:
+    url: https://github.com/ppoonk/AirGo
+  description: AirGo前后分离多用户代理面板
+  license:
+    name: GPL v3.0
+    url: https://github.com/ppoonk/AirGo/blob/main/LICENSE
+  title: AirGo
+  version: 0.1.9 版本
+paths:
+  /api/public/getBase64Captcha:
+    get:
+      description: 发送base64验证码
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Base64CaptchaInfo'
+      summary: 发送base64验证码
+      tags:
+      - public_api
+  /api/public/getEmailCode:
+    post:
+      consumes:
+      - application/json
+      description: 发送邮箱验证码
+      produces:
+      - application/json
+      responses: {}
+      summary: 发送邮箱验证码
+      tags:
+      - public_api
+swagger: "2.0"

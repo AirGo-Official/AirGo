@@ -1,0 +1,206 @@
+<template>
+  <el-dialog v-model="state.isShowDialog" :title="state.title" width="80%" destroy-on-close>
+    <el-form :model="shopStoreData.currentGoods.value" label-width="80px" label-position="top">
+      <el-form-item label="商品标题">
+        <el-input v-model="shopStoreData.currentGoods.value.subject" />
+      </el-form-item>
+      <el-form-item label="价格">
+        <el-col :span="4">
+          <el-input v-model="shopStoreData.currentGoods.value.price" />
+        </el-col>
+        <el-col :span="2" style="text-align: center">
+          <span>-</span>
+        </el-col>
+        <el-col :span="18">
+          <span class="text-gray-500">RMB</span>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="限购">
+        <el-input-number v-model="shopStoreData.currentGoods.value.quota" :min="0" :step="1"/>
+      </el-form-item>
+      <el-form-item label="库存">
+        <el-input-number v-model="shopStoreData.currentGoods.value.stock" :min="0" :step="1"/>
+      </el-form-item>
+      <el-row>
+        <el-col :span="5">
+          <el-form-item label="是否显示">
+            <el-switch v-model="shopStoreData.currentGoods.value.is_show" inline-prompt active-text="开启"
+                       inactive-text="关闭"
+                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="是否在售">
+            <el-switch v-model="shopStoreData.currentGoods.value.is_sale" inline-prompt active-text="开启"
+                       inactive-text="关闭"
+                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="是否可续费">
+            <el-switch v-model="shopStoreData.currentGoods.value.is_renew" inline-prompt active-text="开启"
+                       inactive-text="关闭"
+                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-form-item label="描述">
+        <v-md-editor v-model="shopStoreData.currentGoods.value.des" height="400px"></v-md-editor>
+      </el-form-item>
+
+
+      <el-form-item label="商品类型">
+        <el-radio-group v-model="shopStoreData.currentGoods.value.goods_type">
+          <el-radio :label="constantStore.GOODS_TYPE_GENERAL">普通商品</el-radio>
+          <el-radio :label="constantStore.GOODS_TYPE_SUBSCRIBE">订阅</el-radio>
+          <el-radio :label="constantStore.GOODS_TYPE_RECHARGE">充值</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <!--      发货参数开始-->
+      <div v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_GENERAL">
+        <el-form-item label="发货类型">
+          <el-radio-group v-model="shopStoreData.currentGoods.value.deliver_type">
+            <el-radio label="none">无需发货</el-radio>
+            <el-radio label="manual">手动发货</el-radio>
+            <el-radio label="auto">自动发货</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="发货内容" v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_AUTO">
+          <v-md-editor v-model="shopStoreData.currentGoods.value.deliver_text" height="400px"></v-md-editor>
+        </el-form-item>
+      </div>
+      <!--      发货参数结束-->
+      <!--      订阅商品开始-->
+      <div v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE">
+        <el-form-item label="总流量">
+          <el-col :span="4">
+            <el-input-number v-model.number="shopStoreData.currentGoods.value.total_bandwidth" />
+          </el-col>
+          <el-col :span="2" style="text-align: center">
+            <span>-</span>
+          </el-col>
+          <el-col :span="18">
+            <span class="text-gray-500">GB</span>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="关联节点">
+          <el-transfer
+            :data="nodeManageData.nodeList.value.data"
+            v-model="shopStoreData.checkedNodeIDs.value"
+            :props="{key: 'id',label: 'remarks',}"
+            :titles="['全部节点', '选中节点']"
+          />
+        </el-form-item>
+      </div>
+      <!--      订阅商品结束-->
+      <!--      充值商品开始-->
+      <div v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_RECHARGE">
+        <el-form-item label="充值金额">
+          <el-input v-model="shopStoreData.currentGoods.value.recharge_amount" placeholder="100.00"></el-input>
+        </el-form-item>
+      </div>
+      <!--      充值商品结束-->
+    </el-form>
+    <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="state.isShowDialog = false">取消</el-button>
+                <el-button type="primary" @click="onSubmit">
+                    确认
+                </el-button>
+            </span>
+    </template>
+  </el-dialog>
+</template>
+
+<script lang="ts" setup>
+import { storeToRefs } from "pinia";
+
+import { useAdminNodeStore } from "/@/stores/admin_logic/nodeStore";
+import { reactive } from "vue";
+import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
+import { useConstantStore } from "/@/stores/constantStore";
+
+const  shopStore  = useAdminShopStore()
+const shopStoreData = storeToRefs(shopStore)
+const nodeStore = useAdminNodeStore();
+const  nodeManageData  = storeToRefs(nodeStore);
+const constantStore = useConstantStore()
+// 定义子组件向父组件传值/事件
+const emit = defineEmits(["refresh"]);
+
+//定义参数
+const state = reactive({
+  isShowDialog: false,
+  type: "",
+  title: ""
+});
+
+// 打开弹窗
+const openDialog = (type: string, row?: Goods) => {
+  nodeStore.getAllNode()
+  if (type == "add") {
+    state.type = type;
+    state.title = "新建商品";
+    state.isShowDialog = true;
+    shopStoreData.currentGoods.value.id = 0; //清空上次编辑的id，否则无法新建
+  } else {
+    state.type = type;
+    state.title = "修改商品";
+    shopStoreData.currentGoods.value = row;
+    shopStore.nodeIDsHandler()
+    state.isShowDialog = true;
+  }
+};
+// 关闭弹窗
+const closeDialog = () => {
+  state.isShowDialog = false;
+};
+
+//确认提交
+function onSubmit() {
+  if (state.type === "add") {
+    shopStore.newGoods();
+    setTimeout(() => {
+      emit("refresh");
+    }, 500);
+  } else {
+    shopStore.updateGoods();
+    setTimeout(() => {
+      emit("refresh");
+    }, 500);
+  }
+  closeDialog();
+}
+
+// 暴露变量
+defineExpose({
+  openDialog
+});
+
+</script>
+
+
+<style>
+/* 定义两边的el-transfer-panel大小的方法,直接设置是没有用的,需要去掉scoped即可。才能成功覆盖原生的样式 */
+.el-transfer-panel {
+  width: 400px;
+  height: 600px;
+}
+
+.el-transfer-panel__body {
+  height: 600px;
+}
+
+.el-transfer-panel__list {
+  height: 550px;
+}
+
+/*穿梭框内部展示列表的高宽度*/
+/*:deep(.el-transfer-panel__list.is-filterable){*/
+/*  width:280px;*/
+/*  height:500px;*/
+/*}*/
+
+</style>
+  
