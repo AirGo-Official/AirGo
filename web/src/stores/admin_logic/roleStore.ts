@@ -12,10 +12,11 @@ const apiStoreData = storeToRefs(apiStore)
 export const useAdminRoleStore = defineStore("adminRoleStore", {
     state: () => ({
         // 角色菜单
-        checkedMenuIDs:[] as number[],
-        roleList: {
-            total: 0,
-            data: [] as RoleInfo[],
+        checkedMenuIDs:[] as number[],//编辑角色时，显示该角色已经关联的菜单
+        allMenuList:[] as Route[],    //编辑角色时，显示全部菜单树
+        roleList:{
+            total:0,
+            data:[] as RoleInfo[],
         },
         currentRole: {
             id: 0,
@@ -115,5 +116,9 @@ export const useAdminRoleStore = defineStore("adminRoleStore", {
             })
             return role
         },
+        allMenuListHandler(){
+
+        }
+
     }
 })

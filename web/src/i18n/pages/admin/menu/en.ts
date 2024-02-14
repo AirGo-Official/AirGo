@@ -5,6 +5,7 @@ export default {
     Route :{
       id: "id",
       parent_id: "parent id",
+      remarks:"remarks",
       path: "path",
       name:  "name",
       component:  "component", // 对应前端文件路径

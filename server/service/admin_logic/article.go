@@ -8,6 +8,8 @@ import (
 
 type Article struct{}
 
+var articleService *Article
+
 // 更新文章
 func (a *Article) UpdateArticle(article *model.Article) error {
 	return global.DB.Transaction(func(tx *gorm.DB) error {

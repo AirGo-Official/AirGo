@@ -48,16 +48,16 @@
 import { reactive, ref, onMounted, nextTick, watch, onUnmounted } from 'vue';
 import { useRoute, useRouter, onBeforeRouteUpdate, RouteRecordRaw } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useRoutesList } from '/@/stores/routesList';
 import { useThemeConfig } from '/@/stores/themeConfig';
 import mittBus from '/@/utils/mitt';
+import { useMenuStore } from "/@/stores/menuStore";
 
 // 定义变量内容
 const columnsAsideOffsetTopRefs = ref<RefType>([]);
 const columnsAsideActiveRef = ref();
-const stores = useRoutesList();
+const menuStore = useMenuStore()
 const storesThemeConfig = useThemeConfig();
-const { routesList, isColumnsMenuHover, isColumnsNavHover } = storeToRefs(stores);
+const menuStoreData = storeToRefs(menuStore)
 const { themeConfig } = storeToRefs(storesThemeConfig);
 const route = useRoute();
 const router = useRouter();
@@ -109,16 +109,16 @@ const onColumnsAsideMenuMouseenter = (v: RouteRecordRaw, k: number) => {
   state.liOldIndex = k;
   state.liHoverIndex = k;
   mittBus.emit('setSendColumnsChildren', setSendChildren(path));
-  stores.setColumnsMenuHover(false);
-  stores.setColumnsNavHover(true);
+  menuStore.setColumnsMenuHover(false);
+  menuStore.setColumnsNavHover(true);
 };
 // 鼠标移走时，显示原来的子级菜单
 const onColumnsAsideMenuMouseleave = async () => {
   if (!themeConfig.value.isColumnsMenuHoverPreload) return false;
-  await stores.setColumnsNavHover(false);
+  await menuStore.setColumnsNavHover(false);
   // 添加延时器，防止拿到的 store.state.routesList 值不是最新的
   setTimeout(() => {
-    if (!isColumnsMenuHover && !isColumnsNavHover) mittBus.emit('restoreDefault');
+    if (!menuStoreData.routesListSate.value.isColumnsMenuHover && !menuStoreData.routesListSate.value.isColumnsNavHover) mittBus.emit('restoreDefault');
   }, 100);
 };
 // 设置高亮动态位置
@@ -137,7 +137,7 @@ const setMenuAutoCollaps = (path: string) => {
 };
 // 设置/过滤路由（非静态路由/是否显示在菜单中）
 const setFilterRoutes = () => {
-  state.columnsAsideList = filterRoutesFun(routesList.value);
+  state.columnsAsideList = filterRoutesFun(menuStoreData.routesListSate.value.routesList);
   const resData: MittMenu = setMenuAutoCollaps(route.path);
   onColumnsAsideDown(resData.item?.k);
   // 延迟 500 毫秒更新，防止 aside.vue 组件 setSendColumnsChildren 还没有注册
@@ -202,10 +202,10 @@ onBeforeRouteUpdate((to) => {
 });
 // 监听布局配置信息的变化，动态增加菜单高亮位置移动像素
 watch(
-  [() => themeConfig.value.columnsAsideStyle, isColumnsMenuHover, isColumnsNavHover],
+  [() => themeConfig.value.columnsAsideStyle,menuStoreData.routesListSate.value.isColumnsMenuHover, menuStoreData.routesListSate.value.isColumnsNavHover],
   () => {
     themeConfig.value.columnsAsideStyle === 'columnsRound' ? (state.difference = 3) : (state.difference = 0);
-    if (!isColumnsMenuHover.value && !isColumnsNavHover.value) {
+    if (!menuStoreData.routesListSate.value.isColumnsMenuHover && !menuStoreData.routesListSate.value.isColumnsNavHover) {
       state.liHoverIndex = null;
       mittBus.emit('setSendColumnsChildren', setSendChildren(route.path));
     } else {

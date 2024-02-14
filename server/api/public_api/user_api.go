@@ -35,7 +35,7 @@ func Register(ctx *gin.Context) {
 		response.Fail("Verification code error,please try again!", nil, ctx) //验证错校验失败会清除store中的value，需要前端重新获取
 		return
 	}
-	//校验邮箱验证码
+	//处理邮箱验证码
 	userEmail := u.UserName + u.EmailSuffix //处理邮箱后缀
 	if global.Server.Subscribe.EnableEmailCode {
 		cacheEmail, ok := global.LocalCache.Get(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
@@ -52,16 +52,21 @@ func Register(ctx *gin.Context) {
 	}
 	global.LocalCache.Delete(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
 
-	//初步构建用户信息
+	//构建用户信息
 	var avatar string
 	if u.EmailSuffix == "@qq" {
 		avatar = fmt.Sprintf("https://q1.qlogo.cn/g?b=qq&nk=%s&s=100", u.UserName)
+	} else {
+		avatar = fmt.Sprintf("https://api.multiavatar.com/%s.svg", u.UserName)
 	}
 	err = userService.Register(&model.User{
-		UserName:     userEmail,
-		Password:     u.Password,
-		ReferrerCode: u.ReferrerCode,
-		Avatar:       avatar,
+		UserName:       u.UserName,
+		NickName:       u.UserName,
+		Avatar:         avatar,                                  //头像
+		Password:       encrypt_plugin.BcryptEncode(u.Password), //密码
+		RoleGroup:      []model.Role{{ID: 2}},                   //默认角色：普通用户角色
+		InvitationCode: encrypt_plugin.RandomString(8),          //邀请码
+		ReferrerCode:   u.ReferrerCode,                          //推荐人
 	})
 
 	if err != nil {

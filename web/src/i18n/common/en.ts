@@ -8,8 +8,11 @@ export default {
     operate:"Operate",
     delete:"Delete",
     modify:"Modify",
+    reset:"Reset",
 
     yes:"Yes",
     no:"No",
+    enable:"Enable",
+    disable:"Disable",
   },
 };

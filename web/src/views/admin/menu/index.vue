@@ -14,7 +14,7 @@
         <el-table-column :label="$t('message.adminMenu.Route.title')" show-overflow-tooltip width="200px">
           <template #default="scope">
             <SvgIcon :name="scope.row.meta.icon"/>
-            <span class="ml10">{{ $t(scope.row.meta.i18n_title) }}</span>
+            <span class="ml10">{{ $t(scope.row.meta.title) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="path" :label="$t('message.adminMenu.Route.path')" show-overflow-tooltip width="150px"></el-table-column>
@@ -38,7 +38,7 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <MenuDialog ref="menuDialogRef" @refresh="getData()"/>
+    <MenuDialog ref="menuDialogRef" @refresh="getMenuList()"/>
   </div>
 </template>
 
@@ -62,8 +62,8 @@ const state = reactive({
   },
 });
 
-// 获取路由数据
-const getData = () => {
+// 获取菜单列表
+const getMenuList = () => {
   state.tableData.loading = true;
   menuStore.getAllMenuList()
   setTimeout(() => {
@@ -87,17 +87,13 @@ const onTableRowDel = (row: RouteRecordRaw) => {
     type: 'warning',
   })
       .then(() => {
-        //console.log("删除当前行 row:",row)
-        menuStore.delMenu(row)
-        setTimeout(() => {
-          getData();
-        }, 1000);
-      })
-      .catch(() => {
-      });
+        menuStore.delMenu(row).then(()=>{
+          getMenuList();
+        })
+        })
 };
 // 页面加载时
 onMounted(() => {
-  getData();
+  getMenuList();
 });
 </script>

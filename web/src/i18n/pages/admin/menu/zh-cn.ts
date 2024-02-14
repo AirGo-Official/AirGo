@@ -6,6 +6,7 @@ export default {
       id: "id",
       parent_menu:"父级菜单",
       parent_id: "父级菜单id",
+      remarks:"别名",
       path: "路由路径",
       name:  "路由名称",
       component:  "前端文件路径", // 对应前端文件路径

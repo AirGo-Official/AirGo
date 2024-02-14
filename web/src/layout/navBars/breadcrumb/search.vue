@@ -18,7 +18,7 @@
           <template #default="{ item }">
             <div>
               <SvgIcon :name="item.meta.icon" class="mr5"/>
-              {{ item.meta.title }}
+              {{ $t(item.meta.title) }}
             </div>
           </template>
         </el-autocomplete>

@@ -26,13 +26,10 @@ func InitAdminRouter(RouterGroup *gin.RouterGroup) {
 	// menu
 	menuAdminRouter := adminRouter.Group("/menu")
 	{
-		menuAdminRouter.POST("/newMenu", admin_api.NewMenu)       //新建动态路由
-		menuAdminRouter.POST("/updateMenu", admin_api.UpdateMenu) //修改动态路由
-		menuAdminRouter.DELETE("/delMenu", admin_api.DelMenu)     //删除动态路由
-
-		menuAdminRouter.GET("/getMenuTree", admin_api.GetMenuTree)       //获取当前角色动态路由tree
+		menuAdminRouter.POST("/newMenu", admin_api.NewMenu)              //新建动态路由
+		menuAdminRouter.POST("/updateMenu", admin_api.UpdateMenu)        //修改动态路由
+		menuAdminRouter.DELETE("/delMenu", admin_api.DelMenu)            //删除动态路由
 		menuAdminRouter.GET("/getAllMenuList", admin_api.GetAllMenuList) //获取全部动态路由
-		menuAdminRouter.GET("/getAllMenuTree", admin_api.GetAllMenuTree) //获取全部动态路由tree
 	}
 	//role
 	roleAdminRouter := adminRouter.Group("/role")

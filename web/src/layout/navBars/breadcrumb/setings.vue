@@ -39,12 +39,12 @@
           </div>
         </div>
         <!--        深色模式-->
-        <div class="layout-breadcrumb-seting-bar-flex mt15">
-          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsDark') }}</div>
-          <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isIsDark" size="small" @change="onAddDarkChange"></el-switch>
-          </div>
-        </div>
+<!--        <div class="layout-breadcrumb-seting-bar-flex mt15">-->
+<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsDark') }}</div>-->
+<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
+<!--            <el-switch v-model="getThemeConfig.isIsDark" size="small" @change="onAddDarkChange"></el-switch>-->
+<!--          </div>-->
+<!--        </div>-->
 
         <!-- 顶栏设置 -->
         <el-divider content-position="left">{{ $t('message.layout.twoTopTitle') }}</el-divider>
@@ -108,130 +108,130 @@
 
         <!-- 分栏设置 -->
         <div>
-<!--          <el-divider content-position="left" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">{{$t('message.layout.twoColumnsTitle') }}</el-divider>-->
-<!--          &lt;!&ndash;        分栏菜单背景&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.twoColumnsMenuBar') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-color-picker-->
-<!--                v-model="getThemeConfig.columnsMenuBar"-->
-<!--                size="default"-->
-<!--                @change="onBgColorPickerChange('columnsMenuBar')"-->
-<!--                :disabled="getThemeConfig.layout !== 'columns'"-->
-<!--              >-->
-<!--              </el-color-picker>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          &lt;!&ndash;        分栏菜单默认字体颜色&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.twoColumnsMenuBarColor') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-color-picker-->
-<!--                v-model="getThemeConfig.columnsMenuBarColor"-->
-<!--                size="default"-->
-<!--                @change="onBgColorPickerChange('columnsMenuBarColor')"-->
-<!--                :disabled="getThemeConfig.layout !== 'columns'"-->
-<!--              >-->
-<!--              </el-color-picker>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          &lt;!&ndash;        分栏菜单背景渐变&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex mt14" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.twoIsColumnsMenuBarColorGradual') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-switch-->
-<!--                v-model="getThemeConfig.isColumnsMenuBarColorGradual"-->
-<!--                size="small"-->
-<!--                @change="onColumnsMenuBarGradualChange"-->
-<!--                :disabled="getThemeConfig.layout !== 'columns'"-->
-<!--              ></el-switch>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          &lt;!&ndash;        分栏菜单鼠标悬停预加载&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex mt14" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.twoIsColumnsMenuHoverPreload') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-switch-->
-<!--                v-model="getThemeConfig.isColumnsMenuHoverPreload"-->
-<!--                size="small"-->
-<!--                @change="onColumnsMenuHoverPreloadChange"-->
-<!--                :disabled="getThemeConfig.layout !== 'columns'"-->
-<!--              ></el-switch>-->
-<!--            </div>-->
-<!--          </div>-->
+          <el-divider content-position="left" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">{{$t('message.layout.twoColumnsTitle') }}</el-divider>
+          <!--        分栏菜单背景-->
+          <div class="layout-breadcrumb-seting-bar-flex" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.twoColumnsMenuBar') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-color-picker
+                v-model="getThemeConfig.columnsMenuBar"
+                size="default"
+                @change="onBgColorPickerChange('columnsMenuBar')"
+                :disabled="getThemeConfig.layout !== 'columns'"
+              >
+              </el-color-picker>
+            </div>
+          </div>
+          <!--        分栏菜单默认字体颜色-->
+          <div class="layout-breadcrumb-seting-bar-flex" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.twoColumnsMenuBarColor') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-color-picker
+                v-model="getThemeConfig.columnsMenuBarColor"
+                size="default"
+                @change="onBgColorPickerChange('columnsMenuBarColor')"
+                :disabled="getThemeConfig.layout !== 'columns'"
+              >
+              </el-color-picker>
+            </div>
+          </div>
+          <!--        分栏菜单背景渐变-->
+          <div class="layout-breadcrumb-seting-bar-flex mt14" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.twoIsColumnsMenuBarColorGradual') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-switch
+                v-model="getThemeConfig.isColumnsMenuBarColorGradual"
+                size="small"
+                @change="onColumnsMenuBarGradualChange"
+                :disabled="getThemeConfig.layout !== 'columns'"
+              ></el-switch>
+            </div>
+          </div>
+          <!--        分栏菜单鼠标悬停预加载-->
+          <div class="layout-breadcrumb-seting-bar-flex mt14" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.twoIsColumnsMenuHoverPreload') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-switch
+                v-model="getThemeConfig.isColumnsMenuHoverPreload"
+                size="small"
+                @change="onColumnsMenuHoverPreloadChange"
+                :disabled="getThemeConfig.layout !== 'columns'"
+              ></el-switch>
+            </div>
+          </div>
         </div>
 
 
         <!-- 界面设置 -->
         <div>
-<!--          <el-divider content-position="left">{{ $t('message.layout.threeTitle') }}</el-divider>-->
-<!--          &lt;!&ndash;        菜单水平折叠&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex" :style="{ opacity: getThemeConfig.layout === 'transverse' ? 0.5 : 1 }">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsCollapse') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-switch-->
-<!--                v-model="getThemeConfig.isCollapse"-->
-<!--                :disabled="getThemeConfig.layout === 'transverse'"-->
-<!--                size="small"-->
-<!--                @change="onThemeConfigChange"-->
-<!--              ></el-switch>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          &lt;!&ndash;        菜单手风琴&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex mt15" :style="{ opacity: getThemeConfig.layout === 'transverse' ? 0.5 : 1 }">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsUniqueOpened') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-switch-->
-<!--                v-model="getThemeConfig.isUniqueOpened"-->
-<!--                :disabled="getThemeConfig.layout === 'transverse'"-->
-<!--                size="small"-->
-<!--                @change="setLocalThemeConfig"-->
-<!--              ></el-switch>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          &lt;!&ndash;        固定 Header&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex mt15">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsFixedHeader') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-switch v-model="getThemeConfig.isFixedHeader" size="small" @change="onIsFixedHeaderChange"></el-switch>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          &lt;!&ndash;        经典布局分割菜单&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex mt15" :style="{ opacity: getThemeConfig.layout !== 'classic' ? 0.5 : 1 }">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsClassicSplitMenu') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-switch-->
-<!--                v-model="getThemeConfig.isClassicSplitMenu"-->
-<!--                :disabled="getThemeConfig.layout !== 'classic'"-->
-<!--                size="small"-->
-<!--                @change="onClassicSplitMenuChange"-->
-<!--              >-->
-<!--              </el-switch>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          &lt;!&ndash;        开启锁屏&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex mt15">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsLockScreen') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-switch v-model="getThemeConfig.isLockScreen" size="small" @change="setLocalThemeConfig"></el-switch>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          &lt;!&ndash;        自动锁屏(s/秒)&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex mt11">-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeLockScreenTime') }}</div>-->
-<!--            <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--              <el-input-number-->
-<!--                v-model="getThemeConfig.lockScreenTime"-->
-<!--                controls-position="right"-->
-<!--                :min="1"-->
-<!--                :max="9999"-->
-<!--                @change="setLocalThemeConfig"-->
-<!--                size="default"-->
-<!--                style="width: 90px"-->
-<!--              >-->
-<!--              </el-input-number>-->
-<!--            </div>-->
-<!--          </div>-->
+          <el-divider content-position="left">{{ $t('message.layout.threeTitle') }}</el-divider>
+          <!--        菜单水平折叠-->
+          <div class="layout-breadcrumb-seting-bar-flex" :style="{ opacity: getThemeConfig.layout === 'transverse' ? 0.5 : 1 }">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsCollapse') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-switch
+                v-model="getThemeConfig.isCollapse"
+                :disabled="getThemeConfig.layout === 'transverse'"
+                size="small"
+                @change="onThemeConfigChange"
+              ></el-switch>
+            </div>
+          </div>
+          <!--        菜单手风琴-->
+          <div class="layout-breadcrumb-seting-bar-flex mt15" :style="{ opacity: getThemeConfig.layout === 'transverse' ? 0.5 : 1 }">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsUniqueOpened') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-switch
+                v-model="getThemeConfig.isUniqueOpened"
+                :disabled="getThemeConfig.layout === 'transverse'"
+                size="small"
+                @change="setLocalThemeConfig"
+              ></el-switch>
+            </div>
+          </div>
+          <!--        固定 Header-->
+          <div class="layout-breadcrumb-seting-bar-flex mt15">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsFixedHeader') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-switch v-model="getThemeConfig.isFixedHeader" size="small" @change="onIsFixedHeaderChange"></el-switch>
+            </div>
+          </div>
+          <!--        经典布局分割菜单-->
+          <div class="layout-breadcrumb-seting-bar-flex mt15" :style="{ opacity: getThemeConfig.layout !== 'classic' ? 0.5 : 1 }">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsClassicSplitMenu') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-switch
+                v-model="getThemeConfig.isClassicSplitMenu"
+                :disabled="getThemeConfig.layout !== 'classic'"
+                size="small"
+                @change="onClassicSplitMenuChange"
+              >
+              </el-switch>
+            </div>
+          </div>
+          <!--        开启锁屏-->
+          <div class="layout-breadcrumb-seting-bar-flex mt15">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsLockScreen') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-switch v-model="getThemeConfig.isLockScreen" size="small" @change="setLocalThemeConfig"></el-switch>
+            </div>
+          </div>
+          <!--        自动锁屏(s/秒)-->
+          <div class="layout-breadcrumb-seting-bar-flex mt11">
+            <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeLockScreenTime') }}</div>
+            <div class="layout-breadcrumb-seting-bar-flex-value">
+              <el-input-number
+                v-model="getThemeConfig.lockScreenTime"
+                controls-position="right"
+                :min="1"
+                :max="9999"
+                @change="setLocalThemeConfig"
+                size="default"
+                style="width: 90px"
+              >
+              </el-input-number>
+            </div>
+          </div>
 
         </div>
 
@@ -246,68 +246,68 @@
           </div>
         </div>
 
-<!--        <div-->
-<!--          class="layout-breadcrumb-seting-bar-flex mt15"-->
-<!--          :style="{ opacity: getThemeConfig.layout === 'classic' || getThemeConfig.layout === 'transverse' ? 0.5 : 1 }"-->
-<!--        >-->
-<!--          &lt;!&ndash;        开启 Breadcrumb&ndash;&gt;-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsBreadcrumb') }}</div>-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--            <el-switch-->
-<!--              v-model="getThemeConfig.isBreadcrumb"-->
-<!--              :disabled="getThemeConfig.layout === 'classic' || getThemeConfig.layout === 'transverse'"-->
-<!--              size="small"-->
-<!--              @change="onIsBreadcrumbChange"-->
-<!--            ></el-switch>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash;        开启 Breadcrumb 图标&ndash;&gt;-->
-<!--        <div class="layout-breadcrumb-seting-bar-flex mt15">-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsBreadcrumbIcon') }}</div>-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--            <el-switch v-model="getThemeConfig.isBreadcrumbIcon" size="small" @change="setLocalThemeConfig"></el-switch>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash;        开启 Tagsview&ndash;&gt;-->
-<!--        <div class="layout-breadcrumb-seting-bar-flex mt15">-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsTagsview') }}</div>-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--            <el-switch v-model="getThemeConfig.isTagsview" size="small" @change="setLocalThemeConfig"></el-switch>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash;        开启 Tagsview 图标&ndash;&gt;-->
-<!--        <div class="layout-breadcrumb-seting-bar-flex mt15">-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsTagsviewIcon') }}</div>-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--            <el-switch v-model="getThemeConfig.isTagsviewIcon" size="small" @change="setLocalThemeConfig"></el-switch>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash;        开启 TagsView 缓存&ndash;&gt;-->
-<!--        <div class="layout-breadcrumb-seting-bar-flex mt15">-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsCacheTagsView') }}</div>-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--            <el-switch v-model="getThemeConfig.isCacheTagsView" size="small" @change="setLocalThemeConfig"></el-switch>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash;        开启 TagsView 拖拽&ndash;&gt;-->
-<!--        <div class="layout-breadcrumb-seting-bar-flex mt15" :style="{ opacity: state.isMobile ? 0.5 : 1 }">-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsSortableTagsView') }}</div>-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--            <el-switch-->
-<!--              v-model="getThemeConfig.isSortableTagsView"-->
-<!--              :disabled="state.isMobile ? true : false"-->
-<!--              size="small"-->
-<!--              @change="onSortableTagsViewChange"-->
-<!--            ></el-switch>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash;        开启 TagsView 共用&ndash;&gt;-->
-<!--        <div class="layout-breadcrumb-seting-bar-flex mt15">-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsShareTagsView') }}</div>-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--            <el-switch v-model="getThemeConfig.isShareTagsView" size="small" @change="onShareTagsViewChange"></el-switch>-->
-<!--          </div>-->
-<!--        </div>-->
+        <div
+          class="layout-breadcrumb-seting-bar-flex mt15"
+          :style="{ opacity: getThemeConfig.layout === 'classic' || getThemeConfig.layout === 'transverse' ? 0.5 : 1 }"
+        >
+          <!--        开启 Breadcrumb-->
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsBreadcrumb') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-switch
+              v-model="getThemeConfig.isBreadcrumb"
+              :disabled="getThemeConfig.layout === 'classic' || getThemeConfig.layout === 'transverse'"
+              size="small"
+              @change="onIsBreadcrumbChange"
+            ></el-switch>
+          </div>
+        </div>
+        <!--        开启 Breadcrumb 图标-->
+        <div class="layout-breadcrumb-seting-bar-flex mt15">
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsBreadcrumbIcon') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-switch v-model="getThemeConfig.isBreadcrumbIcon" size="small" @change="setLocalThemeConfig"></el-switch>
+          </div>
+        </div>
+        <!--        开启 Tagsview-->
+        <div class="layout-breadcrumb-seting-bar-flex mt15">
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsTagsview') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-switch v-model="getThemeConfig.isTagsview" size="small" @change="setLocalThemeConfig"></el-switch>
+          </div>
+        </div>
+        <!--        开启 Tagsview 图标-->
+        <div class="layout-breadcrumb-seting-bar-flex mt15">
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsTagsviewIcon') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-switch v-model="getThemeConfig.isTagsviewIcon" size="small" @change="setLocalThemeConfig"></el-switch>
+          </div>
+        </div>
+        <!--        开启 TagsView 缓存-->
+        <div class="layout-breadcrumb-seting-bar-flex mt15">
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsCacheTagsView') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-switch v-model="getThemeConfig.isCacheTagsView" size="small" @change="setLocalThemeConfig"></el-switch>
+          </div>
+        </div>
+        <!--        开启 TagsView 拖拽-->
+        <div class="layout-breadcrumb-seting-bar-flex mt15" :style="{ opacity: state.isMobile ? 0.5 : 1 }">
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsSortableTagsView') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-switch
+              v-model="getThemeConfig.isSortableTagsView"
+              :disabled="state.isMobile ? true : false"
+              size="small"
+              @change="onSortableTagsViewChange"
+            ></el-switch>
+          </div>
+        </div>
+        <!--        开启 TagsView 共用-->
+        <div class="layout-breadcrumb-seting-bar-flex mt15">
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsShareTagsView') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-switch v-model="getThemeConfig.isShareTagsView" size="small" @change="onShareTagsViewChange"></el-switch>
+          </div>
+        </div>
         <!--        开启 Footer-->
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsFooter') }}</div>
@@ -368,40 +368,40 @@
             </el-select>
           </div>
         </div>
-<!--        &lt;!&ndash;        分栏高亮风格&ndash;&gt;-->
-<!--        <div class="layout-breadcrumb-seting-bar-flex mt15" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveColumnsAsideStyle') }}</div>-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--            <el-select-->
-<!--              v-model="getThemeConfig.columnsAsideStyle"-->
-<!--              placeholder="请选择"-->
-<!--              size="default"-->
-<!--              style="width: 90px"-->
-<!--              :disabled="getThemeConfig.layout !== 'columns' ? true : false"-->
-<!--              @change="setLocalThemeConfig"-->
-<!--            >-->
-<!--              <el-option label="圆角" value="columns-round"></el-option>-->
-<!--              <el-option label="卡片" value="columns-card"></el-option>-->
-<!--            </el-select>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash;        分栏布局风格&ndash;&gt;-->
-<!--        <div class="layout-breadcrumb-seting-bar-flex mt15 mb27" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveColumnsAsideLayout') }}</div>-->
-<!--          <div class="layout-breadcrumb-seting-bar-flex-value">-->
-<!--            <el-select-->
-<!--              v-model="getThemeConfig.columnsAsideLayout"-->
-<!--              placeholder="请选择"-->
-<!--              size="default"-->
-<!--              style="width: 90px"-->
-<!--              :disabled="getThemeConfig.layout !== 'columns' ? true : false"-->
-<!--              @change="setLocalThemeConfig"-->
-<!--            >-->
-<!--              <el-option label="水平" value="columns-horizontal"></el-option>-->
-<!--              <el-option label="垂直" value="columns-vertical"></el-option>-->
-<!--            </el-select>-->
-<!--          </div>-->
-<!--        </div>-->
+        <!--        分栏高亮风格-->
+        <div class="layout-breadcrumb-seting-bar-flex mt15" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveColumnsAsideStyle') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-select
+              v-model="getThemeConfig.columnsAsideStyle"
+              placeholder="请选择"
+              size="default"
+              style="width: 90px"
+              :disabled="getThemeConfig.layout !== 'columns' ? true : false"
+              @change="setLocalThemeConfig"
+            >
+              <el-option label="圆角" value="columns-round"></el-option>
+              <el-option label="卡片" value="columns-card"></el-option>
+            </el-select>
+          </div>
+        </div>
+        <!--        分栏布局风格-->
+        <div class="layout-breadcrumb-seting-bar-flex mt15 mb27" :style="{ opacity: getThemeConfig.layout !== 'columns' ? 0.5 : 1 }">
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveColumnsAsideLayout') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-select
+              v-model="getThemeConfig.columnsAsideLayout"
+              placeholder="请选择"
+              size="default"
+              style="width: 90px"
+              :disabled="getThemeConfig.layout !== 'columns' ? true : false"
+              @change="setLocalThemeConfig"
+            >
+              <el-option label="水平" value="columns-horizontal"></el-option>
+              <el-option label="垂直" value="columns-vertical"></el-option>
+            </el-select>
+          </div>
+        </div>
 
         <!-- 布局切换 -->
         <el-divider content-position="left">{{ $t('message.layout.sixTitle') }}</el-divider>

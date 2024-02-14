@@ -3,7 +3,7 @@
     <div class="home-card-item" v-if="customerServiceStoreData.customerServiceList.value.length === 0">
       <el-card>
         <el-skeleton :rows="5" animated />
-        <span>暂无数据</span>
+        <h2>{{$t('message.home.no_data')}}</h2>
       </el-card>
     </div>
 
@@ -112,7 +112,6 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, defineAsyncComponent } from "vue";
-import { request } from "/@/utils/request";
 import { useApiStore } from "/@/stores/apiStore";
 import { DateStrToTime } from "/@/utils/formatTime";
 import commonFunction from "/@/utils/commonFunction";
@@ -140,6 +139,7 @@ const Purchase = defineAsyncComponent(() => import("/@/views/shop/purchase.vue")
 const PurchaseRef = ref();
 const {t} = useI18n()
 
+//组件
 const DialogCustomerServiceDetails = defineAsyncComponent(() => import("/@/views/home/dialog_customer_service_details.vue"));
 const DialogCustomerServiceDetailsRef = ref();
 // const format = (percentage) => (percentage === 100 ? 'Full' : `${percentage}%`)
@@ -148,7 +148,7 @@ const state = reactive({
   isShowPushDialog: false,
   subType: ["NekoBox", "v2rayNG", "v2rayN", "Shadowrocket", "Clash", "Surge", "Quantumult", "V2rayU"],
   currentSubUUID: "",
-  QRcode: null
+  QRcode: null,
 });
 const customColors = [
   { color: "#9af56c", percentage: 20 },

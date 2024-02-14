@@ -3,6 +3,7 @@ declare interface CustomerService {
   updated_at:string
   id:number
   user_id:number
+  user_name:string
   service_status:boolean
   service_start_at:string
   service_end_at:string

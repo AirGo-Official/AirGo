@@ -1,6 +1,7 @@
 import {defineStore, storeToRefs} from "pinia";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
+import { Session } from "/@/utils/storage";
 
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
@@ -45,11 +46,20 @@ export const useArticleStore = defineStore("articleStore", {
             this.articleList = res.data
         },
         async getDefaultArticles() {
-            const res = await request(apiStoreData.userApi.value.getDefaultArticleList)
-            let temp: Article[] = res.data.data
-            if (temp.length === 2) {
+            //尝试从session中获取
+            if (Session.get('defaultArticles')){
+                let temp: Article[] = Session.get('defaultArticles')
                 this.articleID1 = temp[0]
                 this.articleID2 = temp[1]
+            } else {
+                const res = await request(apiStoreData.userApi.value.getDefaultArticleList)
+                const total = res.data.total
+                let temp: Article[] = res.data.data
+                if (total === 2) {
+                    this.articleID1 = temp[0]
+                    this.articleID2 = temp[1]
+                    Session.set('defaultArticles',temp)
+                }
             }
         }
     }

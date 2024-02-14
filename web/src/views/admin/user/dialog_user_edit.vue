@@ -6,49 +6,49 @@
         :column="1"
         border
       >
-        <el-descriptions-item label="ID">{{ userStoreData.currentUser.value.id }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ DateStrToTime(userStoreData.currentUser.value.created_at) }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('message.adminUser.SysUser.id') ">{{ userStoreData.currentUser.value.id }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('message.adminUser.SysUser.created_at') ">{{ DateStrToTime(userStoreData.currentUser.value.created_at) }}</el-descriptions-item>
       </el-descriptions>
-      <el-form ref="userDialogFormRef" :model="userStoreData.currentUser.value" size="default" label-width="90px">
-            <el-form-item label="账户邮箱">
-              <el-input v-model="userStoreData.currentUser.value.user_name" placeholder="请输入账户邮箱"
+      <el-form ref="userDialogFormRef" :model="userStoreData.currentUser.value" size="default" label-position="top">
+            <el-form-item :label="$t('message.adminUser.SysUser.user_name') ">
+              <el-input v-model="userStoreData.currentUser.value.user_name"
                         clearable></el-input>
             </el-form-item>
-            <el-form-item label="账户密码">
-              <el-input v-model="userStoreData.currentUser.value.password" placeholder="请输入"
+            <el-form-item :label="$t('message.adminUser.SysUser.password') ">
+              <el-input v-model="userStoreData.currentUser.value.password"
                         clearable></el-input>
             </el-form-item>
-            <el-form-item label="关联角色">
+            <el-form-item :label="$t('message.adminUser.SysUser.role_group') ">
               <el-checkbox-group v-model="userStoreData.check_list.value">
                 <el-checkbox :label="v.role_name" v-for="(v,index) in roleStoreData.roleList.value.data"
                              :key="index"></el-checkbox>
               </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="用户状态">
-              <el-switch v-model="userStoreData.currentUser.value.enable" inline-prompt active-text="开启"
-                         inactive-text="关闭"></el-switch>
+            <el-form-item :label="$t('message.adminUser.SysUser.enable') ">
+              <el-switch v-model="userStoreData.currentUser.value.enable" inline-prompt :active-text="$t('message.common.enable') "
+                         inactive-text="$t('message.common.disable') "></el-switch>
             </el-form-item>
-            <el-form-item label="余额">
+            <el-form-item :label="$t('message.adminUser.SysUser.balance') ">
               <el-input-number v-model.number="userStoreData.currentUser.value.balance" type="number"></el-input-number>
             </el-form-item>
-        <el-form-item label="TG ID">
+        <el-form-item :label="$t('message.adminUser.SysUser.tg_id') ">
           <el-input v-model.number="userStoreData.currentUser.value.tg_id" type="number"></el-input>
         </el-form-item>
-            <el-form-item label="推荐人">
+            <el-form-item :label="$t('message.adminUser.SysUser.referrer_code') ">
               <el-input v-model="userStoreData.currentUser.value.referrer_code"></el-input>
             </el-form-item>
-            <el-form-item label="邀请码">
+            <el-form-item :label="$t('message.adminUser.SysUser.invitation_code')">
               <el-input v-model="userStoreData.currentUser.value.invitation_code">
                 <template #append>
-                  <el-button @click="resetInvitationCode">重置</el-button>
+                  <el-button @click="resetInvitationCode">{{ $t('message.common.reset') }}</el-button>
                 </template>
               </el-input>
             </el-form-item>
       </el-form>
       <template #footer>
 				<span class="dialog-footer">
-					<el-button @click="closeDialog" size="default">取 消</el-button>
-					<el-button type="primary" @click="onSubmit" size="default">{{ state.submitTxt }}</el-button>
+					<el-button @click="closeDialog" size="default">{{ $t('message.common.button_cancel') }}</el-button>
+					<el-button type="primary" @click="onSubmit" size="default">{{ $t('message.common.button_confirm') }}</el-button>
 				</span>
       </template>
     </el-dialog>
@@ -64,6 +64,7 @@ import {randomStringNew} from "/@/utils/encrypt"
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { useAdminUserStore } from "/@/stores/admin_logic/userStore";
 import {DateStrToTime} from "/@/utils/formatTime"
+import { useI18n } from "vue-i18n";
 
 const userStore = useAdminUserStore()
 const userStoreData = storeToRefs(userStore)
@@ -72,6 +73,7 @@ const roleStoreData = storeToRefs(roleStore)
 const shopStore = useAdminShopStore()
 const emit = defineEmits(['refresh']);
 const userDialogFormRef = ref();
+const {t} = useI18n()
 
 const state = reactive({
   isShowDialog: false,
@@ -82,12 +84,14 @@ const state = reactive({
 
 // 打开弹窗
 const openDialog = (type: string, row: SysUser) => {
+  state.type = type
   state.isShowDialog = true;
-  shopStore.getGoodsList() //获取全部套餐
+  //打开时加载全部套餐
+  shopStore.getGoodsList()
+  //打开时加载全部角色，用来设置用户角色
+  roleStore.getRoleList({page_num: 1, page_size: 10000})
   if (type === 'edit') {
-    state.title = '修改用户';
-    state.submitTxt = '修 改';
-    // userStoreData.currentUser.value = JSON.parse(JSON.stringify(row)) //深拷贝,防止修改时间报错
+    state.title = t('message.adminUser.modify_user');
     userStoreData.currentUser.value = row
     userStoreData.currentUser.value.password = ''
     //计算用户的角色
@@ -97,12 +101,9 @@ const openDialog = (type: string, row: SysUser) => {
     })
     userStoreData.check_list.value = currentUserRoleIds
   } else {
-    state.title = '新增用户';
-    state.submitTxt = '新 增';
+    state.title = t('message.adminUser.add_user');
     userStore.resetData();
   }
-//打开时加载全部角色，用来设置用户角色
-  roleStore.getRoleList({page_num: 1, page_size: 10000})
 };
 // 关闭弹窗
 const closeDialog = () => {
@@ -117,7 +118,7 @@ const onSubmit = () => {
       role_name: value,
     } as RoleInfo)
   })
-  if (state.title === '新增用户') {
+  if (state.type === 'add') {
     userStore.newUser(userStoreData.currentUser.value)
   } else {
     userStore.updateUser(userStoreData.currentUser.value)

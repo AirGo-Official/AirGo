@@ -1,5 +1,7 @@
 export default {
   home: {
+    no_data:"There is currently no data available",
+
     button_push:"PUSH",
     button_details:"Details",
     button_renew:"Renew",

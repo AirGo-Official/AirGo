@@ -14,9 +14,12 @@
               </el-cascader>
             </el-form-item>
 
-
             <el-form-item :label="$t('message.adminMenu.Route.parent_id')">
               <el-input v-model="menuStoreData.currentMenu.value.parent_id"></el-input>
+            </el-form-item>
+
+            <el-form-item :label="$t('message.adminMenu.Route.remarks')">
+              <el-input v-model="menuStoreData.currentMenu.value.remarks"></el-input>
             </el-form-item>
 
             <el-form-item :label="$t('message.adminMenu.Route.title')">
@@ -128,10 +131,7 @@ const onSubmit = () => {
 };
 // 页面加载时
 onMounted(() => {
-  // menuStore.setAllRoutesList()
-  // menuStore.setRoutesTree()
   menuStore.getAllMenuList()
-  menuStore.getAllMenuTree()
 });
 
 // 暴露变量

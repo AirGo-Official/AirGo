@@ -5,7 +5,6 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/admin_logic"
 	"github.com/ppoonk/AirGo/service/common_logic"
 	"github.com/ppoonk/AirGo/utils/response"
 )
@@ -50,13 +49,11 @@ func UpdateSetting(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	admin_logic.Show(setting)
 	err = systemService.UpdateSetting(&setting)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("UpdateSetting error:"+err.Error(), nil, ctx)
 		return
 	}
-
 	response.OK("UpdateSetting success", nil, ctx)
 }

@@ -84,7 +84,7 @@ export default {
 
     configTitle: "Layout configuration",
     oneTitle: "Global Themes",
-    twoTopTitle: "top bar set up",
+    twoTopTitle: "Top bar set up",
     twoMenuTitle: "Menu set up",
     twoColumnsTitle: "Columns set up",
     twoTopBar: "Top bar background",

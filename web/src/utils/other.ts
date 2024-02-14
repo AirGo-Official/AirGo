@@ -7,6 +7,8 @@ import {storeToRefs} from 'pinia';
 import {useThemeConfig} from '/@/stores/themeConfig';
 import {Local,Session} from '/@/utils/storage';
 import {verifyUrl} from '/@/utils/toolsValidate';
+// import { useI18n } from "vue-i18n";
+// const {t} = useI18n()
 
 // 引入组件
 const SvgIcon = defineAsyncComponent(() => import('/@/components/svgIcon/index.vue'));

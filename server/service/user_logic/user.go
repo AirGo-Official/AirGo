@@ -21,23 +21,15 @@ type User struct{}
 var userService *User
 
 // 注册
-func (us *User) Register(u *model.User) error {
+func (us *User) Register(userParams *model.User) error {
 	//判断是否存在
 	var user model.User
-	err := global.DB.Where(&model.User{UserName: u.UserName}).First(&user).Error
+	err := global.DB.Where(&model.User{UserName: userParams.UserName}).First(&user).Error
 	if err == nil {
 		return errors.New("User already exists")
 	} else if err == gorm.ErrRecordNotFound {
-		var newUser = model.User{
-			UserName:       u.UserName,
-			NickName:       u.UserName,
-			Avatar:         u.Avatar,                                //头像
-			Password:       encrypt_plugin.BcryptEncode(u.Password), //密码
-			RoleGroup:      []model.Role{{ID: 2}},                   //默认角色：普通用户角色
-			InvitationCode: encrypt_plugin.RandomString(8),          //邀请码
-			ReferrerCode:   u.ReferrerCode,                          //推荐人
-		}
-		return us.CreateUser(&newUser)
+
+		return us.CreateUser(userParams)
 	} else {
 		return err
 	}

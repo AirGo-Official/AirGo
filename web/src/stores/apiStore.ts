@@ -34,10 +34,7 @@ export const useApiStore = defineStore("apiStore", {
             newMenu:{path: adminApiPre + "/menu/newMenu", method: "post"} as ApiItem,
             updateMenu:{path: adminApiPre + "/menu/updateMenu", method: "post"} as ApiItem,
             delMenu:{path: adminApiPre + "/menu/delMenu", method: "delete"} as ApiItem,
-
-            getMenuTree:{path: adminApiPre + "/menu/getMenuTree", method: "get"} as ApiItem,
             getAllMenuList:{path: adminApiPre + "/menu/getAllMenuList", method: "get"} as ApiItem,
-            getAllMenuTree:{path: adminApiPre + "/menu/getAllMenuTree", method: "get"} as ApiItem,
 
             // role
             newRole:{path: adminApiPre + "/role/newRole", method: "post"} as ApiItem,

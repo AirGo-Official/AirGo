@@ -130,7 +130,6 @@ func (q *Queue) Unsubscribe(topic string, sub <-chan any) error {
 	if !ok {
 		return nil
 	}
-	// delete subscriber
 	q.Lock()
 	var newSubs []chan any
 	for _, subscriber := range subscribers {

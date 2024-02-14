@@ -2,33 +2,31 @@
   <div class="system-role-container layout-padding">
     <div class="system-role-padding layout-padding-auto layout-padding-view">
       <div class="system-user-search mb15">
-        <el-input v-model="state.queryParams.search" size="default" placeholder="请输入角色名称"
-                  style="max-width: 180px"></el-input>
         <el-button size="default" type="success" class="ml10" @click="onOpenAddRole('add')">
           <el-icon>
             <ele-FolderAdd/>
           </el-icon>
-          新增角色
+          {{$t('message.adminRole.add_role')}}
         </el-button>
       </div>
       <el-table :data="roleStoreData.roleList.value.data" stripe v-loading="state.loading"
                 style="width: 100%">
-        <el-table-column type="index" label="序号" width="60" fixed/>
-        <el-table-column prop="role_name" label="角色名称" show-overflow-tooltip fixed></el-table-column>
-        <el-table-column prop="id" label="角色ID" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="status" label="角色状态" show-overflow-tooltip>
+        <el-table-column type="index" :label="$t('message.adminRole.RoleInfo.index')" width="60" fixed/>
+        <el-table-column prop="role_name" :label="$t('message.adminRole.RoleInfo.role_name')" show-overflow-tooltip fixed></el-table-column>
+        <el-table-column prop="id" :label="$t('message.adminRole.RoleInfo.id')" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="status" :label="$t('message.adminRole.RoleInfo.status')" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag type="success" v-if="scope.row.status">启用</el-tag>
-            <el-tag type="info" v-else>禁用</el-tag>
+            <el-tag type="success" v-if="scope.row.status">{{$t('message.common.enable')}}</el-tag>
+            <el-tag type="info" v-else>{{$t('message.common.disable')}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="300">
+        <el-table-column :label="$t('message.common.operate')" width="300">
           <template #default="scope">
             <el-button size="small" text type="primary"
-                       @click="onOpenEditRole('edit', scope.row)">修改
+                       @click="onOpenEditRole('edit', scope.row)">{{$t('message.common.modify')}}
             </el-button>
             <el-button size="small" text type="primary"
-                       @click="onRowDel(scope.row)">删除
+                       @click="deleteRole(scope.row)">{{$t('message.common.delete')}}
             </el-button>
           </template>
         </el-table-column>
@@ -43,7 +41,7 @@
           :total="roleStoreData.roleList.value.total">
       </el-pagination>
     </div>
-    <RoleDialog ref="roleDialogRef" @refresh="roleStore.getRoleList(state.queryParams)"/>
+    <RoleDialog ref="roleDialogRef" @refresh="getRoleList()"/>
   </div>
 </template>
 
@@ -55,12 +53,14 @@ import {storeToRefs} from 'pinia';
 import {useAdminRoleStore} from "/@/stores/admin_logic/roleStore";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
+import { useI18n } from "vue-i18n";
 const roleStore = useAdminRoleStore()
 const roleStoreData = storeToRefs(roleStore)
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
 const RoleDialog = defineAsyncComponent(() => import('/@/views/admin/role/dialog_editRole.vue'));
 const roleDialogRef = ref();
+const {t} = useI18n()
 
 
 //定义参数
@@ -82,36 +82,34 @@ const onOpenEditRole = (type: string, row: Object) => {
 };
 
 // 删除角色
-const onRowDel = (row: RoleInfo) => {
-  ElMessageBox.confirm(`此操作将永久删除角色名称：“${row.role_name}”，是否继续?`, '提示', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
+const deleteRole = (row: RoleInfo) => {
+  ElMessageBox.confirm(t('message.common.message_confirm_delete'), t('message.common.tip'), {
+    confirmButtonText: t('message.common.button_confirm'),
+    cancelButtonText: t('message.common.button_cancel'),
     type: 'warning',
   }).then(() => {
-    request(apiStoreData.adminApi.value.delRole, {id: row.id}).then((res) => {
-      ElMessage.success('删除失败');
-    }).catch(() => {
-      onSearch(state.queryParams)
+    roleStore.deleteRole({id: row.id} as RoleInfo).then(()=>{
+      getRoleList()
     })
   })
 };
 //查询
-const onSearch = (params?: object) => {
-  roleStore.getRoleList(params)
+const getRoleList = () => {
+  roleStore.getRoleList(state.queryParams)
 }
 // 分页改变
 const onHandleSizeChange = (val: number) => {
   state.queryParams.page_size = val;
-  onSearch(state.queryParams)
+  getRoleList()
 };
 // 分页改变
 const onHandleCurrentChange = (val: number) => {
   state.queryParams.page_num = val;
-  onSearch(state.queryParams)
+  getRoleList()
 };
 // 页面加载时
 onMounted(() => {
-  onSearch(state.queryParams)
+  getRoleList()
 });
 </script>
 

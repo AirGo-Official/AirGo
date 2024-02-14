@@ -5,21 +5,18 @@ import (
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/service/common_logic"
+	"strings"
 )
 
 type Article struct{}
 
-func (a *Article) GetArticle(params *model.QueryParams) (any, int64, error) {
-	return common_logic.CommonSqlFindWithFieldParams(params)
-}
-
 // 获取默认的首页弹窗和自定义内容
-func (a *Article) GetDefaultArticle() (any, int64, error) {
+func (a *Article) GetDefaultArticle() (*model.CommonDataResp, error) {
 	// 获取缓存
 	cache, ok := global.LocalCache.Get(constant.CACHE_DEFAULT_ARTICLE)
 	if ok {
 		cache1 := cache.(model.CommonDataResp)
-		return cache1.Data, cache1.Total, nil
+		return &cache1, nil
 	}
 
 	params := model.QueryParams{
@@ -43,17 +40,18 @@ func (a *Article) GetDefaultArticle() (any, int64, error) {
 			OrderBy:  "id ASC",
 		},
 	}
-	data, total, err := a.GetArticle(&params)
+	data, total, err := common_logic.CommonSqlFindWithFieldParams(&params)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	} else {
 		//加入缓存
-		// TODO 修改文章
+		articleList := data.([]model.Article)
+		// 修改文章
+		strings.ReplaceAll(articleList[0].Content, "auto_replace_backend_url", global.Server.Subscribe.BackendUrl) //替换backend url
 		global.LocalCache.SetNoExpire(constant.CACHE_DEFAULT_ARTICLE, model.CommonDataResp{
 			Total: total,
-			Data:  data,
+			Data:  articleList,
 		})
-		return data, total, nil
+		return &model.CommonDataResp{total, articleList}, nil
 	}
-
 }

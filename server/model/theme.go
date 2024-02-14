@@ -11,7 +11,7 @@ type Theme struct {
 
 	IsDrawer bool `json:"isDrawer" gorm:"default:false;comment:是否开启布局配置抽屉"`
 	//全局主题
-	Primary  string `json:"primary"  gorm:"default:#F9A43D;comment:默认primary主题颜色"`
+	Primary  string `json:"primary"  gorm:"default:#002EFC;comment:默认primary主题颜色"`
 	IsIsDark bool   `json:"isIsDark" gorm:"default:false;comment:是否开启深色模式"`
 
 	//顶栏设置
@@ -20,14 +20,14 @@ type Theme struct {
 	IsTopBarColorGradual bool   `json:"isTopBarColorGradual" gorm:"default:false;comment:是否开启顶栏背景颜色渐变"`
 
 	// 菜单设置
-	MenuBar               string `json:"menuBar"               gorm:"default:#f0f0f0;comment:默认菜单导航背景颜色"`
+	MenuBar               string `json:"menuBar"               gorm:"default:#FFFFFF;comment:默认菜单导航背景颜色"`
 	MenuBarColor          string `json:"menuBarColor"          gorm:"default:#000000;comment:默认菜单导航字体颜色"`
 	MenuBarActiveColor    string `json:"menuBarActiveColor"    gorm:"default:'rgba(0, 0, 0, 0.2)';comment:默认菜单高亮背景色"`
 	IsMenuBarColorGradual bool   `json:"isMenuBarColorGradual" gorm:"default:false;comment:是否开启菜单背景颜色渐变"`
 
 	// 分栏设置
-	ColumnsMenuBar               string `json:"columnsMenuBar"                  gorm:"default:#d2e4ff;comment:默认分栏菜单背景颜色"`
-	ColumnsMenuBarColor          string `json:"columnsMenuBarColor"            gorm:"default:#e6e6e6;comment:默认分栏菜单字体颜色"`
+	ColumnsMenuBar               string `json:"columnsMenuBar"                  gorm:"default:#FFFFFF;comment:默认分栏菜单背景颜色"`
+	ColumnsMenuBarColor          string `json:"columnsMenuBarColor"            gorm:"default:#000000;comment:默认分栏菜单字体颜色"`
 	IsColumnsMenuBarColorGradual bool   `json:"isColumnsMenuBarColorGradual" gorm:"default:false;comment:是否开启分栏菜单背景颜色渐变"`
 	IsColumnsMenuHoverPreload    bool   `json:"isColumnsMenuHoverPreload"     gorm:"default:false;comment:是否开启分栏菜单鼠标悬停预加载(预览菜单)"`
 
@@ -46,10 +46,10 @@ type Theme struct {
 	IsShowLogoChange   bool   `json:"isShowLogoChange"   gorm:"default:false;comment:初始化变量，用于 el-scrollbar 的高度更新，请勿删除"`
 	IsBreadcrumb       bool   `json:"isBreadcrumb"        gorm:"default:true;comment:是否开启 Breadcrumb 强制经典、横向布局不显示"`
 	IsTagsview         bool   `json:"isTagsview"          gorm:"default:false;comment:是否开启 Tagsview"`
-	IsBreadcrumbIcon   bool   `json:"isBreadcrumbIcon"   gorm:"default:false;comment:是否开启 Breadcrumb 图标"`
+	IsBreadcrumbIcon   bool   `json:"isBreadcrumbIcon"   gorm:"default:true;comment:是否开启 Breadcrumb 图标"`
 	IsTagsviewIcon     bool   `json:"isTagsviewIcon"     gorm:"default:true;comment:是否开启 Tagsview 图标"`
-	IsCacheTagsView    bool   `json:"isCacheTagsView"   gorm:"default:false;comment:是否开启 TagsView 缓存"`
-	IsSortableTagsView bool   `json:"isSortableTagsView" gorm:"default:false;comment:是否开启 TagsView 拖拽"`
+	IsCacheTagsView    bool   `json:"isCacheTagsView"   gorm:"default:true;comment:是否开启 TagsView 缓存"`
+	IsSortableTagsView bool   `json:"isSortableTagsView" gorm:"default:true;comment:是否开启 TagsView 拖拽"`
 	IsShareTagsView    bool   `json:"isShareTagsView"    gorm:"default:false;comment:是否开启 TagsView 共用"`
 	IsFooter           bool   `json:"isFooter"             gorm:"default:true;comment:是否开启 Footer 底部版权信息"`
 	IsGrayscale        bool   `json:"isGrayscale"             gorm:"default:false;comment:是否开启灰色模式"`

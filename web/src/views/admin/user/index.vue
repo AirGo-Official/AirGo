@@ -1,27 +1,26 @@
 <template>
-  <div >
+  <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
       <div class="mb15">
         <el-input v-model="state.queryParams.field_params_list[0].condition_value" size="default"
-                  placeholder="请输入用户名称"
                   style="max-width: 180px"></el-input>
         <el-button @click="findUser" size="default" type="primary" class="ml10">
           <el-icon>
             <ele-Search/>
           </el-icon>
-          查询
+          {{$t('message.adminUser.query')}}
         </el-button>
         <el-button size="default" type="success" class="ml10" @click="onOpenAddUser('add')">
           <el-icon>
             <ele-FolderAdd/>
           </el-icon>
-          新增用户
+          {{$t('message.adminUser.add_user')}}
         </el-button>
         <el-button size="default" color="blue" class="ml10" @click="onShowCollapse">
           <el-icon>
             <ele-Search/>
           </el-icon>
-          高级查询
+          {{$t('message.adminUser.advanced_query')}}
         </el-button>
         <div v-if="state.isShowCollapse">
           <!--          report组件-->
@@ -29,33 +28,42 @@
         </div>
       </div>
       <el-table :data="userStoreData.userList.value.data" stripe style="width: 100%" @sort-change="sortChange">
-        <el-table-column type="index" label="序号" width="60" fixed/>
-        <el-table-column prop="user_name" label="账户名称" show-overflow-tooltip width="150"
+        <el-table-column type="index" :label="$t('message.adminUser.SysUser.index')" width="60" fixed/>
+        <el-table-column prop="avatar" :label="$t('message.adminUser.SysUser.avatar')" show-overflow-tooltip width="150" sortable="custom">
+          <template #default="{row}">
+            <el-avatar size="small" :src="row.avatar" @error="true">
+              <img
+                src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"
+              />
+            </el-avatar>
+          </template>
+        </el-table-column>
+        <el-table-column prop="user_name" :label="$t('message.adminUser.SysUser.user_name')" show-overflow-tooltip width="150"
                          sortable="custom"></el-table-column>
-        <el-table-column prop="id" label="账户ID" show-overflow-tooltip width="80" sortable="custom"></el-table-column>
-        <el-table-column prop="created_at" label="创建日期" show-overflow-tooltip width="150" sortable="custom">
+        <el-table-column prop="id" :label="$t('message.adminUser.SysUser.id')" show-overflow-tooltip width="80" sortable="custom"></el-table-column>
+        <el-table-column prop="created_at" :label="$t('message.adminUser.SysUser.created_at')" show-overflow-tooltip width="150" sortable="custom">
           <template #default="{row}">
             <span>{{ DateStrToTime(row.created_at) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="enable" label="用户状态" show-overflow-tooltip width="100" sortable="custom">
+        <el-table-column prop="enable" :label="$t('message.adminUser.SysUser.enable')" show-overflow-tooltip width="100" sortable="custom">
           <template #default="scope">
-            <el-tag type="success" v-if="scope.row.enable">启用</el-tag>
-            <el-tag type="danger" v-else>禁用</el-tag>
+            <el-tag type="success" v-if="scope.row.enable">{{$t('message.common.enable')}}</el-tag>
+            <el-tag type="danger" v-else>{{$t('message.common.disable')}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="余额" show-overflow-tooltip sortable="custom">
+        <el-table-column :label="$t('message.adminUser.SysUser.balance')" show-overflow-tooltip sortable="custom">
           <template #default="scope">
             <el-tag type="info">
               {{ scope.row.balance }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200px">
+        <el-table-column :label="$t('message.common.operate')" width="200px">
           <template #default="scope">
-            <el-button size="small" text type="primary" @click="onOpenCustomerService(scope.row)">客户服务</el-button>
-            <el-button size="small" text type="primary" @click="onOpenEditUser('edit', scope.row)">修改</el-button>
-            <el-button size="small" text type="primary" @click="onRowDel(scope.row)">删除</el-button>
+            <el-button size="small" text type="primary" @click="onOpenCustomerService(scope.row)">{{$t('message.adminUser.customerService')}}</el-button>
+            <el-button size="small" text type="primary" @click="onOpenEditUser('edit', scope.row)">{{$t('message.common.modify')}}</el-button>
+            <el-button size="small" text type="primary" @click="onRowDel(scope.row)">{{$t('message.common.delete')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -84,6 +92,7 @@ import {storeToRefs} from 'pinia';
 
 import {DateStrToTime} from "/@/utils/formatTime";
 import { useAdminUserStore } from "/@/stores/admin_logic/userStore";
+import { useI18n } from "vue-i18n";
 const userStore = useAdminUserStore()
 const userStoreData = storeToRefs(userStore)
 const UserDialog = defineAsyncComponent(() => import('/@/views/admin/user/dialog_user_edit.vue'));
@@ -92,7 +101,7 @@ const CustomerServiceDialog =  defineAsyncComponent(() => import('/@/views/admin
 const userDialogRef = ref();
 const reportRef = ref()
 const customerServiceDialogRef = ref()
-
+const {t} = useI18n()
 
 // 定义变量内容
 const state = reactive({
@@ -133,9 +142,9 @@ const getUserList = () => {
 
 // 删除用户
 const onRowDel = (row: SysUser) => {
-  ElMessageBox.confirm(`此操作将永久删除账户名称：“${row.user_name}”，是否继续?`, '提示', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm(t('message.common.message_confirm_delete'),t('message.common.tip') , {
+    confirmButtonText: t('message.common.button_confirm'),
+    cancelButtonText: t('message.common.button_cancel'),
     type: 'warning',
   })
       .then(() => {
@@ -205,9 +214,7 @@ const onShowCollapse = () => {
     flex-direction: column;
     flex: 1;
     overflow: auto;
-
     .el-table {
-      overflow: auto;
       flex: 1;
     }
   }

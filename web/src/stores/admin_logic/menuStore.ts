@@ -10,22 +10,8 @@ export const useAdminMenuStore = defineStore("adminMenuStore", {
     allMenuList: [] as Route[],
     //所有菜单tree
     allMenuTree: [] as RoutesTree[],
-    //当前角色菜单tree
-    currentRoleMenuTree: [] as RoutesTree[],
   }),
   actions: {
-    //所有动态路由tree（路由tree）
-    async getAllMenuTree() {
-      const apiStore = useApiStore()
-      const res: any = await request(apiStore.adminApi.getAllMenuTree)
-      this.allMenuTree = res.data
-    },
-    //当前角色动态路由tree（路由tree）
-    async getMenuTree(params: any) {
-      const apiStore = useApiStore()
-      const res = await request(apiStore.adminApi.getMenuTree, params)
-      this.currentRoleMenuTree = res.data
-    },
     //所有的动态路由list
     async getAllMenuList() {
       const apiStore = useApiStore()

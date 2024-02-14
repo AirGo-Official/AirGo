@@ -47,7 +47,9 @@ net.ljxnet.cn
   <meta name="viewport" content="user-scalable=no, width=device-width" />
   <meta content="telephone=no" name="format-detection" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Title</title>
+  <meta name="keywords" content="网络，加速，全球，视频，游戏，流量，network, acceleration, global, video, gaming, traffic">
+  <meta name="description" content="网络，加速，全球，视频，游戏，流量，network, acceleration, global, video, gaming, traffic">
+  <title>网络，加速，全球</title>
   <link href="https://src.axui.cn/v2.0/dist/css/ax.css" rel="stylesheet" type="text/css" >
   <link href="https://src.axui.cn/v2.0/dist/css/ax-response.css" rel="stylesheet" type="text/css" >
   <link rel="shortcut icon" href="logo-url">
@@ -59,9 +61,9 @@ net.ljxnet.cn
   <div class="ax-row">
     <div class="ax-col"><a href="###" class="ax-logo"><img src="https://telegraph-image.pages.dev/file/c48a2f45ebf102dd66131.png"/></a></div>
     <div class="ax-nav">
-      <div class="ax-item ax-grade"><a href="backend-url/home" class="ax-text">首页<i class="ax-iconfont ax-icon-down"></i></a><span class="ax-line"></span></div>
-      <div class="ax-item ax-grade"><a href="backend-url/shop" class="ax-text">商店<i class="ax-iconfont ax-icon-down"></i></a><span class="ax-line"></span></div>
-      <div class="ax-item ax-grade"><a href="backend-url/documents" class="ax-text">文档<i class="ax-iconfont ax-icon-down"></i></a><span class="ax-line"></span></div>
+      <div class="ax-item ax-grade"><a href="auto_replace_backend_url/home" class="ax-text">首页<i class="ax-iconfont ax-icon-down"></i></a><span class="ax-line"></span></div>
+      <div class="ax-item ax-grade"><a href="auto_replace_backend_url/shop" class="ax-text">商店<i class="ax-iconfont ax-icon-down"></i></a><span class="ax-line"></span></div>
+      <div class="ax-item ax-grade"><a href="auto_replace_backend_url/documents" class="ax-text">文档<i class="ax-iconfont ax-icon-down"></i></a><span class="ax-line"></span></div>
     </div>
   </div>
 </header>
@@ -74,7 +76,7 @@ net.ljxnet.cn
       <div style="margin-top:50px;display: flex; align-items: center;"><span class="ax-glitter ax-primary"></span>专注于全球网络加速的服务商</div>
       <div style="margin-top: 50px;">
 
-        <a href="backend-url/login" class="ax-btn ax-primary"><span class="ax-iconfont ax-icon-triangle-right-f"></span>立即开始</a>
+        <a href="auto_replace_backend_url/login" class="ax-btn ax-primary"><span class="ax-iconfont ax-icon-triangle-right-f"></span>立即开始</a>
         <a href="###" class="ax-btn"><span class="ax-iconfont ax-icon-paperplane-f"></span>加入我们</a>
 
       </div>

@@ -6,10 +6,13 @@
         <el-card shadow="hover" header="个人信息">
           <div class="personal-user">
             <div class="personal-user-left">
-              <el-upload class="h400 personal-user-left-upload" accept=".bmg,.png,.jpg"
-                         action="https://jsonplaceholder.typicode.com/posts/" multiple :limit="1">
+<!--              <el-upload class="h400 personal-user-left-upload" accept=".bmg,.png,.jpg"-->
+<!--                         action="https://jsonplaceholder.typicode.com/posts/" multiple :limit="1">-->
+<!--                <img :src="userInfos.avatar"/>-->
+<!--              </el-upload>-->
+              <div class="h400 personal-user-left-upload">
                 <img :src="userInfos.avatar"/>
-              </el-upload>
+              </div>
             </div>
             <div class="personal-user-right">
               <el-row>
@@ -39,7 +42,7 @@
                 <!--                <div class="personal-edit-safe-item-left-value">当前密码强度：强</div>-->
               </div>
               <div class="personal-edit-safe-item-right">
-                <el-button type="primary" @click="onOpenPWDialog">立即修改</el-button>
+                <el-button type="primary" @click="state.isShowChangePasswordDialog = true">立即修改</el-button>
               </div>
             </div>
           </div>
@@ -73,7 +76,7 @@
             <div class="personal-edit-safe-item">
               <div class="personal-edit-safe-item-left">
                 <div class="personal-edit-safe-item-left-value">
-                  <el-button type="primary" @click="clockin()">立即打卡</el-button>
+<!--                  <el-button type="primary" @click="clockin()">立即打卡</el-button>-->
                 </div>
               </div>
             </div>
@@ -82,7 +85,25 @@
         </el-card>
       </el-col>
     </el-row>
-    <ChangePasswordDialog ref="changePasswordDialogRef"></ChangePasswordDialog>
+    <el-dialog v-model="state.isShowChangePasswordDialog" title="修改密码" width="500px">
+      <el-form ref="userDialogFormRef" size="default" label-width="90px">
+        <el-form-item label="新密码">
+          <el-input v-model="registerData.password" placeholder="请输入密码" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码">
+          <el-input v-model="registerData.re_password" placeholder="请输入密码" clearable></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+				<span class="dialog-footer">
+					<el-button @click="state.isShowChangePasswordDialog = false" size="default">取 消</el-button>
+					<el-button type="primary" @click="changePassword" size="default">确认</el-button>
+				</span>
+      </template>
+    </el-dialog>
+    <el-dialog v-model="state.isShowChangeAvatarDialog" title="修改头像" width="500px">
+
+    </el-dialog>
   </div>
 </template>
 
@@ -99,50 +120,17 @@ import {ElMessage} from "element-plus";
 import { usePublicStore } from "/@/stores/publicStore";
 
 const userStore = useUserStore()
-const {userInfos} = storeToRefs(userStore)
+const {userInfos,registerData} = storeToRefs(userStore)
 
 const publicStore = usePublicStore()
 const publicStoreData = storeToRefs(publicStore)
-
-const ChangePasswordDialog = defineAsyncComponent(() => import('/@/views/personal/change_password_dialog.vue'));
-const changePasswordDialogRef = ref()
 const apiStore = useApiStore()
 
 const state = reactive({
   url: '',
-  host: {
-    host: '',
-  },
+  isShowChangePasswordDialog:false,
+  isShowChangeAvatarDialog:false,
 })
-
-//打开修改密码弹窗
-const onOpenPWDialog = () => {
-  changePasswordDialogRef.value.openDialog()
-}
-//修改混淆
-const onChangeHost = () => {
-  userStore.changeHost(state.host)
-  state.host.host = ''
-}
-//图片超过4M就压缩
-function beforeUpload(file: any) {
-  return new Promise((resolve, reject) => {
-    let isLt2M = file.size / 1024 / 1024 < 4 // 判定图片大小是否小于4MB
-    if (isLt2M) {
-      resolve(file)
-    }
-    //  console.log(file) // 压缩到400KB,这里的400就是要压缩的大小,可自定义
-    imageConversion.compressAccurately(file, 400).then(res => { // console.log(res)
-      resolve(res)
-    })
-  })
-}
-
-//获取当前url
-const getUrl = () => {
-  state.url = window.location.host
-}
-
 // 当前时间提示语
 const currentTime = computed(() => {
   return formatAxis(new Date());
@@ -151,11 +139,20 @@ const currentTime = computed(() => {
 //打卡
 const clockin = () => {
   //是否开启打卡
-
 }
 
+//获取当前url
+const getUrl = () => {
+  state.url = window.location.host
+}
+
+const changePassword = () => {
+  userStore.changePassword(registerData.value)
+  state.isShowChangePasswordDialog = false
+};
+
 onMounted(() => {
-  getUrl(); //获取专属邀请url
+  getUrl(); //获取邀请url
 
 });
 </script>

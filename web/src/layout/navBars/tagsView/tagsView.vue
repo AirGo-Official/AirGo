@@ -20,7 +20,7 @@
         >
           <i class="iconfont icon-webicon318 layout-navbars-tagsview-ul-li-iconfont" v-if="isActive(v)"></i>
           <SvgIcon :name="v.meta.icon" v-if="!isActive(v) && getThemeConfig.isTagsviewIcon" class="pr5"/>
-          <span>{{ setTagsViewNameI18n(v) }}</span>
+          <span>{{ $t(setTagsViewNameI18n(v)) }}</span>
           <template v-if="isActive(v)">
             <SvgIcon
                 name="ele-RefreshRight"

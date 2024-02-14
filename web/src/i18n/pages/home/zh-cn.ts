@@ -1,5 +1,7 @@
 export default {
   home: {
+    no_data:"暂无数据",
+
     button_push:"PUSH",
     button_details:"详情",
     button_renew:"续费",

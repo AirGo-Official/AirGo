@@ -1,65 +1,64 @@
 <template>
   <div>
     <el-dialog :title="state.title" v-model="state.isShowDialog" width="80%">
-      <el-form ref="userDialogFormRef" :model="adminCustomerServiceStoreData.currentCustomerService.value" size="default" label-width="90px">
-        <el-form-item label="结束时间">
+      <el-form ref="userDialogFormRef" :model="adminCustomerServiceStoreData.currentCustomerService.value" size="default"label-position="top">
+        <el-form-item :label="$t('message.adminUser.CustomerService.service_end_at')">
           <el-date-picker
             v-model="adminCustomerServiceStoreData.currentCustomerService.value.service_end_at"
             type="datetime"
-            placeholder="选择结束时间"
             size="default"
           />
         </el-form-item>
-        <el-form-item label="服务状态">
+        <el-form-item :label="$t('message.adminUser.CustomerService.service_status')">
           <el-switch v-model="adminCustomerServiceStoreData.currentCustomerService.value.service_status" inline-prompt active-text="开启"
                      inactive-text="关闭"></el-switch>
         </el-form-item>
-        <el-form-item label="是否可续费">
+        <el-form-item :label="$t('message.adminUser.CustomerService.is_renew')">
           <el-switch v-model="adminCustomerServiceStoreData.currentCustomerService.value.is_renew" inline-prompt active-text="是"
                      inactive-text="否"></el-switch>
         </el-form-item>
-        <el-form-item label="续费价格">
+        <el-form-item :label="$t('message.adminUser.CustomerService.renewal_amount')">
           <el-input v-model="adminCustomerServiceStoreData.currentCustomerService.value.renewal_amount"></el-input>
         </el-form-item>
-        <el-form-item label="订购时长">
+        <el-form-item :label="$t('message.adminUser.CustomerService.duration')">
           <el-input-number v-model.number="adminCustomerServiceStoreData.currentCustomerService.value.duration"></el-input-number>
         </el-form-item>
-        <el-form-item label="订阅状态">
+        <el-form-item :label="$t('message.adminUser.CustomerService.sub_status')">
           <el-switch v-model="adminCustomerServiceStoreData.currentCustomerService.value.sub_status" inline-prompt active-text="有效"
                      inactive-text="失效"></el-switch>
         </el-form-item>
         <div v-if="adminCustomerServiceStoreData.currentCustomerService.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE">
-          <el-form-item label="总流量">
+          <el-form-item :label="$t('message.adminUser.CustomerService.total_bandwidth')">
             <el-input-number v-model.number="adminCustomerServiceStoreData.currentCustomerService.value.total_bandwidth"></el-input-number>
           </el-form-item>
-          <el-form-item label="限速">
+          <el-form-item :label="$t('message.adminUser.CustomerService.node_speed_limit')">
             <el-input-number v-model.number="adminCustomerServiceStoreData.currentCustomerService.value.node_speed_limit"></el-input-number>
           </el-form-item>
-          <el-form-item label="连接数">
+          <el-form-item :label="$t('message.adminUser.CustomerService.node_connector')">
             <el-input-number v-model.number="adminCustomerServiceStoreData.currentCustomerService.value.node_connector"></el-input-number>
           </el-form-item>
-          <el-form-item label="流量重置日">
+          <el-form-item :label="$t('message.adminUser.CustomerService.traffic_reset_day')">
             <el-input-number v-model.number="adminCustomerServiceStoreData.currentCustomerService.value.traffic_reset_day"></el-input-number>
           </el-form-item>
-          <el-form-item label="订阅UUID">
+          <el-form-item :label="$t('message.adminUser.CustomerService.sub_uuid')">
             <el-input v-model="adminCustomerServiceStoreData.currentCustomerService.value.sub_uuid">
               <template #append>
-                <el-button @click="resetSubUUID">重置</el-button>
+                <el-button @click="resetSubUUID">{{$t('message.common.reset')}}</el-button>
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item label="已用上行">
+          <el-form-item :label="$t('message.adminUser.CustomerService.used_up')">
             <el-input-number v-model.number="adminCustomerServiceStoreData.currentCustomerService.value.used_up"></el-input-number>
           </el-form-item>
-          <el-form-item label="已用下行">
+          <el-form-item :label="$t('message.adminUser.CustomerService.used_down')">
             <el-input-number v-model.number="adminCustomerServiceStoreData.currentCustomerService.value.used_down"></el-input-number>
           </el-form-item>
         </div>
       </el-form>
       <template #footer>
 				<span class="dialog-footer">
-					<el-button @click="closeDialog" size="default">取消</el-button>
-					<el-button type="primary" @click="onSubmit" size="default">提交</el-button>
+					<el-button @click="closeDialog" size="default">{{$t('message.common.button_cancel')}}</el-button>
+					<el-button type="primary" @click="onSubmit" size="default">{{$t('message.common.button_confirm')}}</el-button>
 				</span>
       </template>
     </el-dialog>

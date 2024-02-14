@@ -18,7 +18,7 @@ func GetArticleList(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	params.TableName = "article" //
+	params.TableName = "article" //查询article表
 	res, total, err := common_logic.CommonSqlFindWithFieldParams(&params)
 	if err != nil {
 		global.Logrus.Error(err)
@@ -33,14 +33,11 @@ func GetArticleList(ctx *gin.Context) {
 
 // 获取默认的首页弹窗和自定义内容
 func GetDefaultArticleList(ctx *gin.Context) {
-	data, total, err := articleService.GetDefaultArticle()
+	data, err := articleService.GetDefaultArticle()
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("GetDefaultArticleList error:"+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("GetDefaultArticleList success", model.CommonDataResp{
-		Total: total,
-		Data:  data,
-	}, ctx)
+	response.OK("GetDefaultArticleList success", data, ctx)
 }

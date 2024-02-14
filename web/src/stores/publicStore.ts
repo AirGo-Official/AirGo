@@ -1,6 +1,7 @@
 import {defineStore, storeToRefs} from 'pinia';
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
+import { Session } from "/@/utils/storage";
 
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
@@ -32,15 +33,20 @@ export const usePublicStore = defineStore('publicStore', {
         },
         //获取公共系统设置
         async getPublicSetting(){
-            const res = await request(apiStoreData.publicApi.value.getPublicSetting)
-            this.publicSetting = res.data
-            this.acceptable_email_suffixes_arr = this.publicSetting.acceptable_email_suffixes.split("\n")
+            //尝试从session中获取
+            if (Session.get('publicSetting')){
+                this.publicSetting =  Session.get('publicSetting')
+                this.acceptable_email_suffixes_arr = this.publicSetting.acceptable_email_suffixes.split("\n")
+            } else {
+                const res = await request(apiStoreData.publicApi.value.getPublicSetting)
+                this.publicSetting = res.data
+                this.acceptable_email_suffixes_arr = this.publicSetting.acceptable_email_suffixes.split("\n")
+                Session.set('publicSetting',this.publicSetting)
+            }
         },
         //发送验证码
         async sendEmailCode(params:EmailRequest) {
             return request(apiStore.publicApi.getEmailCode, params)
         },
-
     }
-
 })
