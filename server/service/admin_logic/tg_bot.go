@@ -147,7 +147,7 @@ func MessageHandlerForUser(update *tgbotapi.Update, msg *tgbotapi.MessageConfig)
 	case "TG ID":
 		msg.Text = fmt.Sprintf("您的tg id：%d", update.Message.Chat.ID)
 	case "官网":
-		msg.Text = "官网：" + global.Server.Subscribe.FrontendUrl
+		msg.Text = "官网：" + global.Server.Website.FrontendUrl
 	case "刷新菜单":
 		CmdStart(update, msg)
 	}
@@ -181,7 +181,7 @@ func MessageHandlerForAdmin(update *tgbotapi.Update, msg *tgbotapi.MessageConfig
 		NodeStatus(update, msg)
 
 	case "官网":
-		msg.Text = "官网：" + global.Server.Subscribe.FrontendUrl
+		msg.Text = "官网：" + global.Server.Website.FrontendUrl
 
 	case "刷新菜单":
 		CmdStartForAdmin(update, msg)

@@ -3,7 +3,7 @@ declare interface Server {
     updated_at: string;
     id: number;
 
-    subscribe: Subscribe;
+    website: Website;
     email: Email;
     security: Security;
     notice: Notice;
@@ -29,30 +29,18 @@ declare interface Jwt {
     issuer: string;
 }
 
-declare interface Subscribe {
+declare interface Website {
     enable_register: boolean;
     enable_email_code: boolean;
     enable_login_email_code: boolean;
     acceptable_email_suffixes: string;
     is_multipoint: boolean;
-
     backend_url: string;
     frontend_url: string;
     api_prefix: string;
-
     sub_name: string;
     tek: string;
-    default_goods: number;
-    enabled_rebate: boolean;    //是否开启返利
-    rebate_rate: number;        //返利率
-    enabled_deduction: boolean; //是否开启旧套餐抵扣
-    deduction_threshold: number;//旧套餐抵扣阈值,大于该值则抵扣
-
     enabled_clock_in: boolean
-    clock_in_min_traffic: number
-    clock_in_max_traffic: number
-    clock_in_min_day: number
-    clock_in_max_day: number
 }
 
 declare interface Captcha {

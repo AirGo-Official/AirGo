@@ -68,17 +68,16 @@ func InsertIntoMenu() error {
 		{ID: 9, ParentID: 1, Remarks: "文章", Path: "/admin/article", Name: "adminArticle", Component: "/admin/article/index.vue", Meta: model.Meta{Title: "message.router.adminArticle", Icon: "iconfont icon-huanjingxingqiu"}},
 		{ID: 10, ParentID: 1, Remarks: "折扣码", Path: "/admin/coupon", Name: "adminCoupon", Component: "/admin/coupon/index.vue", Meta: model.Meta{Title: "message.router.adminCoupon", Icon: "ele-ShoppingBag"}},
 		{ID: 11, ParentID: 1, Remarks: "访问控制", Path: "/admin/access", Name: "adminAccess", Component: "/admin/access/index.vue", Meta: model.Meta{Title: "message.router.adminAccess", Icon: "ele-ChromeFilled"}},
-		{ID: 12, ParentID: 1, Remarks: "数据迁移", Path: "/admin/migration", Name: "adminMigration", Component: "/admin/migration/index.vue", Meta: model.Meta{Title: "message.router.adminMigration", Icon: "ele-Switch"}},
-		{ID: 13, ParentID: 1, Remarks: "工单管理", Path: "/admin/ticket", Name: "adminTicket", Component: "/admin/ticket/index.vue", Meta: model.Meta{Title: "message.router.adminTicket", Icon: "ele-DocumentRemove"}},
-		{ID: 14, ParentID: 1, Remarks: "营收概览", Path: "/admin/income", Name: "adminIncome", Component: "/admin/income/index.vue", Meta: model.Meta{Title: "message.router.adminIncome", Icon: "iconfont icon-xingqiu"}},
+		{ID: 12, ParentID: 1, Remarks: "工单管理", Path: "/admin/ticket", Name: "adminTicket", Component: "/admin/ticket/index.vue", Meta: model.Meta{Title: "message.router.adminTicket", Icon: "ele-DocumentRemove"}},
+		{ID: 13, ParentID: 1, Remarks: "营收概览", Path: "/admin/income", Name: "adminIncome", Component: "/admin/income/index.vue", Meta: model.Meta{Title: "message.router.adminIncome", Icon: "iconfont icon-xingqiu"}},
 
-		{ID: 15, ParentID: 0, Remarks: "首页", Path: "/home", Name: "home", Component: "/home/index.vue", Meta: model.Meta{Title: "message.router.home", Icon: "iconfont icon-shouye"}},
-		{ID: 16, ParentID: 0, Remarks: "商店", Path: "/shop", Name: "shop", Component: "/shop/index.vue", Meta: model.Meta{Title: "message.router.shop", Icon: "iconfont icon-zidingyibuju"}},
-		{ID: 17, ParentID: 0, Remarks: "我的订单", Path: "/myOrder", Name: "myOrder", Component: "/myOrder/index.vue", Meta: model.Meta{Title: "message.router.myOrder", Icon: "iconfont icon--chaifenhang"}},
-		{ID: 18, ParentID: 0, Remarks: "个人信息", Path: "/personal", Name: "personal", Component: "/personal/index.vue", Meta: model.Meta{Title: "message.router.personal", Icon: "iconfont icon-gerenzhongxin"}},
-		{ID: 19, ParentID: 0, Remarks: "节点状态", Path: "/serverStatus", Name: "serverStatus", Component: "/serverStatus/index.vue", Meta: model.Meta{Title: "message.router.serverStatus", Icon: "iconfont icon-putong"}},
-		{ID: 20, ParentID: 0, Remarks: "文档", Path: "/documents", Name: "documents", Component: "/documents/index.vue", Meta: model.Meta{Title: "message.router.documents", Icon: "ele-ChatLineSquare"}},
-		{ID: 21, ParentID: 0, Remarks: "工单", Path: "/ticket", Name: "ticket", Component: "/ticket/index.vue", Meta: model.Meta{Title: "message.router.ticket", Icon: "ele-DocumentRemove"}},
+		{ID: 14, ParentID: 0, Remarks: "首页", Path: "/home", Name: "home", Component: "/home/index.vue", Meta: model.Meta{Title: "message.router.home", Icon: "iconfont icon-shouye"}},
+		{ID: 15, ParentID: 0, Remarks: "商店", Path: "/shop", Name: "shop", Component: "/shop/index.vue", Meta: model.Meta{Title: "message.router.shop", Icon: "iconfont icon-zidingyibuju"}},
+		{ID: 16, ParentID: 0, Remarks: "我的订单", Path: "/myOrder", Name: "myOrder", Component: "/myOrder/index.vue", Meta: model.Meta{Title: "message.router.myOrder", Icon: "iconfont icon--chaifenhang"}},
+		{ID: 17, ParentID: 0, Remarks: "个人信息", Path: "/personal", Name: "personal", Component: "/personal/index.vue", Meta: model.Meta{Title: "message.router.personal", Icon: "iconfont icon-gerenzhongxin"}},
+		{ID: 18, ParentID: 0, Remarks: "节点状态", Path: "/serverStatus", Name: "serverStatus", Component: "/serverStatus/index.vue", Meta: model.Meta{Title: "message.router.serverStatus", Icon: "iconfont icon-putong"}},
+		{ID: 19, ParentID: 0, Remarks: "文档", Path: "/documents", Name: "documents", Component: "/documents/index.vue", Meta: model.Meta{Title: "message.router.documents", Icon: "ele-ChatLineSquare"}},
+		{ID: 20, ParentID: 0, Remarks: "工单", Path: "/ticket", Name: "ticket", Component: "/ticket/index.vue", Meta: model.Meta{Title: "message.router.ticket", Icon: "ele-DocumentRemove"}},
 	}
 	if err := global.DB.Create(&DynamicRouteData).Error; err != nil {
 		return errors.New("sys_dynamic-router_data表数据初始化失败!")
@@ -128,16 +127,15 @@ func InsertIntoRoleAndMenu() error {
 		{RoleID: 1, MenuID: 18},
 		{RoleID: 1, MenuID: 19},
 		{RoleID: 1, MenuID: 20},
-		{RoleID: 1, MenuID: 21},
 
 		//普通用户的权限
+		{RoleID: 2, MenuID: 14},
 		{RoleID: 2, MenuID: 15},
 		{RoleID: 2, MenuID: 16},
 		{RoleID: 2, MenuID: 17},
 		{RoleID: 2, MenuID: 18},
 		{RoleID: 2, MenuID: 19},
 		{RoleID: 2, MenuID: 20},
-		{RoleID: 2, MenuID: 21},
 	}
 	if err := global.DB.Create(&roleAndMenuData).Error; err != nil {
 		return errors.New("role_and_menu表数据初始化失败!")
@@ -225,7 +223,7 @@ func InsertIntoServer() error {
 			EmailContent: text1,
 			EmailSubject: "hello，我的宝！",
 		},
-		Subscribe: model.Subscribe{
+		Website: model.Website{
 			AcceptableEmailSuffixes: "@qq.com\n@foxmail.com\n@gmail.com\n@163.com\n@126.com\n@yeah.net",
 		},
 	}

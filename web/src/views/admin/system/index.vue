@@ -1,183 +1,122 @@
 <template>
   <div style="padding: 15px;">
     <el-card>
-      <el-tabs stretch style="height: 100%" class="demo-tabs">
-        <el-tab-pane label="订阅">
-          <el-form :model="serverConfig.serverConfig.value.subscribe" label-width="120px">
-            <el-form-item label="是否开启注册">
-              <el-switch v-model="serverConfig.serverConfig.value.subscribe.enable_register" inline-prompt active-text="开启"
-                         inactive-text="关闭"
-                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+      <el-tabs stretch style="height: 100%" @tab-change="tap" v-model="state.currentTapName">
+        <el-tab-pane :label="$t('message.adminServer.tapWebsite')" name="1">
+          <el-form :model="serverConfig.serverConfig.value.website" label-position="top">
+            <el-form-item :label="$t('message.adminServer.Server.enable_register')" class="label">
+
+                <el-switch v-model="serverConfig.serverConfig.value.website.enable_register" inline-prompt :active-text="$t('message.common.enable')"
+                           :inactive-text="$t('message.common.disable')"
+                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+
+
             </el-form-item>
-            <el-form-item label="注册邮箱后缀">
-              <el-input v-model="serverConfig.serverConfig.value.subscribe.acceptable_email_suffixes" type="textarea" autosize/>
+            <el-form-item :label="$t('message.adminServer.Server.acceptable_email_suffixes')" class="label">
+              <el-input v-model="serverConfig.serverConfig.value.website.acceptable_email_suffixes" type="textarea" autosize/>
             </el-form-item>
-            <el-form-item label="注册邮箱验证码">
-              <el-switch v-model="serverConfig.serverConfig.value.subscribe.enable_email_code" inline-prompt active-text="开启"
-                         inactive-text="关闭"
+            <el-form-item :label="$t('message.adminServer.Server.enable_email_code')" class="label">
+              <el-switch v-model="serverConfig.serverConfig.value.website.enable_email_code" inline-prompt :active-text="$t('message.common.enable')"
+                         :inactive-text="$t('message.common.disable')"
                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
             </el-form-item>
             <el-divider></el-divider>
-            <el-form-item label="通信密钥">
-              <el-input v-model="serverConfig.serverConfig.value.subscribe.tek" placeholder="务必前后端保持一致！"/>
-              <div style="color: #9b9da1;display:block">前后端通信密钥</div>
+            <el-form-item :label="$t('message.adminServer.Server.tek')" class="label">
+              <el-input v-model="serverConfig.serverConfig.value.website.tek"/>
             </el-form-item>
-            <el-form-item label="订阅名称">
-              <el-input v-model="serverConfig.serverConfig.value.subscribe.sub_name"/>
-              <div style="color: #9b9da1;display:block">更新订阅时显示的名字</div>
+            <el-form-item :label="$t('message.adminServer.Server.sub_name')" class="label">
+              <el-input v-model="serverConfig.serverConfig.value.website.sub_name"/>
             </el-form-item>
-            <el-form-item label="官网地址">
-              <el-input v-model="serverConfig.serverConfig.value.subscribe.frontend_url"/>
-              <div style="color: #9b9da1">
-                例：http://abc.com:8899
-              </div>
+            <el-form-item :label="$t('message.adminServer.Server.frontend_url')" class="label">
+              <el-input v-model="serverConfig.serverConfig.value.website.frontend_url"/>
             </el-form-item>
-            <el-form-item label="网站后端地址">
-              <el-input v-model="serverConfig.serverConfig.value.subscribe.backend_url"/>
-              <div style="color: #9b9da1">
-                该地址与更新订阅、支付回调有关，请认真填写。前后分离时一般和前端.env中的VITE_API_URL保持一致；前后不分离时填公网可访问的后端地址。例：http://abc.com:8899
-              </div>
+            <el-form-item :label="$t('message.adminServer.Server.backend_url')" class="label">
+              <el-input v-model="serverConfig.serverConfig.value.website.backend_url"/>
             </el-form-item>
-            <el-divider></el-divider>
-            <el-form-item label="新注册分配套餐">
-              <el-select v-model.number="serverConfig.serverConfig.value.subscribe.default_goods" placeholder="选择套餐" style="width: 30%">
-                <el-option
-                    v-for="item in adminShopStoreData.goodsList.value"
-                    :key="item.id"
-                    :label="item.subject"
-                    :value="item.id"
-                />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="邀请返利">
-              <el-switch v-model="serverConfig.serverConfig.value.subscribe.enabled_rebate" inline-prompt active-text="开启"
-                         inactive-text="关闭"
-                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-            </el-form-item>
-            <el-form-item label="返利率">
-              <el-input-number v-model="serverConfig.serverConfig.value.subscribe.rebate_rate" :precision="1" :step="0.1" :min="0" :max="1" />
-              <div style="color: #9b9da1">(范围0~1)邀请收入=其他用户套餐实际支付价格*返利率</div>
-            </el-form-item>
-            <el-form-item label="旧套餐抵扣">
-              <el-switch v-model="serverConfig.serverConfig.value.subscribe.enabled_deduction" inline-prompt active-text="开启"
-                         inactive-text="关闭"
-                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-            </el-form-item>
-            <el-form-item label="旧套餐抵扣阈值">
-              <el-input-number v-model="serverConfig.serverConfig.value.subscribe.deduction_threshold" :precision="1" :step="0.1" :min="0" :max="1" />
-              <div style="color: #9b9da1">
-                (范围0~1)原套餐100G，用50G，剩余比例0.5，小于该阈值，则不会进行抵扣；原套餐实际付款为0也不抵扣
-              </div>
-            </el-form-item>
-            <el-form-item label="是否开启打卡">
-              <el-switch v-model="serverConfig.serverConfig.value.subscribe.enabled_clock_in" inline-prompt active-text="开启"
-                         inactive-text="关闭"
-                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-            </el-form-item>
-            <el-form-item label="打卡获得流量范围">
-              <el-col >
-                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_min_traffic" :precision="0" :step="10" :min="0" :max="10000000" style="width: 120px" />
-                <span>---</span>
-                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_max_traffic" :precision="0" :step="10" :min="0" :max="10000000" style="width: 120px"/>
-                <span>MB</span>
-              </el-col>
-            </el-form-item>
-            <el-form-item label="打卡获得天数范围">
-              <el-col >
-                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_min_day" :precision="0" :step="1" :min="0" :max="10000" style="width: 120px" />
-                <span>---</span>
-                <el-input-number v-model="serverConfig.serverConfig.value.subscribe.clock_in_max_day" :precision="0" :step="1" :min="0" :max="10000" style="width: 120px"/>
-                <span>day</span>
-              </el-col>
-            </el-form-item>
-
             <el-divider></el-divider>
             <el-form-item>
-              <el-button @click="onSubmit()" type="primary">保存</el-button>
+              <el-button @click="onSubmit()" type="primary">{{$t('message.common.button_confirm')}}</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
 
-        <el-tab-pane label="支付">
+        <el-tab-pane :label="$t('message.adminServer.tapPayment')" name="2">
           <div>
             <el-button size="default" type="primary" class="ml10" @click="openPayDialog('add')">
               <el-icon>
                 <ele-FolderAdd/>
               </el-icon>
-              新增支付
+              {{$t('message.adminServer.addPay')}}
             </el-button>
           </div>
           <div>
-            <el-table :data="payStoreData.payList.value" stripe style="width: 100%;flex: 1;">
-              <el-table-column type="index" label="序号" fixed show-overflow-tooltip width="60px"/>
-              <!--              <el-table-column prop="id" label="ID" fixed show-overflow-tooltip width="60px"/>-->
-              <el-table-column prop="name" label="别名" fixed show-overflow-tooltip width="120px"/>
-              <el-table-column prop="pay_type" label="类型" show-overflow-tooltip fixed width="80px"/>
-              <el-table-column prop="pay_logo_url" label="logo" fixed show-overflow-tooltip width="120px">
+            <el-table :data="adminShopStoreData.payList.value" stripe style="width: 100%;flex: 1;">
+              <el-table-column type="index" :label="$t('message.adminShop.PayInfo.index')" fixed show-overflow-tooltip width="60px"/>
+              <el-table-column prop="id" :label="$t('message.adminShop.PayInfo.id')" fixed show-overflow-tooltip width="60px"/>
+              <el-table-column prop="name" :label="$t('message.adminShop.PayInfo.name')" fixed show-overflow-tooltip width="120px"/>
+              <el-table-column prop="pay_type" :label="$t('message.adminShop.PayInfo.pay_type')" show-overflow-tooltip fixed width="80px"/>
+              <el-table-column prop="pay_logo_url" :label="$t('message.adminShop.PayInfo.pay_logo_url')" fixed show-overflow-tooltip width="120px">
                 <template #default="{row}">
                   <el-image :src="row.pay_logo_url" style="width: 40px;height: 40px"></el-image>
                 </template>
               </el-table-column>
-              <el-table-column prop="status" label="状态" fixed show-overflow-tooltip width="80px">
+              <el-table-column prop="status" :label="$t('message.adminShop.PayInfo.status')" fixed show-overflow-tooltip width="80px">
                 <template #default="{row}">
-                  <el-button v-if="row.status" type="warning">启用</el-button>
-                  <el-button v-else type="info">禁用</el-button>
+                  <el-button v-if="row.status" type="warning">{{$t('message.common.enable')}}</el-button>
+                  <el-button v-else type="info">{{$t('message.common.disable')}}</el-button>
                 </template>
               </el-table-column>
 
-              <el-table-column label="操作">
+              <el-table-column :label="$t('message.common.operate')">
                 <template #default="scope">
-                  <el-button text @click="openPayDialog('edit',scope.row)" type="primary">编辑</el-button>
-                  <el-button text @click="deletePay(scope.row)" type="primary">删除</el-button>
+                  <el-button text @click="openPayDialog('edit',scope.row)" type="primary">{{$t('message.common.modify')}}</el-button>
+                  <el-button text @click="deletePay(scope.row)" type="primary">{{$t('message.common.delete')}}</el-button>
                 </template>
               </el-table-column>
             </el-table>
           </div>
+        </el-tab-pane >
 
-        </el-tab-pane>
-
-        <el-tab-pane label="邮件">
-          <el-form :model="serverConfig.serverConfig.value.email" label-width="100px">
-            <el-form-item label="服务器">
+        <el-tab-pane :label="$t('message.adminServer.tapEmail')" name="3">
+          <el-form :model="serverConfig.serverConfig.value.email" label-position="top">
+            <el-form-item :label="$t('message.adminServer.Server.email_host')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.email.email_host" placeholder="mail.example.com"/>
             </el-form-item>
-            <el-form-item label="端口">
+            <el-form-item :label="$t('message.adminServer.Server.email_port')" class="label">
               <el-input v-model.number="serverConfig.serverConfig.value.email.email_port" type="number"/>
             </el-form-item>
-            <el-form-item label="邮箱账户">
-              <el-input v-model="serverConfig.serverConfig.value.email.email_from" placeholder="10010@qq.com"/>
+            <el-form-item :label="$t('message.adminServer.Server.email_from')" class="label">
+              <el-input v-model="serverConfig.serverConfig.value.email.email_from"/>
             </el-form-item>
-            <el-form-item label="邮箱别名">
-              <el-input v-model="serverConfig.serverConfig.value.email.email_from_alias" placeholder="10010@foxmail.com"/>
-              <div style="color: #9b9da1">*例如：qq邮箱可以设置foxmil别名。发送邮件时优先显示别名。无特殊情况可忽略本项</div>
+            <el-form-item :label="$t('message.adminServer.Server.email_from_alias')" class="label">
+              <el-input v-model="serverConfig.serverConfig.value.email.email_from_alias"/>
             </el-form-item>
-            <el-form-item label="账户昵称">
+            <el-form-item :label="$t('message.adminServer.Server.email_nickname')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.email.email_nickname" placeholder="Admin"/>
             </el-form-item>
-            <el-form-item label="密码">
-              <el-input v-model="serverConfig.serverConfig.value.email.email_secret" type="password"/>
+            <el-form-item :label="$t('message.adminServer.Server.email_secret')" class="label">
+              <el-input v-model="serverConfig.serverConfig.value.email.email_secret"/>
             </el-form-item>
-            <el-form-item label="默认主题">
+            <el-form-item :label="$t('message.adminServer.Server.email_subject')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.email.email_subject"/>
             </el-form-item>
-            <el-form-item label="默认验证码内容">
+            <el-form-item :label="$t('message.adminServer.Server.email_content')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.email.email_content" type="textarea" autosize/>
-              <el-text style="color: #9b9da1">*自定义邮件验证码内容样式，支持HTML，`emailcode`为验证码字段，不可删除！
+              <el-text style="color: #9b9da1">{{$t('message.adminServer.emailCodeTip')}}
               </el-text>
             </el-form-item>
             <el-divider></el-divider>
             <el-form-item>
-              <el-button @click="onSubmit()" type="primary">保存</el-button>
-              <el-button @click="onTestEmail" >测试</el-button>
+              <el-button @click="onSubmit()" type="primary">{{$t('message.common.button_confirm')}}</el-button>
+              <el-button @click="onTestEmail" >{{$t('message.adminServer.emailTesting')}}</el-button>
             </el-form-item>
           </el-form>
 
         </el-tab-pane>
 
-        <el-tab-pane label="安全">
-          <el-form :model="serverConfig.serverConfig.value.security" label-width="120px">
-            <el-form-item label="IP限流">
+        <el-tab-pane :label="$t('message.adminServer.tapSecurity')" name="4">
+          <el-form :model="serverConfig.serverConfig.value.security" label-position="top">
+            <el-form-item :label="$t('message.adminServer.Server.ip_role_param')" class="label">
               <el-col :span="2">
                 <el-input-number v-model="serverConfig.serverConfig.value.security.rate_limit_params.ip_role_param" :precision="0" :step="10" :min="0" :max="10000000" />
               </el-col>
@@ -185,11 +124,11 @@
                 <span>-</span>
               </el-col>
               <el-col :span="18">
-                <span class="text-gray-500">请求/分钟</span>
+                <span class="text-gray-500">{{$t('message.adminServer.RequestMinute')}}</span>
               </el-col>
             </el-form-item>
 
-            <el-form-item label="用户限流">
+            <el-form-item :label="$t('message.adminServer.Server.visit_param')" class="label">
               <el-col :span="2">
                 <el-input-number v-model="serverConfig.serverConfig.value.security.rate_limit_params.visit_param" :precision="0" :step="10" :min="0" :max="10000000" />
               </el-col>
@@ -197,73 +136,110 @@
                 <span>-</span>
               </el-col>
               <el-col :span="18">
-                <span class="text-gray-500">请求/分钟</span>
+                <span class="text-gray-500">{{$t('message.adminServer.RequestMinute')}}</span>
               </el-col>
             </el-form-item>
             <el-divider></el-divider>
-            <el-form-item label="jwt签名">
+            <el-form-item :label="$t('message.adminServer.Server.signing_key')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.security.jwt.signing_key"/>
             </el-form-item>
-            <el-form-item label="签发者">
+            <el-form-item :label="$t('message.adminServer.Server.issuer')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.security.jwt.issuer"/>
             </el-form-item>
-            <el-form-item label="过期时间">
+            <el-form-item :label="$t('message.adminServer.Server.expires_time')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.security.jwt.expires_time"/>
             </el-form-item>
             <el-form-item>
-              <el-button @click="onSubmit()" type="primary">保存</el-button>
+              <el-button @click="onSubmit()" type="primary">{{$t('message.common.button_confirm')}}</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
 
-        <el-tab-pane label="通知">
-
+        <el-tab-pane :label="$t('message.adminServer.tapNotice')" name="5">
           <el-form :model="serverConfig.serverConfig.value.notice" label-width="120px" label-position="top">
-
-            <el-card>
-              <el-form-item label="TG bot token">
+              <el-form-item :label="$t('message.adminServer.Server.bot_token')" class="label">
                 <el-input v-model="serverConfig.serverConfig.value.notice.bot_token" placeholder="1234567890:AAAAABBBBBCCCCCDDDDFFFFGGGHHHJJKKLL"/>
               </el-form-item>
-              <el-form-item label="TG socks5代理">
+              <el-form-item :label="$t('message.adminServer.Server.tg_socks5')" class="label">
                 <el-input v-model="serverConfig.serverConfig.value.notice.tg_socks5" placeholder="127.0.0.1:1080"/>
               </el-form-item>
-              <el-form-item label="TG管理员账号(多个账号换行)">
+              <el-form-item :label="$t('message.adminServer.Server.tg_admin')" class="label">
                 <el-input v-model="serverConfig.serverConfig.value.notice.tg_admin" type="textarea" autosize/>
               </el-form-item>
 
-              <el-form-item label="节点离线通知">
-                <el-switch v-model="serverConfig.serverConfig.value.notice.when_node_offline" inline-prompt active-text="开启"
-                           inactive-text="关闭"
+              <el-form-item :label="$t('message.adminServer.Server.when_node_offline')" class="label">
+                <el-switch v-model="serverConfig.serverConfig.value.notice.when_node_offline" inline-prompt :active-text="$t('message.common.enable')"
+                           :inactive-text="$t('message.common.disable')"
                            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
               </el-form-item>
-              <el-form-item label="用户注册通知">
-                <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_registered" inline-prompt active-text="开启"
-                           inactive-text="关闭"
+              <el-form-item :label="$t('message.adminServer.Server.when_user_registered')" class="label">
+                <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_registered" inline-prompt :active-text="$t('message.common.enable')"
+                           :inactive-text="$t('message.common.disable')"
                            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
               </el-form-item>
-              <el-form-item label="用户购买通知">
-                <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_purchased" inline-prompt active-text="开启"
-                           inactive-text="关闭"
+              <el-form-item :label="$t('message.adminServer.Server.when_user_purchased')" class="label">
+                <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_purchased" inline-prompt :active-text="$t('message.common.enable')"
+                           :inactive-text="$t('message.common.disable')"
                            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
               </el-form-item>
-
-            </el-card>
-
             <el-form-item style="margin-top: 20px">
-              <el-button @click="onSubmit()" type="primary">保存</el-button>
+              <el-button @click="onSubmit()" type="primary">{{$t('message.common.button_confirm')}}</el-button>
             </el-form-item>
+          </el-form>
+        </el-tab-pane>
+
+        <el-tab-pane :label="$t('message.adminServer.tapMigration')" name="6">
+          <div style="margin-bottom: 20px">
+            <el-text type="danger" style="background-color: red;color: white;font-size: larger">
+              {{$t('message.adminServer.migrationTip')}}
+            </el-text>
+          </div>
+
+          <el-form v-model="state.migrationParams" label-position="top">
+              <el-form-item :label="$t('message.adminServer.Migration.panel_type')" class="label">
+                <el-select v-model="state.migrationParams.panel_type" placeholder="Select">
+                  <el-option
+                    v-for="item in state.panels"
+                    :key="item"
+                    :label="item"
+                    :value="item"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item :label="$t('message.adminServer.Migration.db_address')" class="label">
+                <el-input v-model="state.migrationParams.db_address"></el-input>
+              </el-form-item>
+              <el-form-item :label="$t('message.adminServer.Migration.db_port')" class="label">
+                <el-input-number v-model="state.migrationParams.db_port"></el-input-number>
+              </el-form-item>
+              <el-form-item :label="$t('message.adminServer.Migration.db_name')" class="label">
+                <el-input v-model="state.migrationParams.db_name"></el-input>
+              </el-form-item>
+              <el-form-item :label="$t('message.adminServer.Migration.db_username')" class="label">
+                <el-input v-model="state.migrationParams.db_username"></el-input>
+              </el-form-item>
+              <el-form-item :label="$t('message.adminServer.Migration.db_password')" class="label">
+                <el-input v-model="state.migrationParams.db_password"></el-input>
+              </el-form-item>
+              <el-form-item >
+                <el-button color="blue" @click="onSubmitMigration">{{$t('message.common.button_confirm')}}</el-button>
+              </el-form-item>
           </el-form>
 
         </el-tab-pane>
 
       </el-tabs>
-      <PayDialog ref="PayDialogRef" @refresh="payStore.getPayList()"></PayDialog>
+      <PayDialog ref="PayDialogRef" @refresh="adminShopStore.getPayList()"></PayDialog>
     </el-card>
-    <el-dialog v-model="state.isShowTestEmailDialog" :title="state.title" width="80%" destroy-on-close center>
-      <el-input v-model="state.emailParams.target_email" placeholder="输入电子邮件地址"/>
+    <el-dialog v-model="state.isShowTestEmailDialog" :title="$t('message.adminServer.emailTesting')" width="400px" destroy-on-close center>
+      <el-form :model="state.emailParams" label-position="top">
+        <el-form-item>
+          <el-input v-model="state.emailParams.target_email" placeholder="xxx@xxx.com"/>
+        </el-form-item>
+      </el-form>
       <template #footer>
       <span class="dialog-footer">
-        <el-button @click="onGetEmailCode">发送</el-button>
+        <el-button @click="onGetEmailCode">{{$t('message.common.button_confirm')}}</el-button>
       </span>
       </template>
     </el-dialog>
@@ -272,17 +248,15 @@
 
 <script lang="ts" setup>
 import {defineAsyncComponent, onMounted, reactive, ref} from "vue";
-
 import {useAdminServerStore} from "/@/stores/admin_logic/serverStore";
 import {storeToRefs} from "pinia";
-import {usePayStore} from "/@/stores/payStore";
-
-import {ElMessage} from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import {useUserStore} from "/@/stores/user_logic/userStore";
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { usePublicStore } from "/@/stores/publicStore";
+import { useI18n } from "vue-i18n";
 
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
@@ -290,26 +264,45 @@ const PayDialog = defineAsyncComponent(() => import("/@/views/admin/system/dialo
 const PayDialogRef = ref()
 const serverStore = useAdminServerStore()
 const serverConfig = storeToRefs(serverStore)
-
 const adminShopStore = useAdminShopStore()
 const adminShopStoreData = storeToRefs(adminShopStore)
-const payStore = usePayStore()
-const payStoreData = storeToRefs(payStore)
 const publicStore = usePublicStore()
 const userStore = useUserStore()
+const {t} = useI18n()
+
+
 const state = reactive({
+  currentTapName:"1",
   isShowTestEmailDialog: false,
-  title: "电子邮件测试",
   emailParams: {
     email_type: "EmailTypeUserRegister",
     target_email: "",
   },
+  loading: false,
+  panels: ["v2board", "sspanel", "AirGo"],
+  migrationParams: {
+    "panel_type": "",
+    "db_address": "",
+    "db_port": 3306,
+    "db_username": "",
+    "db_password": "",
+    "db_name": "",
+  },
+  migrationResult:"",
 });
+const tap=(tapName:string)=>{
+console.log("name:",tapName)
+  switch (tapName){
+    case "":
+      break
+    default:
+      break
+  }
 
+}
 //测试邮件
 const onTestEmail=()=>{
   state.isShowTestEmailDialog=true
-
 }
 //获取邮件验证码
 const onGetEmailCode = () => {
@@ -335,23 +328,51 @@ const onSubmit = () => {
     publicStore.getPublicSetting()
   }, 500)
 }
+const onSubmitMigration=()=>{
+  ElMessageBox.confirm(t('message.adminServer.migrationTip2'), t('message.common.tip'), {
+    confirmButtonText: t('message.common.button_confirm'),
+    cancelButtonText: t('message.common.button_cancel'),
+    type: 'warning',
+  })
+    .then(() => {
+      state.loading=true
+      request(apiStore.adminApi.migrationData,state.migrationParams).then((res)=>{
+        state.migrationResult=res.data
+        state.loading=false
+      }).catch(()=>{
+        state.loading=false
+      })
+    })
+    .catch(() => {
+    });
+}
 //删除支付
 const deletePay = (data: PayInfo) => {
-  request(apiStoreData.adminApi.value.deletePay, data).then((res) => {
-    setTimeout(() => {
-      adminShopStore.getPayList(); //获取支付列表
-    }, 500);
+  ElMessageBox.confirm(t('message.common.message_confirm_delete'), t('message.common.tip'), {
+    confirmButtonText: t('message.common.button_confirm'),
+    cancelButtonText: t('message.common.button_cancel'),
+    type: 'warning',
   })
+    .then(() => {
+      request(apiStoreData.adminApi.value.deletePay, data).then((res) => {
+        adminShopStore.getPayList(); //获取支付列表
+      })
+    })
+    .catch(() => {
+    });
 
 }
 onMounted(() => {
   serverStore.getServerConfig() //获取设置参数
-  adminShopStore.getGoodsList()       //获取全部商品，用来设置新注册分配套餐
-  adminShopStore.getPayList()         //获取支付列表
+  adminShopStore.getGoodsList() //获取全部商品，用来设置新注册分配套餐
+  adminShopStore.getPayList()   //获取支付列表
 });
 
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="scss">
+.label .el-form-item__label{
+  font-weight: bolder;
+  //font-size: 15px;
+}
 </style>

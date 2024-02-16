@@ -223,8 +223,8 @@ func (p *Pay) EpayPreByHTML(sysOrder *model.Order, pay *model.Pay) (*model.EpayP
 		Pid:        pay.Epay.EpayPid,
 		Type:       "", //为空则直接跳转到易支付收银台
 		OutTradeNo: sysOrder.OutTradeNo,
-		NotifyUrl:  global.Server.Subscribe.BackendUrl + "/api/public/epayNotify",
-		ReturnUrl:  global.Server.Subscribe.BackendUrl + "/api/public/epayNotify",
+		NotifyUrl:  global.Server.Website.BackendUrl + "/api/public/epayNotify",
+		ReturnUrl:  global.Server.Website.BackendUrl + "/api/public/epayNotify",
 		Name:       sysOrder.Subject,
 		Money:      sysOrder.Price,
 		//ClientIP:   "",

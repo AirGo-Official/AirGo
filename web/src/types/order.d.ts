@@ -8,7 +8,7 @@ declare interface Order {
     original_amount: string //原始金额
     total_amount: string //订单金额
     buyer_pay_amount: string //付款金额
-    coupon_amount: string //折扣码这块金额
+    coupon_amount: string //折扣码折扣金额
     balance_amount: string //余额折扣金额
     // 关联用户
     user_id: number
@@ -29,7 +29,7 @@ declare interface Order {
 
     //支付参数
     pay_id: number   //支付方式id
-    pay_type: string //支付方式，alipay,epay
+    pay_type: string //支付类型，alipay,epay
     coupon_id: number
     coupon_name: string
     pay_info: PreCreatePayToFrontend; //支付信息，epay，alipay等

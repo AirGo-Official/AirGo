@@ -63,7 +63,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	} else {
 		firstNode = model.Node{
 			Remarks:  "到期时间:" + expiredTime,
-			Address:  global.Server.Subscribe.SubName,
+			Address:  global.Server.Website.SubName,
 			Port:     6666,
 			Aid:      0,
 			Network:  "ws",
@@ -72,7 +72,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 		}
 		secondNode = model.Node{
 			Remarks:  "剩余流量:" + expiredBd2 + "GB",
-			Address:  global.Server.Subscribe.SubName,
+			Address:  global.Server.Website.SubName,
 			Port:     6666,
 			Aid:      0,
 			Network:  "ws",
@@ -210,7 +210,7 @@ func ClashMeta(nodes *[]model.Node) string {
 		proxiesArr = append(proxiesArr, proxy)
 	}
 	var proxyGroup1 = model.ClashProxyGroup{
-		Name:    global.Server.Subscribe.SubName,
+		Name:    global.Server.Website.SubName,
 		Type:    "select",
 		Proxies: nameArr,
 	}
@@ -257,7 +257,7 @@ func ClashMeta(nodes *[]model.Node) string {
 	}
 	clashYaml.Rules = []string{
 		"RULE-SET,cn,DIRECT",
-		"RULE-SET,proxy," + global.Server.Subscribe.SubName,
+		"RULE-SET,proxy," + global.Server.Website.SubName,
 		"GEOSITE,category-ads-all,REJECT",
 
 		"GEOSITE,private,DIRECT",
@@ -270,15 +270,15 @@ func ClashMeta(nodes *[]model.Node) string {
 		"GEOIP,CN,DIRECT",
 		"GEOIP,private,DIRECT,no-resolve",
 
-		"GEOSITE,youtube," + global.Server.Subscribe.SubName,
-		"GEOSITE,google," + global.Server.Subscribe.SubName,
-		"GEOSITE,twitter," + global.Server.Subscribe.SubName,
-		"GEOSITE,pixiv," + global.Server.Subscribe.SubName,
-		"GEOSITE,category-scholar-!cn," + global.Server.Subscribe.SubName,
-		"GEOSITE,biliintl," + global.Server.Subscribe.SubName,
-		"GEOSITE,geolocation-!cn," + global.Server.Subscribe.SubName,
-		"GEOIP,telegram," + global.Server.Subscribe.SubName,
-		"MATCH," + global.Server.Subscribe.SubName,
+		"GEOSITE,youtube," + global.Server.Website.SubName,
+		"GEOSITE,google," + global.Server.Website.SubName,
+		"GEOSITE,twitter," + global.Server.Website.SubName,
+		"GEOSITE,pixiv," + global.Server.Website.SubName,
+		"GEOSITE,category-scholar-!cn," + global.Server.Website.SubName,
+		"GEOSITE,biliintl," + global.Server.Website.SubName,
+		"GEOSITE,geolocation-!cn," + global.Server.Website.SubName,
+		"GEOIP,telegram," + global.Server.Website.SubName,
+		"MATCH," + global.Server.Website.SubName,
 	}
 	res, err := yaml.Marshal(clashYaml)
 	if err != nil {
@@ -424,7 +424,7 @@ func Surge(nodes *[]model.Node) string {
 		}
 	}
 	//
-	subscribeInfo = fmt.Sprintf("title=%s, content=%s\\n%s, style=info", global.Server.Subscribe.SubName, (*nodes)[0].Remarks, (*nodes)[1].Remarks)
+	subscribeInfo = fmt.Sprintf("title=%s, content=%s\\n%s, style=info", global.Server.Website.SubName, (*nodes)[0].Remarks, (*nodes)[1].Remarks)
 	//
 	proxyText = strings.Join(nodeArr, "\n")
 	//

@@ -5,13 +5,13 @@ declare interface Goods {
   good_order: number;    //排序
   subject: string;       // 标题
   des: string;     //商品描述
-  price: string;  // 总金额
+  price: string;  // 商品价格
   is_show: boolean; //是否显示
   is_sale: boolean;//是否售卖，是否上架
   is_renew: boolean;//是否可续费
   quota: number;//限购数量
   stock: number;//库存
-  goods_type: string;    //类型，general=普通商品 subscribe=订阅 recharge=充值
+  goods_type: string;    //商品类型，general=普通商品 subscribe=订阅 recharge=充值
   deliver_type: string;  //发货类型，none=不发货，auto=自动发货，manual=手动发货
   deliver_text: string;  //发货内容;type:text
 

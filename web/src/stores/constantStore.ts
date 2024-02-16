@@ -15,6 +15,7 @@ export const useConstantStore = defineStore('constantStore', {
     ORDER_STATUS_TRADE_SUCCESS  : "TRADE_SUCCESS",
     ORDER_STATUS_TRADE_FINISHED : "TRADE_FINISHED",
     ORDER_STATUS_COMPLETED      : "COMPLETED ",
+    ORDER_STATUS_UNKNOWN_STATE:"UNKNOWN_STATE",
     // 发货
     DELIVER_TYPE_NONE   : "none",
     DELIVER_TYPE_AUTO   : "auto",

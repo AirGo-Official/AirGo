@@ -1,71 +1,73 @@
 <template>
-  <el-dialog v-model="state.isShowDialog" :title="state.title" width="80%" destroy-on-close align-center>
+  <el-dialog v-model="state.isShowDialog" :title="$t('message.adminOrder.modify_order')" width="80%" destroy-on-close align-center>
     <el-descriptions
       :column="2"
       border
-      title="订单信息"
     >
-      <el-descriptions-item label="ID">{{ shopStoreData.currentOrder.value.id }}</el-descriptions-item>
-      <el-descriptions-item label="订单ID">{{ shopStoreData.currentOrder.value.out_trade_no }}</el-descriptions-item>
-      <el-descriptions-item label="创建时间">{{ DateStrToTime(shopStoreData.currentOrder.value.created_at) }}</el-descriptions-item>
-      <el-descriptions-item label="用户ID">{{ shopStoreData.currentOrder.value.user_id}}</el-descriptions-item>
-      <el-descriptions-item label="用户">{{shopStoreData.currentOrder.value.user_name }}</el-descriptions-item>
-      <el-descriptions-item label="商品ID">{{ shopStoreData.currentOrder.value.goods_id }}</el-descriptions-item>
-      <el-descriptions-item label="商品标题">{{ shopStoreData.currentOrder.value.subject }}</el-descriptions-item>
-      <el-descriptions-item label="商品类型">{{ shopStoreData.currentOrder.value.goods_type }}</el-descriptions-item>
-      <el-descriptions-item label="商品价格">{{ shopStoreData.currentOrder.value.price }}</el-descriptions-item>
+      <el-descriptions-item :label="$t('message.adminOrder.Order.id')">{{ shopStoreData.currentOrder.value.id }}</el-descriptions-item>
+      <el-descriptions-item :label="$t('message.adminOrder.Order.out_trade_no')">{{ shopStoreData.currentOrder.value.out_trade_no }}</el-descriptions-item>
+      <el-descriptions-item :label="$t('message.adminOrder.Order.created_at')">{{ DateStrToTime(shopStoreData.currentOrder.value.created_at) }}</el-descriptions-item>
+      <el-descriptions-item :label="$t('message.adminOrder.Order.user_id')">{{ shopStoreData.currentOrder.value.user_id}}</el-descriptions-item>
+      <el-descriptions-item :label="$t('message.adminOrder.Order.user_name')">{{shopStoreData.currentOrder.value.user_name }}</el-descriptions-item>
+      <el-descriptions-item :label="$t('message.adminOrder.Order.goods_id')">{{ shopStoreData.currentOrder.value.goods_id }}</el-descriptions-item>
+      <el-descriptions-item :label="$t('message.adminOrder.Order.subject')">{{ shopStoreData.currentOrder.value.subject }}</el-descriptions-item>
+      <el-descriptions-item :label="$t('message.adminOrder.Order.goods_type')">{{ shopStoreData.currentOrder.value.goods_type }}</el-descriptions-item>
+      <el-descriptions-item :label="$t('message.adminOrder.Order.price')">{{ shopStoreData.currentOrder.value.price }}</el-descriptions-item>
     </el-descriptions>
-    <el-form v-model="shopStoreData.currentOrder.value" label-width="80" label-position="top">
-      <el-form-item label="订单状态">
+    <el-form v-model="shopStoreData.currentOrder.value" label-position="top">
+      <el-form-item :label="$t('message.adminOrder.Order.trade_status')">
         <el-radio-group v-model="shopStoreData.currentOrder.value.trade_status" class="ml-4">
-          <el-radio :label="constantStore.ORDER_STATUS_CREATED">已创建</el-radio>
-          <el-radio :label="constantStore.ORDER_STATUS_WAIT_BUYER_PAY">等待买家付款</el-radio>
-          <el-radio :label="constantStore.ORDER_STATUS_TRADE_SUCCESS">支付成功</el-radio>
-          <el-radio :label="constantStore.ORDER_STATUS_TRADE_FINISHED">交易结束</el-radio>
-          <el-radio :label="constantStore.ORDER_STATUS_TRADE_CLOSED">交易关闭</el-radio>
-          <el-radio :label="constantStore.ORDER_STATUS_COMPLETED">已完成</el-radio>
+          <el-radio :label="constantStore.ORDER_STATUS_CREATED">{{$t('message.constant.ORDER_STATUS_CREATED')}}</el-radio>
+          <el-radio :label="constantStore.ORDER_STATUS_WAIT_BUYER_PAY">{{$t('message.constant.ORDER_STATUS_WAIT_BUYER_PAY')}}</el-radio>
+          <el-radio :label="constantStore.ORDER_STATUS_TRADE_SUCCESS">{{$t('message.constant.ORDER_STATUS_TRADE_SUCCESS')}}</el-radio>
+          <el-radio :label="constantStore.ORDER_STATUS_TRADE_FINISHED">{{$t('message.constant.ORDER_STATUS_TRADE_CLOSED')}}</el-radio>
+          <el-radio :label="constantStore.ORDER_STATUS_TRADE_CLOSED">{{$t('message.constant.ORDER_STATUS_TRADE_FINISHED')}}</el-radio>
+          <el-radio :label="constantStore.ORDER_STATUS_COMPLETED">{{$t('message.constant.ORDER_STATUS_COMPLETED')}}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="发货类型">
+      <el-form-item :label="$t('message.adminOrder.Order.deliver_type')">
         <el-radio-group v-model="shopStoreData.currentOrder.value.deliver_type" class="ml-4">
-          <el-radio :label="constantStore.DELIVER_TYPE_NONE">无需发货</el-radio>
-          <el-radio :label="constantStore.DELIVER_TYPE_AUTO">自动发货</el-radio>
-          <el-radio :label="constantStore.DELIVER_TYPE_MANUAL">手动发货</el-radio>
+          <el-radio :label="constantStore.DELIVER_TYPE_NONE">{{$t('message.constant.DELIVER_TYPE_NONE')}}</el-radio>
+          <el-radio :label="constantStore.DELIVER_TYPE_AUTO">{{$t('message.constant.DELIVER_TYPE_AUTO')}}</el-radio>
+          <el-radio :label="constantStore.DELIVER_TYPE_MANUAL">{{$t('message.constant.DELIVER_TYPE_MANUAL')}}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="发货内容">
+      <el-form-item :label="$t('message.adminOrder.Order.deliver_text')" v-if="shopStoreData.currentOrder.value.deliver_type !== constantStore.DELIVER_TYPE_NONE">
         <v-md-editor v-model="shopStoreData.currentOrder.value.deliver_text"></v-md-editor>
       </el-form-item>
-      <el-form-item label="支付ID">
+      <el-form-item :label="$t('message.adminOrder.Order.pay_id')">
         <el-input v-model="shopStoreData.currentOrder.value.pay_id"></el-input>
       </el-form-item>
-      <el-form-item label="支付类型">
+      <el-form-item :label="$t('message.adminOrder.Order.pay_type')">
         <el-input v-model="shopStoreData.currentOrder.value.pay_type"></el-input>
       </el-form-item>
-      <el-form-item label="折扣码ID">
+      <el-form-item :label="$t('message.adminOrder.Order.coupon_id')">
         <el-input v-model="shopStoreData.currentOrder.value.coupon_id"></el-input>
       </el-form-item>
-      <el-form-item label="折扣码">
+      <el-form-item :label="$t('message.adminOrder.Order.coupon_name')">
         <el-input v-model="shopStoreData.currentOrder.value.coupon_name"></el-input>
       </el-form-item>
-      <el-form-item label="折扣金额">
+      <el-form-item :label="$t('message.adminOrder.Order.coupon_amount')">
         <el-input v-model="shopStoreData.currentOrder.value.coupon_amount"></el-input>
       </el-form-item>
-      <el-form-item label="余额折扣金额">
+      <el-form-item :label="$t('message.adminOrder.Order.balance_amount')">
         <el-input v-model="shopStoreData.currentOrder.value.balance_amount"></el-input>
       </el-form-item>
-      <el-form-item label="订单金额">
+      <el-form-item :label="$t('message.adminOrder.Order.total_amount')">
         <el-input v-model="shopStoreData.currentOrder.value.total_amount"></el-input>
       </el-form-item>
-      <el-form-item label="付款金额">
+      <el-form-item :label="$t('message.adminOrder.Order.buyer_pay_amount')">
+        <el-input v-model="shopStoreData.currentOrder.value.buyer_pay_amount"></el-input>
+      </el-form-item>
+      <el-form-item :label="$t('message.adminOrder.Order.buyer_logon_id')">
         <el-input v-model="shopStoreData.currentOrder.value.buyer_logon_id"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
             <span class="dialog-footer">
-                <el-button @click="closeDialog">取消</el-button>
+                <el-button @click="closeDialog">{{$t('message.common.button_cancel')}}</el-button>
                 <el-button type="primary" @click="onSubmit">
-                    确认
+                    {{$t('message.common.button_confirm')}}
                 </el-button>
             </span>
     </template>
@@ -86,7 +88,6 @@ const constantStore = useConstantStore()
 
 const state = reactive({
   isShowDialog: false,
-  title: "订单编辑",
 })
 
 

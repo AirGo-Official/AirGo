@@ -24,7 +24,7 @@ export const useAdminShopStore = defineStore("adminShopStore", {
       total_bandwidth: 0,
       node_connector: 3,
       //
-      recharge_amount: '',
+      recharge_amount: '0.00',
       // checked_nodes: [0], //套餐编辑时选中的节点
       // nodes: [],
 

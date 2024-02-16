@@ -15,12 +15,12 @@ func GetThemeConfig(ctx *gin.Context) {
 // 获取公共系统设置
 func GetPublicSetting(ctx *gin.Context) {
 	var ps = model.PublicSystem{
-		EnableRegister:          global.Server.Subscribe.EnableRegister,
-		EnableEmailCode:         global.Server.Subscribe.EnableEmailCode,
-		EnableLoginEmailCode:    global.Server.Subscribe.EnableLoginEmailCode,
-		BackendUrl:              global.Server.Subscribe.BackendUrl,
-		EnabledClockIn:          global.Server.Subscribe.EnabledClockIn,
-		AcceptableEmailSuffixes: global.Server.Subscribe.AcceptableEmailSuffixes,
+		EnableRegister:          global.Server.Website.EnableRegister,
+		EnableEmailCode:         global.Server.Website.EnableEmailCode,
+		EnableLoginEmailCode:    global.Server.Website.EnableLoginEmailCode,
+		BackendUrl:              global.Server.Website.BackendUrl,
+		EnabledClockIn:          global.Server.Website.EnabledClockIn,
+		AcceptableEmailSuffixes: global.Server.Website.AcceptableEmailSuffixes,
 	}
 	response.OK("GetPublicSetting success", ps, ctx)
 }

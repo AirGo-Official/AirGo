@@ -1,15 +1,15 @@
 <template>
   <el-dialog
       v-model="state.isShowDialog"
-      :title="state.title"
+      :title="$t('message.adminShop.sort')"
       width="550px" destroy-on-close
       align-center
   >
     <el-table class="sort" :data="state.list" row-key="id" height="100%" style="width: 100%;flex: 1;">
-      <el-table-column type="index" label="序号" show-overflow-tooltip width="60" fixed></el-table-column>
-      <el-table-column prop="subject" label="名称" show-overflow-tooltip width="300" fixed></el-table-column>
-      <el-table-column prop="id" label="ID" show-overflow-tooltip width="60" fixed></el-table-column>
-      <el-table-column label="操作" show-overflow-tooltip fixed>
+      <el-table-column type="index" :label="$t('message.adminShop.Goods.index')" show-overflow-tooltip width="60" fixed></el-table-column>
+      <el-table-column prop="subject" :label="$t('message.adminShop.Goods.subject')" show-overflow-tooltip width="300" fixed></el-table-column>
+      <el-table-column prop="id" :label="$t('message.adminShop.Goods.id')" show-overflow-tooltip width="60" fixed></el-table-column>
+      <el-table-column :label="$t('message.common.operate')" show-overflow-tooltip fixed>
         <el-icon class="move">
           <Rank/>
         </el-icon>
@@ -17,9 +17,9 @@
     </el-table>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="state.isShowDialog = false">取消</el-button>
+        <el-button @click="state.isShowDialog = false">{{$t('message.common.button_cancel')}}</el-button>
         <el-button type="primary" @click="onSubmit">
-          确认
+          {{$t('message.common.button_confirm')}}
         </el-button>
       </span>
     </template>
@@ -42,7 +42,6 @@ const apiStoreData = storeToRefs(apiStore)
 //定义参数
 const state = reactive({
   type: "",
-  title: "排序",
   isShowDialog: false,
   list: [] as Goods[],
 })

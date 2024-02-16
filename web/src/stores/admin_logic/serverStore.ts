@@ -31,7 +31,7 @@ export const useAdminServerStore = defineStore("serverAdminStore", {
                     visit_param: 0,
                 },
             } as Security,
-            subscribe: {
+            website: {
                 enable_register: true,
                 enable_email_code: false,
                 enable_login_email_code: false,
@@ -42,17 +42,8 @@ export const useAdminServerStore = defineStore("serverAdminStore", {
                 frontend_url: '',
                 api_prefix: '',
                 tek: '',
-                default_goods: 0,
-                enabled_rebate: true,    //是否开启返利
-                rebate_rate: 0,          //返利率
-                enabled_deduction: true, //是否开启旧套餐抵扣
-                deduction_threshold: 0,  //旧套餐抵扣阈值,大于该值则抵扣
                 enabled_clock_in: true,
-                clock_in_min_traffic: 100,
-                clock_in_max_traffic: 1000,
-                clock_in_min_day: 0,
-                clock_in_max_day: 0,
-            } as Subscribe,
+            } as Website,
 
             email: {
                 email_from: '',

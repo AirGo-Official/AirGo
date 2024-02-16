@@ -14,7 +14,7 @@ import (
 
 // 用户注册
 func Register(ctx *gin.Context) {
-	if !global.Server.Subscribe.EnableRegister {
+	if !global.Server.Website.EnableRegister {
 		response.Fail("Registration closed", nil, ctx)
 		return
 	}
@@ -26,7 +26,7 @@ func Register(ctx *gin.Context) {
 		return
 	}
 	//判断邮箱后缀
-	ok := other_plugin.In(u.EmailSuffix, strings.Fields(global.Server.Subscribe.AcceptableEmailSuffixes))
+	ok := other_plugin.In(u.EmailSuffix, strings.Fields(global.Server.Website.AcceptableEmailSuffixes))
 	if !ok {
 		response.Fail("The suffix name of this email is not supported!", nil, ctx)
 	}
@@ -37,7 +37,7 @@ func Register(ctx *gin.Context) {
 	}
 	//处理邮箱验证码
 	userEmail := u.UserName + u.EmailSuffix //处理邮箱后缀
-	if global.Server.Subscribe.EnableEmailCode {
+	if global.Server.Website.EnableEmailCode {
 		cacheEmail, ok := global.LocalCache.Get(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
 		if ok {
 			if !strings.EqualFold(cacheEmail.(string), u.EmailCode) {

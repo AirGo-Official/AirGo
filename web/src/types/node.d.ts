@@ -2,7 +2,6 @@ declare interface NodeInfo {
     created_at: string;
     updated_at: string;
     id: number;
-
     node_speed_limit: number; //节点限速/Mbps
     traffic_rate: number;    //倍率
     node_type: string;       //类型 vless vmess shadowsocks

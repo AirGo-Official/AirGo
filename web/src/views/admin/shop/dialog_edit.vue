@@ -1,10 +1,10 @@
 <template>
   <el-dialog v-model="state.isShowDialog" :title="state.title" width="80%" destroy-on-close>
-    <el-form :model="shopStoreData.currentGoods.value" label-width="80px" label-position="top">
-      <el-form-item label="商品标题">
+    <el-form :model="shopStoreData.currentGoods.value" label-position="top">
+      <el-form-item :label="$t('message.adminShop.Goods.subject')">
         <el-input v-model="shopStoreData.currentGoods.value.subject" />
       </el-form-item>
-      <el-form-item label="价格">
+      <el-form-item :label="$t('message.adminShop.Goods.price')">
         <el-col :span="4">
           <el-input v-model="shopStoreData.currentGoods.value.price" />
         </el-col>
@@ -15,65 +15,63 @@
           <span class="text-gray-500">RMB</span>
         </el-col>
       </el-form-item>
-      <el-form-item label="限购">
+      <el-form-item :label="$t('message.adminShop.Goods.quota')">
         <el-input-number v-model="shopStoreData.currentGoods.value.quota" :min="0" :step="1"/>
       </el-form-item>
-      <el-form-item label="库存">
+      <el-form-item :label="$t('message.adminShop.Goods.stock')">
         <el-input-number v-model="shopStoreData.currentGoods.value.stock" :min="0" :step="1"/>
       </el-form-item>
       <el-row>
         <el-col :span="5">
-          <el-form-item label="是否显示">
-            <el-switch v-model="shopStoreData.currentGoods.value.is_show" inline-prompt active-text="开启"
-                       inactive-text="关闭"
+          <el-form-item :label="$t('message.adminShop.Goods.is_show')">
+            <el-switch v-model="shopStoreData.currentGoods.value.is_show" inline-prompt :active-text="$t('message.common.enable')"
+                       :inactive-text="$t('message.common.disable')"
                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
 
           </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="是否在售">
-            <el-switch v-model="shopStoreData.currentGoods.value.is_sale" inline-prompt active-text="开启"
-                       inactive-text="关闭"
+          <el-form-item :label="$t('message.adminShop.Goods.is_sale')">
+            <el-switch v-model="shopStoreData.currentGoods.value.is_sale" inline-prompt :active-text="$t('message.common.enable')"
+                       :inactive-text="$t('message.common.disable')"
                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
           </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="是否可续费">
-            <el-switch v-model="shopStoreData.currentGoods.value.is_renew" inline-prompt active-text="开启"
-                       inactive-text="关闭"
+          <el-form-item :label="$t('message.adminShop.Goods.is_renew')">
+            <el-switch v-model="shopStoreData.currentGoods.value.is_renew" inline-prompt :active-text="$t('message.common.enable')"
+                       :inactive-text="$t('message.common.disable')"
                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="描述">
+      <el-form-item :label="$t('message.adminShop.Goods.des')">
         <v-md-editor v-model="shopStoreData.currentGoods.value.des" height="400px"></v-md-editor>
       </el-form-item>
-
-
-      <el-form-item label="商品类型">
+      <el-form-item :label="$t('message.adminShop.Goods.goods_type')">
         <el-radio-group v-model="shopStoreData.currentGoods.value.goods_type">
-          <el-radio :label="constantStore.GOODS_TYPE_GENERAL">普通商品</el-radio>
-          <el-radio :label="constantStore.GOODS_TYPE_SUBSCRIBE">订阅</el-radio>
-          <el-radio :label="constantStore.GOODS_TYPE_RECHARGE">充值</el-radio>
+          <el-radio :label="constantStore.GOODS_TYPE_GENERAL">{{$t('message.constant.GOODS_TYPE_GENERAL')}}</el-radio>
+          <el-radio :label="constantStore.GOODS_TYPE_SUBSCRIBE">{{$t('message.constant.GOODS_TYPE_SUBSCRIBE')}}</el-radio>
+          <el-radio :label="constantStore.GOODS_TYPE_RECHARGE">{{$t('message.constant.GOODS_TYPE_RECHARGE')}}</el-radio>
         </el-radio-group>
       </el-form-item>
       <!--      发货参数开始-->
       <div v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_GENERAL">
-        <el-form-item label="发货类型">
+        <el-form-item :label="$t('message.adminShop.Goods.deliver_type')">
           <el-radio-group v-model="shopStoreData.currentGoods.value.deliver_type">
-            <el-radio label="none">无需发货</el-radio>
-            <el-radio label="manual">手动发货</el-radio>
-            <el-radio label="auto">自动发货</el-radio>
+            <el-radio label="none">{{$t('message.constant.DELIVER_TYPE_NONE')}}</el-radio>
+            <el-radio label="manual">{{$t('message.constant.DELIVER_TYPE_MANUAL')}}</el-radio>
+            <el-radio label="auto">{{$t('message.constant.DELIVER_TYPE_AUTO')}}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="发货内容" v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_AUTO">
+        <el-form-item :label="$t('message.adminShop.Goods.deliver_text')" v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_AUTO">
           <v-md-editor v-model="shopStoreData.currentGoods.value.deliver_text" height="400px"></v-md-editor>
         </el-form-item>
       </div>
       <!--      发货参数结束-->
       <!--      订阅商品开始-->
       <div v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE">
-        <el-form-item label="总流量">
+        <el-form-item :label="$t('message.adminShop.Goods.total_bandwidth')">
           <el-col :span="4">
             <el-input-number v-model.number="shopStoreData.currentGoods.value.total_bandwidth" />
           </el-col>
@@ -84,7 +82,7 @@
             <span class="text-gray-500">GB</span>
           </el-col>
         </el-form-item>
-        <el-form-item label="关联节点">
+        <el-form-item :label="$t('message.adminShop.Goods.nodes')">
           <el-transfer
             :data="nodeManageData.nodeList.value.data"
             v-model="shopStoreData.checkedNodeIDs.value"
@@ -96,7 +94,7 @@
       <!--      订阅商品结束-->
       <!--      充值商品开始-->
       <div v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_RECHARGE">
-        <el-form-item label="充值金额">
+        <el-form-item :label="$t('message.adminShop.Goods.recharge_amount')">
           <el-input v-model="shopStoreData.currentGoods.value.recharge_amount" placeholder="100.00"></el-input>
         </el-form-item>
       </div>
@@ -104,9 +102,9 @@
     </el-form>
     <template #footer>
             <span class="dialog-footer">
-                <el-button @click="state.isShowDialog = false">取消</el-button>
+                <el-button @click="state.isShowDialog = false">{{$t('message.common.button_cancel')}}</el-button>
                 <el-button type="primary" @click="onSubmit">
-                    确认
+                    {{$t('message.common.button_confirm')}}
                 </el-button>
             </span>
     </template>
@@ -120,12 +118,14 @@ import { useAdminNodeStore } from "/@/stores/admin_logic/nodeStore";
 import { reactive } from "vue";
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { useConstantStore } from "/@/stores/constantStore";
+import { useI18n } from "vue-i18n";
 
 const  shopStore  = useAdminShopStore()
 const shopStoreData = storeToRefs(shopStore)
 const nodeStore = useAdminNodeStore();
 const  nodeManageData  = storeToRefs(nodeStore);
 const constantStore = useConstantStore()
+const {t} = useI18n()
 // 定义子组件向父组件传值/事件
 const emit = defineEmits(["refresh"]);
 
@@ -138,15 +138,15 @@ const state = reactive({
 
 // 打开弹窗
 const openDialog = (type: string, row?: Goods) => {
+  state.type = type;
   nodeStore.getAllNode()
   if (type == "add") {
-    state.type = type;
-    state.title = "新建商品";
+    state.title = t('message.adminShop.addGoods')
     state.isShowDialog = true;
     shopStoreData.currentGoods.value.id = 0; //清空上次编辑的id，否则无法新建
   } else {
     state.type = type;
-    state.title = "修改商品";
+    state.title = t('message.adminShop.modifyGoods')
     shopStoreData.currentGoods.value = row;
     shopStore.nodeIDsHandler()
     state.isShowDialog = true;

@@ -8,9 +8,9 @@
               v-model="state.this_month"
               type="datetimerange"
               :shortcuts="shortcuts"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
+              :range-separator="$t('message.common.to')"
+              :start-placeholder="$t('message.common.startDate')"
+              :end-placeholder="$t('message.common.endDate')"
               value-format="YYYY-MM-DD HH:mm:ss"
           />
         </el-col>
@@ -19,49 +19,54 @@
               <el-icon>
                 <ele-Search/>
               </el-icon>
-              查询
+              {{$t('message.common.query')}}
             </el-button>
-            <el-button size="default" type="success" class="ml10" @click="onOpenEditNode('新建节点','vless')">
+            <el-button size="default" type="success" class="ml10" @click="onOpenEditNode('add',{})">
               <el-icon>
                 <ele-FolderAdd/>
               </el-icon>
-              新增节点
+              {{$t('message.common.add')}}
             </el-button>
 
             <el-button size="default" type="warning" class="ml10" @click="onOpenNodeSortDialog">
               <el-icon>
                 <DCaret/>
               </el-icon>
-              排序
+              {{$t('message.common.sort')}}
             </el-button>
 
             <el-button size="default" type="primary" class="ml10" @click="onOpenNodeSharedDialog">
               <el-icon>
                 <Share/>
               </el-icon>
-              共享节点管理
+              {{$t('message.adminNode.sharedNode')}}
             </el-button>
         </el-col>
       </el-row>
       <el-table :data="nodeStoreData.nodeList.value.data" height="100%" stripe style="width: 100%;flex: 1;" @sort-change="sortChange">
-<!--        <el-table-column fixed type="index" label="序号" width="60"/>-->
-        <el-table-column prop="id" label="节点ID" show-overflow-tooltip width="80" sortable="custom" fixed></el-table-column>
-        <el-table-column prop="remarks" label="节点名称" show-overflow-tooltip width="200" sortable="custom"></el-table-column>
-        <el-table-column prop="enable_transfer" label="节点类型" width="120" show-overflow-tooltip sortable="custom">
+        <el-table-column fixed type="index" :label="$t('message.adminNode.NodeInfo.index')" width="60"/>
+        <el-table-column prop="id" :label="$t('message.adminNode.NodeInfo.id')" show-overflow-tooltip width="80" sortable="custom" fixed></el-table-column>
+        <el-table-column prop="remarks" :label="$t('message.adminNode.NodeInfo.remarks')" show-overflow-tooltip width="200" sortable="custom"></el-table-column>
+        <el-table-column prop="enabled" :label="$t('message.adminNode.NodeInfo.enabled')" width="120" show-overflow-tooltip sortable="custom">
           <template #default="scope">
-            <el-tag type="warning" v-if="scope.row.enable_transfer">中转</el-tag>
-            <el-tag type="success" v-else>直连</el-tag>
+            <el-tag type="success" v-if="scope.row.enabled">{{$t('message.common.enable')}}</el-tag>
+            <el-tag type="danger" v-else>{{$t('message.common.disable')}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="enabled" label="节点状态" width="120" show-overflow-tooltip sortable="custom">
+        <el-table-column prop="enable_transfer" :label="$t('message.adminNode.NodeInfo.enable_transfer')" width="120" show-overflow-tooltip sortable="custom">
           <template #default="scope">
-            <el-tag type="success" v-if="scope.row.enabled">启用</el-tag>
-            <el-tag type="danger" v-else>禁用</el-tag>
+            <el-tag type="warning" v-if="scope.row.enable_transfer">{{$t('message.adminNode.NodeInfo.node_type_transfer')}}</el-tag>
+            <el-tag type="success" v-else>{{$t('message.adminNode.NodeInfo.node_type_direct')}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="节点地址" show-overflow-tooltip width="150" sortable="custom"></el-table-column>
-        <el-table-column prop="port" label="节点端口" width="100" show-overflow-tooltip sortable="custom"></el-table-column>
-        <el-table-column prop="sort" label="协议类型" width="120" show-overflow-tooltip sortable="custom">
+        <el-table-column prop="address" :label="$t('message.adminNode.NodeInfo.address')" show-overflow-tooltip width="150" sortable="custom">
+          <template #default="{row}">
+            <span v-if="row.enable_transfer">{{row.transfer_address}}</span>
+            <span v-else>{{row.address}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="port" :label="$t('message.adminNode.NodeInfo.port')" width="100" show-overflow-tooltip sortable="custom"></el-table-column>
+        <el-table-column prop="node_type" :label="$t('message.adminNode.NodeInfo.node_type')" width="120" show-overflow-tooltip sortable="custom">
           <template #default="scope">
             <el-button type="success" v-if="scope.row.node_type ===constantStore.NODE_TYPE_VMESS">vmess</el-button>
             <el-button type="warning" v-if="scope.row.node_type ===constantStore.NODE_TYPE_VLESS">vless</el-button>
@@ -70,25 +75,25 @@
             <el-button type="primary" v-if="scope.row.node_type ===constantStore.NODE_TYPE_HYSTERIA">hysteria</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="total_up" label="上行流量(GB)" show-overflow-tooltip width="200">
+        <el-table-column prop="total_up" :label="$t('message.adminNode.NodeInfo.total_up')" show-overflow-tooltip width="200">
           <template #default="scope">
             <el-tag type="warning">{{ scope.row.total_up / 1024 / 1024 / 1024 }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="total_down" label="下行流量(GB)" show-overflow-tooltip width="200">
+        <el-table-column prop="total_down" :label="$t('message.adminNode.NodeInfo.total_down')" show-overflow-tooltip width="200">
           <template #default="scope">
             <el-tag type="warning">{{ scope.row.total_down / 1024 / 1024 / 1024 }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="node_speed_limit" label="限速" show-overflow-tooltip sortable="custom"></el-table-column>
-        <el-table-column prop="traffic_rate" label="倍率" show-overflow-tooltip sortable="custom"></el-table-column>
-        <el-table-column label="操作" width="100">
+        <el-table-column prop="node_speed_limit" :label="$t('message.adminNode.NodeInfo.node_speed_limit')" show-overflow-tooltip sortable="custom"></el-table-column>
+        <el-table-column prop="traffic_rate" :label="$t('message.adminNode.NodeInfo.traffic_rate')" show-overflow-tooltip sortable="custom"></el-table-column>
+        <el-table-column :label="$t('message.common.operate')" width="100">
           <template #default="scope">
             <el-button size="small" text type="primary"
-                       @click="onOpenEditNode('编辑节点', scope.row)">编辑
+                       @click="onOpenEditNode('edit', scope.row)">{{$t('message.common.modify')}}
             </el-button>
             <el-button size="small" text type="primary"
-                       @click="onRowDel(scope.row)">删除
+                       @click="onRowDel(scope.row)">{{$t('message.common.delete')}}
             </el-button>
           </template>
         </el-table-column>
@@ -118,6 +123,7 @@ import {useAdminNodeStore} from "/@/stores/admin_logic/nodeStore";
 import {ElMessageBox} from "element-plus";
 import {formatDate} from "/@/utils/formatTime";
 import { useConstantStore } from "/@/stores/constantStore";
+import { useI18n } from "vue-i18n";
 
 const NodeDialog = defineAsyncComponent(() => import('/@/views/admin/node/dialog_edit.vue'))
 const NodeSortDialog = defineAsyncComponent(() => import('/@/views/admin/node/dialog_node_sort.vue'))
@@ -128,10 +134,11 @@ const nodeSharedDialogRef = ref()
 const nodeStore = useAdminNodeStore()
 const nodeStoreData = storeToRefs(nodeStore)
 const constantStore = useConstantStore()
+const {t} = useI18n()
 //时间范围
 const shortcuts = [
   {
-    text: '上周',
+    text: t('message.common.lastWeek'),
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -140,7 +147,7 @@ const shortcuts = [
     },
   },
   {
-    text: '上月',
+    text: t('message.common.lastMonth'),
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -149,7 +156,7 @@ const shortcuts = [
     },
   },
   {
-    text: '最近3个月',
+    text: t('message.common.lastThreeMonths'),
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -173,7 +180,7 @@ const state = reactive({
 })
 
 //打开新建节点，修改节点弹窗
-function onOpenEditNode(title: string, row?: NodeInfo) {1
+function onOpenEditNode(title: string, row?: NodeInfo) {
   nodeDialogRef.value.openDialog(title, row)
 }
 
@@ -211,9 +218,9 @@ function initDate() {
 
 //删除节点
 function onRowDel(row: NodeInfo) {
-  ElMessageBox.confirm(`此操作将永久删除节点：${row.remarks}，是否继续?`, '提示', {
-    confirmButtonText: '删除',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm(t('message.common.message_confirm_delete'), t('message.common.tip'), {
+    confirmButtonText: t('message.common.button_confirm'),
+    cancelButtonText: t('message.common.button_cancel'),
     type: 'warning',
   })
       .then(() => {

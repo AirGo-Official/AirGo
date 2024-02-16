@@ -44,7 +44,7 @@ func GetEmailCode(ctx *gin.Context) {
 		return
 	}
 	// 判断邮箱后缀是否合法
-	ok := other_plugin.In(e.TargetEmail[strings.Index(e.TargetEmail, "@"):], strings.Fields(global.Server.Subscribe.AcceptableEmailSuffixes))
+	ok := other_plugin.In(e.TargetEmail[strings.Index(e.TargetEmail, "@"):], strings.Fields(global.Server.Website.AcceptableEmailSuffixes))
 	if !ok {
 		response.Fail("The suffix name of this email is not supported!", nil, ctx)
 		return

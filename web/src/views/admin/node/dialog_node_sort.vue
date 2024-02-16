@@ -1,16 +1,16 @@
 <template>
   <el-dialog
       v-model="state.isShowDialog"
-      :title="state.title"
+      :title="$t('message.adminNode.sortNode')"
       width="80%" destroy-on-close
       align-center
   >
     <el-table class="nodeSort" :data="nodeStoreData.nodeList.value.data" row-key="id" height="100%"
               style="width: 100%;flex: 1;">
-      <el-table-column type="index" label="序号" show-overflow-tooltip width="60" fixed></el-table-column>
-      <el-table-column prop="remarks" label="节点名称" show-overflow-tooltip width="300" fixed></el-table-column>
-      <el-table-column prop="id" label="节点ID" show-overflow-tooltip width="60" fixed></el-table-column>
-      <el-table-column label="操作" show-overflow-tooltip fixed>
+      <el-table-column type="index" :label="$t('message.adminNode.NodeInfo.index')" show-overflow-tooltip width="60" fixed></el-table-column>
+      <el-table-column prop="remarks" :label="$t('message.adminNode.NodeInfo.remarks')" show-overflow-tooltip width="300" fixed></el-table-column>
+      <el-table-column prop="id" :label="$t('message.adminNode.NodeInfo.id')" show-overflow-tooltip width="60" fixed></el-table-column>
+      <el-table-column :label="$t('message.common.operate')" show-overflow-tooltip fixed>
         <el-icon class="move">
           <Rank/>
         </el-icon>
@@ -18,9 +18,9 @@
     </el-table>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="state.isShowDialog = false">取消</el-button>
+        <el-button @click="state.isShowDialog = false">{{$t('message.common.button_cancel')}}</el-button>
         <el-button type="primary" @click="onSubmit">
-          确认
+          {{$t('message.common.button_confirm')}}
         </el-button>
       </span>
     </template>
@@ -35,18 +35,18 @@ import {useAdminNodeStore} from "/@/stores/admin_logic/nodeStore";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
+import { useI18n } from "vue-i18n";
 
 const nodeStore = useAdminNodeStore()
 const nodeStoreData = storeToRefs(nodeStore)
-
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
+const {t} = useI18n()
+
 const emit = defineEmits(['refresh', 'onGetNode'])
 
 //定义参数
 const state = reactive({
-  type: "",
-  title: "节点排序",
   isShowDialog: false,
 })
 //获取全部节点

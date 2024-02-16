@@ -47,19 +47,6 @@
             </div>
           </div>
           <div class="personal-edit-title">
-            我的邀请（佣金率：{{ publicStoreData.publicSetting.value.rebate_rate * 100 }}%）
-          </div>
-          <div class="personal-edit-safe-box">
-            <div class="personal-edit-safe-item">
-              <div class="personal-edit-safe-item-left">
-<!--                <div class="personal-edit-safe-item-left-label">专属邀请链接</div>-->
-                <div class="personal-edit-safe-item-left-value">
-                  {{ state.url }}/#/login?i={{ userInfos.invitation_code }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="personal-edit-title">
             余额
           </div>
           <div class="personal-edit-safe-box">
