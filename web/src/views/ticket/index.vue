@@ -2,34 +2,34 @@
   <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
       <div class="mb15">
-        <el-button size="default" type="success" class="ml10" @click="newTicket">
+        <el-button size="default" type="success" class="ml10" @click="openTicketDialog">
           <el-icon>
             <ele-FolderAdd/>
           </el-icon>
-          新增工单
+          {{$t('message.adminTicket.addTicket')}}
         </el-button>
       </div>
       <el-table :data="ticketStoreData.userTicketList.value.data" stripe @sort-change="sortChange" height="100%">
-        <el-table-column type="index" label="序号" width="60" fixed/>
-        <el-table-column prop="title" label="标题" show-overflow-tooltip width="300"
+        <el-table-column type="index" :label="$t('message.adminTicket.Ticket.index')" width="60" fixed/>
+        <el-table-column prop="title" :label="$t('message.adminTicket.Ticket.title')" show-overflow-tooltip width="300"
                          sortable="custom"></el-table-column>
-        <el-table-column prop="created_at" label="创建日期" show-overflow-tooltip width="200"
+        <el-table-column prop="created_at" :label="$t('message.adminTicket.Ticket.created_at')" show-overflow-tooltip width="200"
                          sortable="custom">
           <template #default="scope">
             {{ DateStrToTime(scope.row.created_at) }}
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" show-overflow-tooltip width="150"
+        <el-table-column prop="status" :label="$t('message.adminTicket.Ticket.status')" show-overflow-tooltip width="200"
                          sortable="custom">
           <template #default="scope">
-            <el-button v-if="scope.row.status === constantStore.TICKET_PROCESSING" type="success">进行中</el-button>
-            <el-button v-else type="info">关闭</el-button>
+            <el-button v-if="scope.row.status === constantStore.TICKET_PROCESSING" type="success">{{$t('message.constant.TICKET_PROCESSING')}}</el-button>
+            <el-button v-else type="info">{{$t('message.constant.TICKET_CLOSED')}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column :label="$t('message.common.operate')">
           <template #default="scope">
-            <el-button size="small" text type="primary" @click="toChat(scope.row)">查看</el-button>
-            <el-button size="small" text type="primary" @click="closeTicket(scope.row)">关闭</el-button>
+            <el-button size="small" text type="primary" :disabled="scope.row.status === constantStore.TICKET_CLOSED" @click="toChat(scope.row)">{{$t('message.common.reply')}}</el-button>
+            <el-button size="small" text type="primary" :disabled="scope.row.status === constantStore.TICKET_CLOSED" @click="closeTicket(scope.row)">{{$t('message.common.close')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -46,8 +46,23 @@
       >
       </el-pagination>
     </el-card>
+    <el-dialog v-model="state.isShowTicketDialog" :title="$t('message.adminTicket.addTicket')" width="80%" destroy-on-close align-center>
+      <el-form v-model="ticketStoreData.newTicketInfo.value" size="default" label-position="top">
+        <el-form-item :label="$t('message.adminTicket.Ticket.title')">
+          <el-input v-model="ticketStoreData.newTicketInfo.value.title"></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('message.adminTicket.Ticket.details')">
+          <el-input v-model="ticketStoreData.newTicketInfo.value.details" type="textarea" autosize></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+				<span class="dialog-footer">
+					<el-button @click="closeTicketDialog" size="default">{{$t('message.common.button_cancel')}}</el-button>
+					<el-button type="primary" @click="newTicketSubmit" size="default">{{$t('message.common.button_confirm')}}</el-button>
+				</span>
+      </template>
+    </el-dialog>
     <ToChatDialog ref="ToChatDialogRef"></ToChatDialog>
-    <NewTicketDialog ref="NewTicketDialogRef" @refresh="getUserTicketList"></NewTicketDialog>
   </div>
 </template>
 
@@ -64,10 +79,8 @@ const ticketStoreData = storeToRefs(ticketStore)
 const ToChatDialog = defineAsyncComponent(() => import('/@/views/ticket/toChatDialog.vue'))
 const ToChatDialogRef = ref()
 
-const NewTicketDialog = defineAsyncComponent(() => import('/@/views/ticket/newTicket.vue'))
-const NewTicketDialogRef = ref()
-
 const state = reactive({
+  isShowTicketDialog:false,
   queryParams:{
     table_name: 'ticket',
     field_params_list: [
@@ -78,8 +91,18 @@ const state = reactive({
   },
 })
 //
-const newTicket = () => {
-  NewTicketDialogRef.value.openDialog()
+const openTicketDialog = () => {
+  state.isShowTicketDialog = true
+}
+const closeTicketDialog=()=>{
+  state.isShowTicketDialog = false
+}
+//确认提交
+const newTicketSubmit = () => {
+  ticketStore.newTicket().then(()=>{
+    getUserTicketList()
+  })
+  closeTicketDialog()
 }
 const getUserTicketList = () => {
   ticketStore.getUserTicketList(state.queryParams)

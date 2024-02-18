@@ -1,6 +1,6 @@
 export default {
   adminOrder: {
-    query:"Query",
+    query:"查询",
     modify_order:"修改订单",
     Order: {
       index:"序号",

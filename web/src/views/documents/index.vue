@@ -105,13 +105,6 @@ onMounted(() => {
   color: var(--el-text-color-primary);
 }
 
-.el-card {
-  /*background-image: url("../../assets/bgc/bg-1.svg");*/
-  background-repeat: no-repeat;
-  background-position: 100%, 100%;
-  /*background: rgba(0,0,0,0.3);*/
-}
-
 .card-text {
   display: flex;
   justify-content: space-between;

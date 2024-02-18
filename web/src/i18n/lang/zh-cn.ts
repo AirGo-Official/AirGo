@@ -13,8 +13,8 @@ export default {
     adminCoupon: "折扣",
     adminAccess: "路由规则",
     adminMigration: "数据迁移",
-    adminTicket: "工单管理",
-    adminIncome: "收入概览",
+    adminTicket: "工单",
+    adminIncome: "收入",
     home: "主页",
     shop: "商店",
     myOrder: "我的订单",
@@ -26,7 +26,9 @@ export default {
   staticRoutes: {
     signIn: "登录",
     notFound: "找不到此页面",
-    noPower: "没有权限"
+    noPower: "没有权限",
+    articleDetails:"文章详情",
+    ticketDetails:"工单详情",
   },
   user: {
     title0: "组件大小",

@@ -10,7 +10,7 @@
           </el-icon>
           {{$t('message.adminUser.query')}}
         </el-button>
-        <el-button size="default" type="success" class="ml10" @click="onOpenAddUser('add')">
+        <el-button size="default" type="success" class="ml10" @click="openEditDialog('add')">
           <el-icon>
             <ele-FolderAdd/>
           </el-icon>
@@ -61,9 +61,9 @@
         </el-table-column>
         <el-table-column :label="$t('message.common.operate')" width="200px">
           <template #default="scope">
-            <el-button size="small" text type="primary" @click="onOpenCustomerService(scope.row)">{{$t('message.adminUser.customerService')}}</el-button>
-            <el-button size="small" text type="primary" @click="onOpenEditUser('edit', scope.row)">{{$t('message.common.modify')}}</el-button>
-            <el-button size="small" text type="primary" @click="onRowDel(scope.row)">{{$t('message.common.delete')}}</el-button>
+            <el-button size="small" text type="primary" @click="openCustomerServiceDrawer(scope.row)">{{$t('message.adminUser.customerService')}}</el-button>
+            <el-button size="small" text type="primary" @click="openEditDialog('edit', scope.row)">{{$t('message.common.modify')}}</el-button>
+            <el-button size="small" text type="primary" @click="deleteUser(scope.row)">{{$t('message.common.delete')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -81,7 +81,7 @@
       </el-pagination>
     </el-card>
     <UserDialog ref="userDialogRef" @refresh="getUserList"/>
-    <CustomerServiceDialog ref="customerServiceDialogRef"></CustomerServiceDialog>
+    <CustomerServiceDrawer ref="CustomerServiceDrawerRef"></CustomerServiceDrawer>
   </div>
 </template>
 
@@ -97,10 +97,10 @@ const userStore = useAdminUserStore()
 const userStoreData = storeToRefs(userStore)
 const UserDialog = defineAsyncComponent(() => import('/@/views/admin/user/dialog_user_edit.vue'));
 const ReportComponent = defineAsyncComponent(() => import('/@/components/report/index.vue'))
-const CustomerServiceDialog =  defineAsyncComponent(() => import('/@/views/admin/user/dialog_customer_service.vue'));
+const CustomerServiceDrawer =  defineAsyncComponent(() => import('/@/views/admin/user/drawer_customer_service.vue'));
 const userDialogRef = ref();
 const reportRef = ref()
-const customerServiceDialogRef = ref()
+const CustomerServiceDrawerRef = ref()
 const {t} = useI18n()
 
 // 定义变量内容
@@ -117,18 +117,14 @@ const state = reactive({
   } as QueryParams,
 });
 
-// 打开新增用户弹窗
-const onOpenAddUser = (type: string) => {
-  userDialogRef.value.openDialog(type);
-};
-// 打开修改用户弹窗
-const onOpenEditUser = (type: string, row: SysUser) => {
+// 打开用户弹窗
+const openEditDialog = (type: string, row?: SysUser) => {
   userDialogRef.value.openDialog(type, row);
 };
 
 //
-const onOpenCustomerService=(row: SysUser)=>{
-  customerServiceDialogRef.value.onOpenDrawer(row);
+const openCustomerServiceDrawer=(row: SysUser)=>{
+  CustomerServiceDrawerRef.value.openDrawer(row);
 }
 //
 const findUser = () => {
@@ -141,17 +137,16 @@ const getUserList = () => {
 }
 
 // 删除用户
-const onRowDel = (row: SysUser) => {
+const deleteUser = (row: SysUser) => {
   ElMessageBox.confirm(t('message.common.message_confirm_delete'),t('message.common.tip') , {
     confirmButtonText: t('message.common.button_confirm'),
     cancelButtonText: t('message.common.button_cancel'),
     type: 'warning',
   })
       .then(() => {
-        userStore.deleteUser(row)
-        setTimeout(() => {
+        userStore.deleteUser(row).then(()=>{
           getUserList()
-        }, 500)
+        })
       })
       .catch(() => {
       });

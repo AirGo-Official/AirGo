@@ -16,31 +16,22 @@
         </el-col>
         <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
             <el-button @click="onGetNode()" size="default" type="primary" class="ml10">
-              <el-icon>
-                <ele-Search/>
-              </el-icon>
-              {{$t('message.common.query')}}
+              <el-icon><ele-Search/></el-icon>{{$t('message.common.query')}}
             </el-button>
-            <el-button size="default" type="success" class="ml10" @click="onOpenEditNode('add',{})">
-              <el-icon>
-                <ele-FolderAdd/>
-              </el-icon>
-              {{$t('message.common.add')}}
+            <el-button size="default" type="primary" class="ml10" @click="openNodeDialog('add',{})">
+              <el-icon><ele-FolderAdd/></el-icon>{{$t('message.common.add')}}
             </el-button>
 
-            <el-button size="default" type="warning" class="ml10" @click="onOpenNodeSortDialog">
-              <el-icon>
-                <DCaret/>
-              </el-icon>
-              {{$t('message.common.sort')}}
+            <el-button size="default" type="primary" class="ml10" @click="openNodeSortDialog">
+              <el-icon><DCaret/></el-icon>{{$t('message.common.sort')}}
             </el-button>
 
-            <el-button size="default" type="primary" class="ml10" @click="onOpenNodeSharedDialog">
-              <el-icon>
-                <Share/>
-              </el-icon>
-              {{$t('message.adminNode.sharedNode')}}
+            <el-button size="default" type="primary" class="ml10" @click="openNodeSharedDialog">
+              <el-icon><Share/></el-icon>{{$t('message.adminNode.sharedNode')}}
             </el-button>
+          <el-button size="default" type="primary" class="ml10" @click="openAccessDrawer">
+            <el-icon><ChromeFilled /></el-icon>{{$t('message.adminNode.access')}}
+          </el-button>
         </el-col>
       </el-row>
       <el-table :data="nodeStoreData.nodeList.value.data" height="100%" stripe style="width: 100%;flex: 1;" @sort-change="sortChange">
@@ -90,7 +81,7 @@
         <el-table-column :label="$t('message.common.operate')" width="100">
           <template #default="scope">
             <el-button size="small" text type="primary"
-                       @click="onOpenEditNode('edit', scope.row)">{{$t('message.common.modify')}}
+                       @click="openNodeDialog('edit', scope.row)">{{$t('message.common.modify')}}
             </el-button>
             <el-button size="small" text type="primary"
                        @click="onRowDel(scope.row)">{{$t('message.common.delete')}}
@@ -111,7 +102,7 @@
     <NodeDialog ref="nodeDialogRef" @refresh="onGetNode()"/>
     <NodeSortDialog ref="nodeSortDialogRef" @refresh="onGetNode()"></NodeSortDialog>
     <NodeSharedDialog ref="nodeSharedDialogRef"></NodeSharedDialog>
-
+    <AccessDrawer ref="AccessDrawerRef"></AccessDrawer>
   </div>
 </template>
 
@@ -128,9 +119,11 @@ import { useI18n } from "vue-i18n";
 const NodeDialog = defineAsyncComponent(() => import('/@/views/admin/node/dialog_edit.vue'))
 const NodeSortDialog = defineAsyncComponent(() => import('/@/views/admin/node/dialog_node_sort.vue'))
 const NodeSharedDialog = defineAsyncComponent(() => import('/@/views/admin/node/dialog_node_shared.vue'))
+const AccessDrawer = defineAsyncComponent(()=>import('/@/views/admin/node/drawer_access.vue'))
 const nodeDialogRef = ref()
 const nodeSortDialogRef = ref()
 const nodeSharedDialogRef = ref()
+const AccessDrawerRef = ref()
 const nodeStore = useAdminNodeStore()
 const nodeStoreData = storeToRefs(nodeStore)
 const constantStore = useConstantStore()
@@ -180,18 +173,22 @@ const state = reactive({
 })
 
 //打开新建节点，修改节点弹窗
-function onOpenEditNode(title: string, row?: NodeInfo) {
+function openNodeDialog(title: string, row?: NodeInfo) {
   nodeDialogRef.value.openDialog(title, row)
 }
 
 //打开节点排序弹窗
-function onOpenNodeSortDialog() {
+function openNodeSortDialog() {
   nodeSortDialogRef.value.openDialog()
 }
 
 //打开共享节点弹窗
-function onOpenNodeSharedDialog() {
+function openNodeSharedDialog() {
   nodeSharedDialogRef.value.openDialog()
+}
+//打开访问控制抽屉
+const openAccessDrawer=()=>{
+  AccessDrawerRef.value.openDrawer()
 }
 
 //查询节点

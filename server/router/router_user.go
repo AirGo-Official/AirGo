@@ -14,6 +14,7 @@ func InitUserRouter(RouterGroup *gin.RouterGroup) {
 	{
 		userRouter.GET("/getUserInfo", user_api.GetUserInfo)                //获取自身信息
 		userRouter.POST("/changeUserPassword", user_api.ChangeUserPassword) //修改密码
+		userRouter.POST("/changeUserAvatar", user_api.ChangeUserAvatar)     //修改头像
 		userRouter.GET("/clockin", user_api.ClockIn)                        //打卡
 	}
 	// customer

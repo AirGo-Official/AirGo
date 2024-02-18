@@ -26,7 +26,9 @@ export default {
   staticRoutes: {
     signIn: "signIn",
     notFound: "notFound",
-    noPower: "noPower"
+    noPower: "noPower",
+    articleDetails:"Article details",
+    ticketDetails:"Ticket details",
   },
   user: {
     title0: "Component size",

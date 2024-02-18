@@ -2,11 +2,12 @@ export default {
   adminNode:{
    basicParameters:"Basic parameters",
    otherParameters:"Other parameters",
+   //
    addNode:"Add node",
    modifyNode:"Modify node",
    sortNode:"Sort node",
    sharedNode:"Shared node",
-     NodeInfo: {
+   NodeInfo: {
       node_type_transfer:"Transfer",
       node_type_direct:"Direct",
       index:"index",
@@ -61,6 +62,18 @@ export default {
       //关联参数
       goods:"goods",//关联商品
       access: "access",
-    }
+    },
+   //
+   access:"Access",
+   addAccess:"Add Access",
+   modifyAccess:"Modify Access",
+   Access:{
+    index:"index",
+    created_at:"created_at",
+    updated_at:"updated_at",
+    id:"id",
+    name:"name",
+    route:"route",
+   },
   },
 }

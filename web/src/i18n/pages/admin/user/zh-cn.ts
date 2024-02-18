@@ -1,5 +1,6 @@
 export default {
   adminUser: {
+    userInfo:"用户信息",
     query:"查询",
     add_user:"新增用户",
     modify_user:"修改用户",

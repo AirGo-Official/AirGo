@@ -6,11 +6,7 @@
         <el-card shadow="hover" header="个人信息">
           <div class="personal-user">
             <div class="personal-user-left">
-<!--              <el-upload class="h400 personal-user-left-upload" accept=".bmg,.png,.jpg"-->
-<!--                         action="https://jsonplaceholder.typicode.com/posts/" multiple :limit="1">-->
-<!--                <img :src="userInfos.avatar"/>-->
-<!--              </el-upload>-->
-              <div class="h400 personal-user-left-upload">
+              <div class="h400 personal-user-left-upload" @click="state.isShowChangeAvatarDialog = true">
                 <img :src="userInfos.avatar"/>
               </div>
             </div>
@@ -73,7 +69,7 @@
       </el-col>
     </el-row>
     <el-dialog v-model="state.isShowChangePasswordDialog" title="修改密码" width="500px">
-      <el-form ref="userDialogFormRef" size="default" label-width="90px">
+      <el-form size="default" label-position="top">
         <el-form-item label="新密码">
           <el-input v-model="registerData.password" placeholder="请输入密码" clearable></el-input>
         </el-form-item>
@@ -89,7 +85,17 @@
       </template>
     </el-dialog>
     <el-dialog v-model="state.isShowChangeAvatarDialog" title="修改头像" width="500px">
-
+      <el-form size="default" label-position="top">
+        <el-form-item label="头像链接">
+          <el-input v-model="userAvatar.avatar"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+				<span class="dialog-footer">
+					<el-button @click="state.isShowChangeAvatarDialog = false" size="default">取 消</el-button>
+					<el-button type="primary" @click="changeAvatar" size="default">确认</el-button>
+				</span>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -107,7 +113,7 @@ import {ElMessage} from "element-plus";
 import { usePublicStore } from "/@/stores/publicStore";
 
 const userStore = useUserStore()
-const {userInfos,registerData} = storeToRefs(userStore)
+const {userInfos,registerData,userAvatar} = storeToRefs(userStore)
 
 const publicStore = usePublicStore()
 const publicStoreData = storeToRefs(publicStore)
@@ -134,13 +140,19 @@ const getUrl = () => {
 }
 
 const changePassword = () => {
-  userStore.changePassword(registerData.value)
+  userStore.changePassword().then(()=>{
+  })
   state.isShowChangePasswordDialog = false
 };
+const changeAvatar=()=>{
+  userStore.changeAvatar().then(()=>{
+    userStore.getUserInfo()
+  })
+  state.isShowChangeAvatarDialog = false
+}
 
 onMounted(() => {
   getUrl(); //获取邀请url
-
 });
 </script>
 

@@ -50,10 +50,36 @@ func ChangeUserPassword(ctx *gin.Context) {
 		return
 	}
 	//删除该用户token cache
+	// todo 校验依然有效，需优化
 	userService.DeleteUserCacheTokenByID(&model.User{
 		ID: uIDInt,
 	})
 	response.OK("ChangeUserPassword success", nil, ctx)
+}
+
+// 修改头像
+func ChangeUserAvatar(ctx *gin.Context) {
+	uIDInt, ok := api.GetUserIDFromGinContext(ctx)
+	if !ok {
+		response.Fail("user id error", nil, ctx)
+		return
+	}
+	var params model.UserChangeAvatarRequest
+	err := ctx.ShouldBind(&params)
+	if err != nil {
+		global.Logrus.Error(err)
+		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
+		return
+	}
+	err = userService.UpdateUser(&model.User{ID: uIDInt}, map[string]any{
+		"avatar": params.Avatar,
+	})
+	if err != nil {
+		global.Logrus.Error(err)
+		response.Fail("ChangeUserAvatar error:"+err.Error(), nil, ctx)
+		return
+	}
+	response.OK("ChangeUserAvatar success", nil, ctx)
 }
 
 // 打卡

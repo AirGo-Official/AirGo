@@ -70,7 +70,7 @@ const state = reactive({
   isShowDialog:false,
   isShowDrawer: false,
 })
-const onOpenDrawer=(row:SysUser)=>{
+const openDrawer=(row:SysUser)=>{
   state.isShowDrawer = true
   adminCustomerServiceStore.getCustomerServiceList({user_id:row.id} as CustomerService)
 }
@@ -80,7 +80,7 @@ const openDialog = (row:CustomerService)=>{
 }
 // 暴露变量
 defineExpose({
-  onOpenDrawer,
+  openDrawer,
 });
 </script>
 

@@ -6,14 +6,17 @@
         <el-descriptions
           :column="1"
           border
-          title="用户信息"
+          :title="$t('message.adminUser.userInfo')"
         >
-          <el-descriptions-item label="创建时间">{{ DateStrToTime(userStoreData.currentUser.value.created_at) }}</el-descriptions-item>
-          <el-descriptions-item label="ID">{{ userStoreData.currentUser.value.id }}</el-descriptions-item>
-          <el-descriptions-item label="用户名">{{ userStoreData.currentUser.value.user_name }}</el-descriptions-item>
-          <el-descriptions-item label="账户状态">{{ userStoreData.currentUser.value.enable }}</el-descriptions-item>
-          <el-descriptions-item label="余额">{{ userStoreData.currentUser.value.balance }}</el-descriptions-item>
-          <el-descriptions-item label="tg id">{{ userStoreData.currentUser.value.tg_id }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('message.adminUser.SysUser.created_at')">{{ DateStrToTime(userStoreData.currentUser.value.created_at) }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('message.adminUser.SysUser.id')">{{ userStoreData.currentUser.value.id }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('message.adminUser.SysUser.user_name')">{{ userStoreData.currentUser.value.user_name }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('message.adminUser.SysUser.enable')">
+            <el-button v-if="userStoreData.currentUser.value.enable" type="success">{{$t('message.common.enable')}}</el-button>
+            <el-button v-else type="info">{{$t('message.common.disable')}}</el-button>
+          </el-descriptions-item>
+          <el-descriptions-item :label="$t('message.adminUser.SysUser.balance')">{{ userStoreData.currentUser.value.balance }}</el-descriptions-item>
+          <el-descriptions-item :label="$t('message.adminUser.SysUser.tg_id')">{{ userStoreData.currentUser.value.tg_id }}</el-descriptions-item>
 
         </el-descriptions>
       </el-card>
@@ -22,18 +25,18 @@
       <el-card >
         <template #header>
           <div class="card-header">
-            <span>标题：{{ticketStoreData.currentTicket.value.title}}</span>
+            <span>{{$t('message.adminTicket.Ticket.title')}}：{{ticketStoreData.currentTicket.value.title}}</span>
           </div>
         </template>
         <div id="chat">
           <div class="chatBox">
             <div >
-              <span>详情：{{ticketStoreData.currentTicket.value.details}}</span>
+              <span>{{$t('message.adminTicket.Ticket.details')}}：{{ticketStoreData.currentTicket.value.details}}</span>
             </div>
             <div class="chatBox-middle">
               <div class="chatInfo" id="chatInfo">
                 <div class="chatUser-box" v-for="(item,index) in ticketStoreData.currentTicket.value.ticket_message" :key="index"
-                     :class="[!item.is_admin?'chatUser-box1':'chatUser-box']">
+                     :class="[item.is_admin?'chatUser-box1':'chatUser-box']">
                   <div class="chatUser-info">
                     <div class="chatUser-info-name" :class="[!item.is_admin?'chatUser-info-name1':'chatUser-info-name']">
                       <span class="nowDate">{{ DateStrToTime(item.created_at) }}</span>
@@ -48,10 +51,10 @@
             </div>
             <div class="chatBox-infoDesk">
               <div class="chatBox-textarea">
-                <el-input v-model="ticketStoreData.newTicketMessage.value.message" type="textarea" placeholder="请输入信息"/>
+                <el-input v-model="ticketStoreData.newTicketMessage.value.message" type="textarea"/>
               </div>
               <div class="chatBox-sendOut">
-                <el-button type="primary" :disabled="ticketStoreData.currentTicket.value.status === constantStore.TICKET_CLOSED" @click="sendMessage">发送</el-button>
+                <el-button type="primary" :disabled="ticketStoreData.currentTicket.value.status === constantStore.TICKET_CLOSED" @click="sendMessage">{{$t('message.common.send')}}</el-button>
               </div>
             </div>
           </div>
@@ -129,7 +132,6 @@ onMounted(()=>{
   width: 100%;
   height: 400px;
   background-color: #fff;
-  border-bottom: 1px solid #2B3D63;
 }
 
 .chatBox-infoDesk {

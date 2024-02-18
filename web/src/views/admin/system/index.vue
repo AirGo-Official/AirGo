@@ -28,10 +28,10 @@
               <el-input v-model="serverConfig.serverConfig.value.website.sub_name"/>
             </el-form-item>
             <el-form-item :label="$t('message.adminServer.Server.frontend_url')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.website.frontend_url"/>
+              <el-input v-model="serverConfig.serverConfig.value.website.frontend_url" placeholder="http://xxx.com"/>
             </el-form-item>
             <el-form-item :label="$t('message.adminServer.Server.backend_url')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.website.backend_url"/>
+              <el-input v-model="serverConfig.serverConfig.value.website.backend_url" placeholder="http://xxx.com"/>
             </el-form-item>
             <el-divider></el-divider>
             <el-form-item>
@@ -322,11 +322,11 @@ const openPayDialog = (type: string, row?: PayInfo) => {
 
 //保存提交
 const onSubmit = () => {
-  serverStore.updateServerConfig(serverConfig.serverConfig.value)
-  setTimeout(() => {
+  serverStore.updateServerConfig(serverConfig.serverConfig.value).then((res)=>{
+    ElMessage.success(res.msg)
     serverStore.getServerConfig()
     publicStore.getPublicSetting()
-  }, 500)
+  })
 }
 const onSubmitMigration=()=>{
   ElMessageBox.confirm(t('message.adminServer.migrationTip2'), t('message.common.tip'), {

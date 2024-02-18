@@ -1,24 +1,34 @@
 <template>
   <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
+      <div class="mb15">
+        <el-input v-model="state.queryParams.field_params_list[0].condition_value" size="default"
+                  style="max-width: 180px"></el-input>
+        <el-button size="default" type="primary" class="ml10" @click="getTicketList()">
+          <el-icon>
+            <ele-Search/>
+          </el-icon>
+          {{$t('message.common.query')}}
+        </el-button>
+      </div>
       <el-table :data="ticketStoreData.ticketList.value.data" height="100%" stripe style="width: 100%;flex: 1;" @sort-change="sortChange">
-        <el-table-column fixed type="index" label="序号" width="60"></el-table-column>
-        <el-table-column prop="id" label="ID" show-overflow-tooltip width="60px" sortable="custom"></el-table-column>
-        <el-table-column prop="user_id" label="用户ID" show-overflow-tooltip width="80px" sortable="custom"></el-table-column>
-        <el-table-column prop="title" label="标题" show-overflow-tooltip width="200px" sortable="custom"></el-table-column>
-        <el-table-column prop="details" label="详情" show-overflow-tooltip width="200px" sortable="custom"></el-table-column>
-        <el-table-column prop="status" label="状态" show-overflow-tooltip width="150px" sortable="custom">
+        <el-table-column fixed type="index" :label="$t('message.adminTicket.Ticket.index')" width="60"></el-table-column>
+        <el-table-column prop="id" :label="$t('message.adminTicket.Ticket.id')" show-overflow-tooltip width="60px" sortable="custom"></el-table-column>
+        <el-table-column prop="user_id" :label="$t('message.adminTicket.Ticket.user_id')" show-overflow-tooltip width="80px" sortable="custom"></el-table-column>
+        <el-table-column prop="title" :label="$t('message.adminTicket.Ticket.title')" show-overflow-tooltip width="200px" sortable="custom"></el-table-column>
+        <el-table-column prop="details" :label="$t('message.adminTicket.Ticket.details')" show-overflow-tooltip width="200px" sortable="custom"></el-table-column>
+        <el-table-column prop="status" :label="$t('message.adminTicket.Ticket.status')" show-overflow-tooltip width="200px" sortable="custom">
           <template #default="{row}">
-            <el-button v-if="row.status === constantStore.TICKET_PROCESSING" size="small" type="success">进行中</el-button>
-            <el-button v-else size="small" type="info" >关闭</el-button>
+            <el-button v-if="row.status === constantStore.TICKET_PROCESSING" size="small" type="success">{{$t('message.constant.TICKET_PROCESSING')}}</el-button>
+            <el-button v-else size="small" type="info" >{{$t('message.constant.TICKET_CLOSED')}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作" show-overflow-tooltip>
+        <el-table-column :label="$t('message.common.operate')" show-overflow-tooltip width="200px">
           <template #default="{row}">
             <el-button size="small" text type="primary"
-                       @click="openChat(row)">回复
+                       @click="openChat(row)">{{$t('message.common.reply')}}
             </el-button>
-            <el-button size="small" text type="primary" @click="closeTicket(row)">关闭</el-button>
+            <el-button size="small" text type="primary" @click="closeTicket(row)">{{$t('message.common.close')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -63,7 +73,7 @@ const state = reactive({
   queryParams:{
     table_name: 'ticket',
     field_params_list: [
-      {field: 'id', field_chinese_name: '', field_type: '', condition: '<>', condition_value: '', operator: '',}
+      {field: 'title', field_chinese_name: '', field_type: '', condition: 'like', condition_value: '', operator: '',}
     ] as FieldParams[],
     pagination: {
       page_num: 1,

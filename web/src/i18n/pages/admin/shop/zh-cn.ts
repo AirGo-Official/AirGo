@@ -55,5 +55,22 @@ export default {
       epay_notify_url: "易支付同步通知地址",
       epay_type: "支付类型",
     },
+    //
+    coupon:"折扣码",
+    couponRateTip:"价格 = 原价 * (1- 折扣率)",
+    addCoupon:"新增折扣",
+    modifyCoupon:"修改折扣",
+    Coupon:{
+      index:"序号",
+      created_at: "创建时间",
+      updated_at: "更新时间",
+      id:"id",
+      name: "名称",
+      discount_rate:"折扣率",
+      limit:"次数",
+      expired_at: "过期时间",
+      goods:"关联商品",
+      checked_goods: "checked_goods",
+    }
   }
 }

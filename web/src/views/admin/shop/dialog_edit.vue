@@ -45,9 +45,6 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item :label="$t('message.adminShop.Goods.des')">
-        <v-md-editor v-model="shopStoreData.currentGoods.value.des" height="400px"></v-md-editor>
-      </el-form-item>
       <el-form-item :label="$t('message.adminShop.Goods.goods_type')">
         <el-radio-group v-model="shopStoreData.currentGoods.value.goods_type">
           <el-radio :label="constantStore.GOODS_TYPE_GENERAL">{{$t('message.constant.GOODS_TYPE_GENERAL')}}</el-radio>
@@ -83,12 +80,11 @@
           </el-col>
         </el-form-item>
         <el-form-item :label="$t('message.adminShop.Goods.nodes')">
-          <el-transfer
-            :data="nodeManageData.nodeList.value.data"
-            v-model="shopStoreData.checkedNodeIDs.value"
-            :props="{key: 'id',label: 'remarks',}"
-            :titles="['全部节点', '选中节点']"
-          />
+          <el-tree ref="nodes_tree_ref" node-key="id"
+                   :data="nodeManageData.nodeList.value.data"
+                   :props="{label:'remarks'}"
+                   :default-checked-keys="shopStoreData.checkedNodeIDs.value"
+                   show-checkbox class="menu-data-tree"/>
         </el-form-item>
       </div>
       <!--      订阅商品结束-->
@@ -99,6 +95,9 @@
         </el-form-item>
       </div>
       <!--      充值商品结束-->
+      <el-form-item :label="$t('message.adminShop.Goods.des')">
+        <v-md-editor v-model="shopStoreData.currentGoods.value.des" height="400px"></v-md-editor>
+      </el-form-item>
     </el-form>
     <template #footer>
             <span class="dialog-footer">
@@ -113,18 +112,19 @@
 
 <script lang="ts" setup>
 import { storeToRefs } from "pinia";
-
 import { useAdminNodeStore } from "/@/stores/admin_logic/nodeStore";
-import { reactive } from "vue";
+import { reactive,ref } from "vue";
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { useConstantStore } from "/@/stores/constantStore";
 import { useI18n } from "vue-i18n";
+import { ElMessage } from "element-plus";
 
 const  shopStore  = useAdminShopStore()
 const shopStoreData = storeToRefs(shopStore)
 const nodeStore = useAdminNodeStore();
 const  nodeManageData  = storeToRefs(nodeStore);
 const constantStore = useConstantStore()
+const nodes_tree_ref = ref()
 const {t} = useI18n()
 // 定义子组件向父组件传值/事件
 const emit = defineEmits(["refresh"]);
@@ -137,7 +137,7 @@ const state = reactive({
 });
 
 // 打开弹窗
-const openDialog = (type: string, row?: Goods) => {
+const openDialog = (type: string, row?: any) => {
   state.type = type;
   nodeStore.getAllNode()
   if (type == "add") {
@@ -159,16 +159,18 @@ const closeDialog = () => {
 
 //确认提交
 function onSubmit() {
+  //处理商品的关联节点
+  shopStoreData.checkedNodeIDs.value = [...nodes_tree_ref.value.getCheckedKeys()];
   if (state.type === "add") {
-    shopStore.newGoods();
-    setTimeout(() => {
+    shopStore.newGoods().then((res)=>{
+      ElMessage.success(res.msg)
       emit("refresh");
-    }, 500);
+    })
   } else {
-    shopStore.updateGoods();
-    setTimeout(() => {
+    shopStore.updateGoods().then((res)=>{
+      ElMessage.success(res.msg)
       emit("refresh");
-    }, 500);
+    })
   }
   closeDialog();
 }
@@ -201,6 +203,12 @@ defineExpose({
 /*  width:280px;*/
 /*  height:500px;*/
 /*}*/
+.menu-data-tree {
+  width: 100%;
+  border: 1px solid var(--el-border-color);
+  border-radius: var(--el-input-border-radius, var(--el-border-radius-base));
+  padding: 5px;
+}
 
 </style>
   

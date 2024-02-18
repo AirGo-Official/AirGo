@@ -54,4 +54,10 @@ const (
 	PAY_TYPE_ALIPAY  = "alipay"  // 支付宝alipay
 	PAY_TYPE_EPAY    = "epay"    //易支付
 	PAY_TYPE_BALANCE = "balance" //余额支付
+
+	//文章类型
+	ARTICLE_TYPE_HOME      = "home"
+	ARTICLE_TYPE_DIALOG    = "dialog"
+	ARTICLE_TYPE_NOTICE    = "notice"
+	ARTICLE_TYPE_KNOWLEDGE = "knowledge"
 )

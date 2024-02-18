@@ -9,16 +9,20 @@ export default {
     delete:"Delete",
     modify:"Modify",
     reset:"Reset",
+    query:"Query",
+    advanced_query:"Advanced query",
+    add:"Add",
+    sort:"Sort",
+    reply:"Reply",
+    close:"Close",
+    send:"Send",
+    details:"details",
+    purchase:"purchase",
 
     yes:"Yes",
     no:"No",
     enable:"Enable",
     disable:"Disable",
-
-    query:"Query",
-    advanced_query:"Advanced query",
-    add:"Add",
-    sort:"Sort",
 
     startDate:"Start date",
     endDate:"End date",
@@ -60,5 +64,9 @@ export default {
     NODE_TYPE_TROJAN      : "trojan",
     NODE_TYPE_HYSTERIA    : "hysteria",
     NODE_TYPE_SHADOWSOCKS : "shadowsocks",
+    //文章类型
+    ARTICLE_TYPE_HOME      : "home",
+    ARTICLE_TYPE_DIALOG    : "dialog",
+    ARTICLE_TYPE_NOTICE    : "notice",
   },
 };

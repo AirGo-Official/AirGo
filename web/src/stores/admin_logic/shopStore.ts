@@ -201,6 +201,8 @@ export const useAdminShopStore = defineStore("adminShopStore", {
       this.checkedNodeIDs.forEach((value: number, index: number, array: number[])=>{
         goods.nodes.push({id:value} as NodeInfo)
       })
+      console.log("this.checkedNodeIDs:",this.checkedNodeIDs)
+      console.log("goods.nodes:",goods.nodes)
       return goods
     },
   },

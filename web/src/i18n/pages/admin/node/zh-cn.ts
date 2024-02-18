@@ -2,6 +2,7 @@ export default {
   adminNode:{
     basicParameters:"基础参数",
     otherParameters:"其他参数",
+    //
     addNode:"新增节点",
     modifyNode:"修改节点",
     sortNode:"排序节点",
@@ -60,6 +61,18 @@ export default {
       //关联参数
       goods:"关联商品",//关联商品
       access: "访问控制",
-    }
+    },
+    //
+    access:"访问控制",
+    addAccess:"新增访问控制",
+    modifyAccess:"修改访问控制",
+    Access:{
+      index:"序号",
+      created_at:"创建时间",
+      updated_at:"更新时间",
+      id:"id",
+      name:"名称",
+      route:"禁止路由规则",
+    },
   },
 }

@@ -50,7 +50,6 @@ func (s *Shop) DeleteGoods(goods *model.Goods) error {
 
 // 更新商品
 func (s *Shop) UpdateGoods(goodsParams *model.Goods) error {
-	// todo 缓存
 	err := global.DB.Transaction(func(tx *gorm.DB) error {
 		//更新关联节点
 		err := tx.Model(&goodsParams).Association("Nodes").Replace(&goodsParams.Nodes)
@@ -63,7 +62,6 @@ func (s *Shop) UpdateGoods(goodsParams *model.Goods) error {
 	if err != nil {
 		return err
 	}
-	//删除缓存
 	// 删除缓存
 	key1 := fmt.Sprintf("%s%d", constant.CACHE_GOODS_BY_ID, goodsParams.ID)
 	global.LocalCache.Delete(key1)

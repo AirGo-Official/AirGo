@@ -290,12 +290,6 @@ defineExpose({
 
 <style scoped>
 
-.el-card {
-  background-image: url("../../assets/bgc/bg-3.svg");
-  background-repeat: no-repeat;
-  background-position: 100%, 100%;
-}
-
 .card-text {
   display: flex;
   align-items: center;

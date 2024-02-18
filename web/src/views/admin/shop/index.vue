@@ -2,17 +2,17 @@
   <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
       <div class="system-user-search mb15">
-        <el-button size="default" type="success" class="ml10" @click="onOpenAddGoods">
+        <el-button size="default" type="primary" class="ml10" @click="openGoodsDialog('add')">
           <el-icon>
             <ele-FolderAdd/>
           </el-icon>
           {{$t('message.adminShop.addGoods')}}
         </el-button>
-        <el-button size="default" type="warning" class="ml10" @click="onOpenSortDialog">
-          <el-icon>
-            <DCaret/>
-          </el-icon>
-          {{$t('message.adminShop.sort')}}
+        <el-button size="default" type="primary" class="ml10" @click="onOpenSortDialog">
+          <el-icon><DCaret/></el-icon>{{$t('message.adminShop.sort')}}
+        </el-button>
+        <el-button size="default" type="primary" class="ml10" @click="openCouponDrawer">
+          <el-icon><Ticket /></el-icon>{{$t('message.adminShop.coupon')}}
         </el-button>
       </div>
       <el-table :data="shopStoreData.goodsList.value" height="100%" style="width: 100%;flex: 1;">
@@ -56,7 +56,7 @@
         <el-table-column :label="$t('message.common.operate')">
           <template #default="scope">
             <el-button size="small" text type="primary"
-                       @click="onOpenEditGoods(scope.row)">{{$t('message.common.modify')}}
+                       @click="openGoodsDialog('edit',scope.row)">{{$t('message.common.modify')}}
             </el-button>
             <el-button size="small" text type="primary"
                        @click="onRowDel(scope.row)">{{$t('message.common.delete')}}
@@ -68,6 +68,7 @@
     <!-- 引入弹窗组件 -->
     <ShopDialog ref="shopDialogRef" @refresh="shopStore.getGoodsList()"></ShopDialog>
     <SortDialog ref="sortDialogRef"></SortDialog>
+    <CouponDrawer ref="CouponDrawerRef"></CouponDrawer>
   </div>
 </template>
 
@@ -86,18 +87,19 @@ const shopStoreData = storeToRefs(shopStore)
 const nodeStore = useAdminNodeStore()
 const ShopDialog = defineAsyncComponent(() => import('/@/views/admin/shop/dialog_edit.vue'))
 const SortDialog = defineAsyncComponent(() => import('/@/views/admin/shop/dialog_sort.vue'))
+const CouponDrawer = defineAsyncComponent(() => import('/@/views/admin/shop/drawer_coupon.vue'))
 const shopDialogRef = ref()
 const sortDialogRef = ref()
+const CouponDrawerRef = ref()
 const {t} = useI18n()
 
-
 //修改套餐弹窗
-const onOpenEditGoods = (row: Goods) => {
-  shopDialogRef.value.openDialog('edit', row)
+const openGoodsDialog = (type:string,row?: Goods) => {
+  shopDialogRef.value.openDialog(type, row)
 }
-//添加套餐弹窗
-const onOpenAddGoods = () => {
-  shopDialogRef.value.openDialog('add')
+
+const openCouponDrawer=()=>{
+  CouponDrawerRef.value.openDrawer()
 }
 //删除套餐
 const onRowDel = (row: Goods) => {

@@ -33,6 +33,11 @@ export const useConstantStore = defineStore('constantStore', {
     NODE_TYPE_TROJAN      : "trojan",
     NODE_TYPE_HYSTERIA    : "hysteria",
     NODE_TYPE_SHADOWSOCKS : "shadowsocks",
+    //文章类型
+    ARTICLE_TYPE_HOME      : "home",
+    ARTICLE_TYPE_DIALOG    : "dialog",
+    ARTICLE_TYPE_NOTICE    : "notice",
+    ARTICLE_TYPE_KNOWLEDGE : "knowledge",
 
 
   }),

@@ -43,11 +43,22 @@ func InsertInto() {
 func InsertIntoUser() error {
 	sysUserData := []model.User{
 		{
+			//CreatedAt: time.Time{},
+			//UpdatedAt: time.Time{},
+			//DeletedAt: nil,
+
 			ID:             1,
 			UserName:       global.Config.SystemParams.AdminEmail,
 			Password:       utils.BcryptEncode(global.Config.SystemParams.AdminPassword),
 			NickName:       "admin",
+			Avatar:         "https://api.multiavatar.com/admin.svg",
+			Enable:         true,
 			InvitationCode: utils.RandomString(8),
+			//ReferrerCode:   "",
+			Balance: 0,
+			//TgID:           0,
+			//RoleGroup:      nil,
+			//Orders:         nil,
 		},
 	}
 	if err := global.DB.Create(&sysUserData).Error; err != nil {
@@ -66,18 +77,15 @@ func InsertIntoMenu() error {
 		{ID: 7, ParentID: 1, Remarks: "商店", Path: "/admin/shop", Name: "adminShop", Component: "/admin/shop/index.vue", Meta: model.Meta{Title: "message.router.adminShop", Icon: "iconfont icon-zhongduancanshuchaxun"}},
 		{ID: 8, ParentID: 1, Remarks: "系统", Path: "/admin/system", Name: "adminSystem", Component: "/admin/system/index.vue", Meta: model.Meta{Title: "message.router.adminSystem", Icon: "iconfont icon-xitongshezhi"}},
 		{ID: 9, ParentID: 1, Remarks: "文章", Path: "/admin/article", Name: "adminArticle", Component: "/admin/article/index.vue", Meta: model.Meta{Title: "message.router.adminArticle", Icon: "iconfont icon-huanjingxingqiu"}},
-		{ID: 10, ParentID: 1, Remarks: "折扣码", Path: "/admin/coupon", Name: "adminCoupon", Component: "/admin/coupon/index.vue", Meta: model.Meta{Title: "message.router.adminCoupon", Icon: "ele-ShoppingBag"}},
-		{ID: 11, ParentID: 1, Remarks: "访问控制", Path: "/admin/access", Name: "adminAccess", Component: "/admin/access/index.vue", Meta: model.Meta{Title: "message.router.adminAccess", Icon: "ele-ChromeFilled"}},
-		{ID: 12, ParentID: 1, Remarks: "工单管理", Path: "/admin/ticket", Name: "adminTicket", Component: "/admin/ticket/index.vue", Meta: model.Meta{Title: "message.router.adminTicket", Icon: "ele-DocumentRemove"}},
-		{ID: 13, ParentID: 1, Remarks: "营收概览", Path: "/admin/income", Name: "adminIncome", Component: "/admin/income/index.vue", Meta: model.Meta{Title: "message.router.adminIncome", Icon: "iconfont icon-xingqiu"}},
+		{ID: 10, ParentID: 1, Remarks: "工单管理", Path: "/admin/ticket", Name: "adminTicket", Component: "/admin/ticket/index.vue", Meta: model.Meta{Title: "message.router.adminTicket", Icon: "ele-DocumentRemove"}},
+		{ID: 11, ParentID: 1, Remarks: "营收概览", Path: "/admin/income", Name: "adminIncome", Component: "/admin/income/index.vue", Meta: model.Meta{Title: "message.router.adminIncome", Icon: "iconfont icon-xingqiu"}},
 
-		{ID: 14, ParentID: 0, Remarks: "首页", Path: "/home", Name: "home", Component: "/home/index.vue", Meta: model.Meta{Title: "message.router.home", Icon: "iconfont icon-shouye"}},
-		{ID: 15, ParentID: 0, Remarks: "商店", Path: "/shop", Name: "shop", Component: "/shop/index.vue", Meta: model.Meta{Title: "message.router.shop", Icon: "iconfont icon-zidingyibuju"}},
-		{ID: 16, ParentID: 0, Remarks: "我的订单", Path: "/myOrder", Name: "myOrder", Component: "/myOrder/index.vue", Meta: model.Meta{Title: "message.router.myOrder", Icon: "iconfont icon--chaifenhang"}},
-		{ID: 17, ParentID: 0, Remarks: "个人信息", Path: "/personal", Name: "personal", Component: "/personal/index.vue", Meta: model.Meta{Title: "message.router.personal", Icon: "iconfont icon-gerenzhongxin"}},
-		{ID: 18, ParentID: 0, Remarks: "节点状态", Path: "/serverStatus", Name: "serverStatus", Component: "/serverStatus/index.vue", Meta: model.Meta{Title: "message.router.serverStatus", Icon: "iconfont icon-putong"}},
-		{ID: 19, ParentID: 0, Remarks: "文档", Path: "/documents", Name: "documents", Component: "/documents/index.vue", Meta: model.Meta{Title: "message.router.documents", Icon: "ele-ChatLineSquare"}},
-		{ID: 20, ParentID: 0, Remarks: "工单", Path: "/ticket", Name: "ticket", Component: "/ticket/index.vue", Meta: model.Meta{Title: "message.router.ticket", Icon: "ele-DocumentRemove"}},
+		{ID: 12, ParentID: 0, Remarks: "首页", Path: "/home", Name: "home", Component: "/home/index.vue", Meta: model.Meta{Title: "message.router.home", Icon: "iconfont icon-shouye"}},
+		{ID: 13, ParentID: 0, Remarks: "商店", Path: "/shop", Name: "shop", Component: "/shop/index.vue", Meta: model.Meta{Title: "message.router.shop", Icon: "iconfont icon-zidingyibuju"}},
+		{ID: 14, ParentID: 0, Remarks: "我的订单", Path: "/myOrder", Name: "myOrder", Component: "/myOrder/index.vue", Meta: model.Meta{Title: "message.router.myOrder", Icon: "iconfont icon--chaifenhang"}},
+		{ID: 15, ParentID: 0, Remarks: "个人信息", Path: "/personal", Name: "personal", Component: "/personal/index.vue", Meta: model.Meta{Title: "message.router.personal", Icon: "iconfont icon-gerenzhongxin"}},
+		{ID: 16, ParentID: 0, Remarks: "文档", Path: "/documents", Name: "documents", Component: "/documents/index.vue", Meta: model.Meta{Title: "message.router.documents", Icon: "ele-ChatLineSquare"}},
+		{ID: 17, ParentID: 0, Remarks: "工单", Path: "/ticket", Name: "ticket", Component: "/ticket/index.vue", Meta: model.Meta{Title: "message.router.ticket", Icon: "ele-DocumentRemove"}},
 	}
 	if err := global.DB.Create(&DynamicRouteData).Error; err != nil {
 		return errors.New("sys_dynamic-router_data表数据初始化失败!")
@@ -125,17 +133,13 @@ func InsertIntoRoleAndMenu() error {
 		{RoleID: 1, MenuID: 16},
 		{RoleID: 1, MenuID: 17},
 		{RoleID: 1, MenuID: 18},
-		{RoleID: 1, MenuID: 19},
-		{RoleID: 1, MenuID: 20},
-
 		//普通用户的权限
+		{RoleID: 2, MenuID: 12},
+		{RoleID: 2, MenuID: 13},
 		{RoleID: 2, MenuID: 14},
 		{RoleID: 2, MenuID: 15},
 		{RoleID: 2, MenuID: 16},
 		{RoleID: 2, MenuID: 17},
-		{RoleID: 2, MenuID: 18},
-		{RoleID: 2, MenuID: 19},
-		{RoleID: 2, MenuID: 20},
 	}
 	if err := global.DB.Create(&roleAndMenuData).Error; err != nil {
 		return errors.New("role_and_menu表数据初始化失败!")
@@ -235,7 +239,7 @@ func InsertIntoServer() error {
 func InsertIntoArticle() error {
 	articleData := []model.Article{
 		{ID: 1, Type: "home", Title: "首页自定义显示内容", Introduction: "首页自定义显示内容，可编辑，可显示与隐藏，不可删除！", Content: defaultHtml, Status: true},
-		{ID: 2, Type: "home", Title: "首页弹窗内容", Introduction: "首页弹窗，可编辑，可显示与隐藏，不可删除！", Content: defaultDialog, Status: true},
+		{ID: 2, Type: "dialog", Title: "首页弹窗内容", Introduction: "首页弹窗，可编辑，可显示与隐藏，不可删除！", Content: defaultDialog, Status: true},
 	}
 	if err := global.DB.Create(&articleData).Error; err != nil {
 		return errors.New("article表数据初始化失败!")

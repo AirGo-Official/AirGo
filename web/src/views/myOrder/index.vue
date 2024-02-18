@@ -2,40 +2,40 @@
   <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
       <el-table :data="shopStoreData.orderList.value.data" stripe fit height="100%" style="width: 100%;" @sort-change="sortChange">
-<!--        <el-table-column type="index" label="序号" fixed width="60px"/>-->
-        <el-table-column prop="created_at" label="下单日期" width="150" sortable="custom" fixed>
+        <el-table-column type="index" :label="$t('message.adminOrder.Order.index')" fixed width="60px"/>
+        <el-table-column prop="created_at" :label="$t('message.adminOrder.Order.created_at')" width="150" sortable="custom" fixed>
           <template #default="{row}">
             <el-tag type="info">{{ DateStrToTime(row.created_at) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="out_trade_no" label="订单号" width="150" sortable="custom"/>
-        <el-table-column prop="order_type" label="订单类型" width="100" sortable="custom">
+        <el-table-column prop="out_trade_no" :label="$t('message.adminOrder.Order.out_trade_no')" width="150" sortable="custom"/>
+        <el-table-column prop="order_type" :label="$t('message.adminOrder.Order.order_type')" width="100" sortable="custom">
           <template #default="{row}">
-            <el-button type="primary" v-if="row.order_type === constantStore.ORDER_TYPE_NEW">新购</el-button>
-            <el-button type="success" v-else>续费</el-button>
+            <el-button type="primary" v-if="row.order_type === constantStore.ORDER_TYPE_NEW">{{$t('message.constant.ORDER_TYPE_NEW')}}</el-button>
+            <el-button type="success" v-else>{{$t('message.constant.ORDER_TYPE_RENEW')}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="subject" label="商品标题" show-overflow-tooltip width="200" sortable="custom"/>
-        <el-table-column prop="total_amount" label="订单金额" show-overflow-tooltip width="100" sortable="custom"/>
-        <el-table-column prop="trade_status" label="交易状态" show-overflow-tooltip sortable="custom" width="100">
+        <el-table-column prop="subject" :label="$t('message.adminOrder.Order.subject')" show-overflow-tooltip width="200" sortable="custom"/>
+        <el-table-column prop="total_amount" :label="$t('message.adminOrder.Order.total_amount')" show-overflow-tooltip width="100" sortable="custom"/>
+        <el-table-column prop="trade_status" :label="$t('message.adminOrder.Order.trade_status')" show-overflow-tooltip sortable="custom" width="100">
           <template #default="scope">
-            <el-tag type="success" v-if="scope.row.trade_status===constantStore.ORDER_STATUS_TRADE_SUCCESS">支付成功</el-tag>
-            <el-tag type="warning" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_WAIT_BUYER_PAY">等待付款</el-tag>
-            <el-tag type="info" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_TRADE_CLOSED">超时关闭</el-tag>
-            <el-tag type="info" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_TRADE_FINISHED">交易结束</el-tag>
-            <el-tag type="info" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_CREATED">已创建</el-tag>
-            <el-tag type="success" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_COMPLETED">已完成</el-tag>
-            <el-tag type="danger" v-else>未知状态</el-tag>
+            <el-tag type="success" v-if="scope.row.trade_status===constantStore.ORDER_STATUS_TRADE_SUCCESS">{{$t('message.constant.ORDER_STATUS_TRADE_SUCCESS')}}</el-tag>
+            <el-tag type="warning" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_WAIT_BUYER_PAY">{{$t('message.constant.ORDER_STATUS_WAIT_BUYER_PAY')}}</el-tag>
+            <el-tag type="info" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_TRADE_CLOSED">{{$t('message.constant.ORDER_STATUS_TRADE_CLOSED')}}</el-tag>
+            <el-tag type="info" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_TRADE_FINISHED">{{$t('message.constant.ORDER_STATUS_TRADE_FINISHED')}}</el-tag>
+            <el-tag type="info" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_CREATED">{{$t('message.constant.ORDER_STATUS_CREATED')}}</el-tag>
+            <el-tag type="success" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_COMPLETED">{{$t('message.constant.ORDER_STATUS_COMPLETED')}}</el-tag>
+            <el-tag type="danger" v-else>{{$t('message.constant.ORDER_STATUS_UNKNOWN_STATE')}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column :label="$t('message.common.operate')">
           <template #default="scope">
             <el-button size="small" text type="primary"
-                       @click="showOrderInfo(scope.row)">详情
+                       @click="showOrderInfo(scope.row)">{{$t('message.common.details')}}
             </el-button>
-            <el-button v-if="scope.row.trade_status === 'WAIT_BUYER_PAY' || scope.row.trade_status === 'CREATED'"
+            <el-button v-if="scope.row.trade_status === constantStore.ORDER_STATUS_WAIT_BUYER_PAY || scope.row.trade_status === constantStore.ORDER_STATUS_CREATED"
                        size="small" text type="primary"
-                       @click="toPay(scope.row)">去支付
+                       @click="toPay(scope.row)">{{$t('message.common.purchase')}}
             </el-button>
           </template>
         </el-table-column>
@@ -158,21 +158,6 @@ const openQRDialog = () => {
       flex: 1;
     }
   }
-}
-
-// 拖拽
-.dragClass {
-  background: rgba($color: #41c21a, $alpha: 0.5) !important;
-}
-
-// 停靠
-.ghostClass {
-  background: rgba($color: #6cacf5, $alpha: 0.5) !important;
-}
-
-// 选择
-.chosenClass:hover > td {
-  background: rgba($color: #f56c6c, $alpha: 0.5) !important;
 }
 
 </style>

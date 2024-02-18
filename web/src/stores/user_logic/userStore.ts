@@ -31,6 +31,10 @@ export const useUserStore = defineStore('userStore', {
                 b64s: '',
             }
         } as RegisterForm,
+        //修改用户头像
+        userAvatar:{
+            avatar:'',
+        },
         //全局用户信息
         userInfos: {
             created_at: '',
@@ -59,8 +63,8 @@ export const useUserStore = defineStore('userStore', {
             return  request(apiStore.publicApi.register, this.registerData)
         },
         //登录
-        async userLogin(data?: any) {
-            const res: any = await request(apiStore.publicApi.login, data)
+        async userLogin(params?: any) {
+            const res: any = await request(apiStore.publicApi.login, params)
             //保存用户信息到pinia
             this.userInfos = res.data.user;
             //保存用户信息到Session
@@ -75,8 +79,12 @@ export const useUserStore = defineStore('userStore', {
             Session.set("userInfos", res.data)
         },
         //修改密码
-        async changePassword(data?: object) {
-            return  request(apiStore.userApi.changeUserPassword, data)
+        async changePassword() {
+            return  request(apiStore.userApi.changeUserPassword, this.registerData)
+        },
+        //修改头像
+        async changeAvatar() {
+            return  request(apiStore.userApi.changeUserAvatar, this.userAvatar)
         },
         //重置密码
         async submitResetPassword() {

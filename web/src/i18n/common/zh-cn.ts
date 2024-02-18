@@ -10,17 +10,21 @@ export default {
     delete:"删除",
     modify:"修改",
     reset:"重置",
+    query:"查询",
+    advanced_query:"高级查询",
+    add:"新增",
+    sort:"排序",
+    reply:"回复",
+    close:"关闭",
+    send:"发送",
+    details:"详情",
+    purchase:"购买",
 
 
     yes:"是",
     no:"否",
     enable:"启用",
     disable:"禁用",
-
-    query:"查询",
-    advanced_query:"高级查询",
-    add:"新增",
-    sort:"排序",
 
     startDate:"开始日期",
     endDate:"结束日期",
@@ -44,6 +48,7 @@ export default {
     ORDER_STATUS_TRADE_SUCCESS  : "交易成功",
     ORDER_STATUS_TRADE_FINISHED : "交易结束",
     ORDER_STATUS_COMPLETED      : "交易完成 ",
+    ORDER_STATUS_UNKNOWN_STATE  : "未知状态 ",
     // 发货
     DELIVER_TYPE_NONE   : "无",
     DELIVER_TYPE_AUTO   : "自动",
@@ -61,5 +66,9 @@ export default {
     NODE_TYPE_TROJAN      : "trojan",
     NODE_TYPE_HYSTERIA    : "hysteria",
     NODE_TYPE_SHADOWSOCKS : "shadowsocks",
+    //文章类型
+    ARTICLE_TYPE_HOME      : "首页",
+    ARTICLE_TYPE_DIALOG    : "弹窗",
+    ARTICLE_TYPE_NOTICE    : "公告",
   },
 };

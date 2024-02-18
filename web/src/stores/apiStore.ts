@@ -119,6 +119,7 @@ export const useApiStore = defineStore("apiStore", {
             // user
             getUserInfo:{path: userApiPre + "/user/getUserInfo", method: "get"} as ApiItem,
             changeUserPassword:{path: userApiPre + "/user/changeUserPassword", method: "post"} as ApiItem,
+            changeUserAvatar:{path: userApiPre + "/user/changeUserAvatar", method: "post"} as ApiItem,
             clockin:{path: userApiPre + "/user/clockin", method: "get"} as ApiItem,
 
             // customerService

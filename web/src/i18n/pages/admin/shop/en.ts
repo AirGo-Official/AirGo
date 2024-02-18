@@ -55,5 +55,22 @@ export default {
       epay_notify_url: "epay_notify_url",
       epay_type: "epay_type",
     },
+    //
+    coupon:"Coupon",
+    couponRateTip:"price = price * (1- rate)",
+    addCoupon:"Add coupon",
+    modifyCoupon:"Modify coupon",
+    Coupon:{
+      index:"index",
+      created_at: "created_at",
+      updated_at: "updated_at",
+      id:"id",
+      name: "name",
+      discount_rate:"discount_rate",
+      limit:"limit",
+      expired_at: "expired_at",
+      goods:"goods",
+      checked_goods: "checked_goods",
+    }
   }
 }

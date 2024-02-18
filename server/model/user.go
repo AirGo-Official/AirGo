@@ -14,8 +14,8 @@ type User struct {
 	UserName       string     `json:"user_name"    gorm:"comment:用户名"`
 	Password       string     `json:"password"     gorm:"comment:用户登录密码"`
 	NickName       string     `json:"nick_name"    gorm:"default:系统用户;comment:用户昵称"`
-	Avatar         string     `json:"avatar"       gorm:"default:https://telegraph-image.pages.dev/file/6d9cefe5db40118aa2829.jpg;comment:用户头像"`
-	Enable         bool       `json:"enable"       gorm:"default:true;comment:用户是否被启用 true正常 false冻结"`
+	Avatar         string     `json:"avatar"       gorm:"comment:用户头像"`
+	Enable         bool       `json:"enable"       gorm:"default:true;comment:用户是否被启用 true启用 false冻结"`
 	InvitationCode string     `json:"invitation_code" gorm:"comment:我的邀请码"`
 	ReferrerCode   string     `json:"referrer_code"   gorm:"comment:推荐人码"`
 	Balance        float64    `json:"balance"         gorm:"default:0;comment:余额"`
@@ -59,6 +59,11 @@ type UserChangePasswordRequest struct {
 	Password   string `json:"password" binding:"required,max=20,min=4"`                     // 密码
 	RePassword string `json:"re_password" binding:"required,eqfield=Password,max=20,min=4"` // 密码
 	EmailCode  string `json:"email_code"`
+}
+
+// 修改头像 请求
+type UserChangeAvatarRequest struct {
+	Avatar string `json:"avatar"`
 }
 
 // 用户在线设备信息

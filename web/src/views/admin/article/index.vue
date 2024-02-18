@@ -2,46 +2,46 @@
   <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
       <div class="mb15">
-        <el-input v-model="state.queryParams.field_params_list[0].condition_value" size="default" placeholder="请输入名称"
+        <el-input v-model="state.queryParams.field_params_list[0].condition_value" size="default"
                   style="max-width: 180px"></el-input>
         <el-button size="default" type="primary" class="ml10" @click="getArticleList(state.queryParams)">
           <el-icon>
             <ele-Search/>
           </el-icon>
-          查询
+          {{$t('message.common.query')}}
         </el-button>
         <el-button size="default" type="success" class="ml10" @click="onOpenDialog('add')">
           <el-icon>
             <ele-FolderAdd/>
           </el-icon>
-          新建文章
+          {{$t('message.adminArticle.addArticle')}}
         </el-button>
       </div>
       <el-table :data="articleStoreData.articleList.value.data" stripe height="100%">
-        <el-table-column fixed type="index" label="序号" width="60"/>
-        <el-table-column prop="title" label="标题" show-overflow-tooltip width="200"></el-table-column>
-        <el-table-column prop="id" label="ID" show-overflow-tooltip width="60"></el-table-column>
-        <el-table-column prop="status" label="是否显示" show-overflow-tooltip width="80">
+        <el-table-column fixed type="index" :label="$t('message.adminArticle.Article.index')" width="60"/>
+        <el-table-column prop="title" :label="$t('message.adminArticle.Article.title')" show-overflow-tooltip width="200"></el-table-column>
+        <el-table-column prop="id" :label="$t('message.adminArticle.Article.id')" show-overflow-tooltip width="60"></el-table-column>
+        <el-table-column prop="status" :label="$t('message.adminArticle.Article.status')" show-overflow-tooltip width="80">
           <template #default="{ row }">
-            <el-button v-if="row.is_show" type="primary">显示</el-button>
-            <el-button v-else type="info">隐藏</el-button>
+            <el-button v-if="row.status" type="primary">{{$t('message.common.enable')}}</el-button>
+            <el-button v-else type="info">{{$t('message.common.disable')}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="类型" show-overflow-tooltip width="100">
+        <el-table-column prop="type" :label="$t('message.adminArticle.Article.type')" show-overflow-tooltip width="100">
           <template #default="{ row }">
-            <el-button v-if="row.type==='notice'" type="primary">公告</el-button>
-            <el-button v-else-if="row.type==='knowledge'" type="primary">知识库</el-button>
-            <el-button v-else type="info">系统保留</el-button>
+            <el-button v-if="row.type==='home'" type="primary">{{$t('message.constant.ARTICLE_TYPE_HOME')}}</el-button>
+            <el-button v-else-if="row.type==='dialog'" type="primary">{{$t('message.constant.ARTICLE_TYPE_DIALOG')}}</el-button>
+            <el-button v-else type="primary">{{$t('message.constant.ARTICLE_TYPE_NOTICE')}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="introduction" label="简介" show-overflow-tooltip></el-table-column>
-        <el-table-column label="操作" width="100">
+        <el-table-column prop="introduction" :label="$t('message.adminArticle.Article.introduction')" show-overflow-tooltip></el-table-column>
+        <el-table-column :label="$t('message.common.operate')" width="100">
           <template #default="scope">
             <el-button size="small" text type="primary"
-                       @click="onOpenDialog('edit', scope.row)">修改
+                       @click="onOpenDialog('edit', scope.row)">{{$t('message.common.modify')}}
             </el-button>
             <el-button :disabled="scope.row.id === 1 || scope.row.id === 2" size="small" text type="primary"
-                       @click="deleteArticle(scope.row)">删除
+                       @click="deleteArticle(scope.row)">{{$t('message.common.delete')}}
             </el-button>
           </template>
         </el-table-column>
@@ -68,15 +68,16 @@ import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
 import { useAdminArticleStore } from "/@/stores/admin_logic/articleStore";
+import { useI18n } from "vue-i18n";
 
 
 const ArticleDialog = defineAsyncComponent(() => import('/@/views/admin/article/dialog.vue'))
 const articleDialogRef = ref()
-
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
 const articleStore = useAdminArticleStore()
 const articleStoreData = storeToRefs(articleStore)
+const {t} = useI18n()
 
 //定义变量
 const state = reactive({
@@ -90,17 +91,15 @@ const state = reactive({
 })
 
 function deleteArticle(row: any) {
-  ElMessageBox.confirm(`此操作将永久删除文章：${row.title}, 是否继续?`, '提示', {
-    confirmButtonText: '删除',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm(t('message.common.message_confirm_delete'), t('message.common.tip'), {
+    confirmButtonText: t('message.common.button_confirm'),
+    cancelButtonText: t('message.common.button_cancel'),
     type: 'warning',
   })
       .then(() => {
-        request(apiStoreData.adminApi.value.deleteArticle, row)
-        setTimeout(() => {
+        request(apiStoreData.adminApi.value.deleteArticle, row).then(()=>{
           getArticleList(state.queryParams)
-          ElMessage.success('成功');
-        }, 500);
+        })
       })
       .catch(() => {
       });

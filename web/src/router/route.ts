@@ -41,9 +41,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: '/',
-        // component: () => import('/@/views/default/index.vue'),
         component: () => import('/@/layout/index.vue'),
-        // redirect: '/index',
         redirect: '/index',
         meta: {
             isKeepAlive: true,
@@ -63,7 +61,7 @@ export const notFoundAndNoPower = [
         name: 'notFound',
         component: () => import('/@/views/error/404.vue'),
         meta: {
-            title: '找不到此页面',
+            title: 'message.staticRoutes.notFound',
             isHide: true,
         },
     },
@@ -72,7 +70,7 @@ export const notFoundAndNoPower = [
         name: 'noPower',
         component: () => import('/@/views/error/401.vue'),
         meta: {
-            title: '没有权限',
+            title: 'message.staticRoutes.noPower',
             isHide: true,
         },
     },
@@ -88,7 +86,7 @@ export const staticRoutes: Array<RouteRecordRaw> = [
     {
         path: '/index',
         name: 'index',
-        component: () => import('/src/views/default/index.vue'),
+        component: () => import('/src/views/static/index.vue'),
         meta: {
             title: 'index',
         },
@@ -98,7 +96,7 @@ export const staticRoutes: Array<RouteRecordRaw> = [
         name: 'login',
         component: () => import('/src/views/login/index.vue'),
         meta: {
-            title: '登录',
+            title: 'message.staticRoutes.signIn',
         },
     },
     {
@@ -108,9 +106,9 @@ export const staticRoutes: Array<RouteRecordRaw> = [
             {
                 path: 'showArticle',
                 name: 'showArticle',
-                component: () => import('/@/views/article/show_article.vue'),
+                component: () => import('/@/views/documents/show_article.vue'),
                 meta: {
-                    title: '详情',
+                    title: 'message.staticRoutes.articleDetails',
                 },
             },
             {
@@ -118,7 +116,7 @@ export const staticRoutes: Array<RouteRecordRaw> = [
                 name: 'ticketToChat',
                 component: () => import('/@/views/admin/ticket/chat.vue'),
                 meta: {
-                    title: '详情',
+                    title: 'message.staticRoutes.ticketDetails',
                 },
             },
         ],

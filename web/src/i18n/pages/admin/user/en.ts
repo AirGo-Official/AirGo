@@ -1,5 +1,6 @@
 export default {
   adminUser: {
+    userInfo:"User Info",
     query:"Query",
     add_user:"Add user",
     modify_user:"Modify user",

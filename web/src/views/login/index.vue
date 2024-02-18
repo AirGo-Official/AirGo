@@ -9,10 +9,10 @@
         </div>
       </div>
       <!--      左侧svg-->
-      <div class="login-left-img">
-        <img :src="loginMain"/>
-      </div>
-      <img :src="loginBg" class="login-left-waves"/>
+<!--      <div class="login-left-img">-->
+<!--        <img :src="loginMain"/>-->
+<!--      </div>-->
+<!--      <img :src="loginBg" class="login-left-waves"/>-->
     </div>
     <div class="login-right flex">
       <div class="login-right-warp flex-margin">
@@ -106,11 +106,23 @@ onMounted(() => {
 .login-container {
   height: 100%;
   background: var(--el-color-white);
+  background-image: url("../../assets/bgc/login-body.svg");
+  /* 背景图垂直、水平均居中 */
+  //background-position: center center;
+  //background-position: top 500px;
+  /* 背景图不平铺 */
+  background-repeat: no-repeat;
+  /* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
+  background-attachment: fixed;
+  /* 让背景图基于容器大小伸缩 */
+  background-size: cover;
+  /* 设置背景颜色，背景图加载过程中会显示背景色 */
+  //background-color: var(--el-color-primary-light-5);
 
   .login-left {
     flex: 1;
     position: relative;
-    background-color: rgba(255, 165, 0, 1);
+    //background-color: var(--el-color-primary-light-5);
     margin-right: 200px;
 
     .login-left-logo {
@@ -169,7 +181,7 @@ onMounted(() => {
 
   .login-right {
     width: 500px;
-    margin-right: 100px;
+    margin-right: 35%;
 
     .login-right-warp {
       border: 1px solid var(--el-color-primary-light-3); //表单边框

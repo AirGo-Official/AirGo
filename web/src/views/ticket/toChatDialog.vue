@@ -4,7 +4,7 @@
       <div id="chat">
         <div class="chatBox">
           <div >
-              <span>详情：{{ticketStoreData.currentTicket.value.details}}</span>
+              <span>{{$t('message.adminTicket.Ticket.details')}}：{{ticketStoreData.currentTicket.value.details}}</span>
           </div>
           <div class="chatBox-middle">
             <div class="chatInfo" id="chatInfo">
@@ -19,15 +19,14 @@
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
           <div class="chatBox-infoDesk">
             <div class="chatBox-textarea">
-              <el-input v-model="ticketStoreData.newTicketMessage.value.message" type="textarea" placeholder="请输入信息"/>
+              <el-input v-model="ticketStoreData.newTicketMessage.value.message" type="textarea"/>
             </div>
             <div class="chatBox-sendOut">
-              <el-button type="primary" :disabled="ticketStoreData.currentTicket.value.status === 'TicketClosed'" @click="sendMessage">发送</el-button>
+              <el-button type="primary" :disabled="ticketStoreData.currentTicket.value.status === 'TicketClosed'" @click="sendMessage">{{$t('message.common.send')}}</el-button>
             </div>
           </div>
         </div>
@@ -107,7 +106,6 @@ defineExpose({
   width: 100%;
   height: 400px;
   background-color: #fff;
-  border-bottom: 1px solid #2B3D63;
 }
 
 .chatBox-infoDesk {
