@@ -35,7 +35,6 @@ export async function initBackEndControlRoutes() {
     // 界面 loading 动画开始执行
     if (window.nextLoading === undefined) NextLoading.start();
     // 无 token 停止执行下一步
-    // if (!Session.get('token')) return false;
     if (!Local.get('token')) return false;
     //获取路由菜单数据，请求后端路由
     const res = await getBackEndControlRoutes();

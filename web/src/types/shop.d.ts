@@ -3,6 +3,7 @@ declare interface Goods {
   updated_at: string;
   id: number;
   good_order: number;    //排序
+  cover_image:string     //封面图片
   subject: string;       // 标题
   des: string;     //商品描述
   price: string;  // 商品价格

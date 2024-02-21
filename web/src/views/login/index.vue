@@ -1,18 +1,13 @@
 <template>
   <div class="login-container flex">
     <div class="login-left">
-      <div class="login-left-logo">
-        <img :src="themeConfig.logo_link"/>
-        <div class="login-left-logo-text">
-          <span>{{ getThemeConfig.globalViceTitle }}</span>
-          <span class="login-left-logo-text-msg">{{ getThemeConfig.globalViceTitleMsg }}</span>
-        </div>
+      <div class="login-left-logo" style="">
+          <img :src="themeConfig.logo_link"/>
+          <div class="login-left-logo-text">
+            <span>{{ getThemeConfig.globalViceTitle }}</span>
+            <span class="login-left-logo-text-msg">{{ getThemeConfig.globalViceTitleMsg }}</span>
+          </div>
       </div>
-      <!--      左侧svg-->
-<!--      <div class="login-left-img">-->
-<!--        <img :src="loginMain"/>-->
-<!--      </div>-->
-<!--      <img :src="loginBg" class="login-left-waves"/>-->
     </div>
     <div class="login-right flex">
       <div class="login-right-warp flex-margin">
@@ -21,24 +16,17 @@
             <div>
               <div>{{ getThemeConfig.globalTitle }}</div>
             </div>
-
           </div>
-
           <div class="login-right-warp-main-form">
             <div v-if="!state.isScan">
               <el-tabs v-model="state.tabsActiveName">
-                <el-tab-pane label="登录" name="login">
+                <el-tab-pane :label="$t('message.login.signIn')" name="login">
                   <Account/>
                 </el-tab-pane>
-                <el-tab-pane label="注册" name="register">
+                <el-tab-pane :label="$t('message.login.register')" name="register">
                   <Register ref="RegisterRef" @toLogin="toLogin"/>
                 </el-tab-pane>
               </el-tabs>
-            </div>
-            <Scan v-if="state.isScan"/>
-            <div class="login-content-main-sacn" @click="state.isScan = !state.isScan">
-              <i class="iconfont" :class="state.isScan ? 'icon-diannao1' : 'icon-barcode-qr'"></i>
-              <div class="login-content-main-sacn-delta"></div>
             </div>
           </div>
         </div>
@@ -56,8 +44,6 @@ import {storeToRefs} from 'pinia';
 
 import {useThemeConfig} from '/@/stores/themeConfig';
 import {NextLoading} from '/@/utils/loading';
-import loginMain from '/@/assets/bgc/login-main.svg';
-import loginBg from '/@/assets/bgc/login-bg.svg';
 import {useRoute} from "vue-router";
 import { Local, Session } from "/@/utils/storage";
 
@@ -65,7 +51,6 @@ import { Local, Session } from "/@/utils/storage";
 const Account = defineAsyncComponent(() => import('/@/views/login/component/account.vue'));
 const Register = defineAsyncComponent(() => import('/@/views/login/component/register.vue'));
 const RegisterRef = ref()
-const Scan = defineAsyncComponent(() => import('/@/views/login/component/scan.vue'));
 const LayoutFooter = defineAsyncComponent(() => import('/@/layout/footer/index.vue'));
 
 
@@ -109,7 +94,7 @@ onMounted(() => {
   background-image: url("../../assets/bgc/login-body.svg");
   /* 背景图垂直、水平均居中 */
   //background-position: center center;
-  //background-position: top 500px;
+  //background-position: top 300px right 0px;
   /* 背景图不平铺 */
   background-repeat: no-repeat;
   /* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
@@ -156,27 +141,6 @@ onMounted(() => {
         }
       }
     }
-
-    .login-left-img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      height: 52%;
-
-      img {
-        width: 100%;
-        height: 100%;
-        animation: error-num 0.6s ease;
-      }
-    }
-
-    .login-left-waves {
-      position: absolute;
-      top: 0;
-      right: -100px;
-    }
   }
 
   .login-right {
@@ -212,45 +176,6 @@ onMounted(() => {
         .login-right-warp-main-form {
           flex: 1;
           padding: 0 20px 20px;
-
-          .login-content-main-sacn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50px;
-            height: 50px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all ease 0.3s;
-            color: var(--el-color-primary);
-
-            &-delta {
-              position: absolute;
-              width: 35px;
-              height: 70px;
-              z-index: 2;
-              top: 2px;
-              right: 21px;
-              background: var(--el-color-white);
-              transform: rotate(-45deg);
-            }
-
-            &:hover {
-              opacity: 1;
-              transition: all ease 0.3s;
-              color: var(--el-color-primary) !important;
-            }
-
-            i {
-              width: 47px;
-              height: 50px;
-              display: inline-block;
-              font-size: 48px;
-              position: absolute;
-              right: 1px;
-              top: 0px;
-            }
-          }
         }
       }
     }

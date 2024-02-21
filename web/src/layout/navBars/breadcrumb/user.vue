@@ -158,16 +158,16 @@ const onHandleCommandClick = (path: string) => {
     ElMessageBox({
       closeOnClickModal: false,
       closeOnPressEscape: false,
-      title: "提示",
-      message: "此操作将退出登录, 是否继续?",
+      title: t('message.user.logOutTitle'),
+      message: t('message.user.logOutMessage'),
       showCancelButton: true,
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      buttonSize: "default",
+      confirmButtonText: t('message.user.logOutConfirm'),
+      cancelButtonText: t('message.user.logOutCancel'),
+      buttonSize: 'default',
       beforeClose: (action, instance, done) => {
-        if (action === "confirm") {
+        if (action === 'confirm') {
           instance.confirmButtonLoading = true;
-          instance.confirmButtonText = "退出中";
+          instance.confirmButtonText = t('message.user.logOutExit');
           setTimeout(() => {
             done();
             setTimeout(() => {
@@ -177,11 +177,10 @@ const onHandleCommandClick = (path: string) => {
         } else {
           done();
         }
-      }
+      },
     })
       .then(async () => {
         // 清除缓存/token等
-        // Session.clear();
         Local.clear();
         // 使用 reload 时，不需要调用 resetRoute() 重置路由
         window.location.reload();
@@ -261,7 +260,6 @@ onMounted(() => {
 
     &:hover {
       background: var(--next-color-user-hover);
-
       i {
         display: inline-block;
         animation: logoAnimation 0.3s ease-in-out;

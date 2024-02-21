@@ -10,6 +10,7 @@ export default {
       id: "id",
       good_order: "排序",    //排序
       subject: "标题",       // 标题
+      cover_image:"封面图片",//封面图片
       des: "商品描述",     //商品描述
       price: "价格",  // 商品价格
       is_show: "是否显示", //是否显示

@@ -82,6 +82,7 @@ import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
 import alipayLogo from '/@/assets/icon/alipay.jpeg';
 import epayLogo from '/@/assets/icon/epay.png';
+import balancePayLogo from '/@/assets/icon/balance.jpeg';
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { useI18n } from "vue-i18n";
 
@@ -102,6 +103,7 @@ const state = reactive({
   defaultPayLogoList: [
     {name: "alipay logo", url: alipayLogo},
     {name: "epay logo", url: epayLogo},
+    {name: "balance logo", url: balancePayLogo},
   ],
 })
 

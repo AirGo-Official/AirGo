@@ -53,7 +53,8 @@ func (s *Shop) GetGoodsList(goodsParams *model.Goods) (*[]model.Goods, error) {
 		goodsList = value.(*[]model.Goods)
 		return goodsList, nil
 	}
-	err := global.DB.Where(&goodsParams).Order("goods_order").Find(&goodsList).Error
+	//为普通用户屏蔽掉敏感字段 deliver_text：自动发货的内容
+	err := global.DB.Where(&goodsParams).Omit("deliver_text").Order("goods_order").Find(&goodsList).Error
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +62,7 @@ func (s *Shop) GetGoodsList(goodsParams *model.Goods) (*[]model.Goods, error) {
 	return goodsList, nil
 }
 
-// 更新商品
+// 更新商品（库存等）
 func (s *Shop) UpdateGoods(goodsParams *model.Goods) error {
 	err := global.DB.Transaction(func(tx *gorm.DB) error {
 		return tx.Save(&goodsParams).Error

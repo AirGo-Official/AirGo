@@ -4,6 +4,16 @@
       <el-form-item :label="$t('message.adminShop.Goods.subject')">
         <el-input v-model="shopStoreData.currentGoods.value.subject" />
       </el-form-item>
+      <el-form-item :label="$t('message.adminShop.Goods.cover_image')">
+        <el-image :src="shopStoreData.currentGoods.value.cover_image" style="height: 100px">
+          <template #error>
+            <div class="image-slot">
+              <el-icon><icon-picture /></el-icon>
+            </div>
+          </template>
+        </el-image>
+        <el-input v-model="shopStoreData.currentGoods.value.cover_image" />
+      </el-form-item>
       <el-form-item :label="$t('message.adminShop.Goods.price')">
         <el-col :span="4">
           <el-input v-model="shopStoreData.currentGoods.value.price" />
@@ -16,52 +26,54 @@
         </el-col>
       </el-form-item>
       <el-form-item :label="$t('message.adminShop.Goods.quota')">
-        <el-input-number v-model="shopStoreData.currentGoods.value.quota" :min="0" :step="1"/>
+        <el-input-number v-model="shopStoreData.currentGoods.value.quota" :min="0" :step="1" />
       </el-form-item>
       <el-form-item :label="$t('message.adminShop.Goods.stock')">
-        <el-input-number v-model="shopStoreData.currentGoods.value.stock" :min="0" :step="1"/>
+        <el-input-number v-model="shopStoreData.currentGoods.value.stock" :min="0" :step="1" />
       </el-form-item>
-      <el-row>
-        <el-col :span="5">
-          <el-form-item :label="$t('message.adminShop.Goods.is_show')">
-            <el-switch v-model="shopStoreData.currentGoods.value.is_show" inline-prompt :active-text="$t('message.common.enable')"
-                       :inactive-text="$t('message.common.disable')"
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
 
-          </el-form-item>
-        </el-col>
-        <el-col :span="5">
-          <el-form-item :label="$t('message.adminShop.Goods.is_sale')">
-            <el-switch v-model="shopStoreData.currentGoods.value.is_sale" inline-prompt :active-text="$t('message.common.enable')"
-                       :inactive-text="$t('message.common.disable')"
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-          </el-form-item>
-        </el-col>
-        <el-col :span="5">
-          <el-form-item :label="$t('message.adminShop.Goods.is_renew')">
-            <el-switch v-model="shopStoreData.currentGoods.value.is_renew" inline-prompt :active-text="$t('message.common.enable')"
-                       :inactive-text="$t('message.common.disable')"
-                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <el-form-item :label="$t('message.adminShop.Goods.is_show')">
+        <el-switch v-model="shopStoreData.currentGoods.value.is_show" inline-prompt
+                   :active-text="$t('message.common.enable')"
+                   :inactive-text="$t('message.common.disable')"
+                   style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+
+      </el-form-item>
+
+      <el-form-item :label="$t('message.adminShop.Goods.is_sale')">
+        <el-switch v-model="shopStoreData.currentGoods.value.is_sale" inline-prompt
+                   :active-text="$t('message.common.enable')"
+                   :inactive-text="$t('message.common.disable')"
+                   style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+      </el-form-item>
+
+      <el-form-item :label="$t('message.adminShop.Goods.is_renew')">
+        <el-switch v-model="shopStoreData.currentGoods.value.is_renew" inline-prompt
+                   :active-text="$t('message.common.enable')"
+                   :inactive-text="$t('message.common.disable')"
+                   style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+      </el-form-item>
+
       <el-form-item :label="$t('message.adminShop.Goods.goods_type')">
         <el-radio-group v-model="shopStoreData.currentGoods.value.goods_type">
-          <el-radio :label="constantStore.GOODS_TYPE_GENERAL">{{$t('message.constant.GOODS_TYPE_GENERAL')}}</el-radio>
-          <el-radio :label="constantStore.GOODS_TYPE_SUBSCRIBE">{{$t('message.constant.GOODS_TYPE_SUBSCRIBE')}}</el-radio>
-          <el-radio :label="constantStore.GOODS_TYPE_RECHARGE">{{$t('message.constant.GOODS_TYPE_RECHARGE')}}</el-radio>
+          <el-radio :label="constantStore.GOODS_TYPE_GENERAL">{{ $t("message.constant.GOODS_TYPE_GENERAL") }}</el-radio>
+          <el-radio :label="constantStore.GOODS_TYPE_SUBSCRIBE">{{ $t("message.constant.GOODS_TYPE_SUBSCRIBE") }}
+          </el-radio>
+          <el-radio :label="constantStore.GOODS_TYPE_RECHARGE">{{ $t("message.constant.GOODS_TYPE_RECHARGE") }}
+          </el-radio>
         </el-radio-group>
       </el-form-item>
       <!--      发货参数开始-->
       <div v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_GENERAL">
         <el-form-item :label="$t('message.adminShop.Goods.deliver_type')">
           <el-radio-group v-model="shopStoreData.currentGoods.value.deliver_type">
-            <el-radio label="none">{{$t('message.constant.DELIVER_TYPE_NONE')}}</el-radio>
-            <el-radio label="manual">{{$t('message.constant.DELIVER_TYPE_MANUAL')}}</el-radio>
-            <el-radio label="auto">{{$t('message.constant.DELIVER_TYPE_AUTO')}}</el-radio>
+            <el-radio label="none">{{ $t("message.constant.DELIVER_TYPE_NONE") }}</el-radio>
+            <el-radio label="manual">{{ $t("message.constant.DELIVER_TYPE_MANUAL") }}</el-radio>
+            <el-radio label="auto">{{ $t("message.constant.DELIVER_TYPE_AUTO") }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="$t('message.adminShop.Goods.deliver_text')" v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_AUTO">
+        <el-form-item :label="$t('message.adminShop.Goods.deliver_text')"
+                      v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_AUTO">
           <v-md-editor v-model="shopStoreData.currentGoods.value.deliver_text" height="400px"></v-md-editor>
         </el-form-item>
       </div>
@@ -84,7 +96,7 @@
                    :data="nodeManageData.nodeList.value.data"
                    :props="{label:'remarks'}"
                    :default-checked-keys="shopStoreData.checkedNodeIDs.value"
-                   show-checkbox class="menu-data-tree"/>
+                   show-checkbox class="menu-data-tree" />
         </el-form-item>
       </div>
       <!--      订阅商品结束-->
@@ -101,9 +113,9 @@
     </el-form>
     <template #footer>
             <span class="dialog-footer">
-                <el-button @click="state.isShowDialog = false">{{$t('message.common.button_cancel')}}</el-button>
+                <el-button @click="state.isShowDialog = false">{{ $t("message.common.button_cancel") }}</el-button>
                 <el-button type="primary" @click="onSubmit">
-                    {{$t('message.common.button_confirm')}}
+                    {{ $t("message.common.button_confirm") }}
                 </el-button>
             </span>
     </template>
@@ -113,19 +125,19 @@
 <script lang="ts" setup>
 import { storeToRefs } from "pinia";
 import { useAdminNodeStore } from "/@/stores/admin_logic/nodeStore";
-import { reactive,ref } from "vue";
+import { reactive, ref } from "vue";
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { useConstantStore } from "/@/stores/constantStore";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 
-const  shopStore  = useAdminShopStore()
-const shopStoreData = storeToRefs(shopStore)
+const shopStore = useAdminShopStore();
+const shopStoreData = storeToRefs(shopStore);
 const nodeStore = useAdminNodeStore();
-const  nodeManageData  = storeToRefs(nodeStore);
-const constantStore = useConstantStore()
-const nodes_tree_ref = ref()
-const {t} = useI18n()
+const nodeManageData = storeToRefs(nodeStore);
+const constantStore = useConstantStore();
+const nodes_tree_ref = ref();
+const { t } = useI18n();
 // 定义子组件向父组件传值/事件
 const emit = defineEmits(["refresh"]);
 
@@ -139,16 +151,16 @@ const state = reactive({
 // 打开弹窗
 const openDialog = (type: string, row?: any) => {
   state.type = type;
-  nodeStore.getAllNode()
+  nodeStore.getAllNode();
   if (type == "add") {
-    state.title = t('message.adminShop.addGoods')
+    state.title = t("message.adminShop.addGoods");
     state.isShowDialog = true;
     shopStoreData.currentGoods.value.id = 0; //清空上次编辑的id，否则无法新建
   } else {
     state.type = type;
-    state.title = t('message.adminShop.modifyGoods')
+    state.title = t("message.adminShop.modifyGoods");
     shopStoreData.currentGoods.value = row;
-    shopStore.nodeIDsHandler()
+    shopStore.nodeIDsHandler();
     state.isShowDialog = true;
   }
 };
@@ -162,15 +174,15 @@ function onSubmit() {
   //处理商品的关联节点
   shopStoreData.checkedNodeIDs.value = [...nodes_tree_ref.value.getCheckedKeys()];
   if (state.type === "add") {
-    shopStore.newGoods().then((res)=>{
-      ElMessage.success(res.msg)
+    shopStore.newGoods().then((res) => {
+      ElMessage.success(res.msg);
       emit("refresh");
-    })
+    });
   } else {
-    shopStore.updateGoods().then((res)=>{
-      ElMessage.success(res.msg)
+    shopStore.updateGoods().then((res) => {
+      ElMessage.success(res.msg);
       emit("refresh");
-    })
+    });
   }
   closeDialog();
 }

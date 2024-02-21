@@ -190,9 +190,7 @@
 
         <el-tab-pane :label="$t('message.adminServer.tapMigration')" name="6">
           <div style="margin-bottom: 20px">
-            <el-text type="danger" style="background-color: red;color: white;font-size: larger">
-              {{$t('message.adminServer.migrationTip')}}
-            </el-text>
+            <el-alert :title="$t('message.adminServer.migrationTip')" type="warning" effect="dark" />
           </div>
 
           <el-form v-model="state.migrationParams" label-position="top">

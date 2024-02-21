@@ -1,29 +1,22 @@
 // 定义内容
 export default {
-	label: {
-		one1: 'User name login',
-		two2: 'Mobile number',
-	},
-	link: {
-		one3: 'Third party login',
-		two4: 'Links',
-	},
-	account: {
-		accountPlaceholder1: 'The user name admin or not is common',
-		accountPlaceholder2: 'Password: 123456',
-		accountPlaceholder3: 'Please enter the verification code',
-		accountBtnText: 'Sign in',
-	},
-	mobile: {
-		placeholder1: 'Please input mobile phone number',
-		placeholder2: 'Please enter the verification code',
+	login:{
+		placeholder1: 'Please enter the verification code',
+		placeholder2: 'Please enter password',
+		placeholder3: 'Please re-enter the password',
+		placeholder4: 'Please enter one user name',
+		retry:"重试",
 		codeText: 'Get code',
-		btnText: 'Sign in',
-		msgText:
-			'Warm tip: it is recommended to use Google, Microsoft edge, version 79.0.1072.62 and above browsers, and 360 browser, please use speed mode',
+		signInText: 'welcome back!',
+		registerText:"Registration successful, go to login...",
+		signIn:"Sign in",
+		register:"Register",
+		resetPassword:"Reset password",
+		loginRules:{
+			msg1:"Please enter one user name",
+			msg2:"Length 4-40",
+			msg3:"Please enter password",
+			msg4:"Length 4-20",
+		},
 	},
-	scan: {
-		text: 'Open the mobile phone to scan and quickly log in / register',
-	},
-	signInText: 'welcome back!',
 };

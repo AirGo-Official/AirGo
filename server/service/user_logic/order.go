@@ -59,14 +59,10 @@ func (o *Order) StartTask() {
 					continue
 				}
 				// 7、设置5分钟过期，5分钟等待付款
-				//global.LocalCache.
-				//	Set(constant.CACHE_SUBMIT_ORDER_BY_ORDERID+preOrder.OutTradeNo,
-				//		preOrder,
-				//		constant.CACHE_SUBMIT_ORDER_TIMEOUT*time.Minute)
 				global.LocalCache.
 					Set(constant.CACHE_SUBMIT_ORDER_BY_ORDERID+preOrder.OutTradeNo,
 						preOrder,
-						20*time.Second)
+						constant.CACHE_SUBMIT_ORDER_TIMEOUT*time.Minute)
 				// 8、删除幂等性cache
 				global.LocalCache.
 					Delete(fmt.Sprintf("%s%d:%d", constant.CACHE_USERID_AND_GOODSID, preOrder.UserID, preOrder.GoodsID))
@@ -201,8 +197,8 @@ func (o *Order) PreHandleOrder(orderReq *model.Order) (*model.Order, error) {
 			OrderType:      constant.ORDER_TYPE_NEW,
 			TradeStatus:    constant.ORDER_STATUS_CREATED,
 			OutTradeNo:     time.Now().Format("20060102150405") + fmt.Sprintf("%d", orderReq.UserID), //系统订单号：时间戳+user id]
-			OriginalAmount: originalAmount,
-			TotalAmount:    originalAmount,
+			OriginalAmount: originalAmount,                                                           //原始价格
+			TotalAmount:    originalAmount,                                                           //订单价格
 			BuyerPayAmount: "0.00",
 			CouponAmount:   "0.00",
 			BalanceAmount:  "0.00",

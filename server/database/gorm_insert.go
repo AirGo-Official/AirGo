@@ -238,7 +238,7 @@ func InsertIntoServer() error {
 }
 func InsertIntoArticle() error {
 	articleData := []model.Article{
-		{ID: 1, Type: "home", Title: "首页自定义显示内容", Introduction: "首页自定义显示内容，可编辑，可显示与隐藏，不可删除！", Content: defaultHtml, Status: true},
+		{ID: 1, Type: "home", Title: "首页自定义显示内容", Introduction: "首页自定义显示内容，可编辑，不可删除！", Content: defaultHtml, Status: true},
 		{ID: 2, Type: "dialog", Title: "首页弹窗内容", Introduction: "首页弹窗，可编辑，可显示与隐藏，不可删除！", Content: defaultDialog, Status: true},
 	}
 	if err := global.DB.Create(&articleData).Error; err != nil {
@@ -265,7 +265,7 @@ func InsertIntoPay() error {
 	payData := model.Pay{
 		Name:       "Balance payment",
 		PayType:    constant.PAY_TYPE_BALANCE,
-		PayLogoUrl: "/src/assets/icon/balance.jpeg",
+		PayLogoUrl: "https://telegraph-image.pages.dev/file/a57a72c5572277ff6b48f.jpg",
 		Status:     true,
 		AliPay:     model.AliPay{},
 		Epay:       model.Epay{},

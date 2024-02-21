@@ -36,6 +36,7 @@ export const useShopStore = defineStore("shopStore", {
             buyer_pay_amount: '', //付款金额
             coupon_amount: '', //折扣码这块金额
             balance_amount: '', //余额折扣金额
+            duration:1,// 默认订购时长
             // 关联用户
             user_id: 0,
             user_name: '',

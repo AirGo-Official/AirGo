@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/ppoonk/AirGo/api/public_api"
+	"github.com/ppoonk/AirGo/api/user_api"
 	"github.com/ppoonk/AirGo/middleware"
 )
 
@@ -48,5 +49,8 @@ func InitPublicRouter(RouterGroup *gin.RouterGroup) {
 		codeRouter.POST("/getEmailCode", public_api.GetEmailCode)        //获取验证码
 		codeRouter.GET("/getBase64Captcha", public_api.GetBase64Captcha) //获取base64Captcha
 	}
-
+	articleRouter := publicRouter.Group("/article").Use(middleware.RateLimitIP())
+	{
+		articleRouter.GET("/getDefaultArticleList", user_api.GetDefaultArticleList)
+	}
 }

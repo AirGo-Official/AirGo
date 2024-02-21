@@ -30,6 +30,7 @@ export default {
     lastWeek:"Last week",
     lastMonth:"Last month",
     lastThreeMonths:"Last 3 months",
+    month:"month",
   },
   constant:{
     // 商品
@@ -39,6 +40,7 @@ export default {
     // 订单类型
     ORDER_TYPE_NEW:"New",
     ORDER_TYPE_RENEW:"Renew",
+    ORDER_TYPE_DESTROYED:"Destroyed",
     // 订单状态
     ORDER_STATUS_CREATED        : "CREATED",
     ORDER_STATUS_WAIT_BUYER_PAY : "WAIT_BUYER_PAY",

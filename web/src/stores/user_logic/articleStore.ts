@@ -52,7 +52,7 @@ export const useArticleStore = defineStore("articleStore", {
                 this.articleID1 = temp[0]
                 this.articleID2 = temp[1]
             } else {
-                const res = await request(apiStoreData.userApi.value.getDefaultArticleList)
+                const res = await request(apiStoreData.publicApi.value.getDefaultArticleList)
                 const total = res.data.total
                 let temp: Article[] = res.data.data
                 if (total === 2) {

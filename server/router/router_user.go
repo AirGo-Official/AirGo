@@ -52,7 +52,6 @@ func InitUserRouter(RouterGroup *gin.RouterGroup) {
 	articleRouter := customerRouter.Group("/article")
 	{
 		articleRouter.POST("/getArticleList", user_api.GetArticleList)
-		articleRouter.GET("/getDefaultArticleList", user_api.GetDefaultArticleList)
 	}
 	//ticket
 	ticketRouter := customerRouter.Group("/ticket")

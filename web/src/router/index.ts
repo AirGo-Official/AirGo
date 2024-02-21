@@ -98,27 +98,53 @@ export function formatTwoStageRoutes(arr: any) {
 }
 
 // 路由加载前
+// router.beforeEach(async (to, from, next) => {
+//     console.log("to.path:",to.path)
+//     NProgress.configure({showSpinner: false});
+//     if (to.meta.title) NProgress.start();
+//     // const token = Session.get('token');
+//     const token = Local.get('token');
+//
+//      if (to.path === '/login' && !token) {
+//         console.log('login')
+//         next();
+//         NProgress.done();
+//     } else {
+//         console.log(2)
+//         if (!token) {
+//             console.log(3)
+//             // next(`/login?redirect=${to.path}&params=${JSON.stringify(to.query ? to.query : to.params)}`);
+//             // next(`/login?i=${JSON.stringify(to.query ? to.query : to.params)}`);
+//             next(`/login`);
+//             Session.clear();
+//             Local.clear();
+//             NProgress.done();
+//         } else if (token && to.path === '/login') {
+//             next('/home');
+//             NProgress.done();
+//         } else if (token && to.path.substring(0, 8) === '/static/') {
+//             next();
+//             NProgress.done();
+//         } else {
+//             const storesRoutesList = useMenuStore(pinia);
+//             const {routesListSate} = storeToRefs(storesRoutesList);
+//             if (routesListSate.value.routesList.length === 0) {
+//                 // 后端控制路由：路由数据初始化，防止刷新时丢失
+//                 await initBackEndControlRoutes();
+//                 next({path: to.path, query: to.query});
+//             } else {
+//                 next();
+//             }
+//         }
+//     }
+// });
 router.beforeEach(async (to, from, next) => {
     NProgress.configure({showSpinner: false});
     if (to.meta.title) NProgress.start();
-    // const token = Session.get('token');
     const token = Local.get('token');
-    if (to.path === '/login' && !token) {
-        next();
-        NProgress.done();
-    } else {
-        if (!token) {
-            // next(`/login?redirect=${to.path}&params=${JSON.stringify(to.query ? to.query : to.params)}`);
-            next(`/login?i=${JSON.stringify(to.query ? to.query : to.params)}`);
-            // next(`/login`);
-            Session.clear();
-            Local.clear();
-            NProgress.done();
-        } else if (token && to.path === '/login') {
+    if (token){
+        if (to.path === '/login') {
             next('/home');
-            NProgress.done();
-        } else if (token && to.path.substring(0, 8) === '/static/') {
-            next();
             NProgress.done();
         } else {
             const storesRoutesList = useMenuStore(pinia);
@@ -130,6 +156,16 @@ router.beforeEach(async (to, from, next) => {
             } else {
                 next();
             }
+        }
+    } else {
+        if (to.path === '/index' || to.path === '/login') {
+            next();
+            NProgress.done();
+        }  else {
+            next(`/index`);
+            Session.clear();
+            Local.clear();
+            NProgress.done();
         }
     }
 });

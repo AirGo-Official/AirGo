@@ -33,6 +33,13 @@
             <el-tag type="success">{{ DateStrToTime(scope.row.created_at) }}</el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="order_type" :label="$t('message.adminOrder.Order.order_type')" width="100" sortable="custom">
+          <template #default="{row}">
+            <el-button type="primary" v-if="row.order_type === constantStore.ORDER_TYPE_NEW">{{$t('message.constant.ORDER_TYPE_NEW')}}</el-button>
+            <el-button type="primary" v-else-if="row.order_type === constantStore.ORDER_TYPE_RENEW">{{$t('message.constant.ORDER_TYPE_RENEW')}}</el-button>
+            <el-button type="info" v-else>{{$t('message.constant.ORDER_TYPE_DESTROYED')}}</el-button>
+          </template>
+        </el-table-column>
         <el-table-column prop="user_name" :label="$t('message.adminOrder.Order.user_name')" width="180" sortable="custom"/>
         <el-table-column prop="goods_id" :label="$t('message.adminOrder.Order.goods_id')" show-overflow-tooltip width="100" sortable="custom"/>
         <el-table-column prop="subject" :label="$t('message.adminOrder.Order.subject')" show-overflow-tooltip width="200" sortable="custom"/>

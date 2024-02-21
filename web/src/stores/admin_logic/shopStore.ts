@@ -10,13 +10,15 @@ const apiStoreData = storeToRefs(apiStore)
 export const useAdminShopStore = defineStore("adminShopStore", {
   state: () => ({
     currentGoods: {
+      cover_image:"https://telegraph-image.pages.dev/file/ee6166159a0e330f67bd6.png",
       subject: "新套餐",
       price: "0.00",
       good_order: 0,
       is_show: true,
       is_sale:true,
-      // is_renew:true,
-      des: '<h3 style="color:#00BFFF">究竟什么样的终点，才配得上这一路的颠沛流离---管泽元</h3>\n<h3 style="color:#DDA0DD">世界聚焦于你---管泽元</h3>',
+      is_renew:true,
+      des: `<h3 style="color:#00BFFF">新套餐</h3>
+<h3 style="color:#DDA0DD">新套餐</h3>`,
       goods_type: 'subscribe',
       deliver_type: 'none',
       deliver_text: '',

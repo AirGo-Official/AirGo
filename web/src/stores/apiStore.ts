@@ -17,6 +17,8 @@ export const useApiStore = defineStore("apiStore", {
 
             getEmailCode: {path: publicApiPre + "/code/getEmailCode", method: "post"} as ApiItem,
             getBase64Captcha: {path: publicApiPre + "/code/getBase64Captcha", method: "get"} as ApiItem,
+
+            getDefaultArticleList:{path: publicApiPre + "/article/getDefaultArticleList", method: "get"} as ApiItem,
         },
 
         adminApi:{
@@ -145,7 +147,6 @@ export const useApiStore = defineStore("apiStore", {
 
             // article
             getArticleList:{path: userApiPre + "/article/getArticleList", method: "post"} as ApiItem,
-            getDefaultArticleList:{path: userApiPre + "/article/getDefaultArticleList", method: "get"} as ApiItem,
 
             // ticket
             newTicket:{path: userApiPre + "/ticket/newTicket", method: "post"} as ApiItem,

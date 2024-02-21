@@ -30,7 +30,7 @@
         </el-table-column>
         <el-table-column prop="renewal_amount" :label="$t('message.adminUser.CustomerService.renewal_amount')" width="100"/>
         <el-table-column prop="goods_id" :label="$t('message.adminUser.CustomerService.goods_id')" width="100"/>
-        <el-table-column prop="subject" :label="$t('message.adminUser.CustomerService.subject')" width="100"/>
+        <el-table-column prop="subject" :label="$t('message.adminUser.CustomerService.subject')" width="200" show-overflow-tooltip/>
         <el-table-column prop="price" :label="$t('message.adminUser.CustomerService.price')" width="100"/>
         <el-table-column prop="goods_type" :label="$t('message.adminUser.CustomerService.goods_type')" width="100"/>
         <el-table-column prop="duration" :label="$t('message.adminUser.CustomerService.duration')" width="100"/>

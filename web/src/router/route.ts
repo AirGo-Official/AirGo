@@ -45,6 +45,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         redirect: '/index',
         meta: {
             isKeepAlive: true,
+            title:"/",
         },
         children: [],
     },
@@ -86,7 +87,7 @@ export const staticRoutes: Array<RouteRecordRaw> = [
     {
         path: '/index',
         name: 'index',
-        component: () => import('/src/views/static/index.vue'),
+        component: () => import('/src/views/default/index.vue'),
         meta: {
             title: 'index',
         },

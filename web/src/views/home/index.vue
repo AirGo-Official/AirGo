@@ -14,7 +14,7 @@
           <el-card>
             <template #header>
               <div>
-                <el-text class="card-header-left">{{ v.subject }}</el-text>
+                <el-button text class="card-header-left">{{ v.subject }}</el-button>
               </div>
             </template>
             <el-descriptions
@@ -247,6 +247,5 @@ onMounted(() => {
 
 .card-header-left {
   font-size: 20px;
-  color: #083dfc;
 }
 </style>

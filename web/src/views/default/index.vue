@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div v-html="articleStoreData.articleID1.value.content"></div>
+  <div class="text">
+    <div class="cont" v-html="articleStoreData.articleID1.value.content"></div>
   </div>
 </template>
 
@@ -19,5 +19,12 @@ onMounted(()=>{
 </script>
 
 <style scoped>
+.text{
+  width: 100%;
+  overflow-y: scroll;
+  height: 100%;
+}
+
+
 
 </style>

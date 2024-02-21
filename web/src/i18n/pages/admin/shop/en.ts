@@ -9,6 +9,7 @@ export default {
       updated_at: "updated_at",
       id: "id",
       good_order: "good_order",    //排序
+      cover_image:"cover image",//封面图片
       subject: "subject",       // 标题
       des: "des",     //商品描述
       price: "price",  // 商品价格

@@ -11,9 +11,10 @@ type Goods struct {
 	ID        int64      `json:"id" gorm:"primaryKey"`
 	//基础参数
 	GoodsOrder  int64  `json:"goods_order"   gorm:"comment:排序"`
+	CoverImage  string `json:"cover_image"   gorm:"comment:封面图片"`
 	Subject     string `json:"subject"       gorm:"comment:商品标题"`
 	Des         string `json:"des"           gorm:"comment:描述;type:text"`
-	Price       string `json:"price"  gorm:"comment:金额，单位为元，精确到小数点后两位"` //todo 前端修改
+	Price       string `json:"price"         gorm:"comment:金额，单位为元，精确到小数点后两位"` //todo 前端修改
 	IsShow      bool   `json:"is_show"       gorm:"comment:是否显示"`
 	IsSale      bool   `json:"is_sale"       gorm:"comment:是否售卖，是否上架"`
 	IsRenew     bool   `json:"is_renew"      gorm:"comment:是否可续费"`

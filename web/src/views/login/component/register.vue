@@ -2,7 +2,7 @@
   <el-form size="large" class="login-content-form" ref="ruleFormRef" :rules="registerRules" :model="registerData">
 
     <el-form-item prop="user_name">
-      <el-input text placeholder="请输入邮箱" v-model="registerData.user_name" clearable autocomplete="off">
+      <el-input text :placeholder="$t('message.login.placeholder4')" v-model="registerData.user_name" clearable autocomplete="off">
         <template #prefix>
           <el-icon>
             <ele-User/>
@@ -22,7 +22,7 @@
     </el-form-item>
 
     <el-form-item prop="password">
-      <el-input text placeholder="请输入密码" v-model="registerData.password" clearable autocomplete="off">
+      <el-input text :placeholder="$t('message.login.placeholder2')" v-model="registerData.password" clearable autocomplete="off">
         <template #prefix>
           <el-icon>
             <ele-Unlock/>
@@ -31,7 +31,7 @@
       </el-input>
     </el-form-item>
     <el-form-item prop="re_password">
-      <el-input text placeholder="重新输入密码" v-model="registerData.re_password" clearable autocomplete="off">
+      <el-input text :placeholder="$t('message.login.placeholder3')" v-model="registerData.re_password" clearable autocomplete="off">
         <template #prefix>
           <el-icon>
             <ele-Unlock/>
@@ -42,7 +42,7 @@
     <!--    base64验证码-->
     <el-form-item prop="b64s">
       <el-col :span="10" style="display: flex;align-items: center">
-        <el-input text placeholder="输入验证码" v-model="registerData.base64_captcha.b64s" clearable autocomplete="off">
+        <el-input text :placeholder="$t('message.login.placeholder1')" v-model="registerData.base64_captcha.b64s" clearable autocomplete="off">
           <template #prefix>
             <el-icon>
               <ele-Position/>
@@ -58,7 +58,7 @@
     </el-form-item>
       <el-form-item v-if="publicStoreData.publicSetting.value.enable_email_code">
       <el-col :span="13">
-        <el-input text maxlength="4" placeholder="请输入验证码" v-model="registerData.email_code" clearable
+        <el-input text maxlength="4" :placeholder="$t('message.login.placeholder1')" v-model="registerData.email_code" clearable
                   autocomplete="off">
           <template #prefix>
             <el-icon>
@@ -70,14 +70,14 @@
       <el-col :span="1"></el-col>
       <el-col :span="10">
         <el-button class="login-content-code" type="primary" :disabled="state.isCountDown" @click="onGetEmailCode">
-          {{ state.isCountDown ? `${state.countDownTime}s后重新获取` : "获取验证码" }}
+          {{ state.isCountDown ? `$t('message.login.retry'):${state.countDownTime}s` : $t('message.login.codeText') }}
         </el-button>
       </el-col>
     </el-form-item>
 
     <el-form-item>
       <el-button @click="submitForm(ruleFormRef)" round type="primary" v-waves class="login-content-submit">
-        <span>注 册</span>
+        <span>{{$t('message.login.register')}}</span>
       </el-button>
     </el-form-item>
   </el-form>
@@ -95,6 +95,7 @@ import {useAdminServerStore} from "/@/stores/admin_logic/serverStore";
 import {usePublicStore} from "/@/stores/publicStore";
 import {Local} from "/@/utils/storage";
 import { useConstantStore } from "/@/stores/constantStore";
+import { useI18n } from "vue-i18n";
 const constantStore = useConstantStore()
 const userStore = useUserStore()
 const {registerData, loginData} = storeToRefs(userStore)
@@ -102,10 +103,9 @@ const router = useRouter();
 const storesThemeConfig = useThemeConfig();
 const {themeConfig} = storeToRefs(storesThemeConfig);
 const serverStore = useAdminServerStore()
-
 const publicStore = usePublicStore()
 const publicStoreData = storeToRefs(publicStore)
-
+const {t} = useI18n()
 const emit = defineEmits(['toLogin'])
 
 //定义参数
@@ -125,7 +125,7 @@ const state = reactive({
 //注册
 const onRegister = () => {
   userStore.register().then((res) => {
-    ElMessage.success('注册成功，前往登录...')
+    ElMessage.success(t('message.login.registerText'))
     Local.clear() //删除缓存（包含邀请码数据）
     userStore.$reset()
     emit('toLogin')
@@ -163,16 +163,16 @@ const handleTimeChange = () => {
 const ruleFormRef = ref<FormInstance>()
 const registerRules = reactive<FormRules<RegisterForm>>({
   user_name: [
-    {required: true, message: '请输入用户名', trigger: 'blur'},
-    {min: 4, max: 40, message: '长度4～40', trigger: 'blur'},
+    {required: true, message: t('message.login.loginRules.msg1'), trigger: 'blur'},
+    {min: 4, max: 40, message: t('message.login.loginRules.msg2'), trigger: 'blur'},
   ],
   password: [
-    {required: true, message: '请输入密码', trigger: 'blur'},
-    {min: 4, max: 20, message: '密码长度4～20', trigger: 'blur'},
+    {required: true, message: t('message.login.loginRules.msg3'), trigger: 'blur'},
+    {min: 4, max: 20, message: t('message.login.loginRules.msg4'), trigger: 'blur'},
   ],
   re_password: [
-    {required: true, message: '请输入密码', trigger: 'blur'},
-    {min: 4, max: 20, message: '密码长度4～20', trigger: 'blur'},
+    {required: true, message: t('message.login.loginRules.msg3'), trigger: 'blur'},
+    {min: 4, max: 20, message: t('message.login.loginRules.msg4'), trigger: 'blur'},
   ],
 })
 // 提交表单，验证表单
@@ -216,8 +216,6 @@ onMounted(() => {
 
 .login-content-submit {
   width: 100%;
-  letter-spacing: 2px;
-  font-weight: 300;
 }
 
 }</style>

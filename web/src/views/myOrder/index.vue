@@ -12,7 +12,8 @@
         <el-table-column prop="order_type" :label="$t('message.adminOrder.Order.order_type')" width="100" sortable="custom">
           <template #default="{row}">
             <el-button type="primary" v-if="row.order_type === constantStore.ORDER_TYPE_NEW">{{$t('message.constant.ORDER_TYPE_NEW')}}</el-button>
-            <el-button type="success" v-else>{{$t('message.constant.ORDER_TYPE_RENEW')}}</el-button>
+            <el-button type="primary" v-else-if="row.order_type === constantStore.ORDER_TYPE_RENEW">{{$t('message.constant.ORDER_TYPE_RENEW')}}</el-button>
+            <el-button type="info" v-else>{{$t('message.constant.ORDER_TYPE_DESTROYED')}}</el-button>
           </template>
         </el-table-column>
         <el-table-column prop="subject" :label="$t('message.adminOrder.Order.subject')" show-overflow-tooltip width="200" sortable="custom"/>
@@ -69,8 +70,8 @@ import { useConstantStore } from "/@/stores/constantStore";
 
 const shopStore = useShopStore()
 const shopStoreData = storeToRefs(shopStore)
-const PurchaseDialog = defineAsyncComponent(() => import('/@/views/shop/dialog_purchase.vue'))
-const QRDialog = defineAsyncComponent(() => import('/@/views/shop/dialog_QR.vue'))
+const PurchaseDialog = defineAsyncComponent(() => import('/@/views/shop/purchase.vue'))
+const QRDialog = defineAsyncComponent(() => import('/@/views/shop/purchase.vue'))
 const PurchaseDialogRef = ref()
 const QRDialogRef = ref()
 const constantStore = useConstantStore()
