@@ -18,7 +18,7 @@ export default {
       avatar: "头像",
       enable: "状态",
       invitation_code: "邀请码",
-      referrer_code: "邀请人",
+      referrer_code: "推荐人的邀请码",
       balance: "余额",
       tg_id: "tg id",
       role_group: "角色组",	//角色组
@@ -44,7 +44,7 @@ export default {
       duration:"订购时长",
       total_bandwidth:"总流量",
       node_connector:"节点连接数",
-      node_speed_limit:"商品速率",
+      node_speed_limit:"节点速率",
       traffic_reset_day:"流量重置日",
       sub_status: "订阅状态",
       sub_uuid:"订阅UUID",

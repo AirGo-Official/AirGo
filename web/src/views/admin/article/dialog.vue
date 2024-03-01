@@ -11,7 +11,7 @@
         <el-switch v-model="articleStoreData.currentArticle.value.status"
                    inline-prompt
                    :active-text="$t('message.common.enable')"
-                   inactive-text="$t('message.common.disable')"
+                   :inactive-text="$t('message.common.disable')"
                    style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
       </el-form-item>
       <el-form-item :label="$t('message.adminArticle.Article.type')">

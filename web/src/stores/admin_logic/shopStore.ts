@@ -101,6 +101,7 @@ export const useAdminShopStore = defineStore("adminShopStore", {
       discount_rate: 0,
       limit: 0,
       expired_at: '',
+      min_amount:0.01,
     } as Coupon,
     checkedGoodsIDs:[] as number[],
     checkedNodeIDs:[] as number[],

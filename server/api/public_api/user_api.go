@@ -41,17 +41,19 @@ func Register(ctx *gin.Context) {
 		cacheEmail, ok := global.LocalCache.Get(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
 		if ok {
 			if !strings.EqualFold(cacheEmail.(string), u.EmailCode) {
+				//验证失败，返回错误响应，但不删除缓存的验证码。因为用户输错了，需要重新输入，而不需要重新发送验证码
 				response.Fail("Email verification error", nil, ctx)
 				return
+			} else {
+				//验证成功，删除缓存的验证码
+				global.LocalCache.Delete(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
 			}
 		} else {
-			//cache获取验证码失败,原因：1超时 2系统错误
+			//cache缓存超时
 			response.Fail("Timeout, please try again", nil, ctx)
 			return
 		}
 	}
-	global.LocalCache.Delete(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
-
 	//构建用户信息
 	var avatar string
 	if u.EmailSuffix == "@qq" {
@@ -115,22 +117,26 @@ func ResetUserPassword(ctx *gin.Context) {
 	cacheEmail, ok := global.LocalCache.Get(constant.CACHE_USER_RESET_PWD_EMAIL_CODE_BY_USERNAME + u.UserName)
 	if ok {
 		if !strings.EqualFold(cacheEmail.(string), u.EmailCode) {
+			//验证失败，返回错误响应，但不删除缓存的验证码。因为用户输错了，需要重新输入，而不需要重新发送验证码
 			response.Fail("Email verification error", nil, ctx)
 			return
+		} else {
+			//验证成功，删除缓存的验证码
+			global.LocalCache.Delete(constant.CACHE_USER_RESET_PWD_EMAIL_CODE_BY_USERNAME + u.UserName)
 		}
 	} else {
-		//cache获取验证码失败,原因：1超时 2系统错误
+		//cache缓存超时
 		response.Fail("Timeout, please try again", nil, ctx)
 		return
 	}
-	global.LocalCache.Delete(constant.CACHE_USER_RESET_PWD_EMAIL_CODE_BY_USERNAME + u.UserName)
+
 	err = userService.UpdateUser(&model.User{UserName: u.UserName}, map[string]any{"password": encrypt_plugin.BcryptEncode(u.Password)})
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("ResetUserPassword error:"+err.Error(), nil, ctx)
 		return
 	}
-	// todo 删除该用户token cache
+	// TODO 使该用户token失效
 	response.OK("ResetUserPassword success", nil, ctx)
 
 }

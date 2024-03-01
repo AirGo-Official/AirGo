@@ -34,7 +34,7 @@ func (r *Role) FindRoleIdsByRoleNameArr(nameArr []string) ([]model.Role, error) 
 }
 
 // 获取角色列表
-func (r *Role) GetRoleList(params *model.PaginationParams) (*model.CommonDataResp, error) {
+func (r *Role) GetRoleList() (*model.CommonDataResp, error) {
 	var roleArr []model.Role
 	var total int64
 	var err error
@@ -42,8 +42,6 @@ func (r *Role) GetRoleList(params *model.PaginationParams) (*model.CommonDataRes
 		Model(&model.Role{}).
 		Count(&total).
 		Preload("Menus").
-		Limit(int(params.PageSize)).
-		Offset((int(params.PageNum) - 1) * int(params.PageSize)).
 		Find(&roleArr).Error
 	return &model.CommonDataResp{total, roleArr}, err
 }

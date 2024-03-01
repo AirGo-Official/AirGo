@@ -8,7 +8,7 @@ export default {
     tapMigration:"数据迁移",
     emailTesting:"邮件测试",
     emailCodeTip:"邮件验证码内容，支持HTML，`emailcode`为验证码字段，不可删除！",
-    migrationTip:" 迁移之前请做好数据备份。由于面板之间数据不兼容，迁移仅保留用户最基本的账号email和uuid数据，并将用户密码初始为123456，请引导用户及时修改密码",
+    migrationTip:"迁移之前请做好数据备份。由于面板之间数据不兼容，迁移仅保留用户最基本的账号email和uuid数据，并将用户密码初始为123456，请引导用户及时修改密码",
     migrationTip2:"请做好数据备份，并填写正确的数据库信息，是否继续?",
     RequestMinute:"请求/分钟",
     addPay:"新增支付",
@@ -28,7 +28,7 @@ export default {
       api_prefix: "管理员api前缀",
       sub_name: "订阅名称",
       tek: "通信密钥",
-      enabled_clock_in: "启用打开",
+      enabled_clock_in: "启用打卡",
       // email
       email_from: "发件人",
       email_from_alias: "发件人别名",

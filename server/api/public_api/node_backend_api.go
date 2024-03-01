@@ -20,11 +20,13 @@ func AGGetNodeInfo(ctx *gin.Context) {
 		return
 	}
 	id := ctx.Query("id")
-	//node, _, err := service.CommonSqlFind[model.Node, string, model.AGNodeInfo](fmt.Sprintf("id = %s", id))
-
+	nodeIDInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		ctx.AbortWithStatus(400)
+		return
+	}
 	var node model.Node
-	err := global.DB.Where("id = ?", id).Preload("Access").First(&node).Error
-
+	err = global.DB.Model(&model.Node{}).Where(&model.Node{ID: nodeIDInt}).Preload("Access").First(&node).Error
 	if err != nil {
 		global.Logrus.Error("AGGetNodeInfo error,id="+id, err.Error())
 		return
@@ -48,7 +50,7 @@ func AGGetNodeInfo(ctx *gin.Context) {
 		}
 	})
 	//处理ss节点加密
-	if node.NodeType == "shadowsocks" {
+	if node.Protocol == "shadowsocks" {
 		switch node.Scy {
 		case "2022-blake3-aes-128-gcm":
 			node.ServerKey = base64.StdEncoding.EncodeToString([]byte(node.ServerKey[:16]))
@@ -108,13 +110,8 @@ func AGGetUserlist(ctx *gin.Context) {
 		ctx.AbortWithStatus(400)
 		return
 	}
-	//节点
-	//node, _, _ := common_logic.CommonSqlFind[model.Node, string, model.Node](fmt.Sprintf("id = %s", id))
-	//if !node.Enabled {
-	//	return
-	//}
 	var node model.Node
-	err = global.DB.Model(&model.Node{}).Where(&model.Node{ID: nodeIDInt, Enabled: true}).First(&node).Error
+	err = global.DB.Model(&model.Node{}).Where(&model.Node{ID: nodeIDInt}).First(&node).Error
 	if err != nil {
 		ctx.AbortWithStatus(400)
 		return
@@ -142,8 +139,8 @@ func AGGetUserlist(ctx *gin.Context) {
 		return
 	}
 	//处理ss加密
-	switch node.NodeType {
-	case constant.NODE_TYPE_SHADOWSOCKS:
+	switch node.Protocol {
+	case constant.NODE_PROTOCOL_SHADOWSOCKS:
 		switch strings.HasPrefix(node.Scy, "2022") {
 		case true:
 			for k, _ := range users {
@@ -166,8 +163,8 @@ func AGGetUserlist(ctx *gin.Context) {
 }
 
 func ssEncryptionHandler(node model.Node, user *model.AGUserInfo) {
-	switch node.NodeType {
-	case "shadowsocks":
+	switch node.Protocol {
+	case constant.NODE_PROTOCOL_SHADOWSOCKS:
 		if strings.HasPrefix(node.Scy, "2022") {
 			//
 			p := user.UUID.String()

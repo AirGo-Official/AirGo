@@ -5,8 +5,8 @@ export default {
     button_push:"PUSH",
     button_details:"Details",
     button_renew:"Renew",
-    button_resetSub:"Reset Subscription",
-    button_copySub:"Copy Subscription",
+    button_resetSub:"Reset Sub",
+    button_copySub:"Copy Sub",
 
     des_start:"Start",
     des_end:"End",

@@ -5,22 +5,24 @@ declare interface NodeInfo {
     node_speed_limit: number; //节点限速/Mbps
     traffic_rate: number;    //倍率
     node_type: string;       //类型 vless vmess shadowsocks
-    //共享节点额外需要的参数
-    uuid: string;
     //基础参数
     remarks: string;//别名
     address: string;
     port: number;
     node_order: number;//节点排序
-    enabled: boolean;  //是否为激活节点
+    enabled: boolean;  //是否为激活节点（是否显示）
     //中转参数
-    enable_transfer: boolean;//是否启用中转
     transfer_address: string;//中转ip
     transfer_port: number;   //中转port
     transfer_node_id: number; //中转绑定的节点ID
+    // 共享节点额外需要的参数
+    uuid:string
     //流量
     total_up: number;
     total_down: number;
+
+    //节点协议类型
+    protocol:string
 
     //vmess参数
     v: string;
@@ -64,46 +66,6 @@ declare interface ServerStatusInfo {
     cpu: number;
     mem: number;
     disk: number;
-}
-
-declare interface NodeSharedInfo {
-    id: number;
-    created_at: string;
-    updated_at: string;
-
-    node_type: string;
-    remarks: string;
-    uuid: string;
-    address: string;
-    port: number;
-    ns: string;
-    tcping: number;
-    ascription: string;
-    enabled: boolean;
-    //vmess参数
-    v: string;
-    scy: string;//加密方式 auto,none,chacha20-poly1305,aes-128-gcm,zero
-    aid: number;
-    //vless参数
-    flow: string;//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
-    encryption: string;
-
-    network: string; ////传输协议 tcp,kcp,ws,h2,quic,grpc
-    type: string;  //伪装类型 ws,h2,grpc：无    tcp：none，http    kcp,quic：none，srtp，utp，wechat-video，dtls，wireguard
-    host: string;
-    path: string;
-    mode: string; //grpc传输模式 gun，multi
-
-    security: string;        //传输层安全类型 none,tls,reality
-    sni: string;             //
-    fp: string;              //
-
-    alpn: string;            //tls
-    allowInsecure: boolean;  //tls
-
-    pbk: string;             //reality
-    sid: string;             //reality
-    spx: string;             //reality
 }
 
 declare interface RealityItem {

@@ -25,26 +25,26 @@ golang, gin, gorm
 
 <hr/>
 
+
+
+<!-- TOC -->
+* [AirGo 前后端分离，多用户，多协议代理服务管理系统，简单易用](#airgo-前后端分离多用户多协议代理服务管理系统简单易用)
+* [面板部分功能展示](#面板部分功能展示)
+<!-- TOC -->
+
 # 面板部分功能展示
 <div style="color: darkgray" >Display of panel functions</div>
 
 <table>
 <tr>
-    <td> <img src="https://telegraph-image.pages.dev/file/6c155e3649101c65c4c67.png">
-    <td> <img src="https://telegraph-image.pages.dev/file/533bff998724b7bd87ef0.png">
+    <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/1.png">
+    <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/2.png">
+    <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/3.png">
 <tr>
-    <td> <img src="https://telegraph-image.pages.dev/file/1a8eb3c9bf615ea4c4cd0.png">
-    <td> <img src="https://telegraph-image.pages.dev/file/149800a378b536600ab07.png">
+    <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/4.png">
+    <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/5.png">
+    <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/6.png">
 </table>
 
-# AirGo特点
-- 更简单，告别复杂的配置和繁琐的部署过程，最快1分钟安装，5分钟对接
-- 更强大，基于gin框架和ants goroutine优化，轻松应对百万并发
-- 更安全，jwt和casbin鉴权结合，减少安全风险
-- 更丰富，外链页面、首页内容，弹窗内容，颜色风格等，完全可自定义，凸显您的个性
-
-更新记录：[https://github.com/ppoonk/AirGo/wiki](https://github.com/ppoonk/AirGo/wiki)
-
-使用文档：[https://github.com/ppoonk/AirGo/wiki/AirGo-Wiki](https://github.com/ppoonk/AirGo/wiki/AirGo-Wiki)
 
 TG群组：[https://t.me/AirGo_Group](https://t.me/AirGo_Group)

@@ -53,17 +53,19 @@ func InitAdminRouter(RouterGroup *gin.RouterGroup) {
 	nodeAdminRouter := adminRouter.Group("/node")
 	{
 		nodeAdminRouter.POST("/newNode", admin_api.NewNode)                               //新建节点
-		nodeAdminRouter.GET("/getAllNode", admin_api.GetAllNode)                          //查询全部节点
-		nodeAdminRouter.POST("/getNodeListWithTraffic", admin_api.GetNodeListWithTraffic) //获取节点 with Traffic,分页
+		nodeAdminRouter.POST("/getNodeList", admin_api.GetNodeList)                       //获取节点
+		nodeAdminRouter.POST("/getNodeListWithTraffic", admin_api.GetNodeListWithTraffic) //获取节点 with Traffic
 		nodeAdminRouter.POST("/updateNode", admin_api.UpdateNode)                         //更新节点
 		nodeAdminRouter.DELETE("/deleteNode", admin_api.DeleteNode)                       //删除节点
 
 		nodeAdminRouter.POST("/nodeSort", admin_api.NodeSort)        //节点排序
 		nodeAdminRouter.GET("/createx25519", admin_api.Createx25519) // reality x25519
 
-		nodeAdminRouter.POST("/newNodeShared", admin_api.NewNodeShared)         //新增共享节点
-		nodeAdminRouter.GET("/getNodeSharedList", admin_api.GetNodeSharedList)  //获取共享节点列表
-		nodeAdminRouter.DELETE("/deleteNodeShared", admin_api.DeleteNodeShared) //删除共享节点
+		nodeAdminRouter.POST("/newNodeShared", admin_api.NewNodeShared) //新增共享节点
+		nodeAdminRouter.POST("/parseUrl", admin_api.ParseUrl)           //解析url
+
+		nodeAdminRouter.GET("/getNodeServerStatus", admin_api.GetNodeServerStatus)
+
 	}
 	// shop
 	shopAdminRouter := adminRouter.Group("/shop")

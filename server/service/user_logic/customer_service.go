@@ -1,14 +1,13 @@
 package user_logic
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/service/common_logic"
 	uuid "github.com/satori/go.uuid"
 	"gorm.io/gorm"
-	"strconv"
+	"math"
 	"strings"
 	"time"
 )
@@ -53,21 +52,6 @@ func (c *CustomerService) SaveCustomerService(csParams *model.CustomerService) e
 	})
 }
 func (c *CustomerService) CreateCustomerService(goods *model.Goods, order *model.Order) error {
-	originalAmount, err := strconv.ParseFloat(order.OriginalAmount, 64)
-	if err != nil {
-		return err
-	}
-	couponAmount, err := strconv.ParseFloat(order.CouponAmount, 64)
-	if err != nil {
-		return err
-	}
-	renewalAmount := originalAmount - couponAmount
-	if renewalAmount < 0 {
-		return errors.New("The renewal amount is illegal")
-	}
-
-	//
-	//subUserID, _ := strconv.ParseInt(fmt.Sprintf("%d%d", order.UserID, order.ID), 10, 64)
 	cs := model.CustomerService{
 		UserID:          order.UserID,
 		UserName:        order.UserName,
@@ -75,7 +59,7 @@ func (c *CustomerService) CreateCustomerService(goods *model.Goods, order *model
 		ServiceStartAt:  time.Now(),
 		ServiceEndAt:    time.Now().AddDate(0, int(order.Duration), 0),
 		IsRenew:         goods.IsRenew,
-		RenewalAmount:   order.OriginalAmount,
+		RenewalAmount:   order.TotalAmount, //TODO 目前设置续费价格是订单结算时的价格（用户使用折扣码后的价格）
 		GoodsID:         order.GoodsID,
 		Subject:         order.Subject,
 		Des:             order.Des,
@@ -85,20 +69,14 @@ func (c *CustomerService) CreateCustomerService(goods *model.Goods, order *model
 		TotalBandwidth:  goods.TotalBandwidth * 1024 * 1024 * 1024, // GB->MB->KB->B
 		NodeConnector:   goods.NodeConnector,
 		NodeSpeedLimit:  goods.NodeSpeedLimit,
-		TrafficResetDay: int64(time.Now().Day()),
+		TrafficResetDay: int64(math.Min(float64(time.Now().Day()), 28)), //2月一般只有28天，流量重置日简单的设置为不超过28
 		SubStatus:       true,
 		SubUUID:         uuid.NewV4(),
 		UsedUp:          0,
 		UsedDown:        0,
 	}
+
 	return global.DB.Transaction(func(tx *gorm.DB) error {
 		return tx.Create(&cs).Error
-	})
-}
-
-// todo 可续费的服务，才可以push和续费
-func (c *CustomerService) PushCustomerService(csParams *model.CustomerService, newUser *model.User) error {
-	return global.DB.Transaction(func(tx *gorm.DB) error {
-		return tx.Model(&model.CustomerService{}).Where(&model.CustomerService{ID: csParams.UserID}).Updates(map[string]any{"user_id": newUser.ID}).Error
 	})
 }

@@ -1,4 +1,3 @@
-// 定义内容
 export default {
   router: {
     admin: "管理员",

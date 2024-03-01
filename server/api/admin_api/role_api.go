@@ -10,14 +10,7 @@ import (
 
 // 获取角色列表
 func GetRoleList(ctx *gin.Context) {
-	var roleParams model.PaginationParams
-	err := ctx.ShouldBind(&roleParams)
-	if err != nil {
-		global.Logrus.Error(err.Error())
-		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
-		return
-	}
-	res, err := roleService.GetRoleList(&roleParams)
+	res, err := roleService.GetRoleList()
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetRoleList error:"+err.Error(), nil, ctx)

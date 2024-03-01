@@ -49,8 +49,7 @@ func ChangeUserPassword(ctx *gin.Context) {
 		response.Fail("ChangeUserPassword error:"+err.Error(), nil, ctx)
 		return
 	}
-	//删除该用户token cache
-	// todo 校验依然有效，需优化
+	// TODO 该用户token校验依然有效，需优化
 	userService.DeleteUserCacheTokenByID(&model.User{
 		ID: uIDInt,
 	})
@@ -84,5 +83,5 @@ func ChangeUserAvatar(ctx *gin.Context) {
 
 // 打卡
 func ClockIn(ctx *gin.Context) {
-	// todo
+	// TODO
 }

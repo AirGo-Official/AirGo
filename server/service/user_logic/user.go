@@ -54,7 +54,6 @@ func (us *User) Login(u *model.UserLoginRequest) (*model.User, error) {
 		}
 		return &user, err
 	}
-	return &user, err
 }
 func (us *User) GetUserToken(user *model.User) (string, error) {
 	//查缓存
@@ -95,12 +94,6 @@ func (us *User) UpdateUser(userParams *model.User, values map[string]any) error 
 	})
 }
 
-// 处理用户余额
-// todo 提交订单后就扣除！
-func (us *User) UserRemainHandleByOrder(order *model.Order) error {
-	return nil
-}
-
 // 处理用户充值卡商品
 func (us *User) RechargeHandle(order *model.Order) error {
 	//查询商品信息
@@ -134,7 +127,7 @@ func (us *User) UserRemainPayHandler(order *model.Order) error {
 	return userService.SaveUser(user)
 }
 
-// 保存用户信息3
+// 保存用户信息
 func (us *User) SaveUser(u *model.User) error {
 	return global.DB.Transaction(func(tx *gorm.DB) error {
 		return tx.Save(&u).Error

@@ -5,8 +5,7 @@ import qs from "qs";
 
 let apiUrl = import.meta.env.VITE_API_URL;
 
-if (apiUrl === "") {
-  // console.log("apiUrl===''")
+if (!apiUrl) {
   apiUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 }
 
@@ -51,14 +50,16 @@ service.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
-// 响应拦截器
+/**
+ * 响应拦截器
+ * 业务代码详见 src/stores/constantStore.ts
+ */
 service.interceptors.response.use(
   (response) => {
     // 对响应数据做点什么
     const res = response.data;
     console.log("响应数据：", res);
-    if (res.code && res.code !== 0) {
+    if (res.code && res.code !== 0) { //根据业务代码进行处理
       if (res.code === 40101) {  // `token` 过期
         Local.clear();
         ElMessageBox.alert(res.msg, "提示", {
@@ -69,17 +70,17 @@ service.interceptors.response.use(
           })
           .catch(() => {
           });
-      } else if (res.code > 40000) {
+      } else if(res.code === 10){    //code=10，能正常获取请求数据，但有重要message 需要显式提醒
+        return res;
+      } else if (res.code > 40000) { //其他业务代码，不能正常获取请求数据
         ElMessageBox.alert(res.msg, "提示", {})
           .then(() => {
           })
-          .catch(() => {
-          });
       } else {
         ElMessage.error(res.msg);
       }
       return Promise.reject(service.interceptors.response);
-    } else {
+    } else { //code=0，能正常获取请求数据
       return res;
     }
   },

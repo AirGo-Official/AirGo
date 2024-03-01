@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <el-dialog v-model="state.isShowDialog" width="90%" style="height: 90%" destroy-on-close align-center>
     <el-row :gutter="15">
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" v-for="(v,k) in serverStatusData.data" :key="k">
         <div class="home-card-item">
@@ -72,12 +72,12 @@
         </div>
       </el-col>
     </el-row>
-  </div>
+  </el-dialog>
 
 </template>
 
 <script setup lang="ts">
-import {onMounted, onUnmounted} from "vue";
+import { onMounted, onUnmounted, reactive } from "vue";
 import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
 import {useAdminNodeStore} from "/@/stores/admin_logic/nodeStore";
@@ -85,7 +85,7 @@ import {Local} from "/@/utils/storage";
 
 const nodeStore = useAdminNodeStore()
 const {serverStatusData} = storeToRefs(nodeStore)
-const token = Local.get('token')
+// const token = Local.get('token')
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
 const customColors = [
@@ -96,62 +96,40 @@ const customColors = [
   { color: '#f56c6c', percentage: 80 },
   { color: '#000000', percentage: 100 },
 ]
+const state = reactive({
+  isShowDialog:false,
+})
 
-
-function getWsUrl(): string {
-  let apiUrl: string = import.meta.env.VITE_API_URL
-  if (apiUrl === '') {
-    apiUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port
-  }
-  const url = apiUrl.slice(apiUrl.indexOf('//') + 2, apiUrl.length)
-  const pre_url = apiUrl.slice(0, apiUrl.indexOf('//') + 2)
-  // console.log(`pre_url:${pre_url} url:${url}`)
-  if (pre_url === 'https://') {
-    return "wss://" + url
-  } else {
-    return "ws://" + url
-  }
+const openDialog = () => {
+  state.isShowDialog = true
+  loop()
+}
+const closeDialog = () => {
+  state.isShowDialog = false
 }
 
-let ws = new WebSocket(getWsUrl(), token);
-let interval = null;//计时器
-//监听是否连接成功
-function initWS() {
-  ws.onopen = function () {
-    // console.log('ws连接成功,连接状态：' + ws.readyState);
-    ws.send('{"type":1,"data":"hi"}');
-    interval = setInterval(() => {
-      ws.send('{"type":1,"data":"hi"}');
-    }, 5000);
-  }
-//接收服务器发回的信息
-  ws.onmessage = function (data) {
-    // console.log('ws接收服务器发回的信息：' + ws.readyState);
-    serverStatusData.value = JSON.parse(data.data)
-    // console.log("JSON.parse:", JSON.parse(data.data))
-  }
-//监听连接关闭事件
-  ws.onclose = function () {
-    // console.log('ws连接关闭,连接状态：' + ws.readyState);
-    clearInterval(interval)
-    ws.close();
-  }
-//监听并处理error事件
-  ws.onerror = function (error) {
-    // console.log(error);
-    ws.close();
-    clearInterval(interval)
-  }
+
+const loop=()=>{
+  let i = 0;
+  let timer = setInterval(() => {
+    getNodeServerStatus(timer, i++);
+  }, 3000);
+}
+const getNodeServerStatus=(timer: NodeJS.Timeout, i: number)=> {
+  setTimeout(() => {
+    if (i >= 100) {
+      clearInterval(timer);
+    }
+    nodeStore.getNodeServerStatus()
+  },0)
 }
 
-onMounted(() => {
-  // initWS()
+
+// 暴露变量
+defineExpose({
+  openDialog   // 打开弹窗
 });
-onUnmounted(() => {
-  //完成通信后关闭WebSocket连接
-  // ws.close();
-  // clearInterval(interval)
-});
+
 </script>
 
 <style scoped>
@@ -169,7 +147,7 @@ onUnmounted(() => {
 }
 
 .el-card {
-  background-image: url("../../assets/bgc/3.png");
+  background-image: url("../../../assets/bgc/3.png");
   background-repeat: no-repeat;
 }
 </style>

@@ -22,7 +22,6 @@ func RegisterTables() {
 		model.Article{},          //文章
 		model.Coupon{},           //折扣
 		model.Node{},             //节点
-		model.NodeShared{},       //共享节点
 		model.Pay{},              //支付
 		model.Access{},           //访问控制
 		model.Ticket{},           //工单

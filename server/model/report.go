@@ -32,13 +32,6 @@ type Pagination struct {
 	PageSize int64  `json:"page_size"`
 	OrderBy  string `json:"order_by"`
 }
-type PaginationParams struct {
-	Search   string   `json:"search"`
-	PageNum  int64    `json:"page_num"`
-	PageSize int64    `json:"page_size"`
-	Total    int64    `json:"total"`
-	Date     []string `json:"date"`
-}
 
 type CommonDataResp struct {
 	Total int64 `json:"total"`

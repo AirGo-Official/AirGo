@@ -145,13 +145,25 @@ const emit = defineEmits(["refresh"]);
 const state = reactive({
   isShowDialog: false,
   type: "",
-  title: ""
+  title: "",
+  queryParams: {
+    table_name: "node",
+    field_params_list: [
+      { field: "id", field_chinese_name: "", field_type: "", condition: "<>", condition_value: "", operator: "" }
+      // {field: 'created_at', field_chinese_name: '', field_type: '', condition: '<', condition_value: "", operator: 'AND',}
+    ] as FieldParams[],
+    pagination: { page_num: 1, page_size: 9999, order_by: "node_order" } as Pagination//设为9999，理论能获取全部节点，暂时取消详细的分页设置
+  } as QueryParams,
 });
+//查询节点
+const getNodeList=()=> {
+  nodeStore.getNodeList(state.queryParams);
+}
 
 // 打开弹窗
 const openDialog = (type: string, row?: any) => {
   state.type = type;
-  nodeStore.getAllNode();
+  getNodeList()
   if (type == "add") {
     state.title = t("message.adminShop.addGoods");
     state.isShowDialog = true;

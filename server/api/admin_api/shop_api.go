@@ -5,7 +5,6 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/admin_logic"
 	"github.com/ppoonk/AirGo/service/common_logic"
 	"github.com/ppoonk/AirGo/utils/response"
 )
@@ -86,7 +85,6 @@ func UpdateGoods(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	admin_logic.Show(goods)
 	err = shopService.UpdateGoods(&goods)
 	if err != nil {
 		global.Logrus.Error(err.Error())

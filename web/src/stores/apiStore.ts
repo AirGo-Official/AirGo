@@ -53,7 +53,7 @@ export const useApiStore = defineStore("apiStore", {
 
             // node
             newNode:{path: adminApiPre + "/node/newNode", method: "post"} as ApiItem,
-            getAllNode:{path: adminApiPre + "/node/getAllNode", method: "get"} as ApiItem,
+            getNodeList:{path: adminApiPre + "/node/getNodeList", method: "post"} as ApiItem,
             getNodeListWithTraffic:{path: adminApiPre + "/node/getNodeListWithTraffic", method: "post"} as ApiItem,
             updateNode:{path: adminApiPre + "/node/updateNode", method: "post"} as ApiItem,
             deleteNode:{path: adminApiPre + "/node/deleteNode", method: "delete"} as ApiItem,
@@ -61,9 +61,11 @@ export const useApiStore = defineStore("apiStore", {
             nodeSort:{path: adminApiPre + "/node/nodeSort", method: "post"} as ApiItem,
             createx25519:{path: adminApiPre + "/node/createx25519", method: "get"} as ApiItem,
 
+            parseUrl:{path: adminApiPre + "/node/parseUrl", method: "post"} as ApiItem,
             newNodeShared:{path: adminApiPre + "/node/newNodeShared", method: "post"} as ApiItem,
             getNodeSharedList:{path: adminApiPre + "/node/getNodeSharedList", method: "get"} as ApiItem,
             deleteNodeShared:{path: adminApiPre + "/node/deleteNodeShared", method: "delete"} as ApiItem,
+            getNodeServerStatus:{path: adminApiPre + "/node/getNodeServerStatus", method: "get"} as ApiItem,
 
             // shop
             newGoods:{path: adminApiPre + "/shop/newGoods", method: "post"} as ApiItem,

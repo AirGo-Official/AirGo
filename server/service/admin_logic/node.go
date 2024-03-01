@@ -7,13 +7,132 @@ import (
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/service/common_logic"
+	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type Node struct {
+}
+
+// 新建节点
+func (n *Node) NewNode(nodeParams *model.Node) error {
+	return global.DB.Transaction(func(tx *gorm.DB) error {
+		//检查remarks冲突，避免clash等客户端更新订阅时会报错
+		tempNode, err := n.FirstNode(&model.Node{Remarks: nodeParams.Remarks})
+		if err == nil { //已存在
+			nodeParams.Remarks = fmt.Sprintf("%s-%s", tempNode.Remarks, encrypt_plugin.RandomString(4))
+		}
+		switch nodeParams.NodeType {
+		case constant.NODE_TYPE_NORMAL:
+			if nodeParams.Protocol == constant.NODE_PROTOCOL_SHADOWSOCKS {
+				nodeParams.ServerKey = encrypt_plugin.RandomString(32)
+			}
+
+		case constant.NODE_TYPE_TRANSFER:
+			//如果该节点是中转节点，则把父节点的参数拷贝给该节点，减少更新订阅时查询次数
+			transferNode, err := n.FirstNode(&model.Node{ID: nodeParams.TransferNodeID})
+			if err != nil {
+				return err
+			}
+			transferNode.ID = 0
+			transferNode.NodeType = constant.NODE_TYPE_TRANSFER //更换父节点类型为中转
+			transferNode.CreatedAt, transferNode.UpdatedAt = time.Now(), time.Now()
+			transferNode.Remarks = nodeParams.Remarks
+			transferNode.TransferNodeID = nodeParams.TransferNodeID
+			transferNode.TransferAddress = nodeParams.TransferAddress
+			transferNode.TransferPort = nodeParams.TransferPort
+			nodeParams = transferNode
+		case constant.NODE_TYPE_SHARED:
+
+		default:
+			return errors.New(constant.ERROR_INVALID_NODE_TYPE)
+		}
+
+		//矫正一些参数
+		nodeParams.ID = 0
+		nodeParams.Enabled = true
+		nodeParams.NodeOrder = 9999 //默认将排序放到最低下
+
+		//创建
+		return tx.Create(&nodeParams).Error
+	})
+
+}
+
+// 查询节点
+func (n *Node) FirstNode(nodeParams *model.Node) (*model.Node, error) {
+	var node model.Node
+	err := global.DB.Where(&nodeParams).First(&node).Error
+	return &node, err
+}
+
+// 查询节点列表
+func (n *Node) GetNodeList(params *model.QueryParams) (*model.CommonDataResp, error) {
+	var nodeList []model.Node
+	var total int64
+	_, dataSql := common_logic.CommonSqlFindSqlHandler(params)
+	dataSql = dataSql[strings.Index(dataSql, "WHERE ")+6:] //去掉`WHERE `
+	if dataSql == "" {
+		dataSql = "id > 0" //当前端什么参数没有传时，默认添加一个参数
+	}
+	err := global.DB.Model(&model.Node{}).
+		Count(&total).Where(dataSql).
+		Preload("Access").
+		Find(&nodeList).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return &model.CommonDataResp{total, nodeList}, err
+}
+
+// 更新节点
+func (n *Node) UpdateNode(node *model.Node) error {
+	return global.DB.Transaction(func(tx *gorm.DB) error {
+		//更新节点
+		err := tx.Save(&node).Error
+		if err != nil {
+			return err
+		}
+		if node.NodeType == constant.NODE_TYPE_NORMAL { //该节点是正常节点，则更新该节点节点绑定的中转
+			var nodeArr []model.Node
+			err = tx.Where(&model.Node{TransferNodeID: node.ID}).Find(&nodeArr).Error
+			if err != nil {
+				return err
+			}
+			if len(nodeArr) > 0 {
+				for k, v := range nodeArr { //遍历中转节点
+					temp := *node
+					temp.NodeType = constant.NODE_TYPE_TRANSFER
+					temp.NodeOrder = v.NodeOrder
+					temp.ID = v.ID
+					temp.CreatedAt, temp.UpdatedAt = v.CreatedAt, v.UpdatedAt
+					temp.Remarks = v.Remarks
+					temp.TransferNodeID = v.TransferNodeID
+					temp.TransferAddress = v.TransferAddress
+					temp.TransferPort = v.TransferPort
+					nodeArr[k] = temp
+				}
+				return tx.Save(&nodeArr).Error
+			}
+		}
+		return nil
+	})
+}
+
+// 删除节点
+func (n *Node) DeleteNode(node *model.Node) error {
+	return global.DB.Transaction(func(tx *gorm.DB) error {
+		err := tx.Where("node_id = ?", node.ID).Delete(&model.NodeTrafficLog{}).Error
+		if err != nil {
+			return err
+		}
+		return tx.Select(clause.Associations).Delete(&node).Error
+	})
 }
 
 // 更新节点流量记录
@@ -43,14 +162,7 @@ func (n *Node) ClearNodeTraffic() error {
 	})
 }
 
-// 查询节点
-func (n *Node) FirstNode(nodeParams *model.Node) (*model.Node, error) {
-	var node model.Node
-	err := global.DB.Where(&nodeParams).First(&node).Error
-	return &node, err
-}
-
-// 查询节点流量
+// 查询节点列表 with流量
 func (n *Node) GetNodeListWithTraffic(params *model.QueryParams) (*model.CommonDataResp, error) {
 	var nodeList []model.Node
 	var total int64
@@ -120,10 +232,15 @@ func (n *Node) UpdateNodeStatus(userIds []int64, trafficLog *model.NodeTrafficLo
 
 // 获取 node status
 func (n *Node) GetNodesStatus() *[]model.NodeStatus {
-	var nodesIds []model.Node
-	global.DB.Model(&model.Node{}).Select("id", "remarks", "traffic_rate").Where("enabled = ? AND enable_transfer = ?", true, false).Order("node_order").Find(&nodesIds)
+	var nodesArr []model.Node
+	global.DB.
+		Model(&model.Node{}).
+		Select("id", "remarks", "traffic_rate").
+		Where("enabled = ? AND node_type = ?", true, constant.NODE_TYPE_NORMAL).
+		Order("node_order").
+		Find(&nodesArr)
 	var nodestatusArr []model.NodeStatus
-	for _, v := range nodesIds {
+	for _, v := range nodesArr {
 		var nodeStatus = model.NodeStatus{}
 		vStatus, ok := global.LocalCache.Get(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, v.ID))
 		if !ok { //cache过期，离线了
@@ -142,71 +259,4 @@ func (n *Node) GetNodesStatus() *[]model.NodeStatus {
 		}
 	}
 	return &nodestatusArr
-}
-
-// 更新节点
-func (n *Node) UpdateNode(node *model.Node) error {
-	return global.DB.Transaction(func(tx *gorm.DB) error {
-		//查询关联access
-		var accessIDs []int64
-		for _, v := range node.Access {
-			accessIDs = append(accessIDs, v.ID)
-		}
-		err := tx.Model(&model.Access{}).Where("id in ?", accessIDs).Find(&node.Access).Error
-		if err != nil {
-			return err
-		}
-		//更新关联
-		err = tx.Model(&node).Association("Access").Replace(&node.Access)
-		if err != nil {
-			return err
-		}
-		//更新节点
-		err = tx.Save(&node).Error
-		if err != nil {
-			return err
-		}
-		//更新节点绑定的中转
-		if !node.EnableTransfer { //当前更新的节点是一个落地直连节点
-			var nodeArr []model.Node
-			err = tx.Where(&model.Node{TransferNodeID: node.ID}).Find(&nodeArr).Error
-			if err != nil {
-				return err
-			}
-			if len(nodeArr) > 0 {
-				for k, v := range nodeArr { //遍历中转节点
-					temp := *node
-					temp.ID = v.ID
-					temp.CreatedAt, temp.UpdatedAt = v.CreatedAt, v.UpdatedAt
-					temp.Remarks = v.Remarks
-					temp.EnableTransfer = true
-					temp.TransferNodeID = v.TransferNodeID
-					temp.TransferAddress = v.TransferAddress
-					temp.TransferPort = v.TransferPort
-					nodeArr[k] = temp
-				}
-				return tx.Save(&nodeArr).Error
-			}
-		}
-		return nil
-	})
-}
-
-// 删除节点
-func (n *Node) DeleteNode(node *model.Node) error {
-	return global.DB.Transaction(func(tx *gorm.DB) error {
-		err := tx.Model(&model.Node{ID: node.ID}).Association("Goods").Replace(nil)
-		if err != nil {
-			return err
-		}
-		err = tx.Model(&model.Node{ID: node.ID}).Association("Access").Replace(nil)
-		if err != nil {
-			return err
-		}
-		err = tx.Where("node_id = ?", node.ID).Delete(&model.NodeTrafficLog{}).Error
-		if err != nil {
-			return err
-		}
-		return tx.Delete(&node).Error
-	})
 }

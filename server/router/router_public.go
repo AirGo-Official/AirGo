@@ -21,8 +21,8 @@ func InitPublicRouter(RouterGroup *gin.RouterGroup) {
 	//shop
 	shopRouter := publicRouter.Group("/shop").Use(middleware.RateLimitIP())
 	{
-		shopRouter.GET("/epayNotify", public_api.EpayNotify) //易支付异步回调
-		//shopRouter.POST("/alipayNotify", public_api.AlipayNotify)      //支付宝异步验证支付结果
+		shopRouter.GET("/epayNotify", public_api.EpayNotify)      //易支付异步回调
+		shopRouter.POST("/alipayNotify", public_api.AlipayNotify) //支付宝异步验证支付结果
 	}
 	// 订阅
 	subRouter := publicRouter.Group("/sub").Use(middleware.RateLimitIP())

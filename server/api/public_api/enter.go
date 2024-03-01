@@ -11,4 +11,5 @@ var (
 	customerService       *user_logic.CustomerService
 	shopService           *admin_logic.Shop
 	userService           *user_logic.User
+	payService            *user_logic.Pay
 )

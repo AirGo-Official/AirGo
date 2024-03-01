@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	updateCmd.Flags().StringVarP(&startConfigPath, "config", "c", "config.yaml", "config.yaml directory to read from")
+	updateCmd.Flags().StringVar(&startConfigPath, "config", "config.yaml", "config.yaml directory to read from")
 }
 
 var updateCmd = &cobra.Command{

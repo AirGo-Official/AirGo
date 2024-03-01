@@ -4,8 +4,8 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service/admin_logic"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
-
 	//"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 
 	"github.com/gin-gonic/gin"
@@ -63,24 +63,29 @@ func UpdateUser(ctx *gin.Context) {
 		response.Fail("UpdateUser error:"+err.Error(), nil, ctx)
 		return
 	}
-	//处理角色
-	roleService.DeleteUserRoleGroup(&userParams)
-	var roleArr []string
-	for _, v := range userParams.RoleGroup {
-		roleArr = append(roleArr, v.RoleName)
+	admin_logic.Show(userParams)
+	var newUser = model.User{
+		CreatedAt: userData.CreatedAt,
+		UpdatedAt: userData.UpdatedAt,
+		//DeletedAt:      nil,
+		ID:             userData.ID,
+		UserName:       userParams.UserName,
+		Password:       userData.Password,
+		NickName:       userParams.NickName,
+		Avatar:         userParams.Avatar,
+		Enable:         userParams.Enable,
+		InvitationCode: userParams.InvitationCode,
+		ReferrerCode:   userParams.ReferrerCode,
+		Balance:        userParams.Balance,
+		TgID:           userParams.TgID,
+		RoleGroup:      userParams.RoleGroup,
+		//Orders:         nil,
 	}
-	roles, err := roleService.FindRoleIdsByRoleNameArr(roleArr)
-	if err != nil {
-		global.Logrus.Error(err)
-		response.Fail("UpdateUser error:"+err.Error(), nil, ctx)
-		return
-	}
-	userData.RoleGroup = roles
-	//处理密码,不为空且大于4位
+	//处理密码,不为空且大于4位时更新，否则不修改
 	if userParams.Password != "" && len(userParams.Password) > 4 {
-		userData.Password = encrypt_plugin.BcryptEncode(userParams.Password)
+		newUser.Password = encrypt_plugin.BcryptEncode(userParams.Password)
 	}
-	err = userService.SaveUser(&userParams)
+	err = userService.SaveUser(&newUser)
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("UpdateUser error:"+err.Error(), nil, ctx)
@@ -92,7 +97,6 @@ func UpdateUser(ctx *gin.Context) {
 }
 
 // 删除用户
-// todo删除客户服务
 func DeleteUser(ctx *gin.Context) {
 	var user model.User
 	err := ctx.ShouldBind(&user)

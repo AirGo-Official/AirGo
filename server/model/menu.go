@@ -27,11 +27,3 @@ type Meta struct {
 	IsAffix     bool   `json:"isAffix"        gorm:"default:false;comment:是否固定在 tagsView 栏上"`
 	Icon        string `json:"icon"           gorm:"default:iconfont icon-caidan;comment:菜单、tagsView 图标"`
 }
-
-// 菜单node，前端编辑角色的时候显示全部菜单节点
-type MenuNode struct { // todo 前端修改
-	ID       int64      `json:"id"`
-	Title    string     `json:"title"`
-	ParentID int64      `json:"-"`
-	Children []MenuNode `gorm:"-" json:"children"`
-}

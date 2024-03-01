@@ -15,6 +15,7 @@ export default {
     sort:"Sort",
     reply:"Reply",
     close:"Close",
+    back:"back",
     send:"Send",
     details:"details",
     purchase:"purchase",
@@ -23,6 +24,8 @@ export default {
     no:"No",
     enable:"Enable",
     disable:"Disable",
+    display:"display",
+    hide:"hide",
 
     startDate:"Start date",
     endDate:"End date",
@@ -31,6 +34,12 @@ export default {
     lastMonth:"Last month",
     lastThreeMonths:"Last 3 months",
     month:"month",
+
+    noData:"No data",
+
+    success:"Success",
+    warning:"Warning",
+    error:"Error",
   },
   constant:{
     // 商品
@@ -60,12 +69,15 @@ export default {
     EMAIL_TYPE_USER_REGISTER : "EMAIL_TYPE_USER_REGISTER",
     EMAIL_TYPE_USER_RESETPWD : "EMAIL_TYPE_USER_RESETPWD",
     //节点类型
+    NODE_TYPE_NORMAL    : "normal",
+    NODE_TYPE_SHARED    : "shared",
     NODE_TYPE_TRANSFER    : "transfer",
-    NODE_TYPE_VMESS       : "vmess",
-    NODE_TYPE_VLESS       : "vless",
-    NODE_TYPE_TROJAN      : "trojan",
-    NODE_TYPE_HYSTERIA    : "hysteria",
-    NODE_TYPE_SHADOWSOCKS : "shadowsocks",
+    //节点协议类型
+    NODE_PROTOCOL_VMESS       : "vmess",
+    NODE_PROTOCOL_VLESS       : "vless",
+    NODE_PROTOCOL_TROJAN      : "trojan",
+    NODE_PROTOCOL_HYSTERIA    : "hysteria",
+    NODE_PROTOCOL_SHADOWSOCKS : "shadowsocks",
     //文章类型
     ARTICLE_TYPE_HOME      : "home",
     ARTICLE_TYPE_DIALOG    : "dialog",

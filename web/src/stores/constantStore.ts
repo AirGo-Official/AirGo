@@ -27,19 +27,35 @@ export const useConstantStore = defineStore('constantStore', {
     //邮件类型
     EMAIL_TYPE_USER_REGISTER : "EMAIL_TYPE_USER_REGISTER",
     EMAIL_TYPE_USER_RESETPWD : "EMAIL_TYPE_USER_RESETPWD",
+    EMAIL_TYPE_TEST : "EMAIL_TYPE_TEST",
     //节点类型
-    NODE_TYPE_TRANSFER    : "transfer",
-    NODE_TYPE_VMESS       : "vmess",
-    NODE_TYPE_VLESS       : "vless",
-    NODE_TYPE_TROJAN      : "trojan",
-    NODE_TYPE_HYSTERIA    : "hysteria",
-    NODE_TYPE_SHADOWSOCKS : "shadowsocks",
+    NODE_TYPE_NORMAL   : "normal",
+    NODE_TYPE_TRANSFER : "transfer",
+    NODE_TYPE_SHARED   : "shared",
+    //节点协议类型
+    NODE_PROTOCOL_VMESS       : "vmess",
+    NODE_PROTOCOL_VLESS       : "vless",
+    NODE_PROTOCOL_TROJAN      : "trojan",
+    NODE_PROTOCOL_HYSTERIA    : "hysteria",
+    NODE_PROTOCOL_SHADOWSOCKS : "shadowsocks",
+
+    // 支付类型
+    PAY_TYPE_ALIPAY  : "alipay",  // 支付宝alipay
+    PAY_TYPE_EPAY    : "epay",    //易支付
+    PAY_TYPE_BALANCE : "balance", //余额支付
+
     //文章类型
     ARTICLE_TYPE_HOME      : "home",
     ARTICLE_TYPE_DIALOG    : "dialog",
     ARTICLE_TYPE_NOTICE    : "notice",
     ARTICLE_TYPE_KNOWLEDGE : "knowledge",
 
+    //业务代码
+    RESPONSE_ERROR   : 1,  //code=1，不能正常获取请求数据
+    RESPONSE_SUCCESS : 0,  //code=0，能正常获取请求数据
+    RESPONSE_WARNING : 10, //code=10，能正常获取请求数据，但有重要message 需要显式提醒
+    TOKENERROR : 40101, //token过期
+    LIMITERROR : 40201, //限流
 
   }),
   actions: {

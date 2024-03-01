@@ -22,6 +22,7 @@
                 {{ DateStrToTime(row.expired_at) }}
               </template>
             </el-table-column>
+            <el-table-column prop="min_amount" :label="$t('message.adminShop.Coupon.min_amount')" width="180"></el-table-column>
             <el-table-column :label="$t('message.common.operate')">
               <template #default="scope">
                 <el-button text type="primary" @click="openDialog('edit',scope.row)">{{$t('message.common.modify')}}</el-button>
@@ -56,6 +57,10 @@
               size="default"
             />
           </el-form-item>
+          <el-form-item :label="$t('message.adminShop.Coupon.min_amount')">
+            <el-input-number v-model.number="shopStoreData.currentCoupon.value.min_amount" :min="0.00" :step="1" :precision="2"></el-input-number>
+          </el-form-item>
+
           <el-form-item :label="$t('message.adminShop.Coupon.goods')">
             <el-tree ref="goods_tree_ref" node-key="id"
                      :data="shopStoreData.goodsList.value"

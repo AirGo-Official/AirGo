@@ -34,8 +34,8 @@ export const useAdminRoleStore = defineStore("adminRoleStore", {
     }),
     actions: {
         //获取角色列表
-        async getRoleList(params?: object) {
-            const res: any = await request(apiStoreData.adminApi.value.getRoleList, params)
+        async getRoleList() {
+            const res: any = await request(apiStoreData.adminApi.value.getRoleList)
             this.roleList = res.data
         },
         //新建角色
@@ -116,9 +116,6 @@ export const useAdminRoleStore = defineStore("adminRoleStore", {
             })
             return role
         },
-        allMenuListHandler(){
-
-        }
 
     }
 })

@@ -58,7 +58,6 @@ func CommonSqlFindWithFieldParams(fieldParams *model.QueryParams) (any, int64, e
 	//fmt.Println("dataSql:", dataSql)
 	var data any
 	data = model.StringAndSlice[fieldParams.TableName]
-	// todo err
 	var total int64
 	err := global.DB.Raw(totalSql).Scan(&total).Error
 	if err != nil {

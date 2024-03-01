@@ -29,7 +29,13 @@ func (o *Order) GetMonthOrderStatistics(params *model.QueryParams) (*model.Order
 
 func (o *Order) GetOrderStatistics(startTime, endTime time.Time) (*model.OrderStatistics, error) {
 	var orderStatistic model.OrderStatistics
-	err := global.DB.Model(&model.Order{}).Where("created_at > ? and created_at < ?", startTime, endTime).Select("sum(receipt_amount) as total_amount").Find(&orderStatistic).Count(&orderStatistic.Total).Error
+	err := global.DB.
+		Model(&model.Order{}).
+		Where("created_at > ? and created_at < ?", startTime, endTime).
+		Select("sum(buyer_pay_amount) as total_amount").
+		Find(&orderStatistic).
+		Count(&orderStatistic.Total).
+		Error
 	if err != nil {
 		return &model.OrderStatistics{}, err
 	}
@@ -45,16 +51,12 @@ func (o *Order) UpdateOrder(order *model.Order) error {
 	if err != nil {
 		return err
 	}
-	if order.TradeStatus == constant.ORDER_STATUS_TRADE_SUCCESS { //如果订单状态是支付成功，将订单进行处理
+	//如果订单状态是 支付成功 或 交易结束，将订单进行处理
+	if order.TradeStatus == constant.ORDER_STATUS_TRADE_SUCCESS || order.TradeStatus == constant.ORDER_STATUS_TRADE_FINISHED {
 		userOrderService.DeleteOneOrderFromCache(order) //删除缓存
 		return userOrderService.PaymentSuccessfullyOrderHandler(order)
 	} else {
 		userOrderService.UpdateOneOrderToCache(order) //更新缓存
 	}
 	return nil
-}
-
-// 删除用户全部订单
-func (o *Order) DeleteUserAllOrder(user *model.User) error {
-	return global.DB.Where(&model.Order{UserID: user.ID}).Delete(&model.Order{}).Error
 }

@@ -132,7 +132,7 @@ func MessageHandlerForUser(update *tgbotapi.Update, msg *tgbotapi.MessageConfig)
 
 	switch update.Message.Command() {
 	case "start":
-		CmdStart(update, msg)
+		ShowMenuForUser(update, msg)
 		goto tomsg
 	case "bind":
 		CmdBind(update, msg)
@@ -149,7 +149,7 @@ func MessageHandlerForUser(update *tgbotapi.Update, msg *tgbotapi.MessageConfig)
 	case "官网":
 		msg.Text = "官网：" + global.Server.Website.FrontendUrl
 	case "刷新菜单":
-		CmdStart(update, msg)
+		ShowMenuForUser(update, msg)
 	}
 
 tomsg:
@@ -159,7 +159,7 @@ tomsg:
 func MessageHandlerForAdmin(update *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 	switch update.Message.Command() {
 	case "start":
-		CmdStart(update, msg)
+		ShowMenuForUser(update, msg)
 		goto tomsg
 	case "bind":
 		CmdBind(update, msg)
@@ -184,14 +184,14 @@ func MessageHandlerForAdmin(update *tgbotapi.Update, msg *tgbotapi.MessageConfig
 		msg.Text = "官网：" + global.Server.Website.FrontendUrl
 
 	case "刷新菜单":
-		CmdStartForAdmin(update, msg)
+		ShowMenuForAdmin(update, msg)
 	}
 
 tomsg:
 	msg.ReplyToMessageID = update.Message.MessageID
 
 }
-func CmdStart(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
+func ShowMenuForUser(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 	msg.Text = "菜单"
 	bt1 := tgbotapi.NewKeyboardButton("打卡")
 
@@ -214,7 +214,7 @@ func CmdStart(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 	msg.ReplyMarkup = keyboard
 	msg.ParseMode = tgbotapi.ModeMarkdown
 }
-func CmdStartForAdmin(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
+func ShowMenuForAdmin(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 	msg.Text = "菜单"
 
 	bt1 := tgbotapi.NewKeyboardButton("打卡")
@@ -349,7 +349,7 @@ func NodeStatus(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 }
 func GetNodeStatus() string {
 	var NodeArr []model.Node
-	err := global.DB.Where("enabled = ? AND enable_transfer = ?", true, false).Find(&NodeArr).Error
+	err := global.DB.Where("enabled = ?", true).Find(&NodeArr).Error
 	if err != nil {
 		return ""
 	}

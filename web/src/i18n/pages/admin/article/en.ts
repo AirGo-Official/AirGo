@@ -4,8 +4,8 @@ export default {
     modifyArticle:"Modify article",
     Article: {
       index:"index",
-      created_at: "created_at",
-      updated_at: "updated_at",
+      created_at: "created at",
+      updated_at: "updated at",
       id: "id",
       type: "type",
       status: "status",

@@ -7,24 +7,26 @@
             <el-col :span="4">
               <el-button size="default" type="success" class="ml10" @click="openDialog('add')">
                 <el-icon>
-                  <ele-FolderAdd/>
+                  <ele-FolderAdd />
                 </el-icon>
-                {{$t('message.adminNode.addAccess')}}
+                {{ $t("message.adminNode.addAccess") }}
               </el-button>
             </el-col>
           </el-row>
         </div>
-        <el-table :data="nodeStoreData.accessList.value.data"  stripe height="100%" style="width: 100%">
-          <el-table-column fixed type="index" :label="$t('message.adminNode.Access.index')" width="60"/>
-          <el-table-column prop="name" :label="$t('message.adminNode.Access.name')" show-overflow-tooltip width="200"></el-table-column>
-          <el-table-column prop="route" :label="$t('message.adminNode.Access.route')" show-overflow-tooltip width="800"></el-table-column>
-          <el-table-column :label="$t('message.common.operate')" >
+        <el-table :data="nodeStoreData.accessList.value.data" stripe height="100%" style="width: 100%">
+          <el-table-column fixed type="index" :label="$t('message.adminNode.Access.index')" width="60" />
+          <el-table-column prop="name" :label="$t('message.adminNode.Access.name')" show-overflow-tooltip
+                           width="200"></el-table-column>
+          <el-table-column prop="route" :label="$t('message.adminNode.Access.route')" show-overflow-tooltip
+                           width="800"></el-table-column>
+          <el-table-column :label="$t('message.common.operate')">
             <template #default="scope">
-              <el-button  size="small" text type="primary"
-                          @click="openDialog('edit', scope.row)">{{$t('message.common.modify')}}
+              <el-button size="small" text type="primary"
+                         @click="openDialog('edit', scope.row)">{{ $t("message.common.modify") }}
               </el-button>
-              <el-button  size="small" text type="primary"
-                          @click="deleteAccess(scope.row)">{{$t('message.common.delete')}}
+              <el-button size="small" text type="primary"
+                         @click="deleteAccess(scope.row)">{{ $t("message.common.delete") }}
               </el-button>
             </template>
           </el-table-column>
@@ -42,17 +44,17 @@
       <el-dialog v-model="state.isShowDialog" :title="state.dialogTitle" width="80%" destroy-on-close align-center>
         <el-form label-position="top">
           <el-form-item :label="$t('message.adminNode.Access.name')">
-            <el-input v-model="nodeStoreData.currentAccess.value.name"/>
+            <el-input v-model="nodeStoreData.currentAccess.value.name" />
           </el-form-item>
           <el-form-item :label="$t('message.adminNode.Access.route')">
-            <el-input v-model="nodeStoreData.currentAccess.value.route" type="textarea" autosize/>
+            <el-input v-model="nodeStoreData.currentAccess.value.route" type="textarea" autosize />
           </el-form-item>
         </el-form>
         <template #footer>
             <span class="dialog-footer">
-                <el-button @click="closeDialog">{{$t('message.common.button_cancel')}}</el-button>
+                <el-button @click="closeDialog">{{ $t("message.common.button_cancel") }}</el-button>
                 <el-button type="primary" @click="onSubmit">
-                    {{$t('message.common.button_confirm')}}
+                    {{ $t("message.common.button_confirm") }}
                 </el-button>
             </span>
         </template>
@@ -64,109 +66,111 @@
 <script lang="ts" setup>
 
 //定义参数
-import {defineAsyncComponent, onMounted, reactive, ref} from "vue";
-import {ElMessageBox} from "element-plus";
-import {storeToRefs} from "pinia";
+import { defineAsyncComponent, onMounted, reactive, ref } from "vue";
+import { ElMessageBox } from "element-plus";
+import { storeToRefs } from "pinia";
 import { useAdminNodeStore } from "/@/stores/admin_logic/nodeStore";
 import { useI18n } from "vue-i18n";
-const nodeStore = useAdminNodeStore()
-const nodeStoreData = storeToRefs(nodeStore)
-const {t} = useI18n()
+
+const nodeStore = useAdminNodeStore();
+const nodeStoreData = storeToRefs(nodeStore);
+const { t } = useI18n();
 const state = reactive({
   loading: true,
   queryParams: {
-    table_name: 'access',
+    table_name: "access",
     field_params_list: [
-      {field: 'name', condition: 'like', condition_value: '',},
+      { field: "name", condition: "like", condition_value: "" }
     ] as FieldTableNew[],
-    pagination: { page_num: 1, page_size: 30,} as Pagination,//分页参数
+    pagination: { page_num: 1, page_size: 30 } as Pagination//分页参数
   } as QueryParams,
-  dialogType:'',
-  dialogTitle:'',
-  isShowDialog:false,
-  isShowDrawer:false,
-})
-const openDrawer=()=>{
-  state.isShowDrawer = true
-  getAccess()
-}
+  dialogType: "",
+  dialogTitle: "",
+  isShowDialog: false,
+  isShowDrawer: false
+});
+const openDrawer = () => {
+  state.isShowDrawer = true;
+  getAccess();
+};
 
 //获取数据
-const getAccess=()=>{
-  nodeStore.getAccessList(state.queryParams)
-}
+const getAccess = () => {
+  nodeStore.getAccessList(state.queryParams);
+};
 //删除
-const deleteAccess=(row: any) =>{
-  ElMessageBox.confirm(t('message.common.message_confirm_delete'), t('message.common.tip'), {
-    confirmButtonText: t('message.common.button_confirm'),
-    cancelButtonText: t('message.common.button_cancel'),
-    type: 'warning',
+const deleteAccess = (row: any) => {
+  ElMessageBox.confirm(t("message.common.message_confirm_delete"), t("message.common.tip"), {
+    confirmButtonText: t("message.common.button_confirm"),
+    cancelButtonText: t("message.common.button_cancel"),
+    type: "warning"
   })
-      .then(() => {
-        nodeStore.deleteAccess(row)
-        setTimeout(()=>{
-          getAccess()
-        },500)
+    .then(() => {
+      nodeStore.deleteAccess(row);
+      setTimeout(() => {
+        getAccess();
+      }, 500);
 
-      })
-      .catch(() => {
-      });
-}
+    })
+    .catch(() => {
+    });
+};
 
 // 分页改变
 const onHandleSizeChange = (val: number) => {
   state.queryParams.pagination.page_size = val;
-  getAccess()
+  getAccess();
 
 };
 // 分页改变
 const onHandleCurrentChange = (val: number) => {
   state.queryParams.pagination.page_num = val;
-  getAccess()
+  getAccess();
 };
 
 // 打开弹窗
 const openDialog = (type: string, row?: any) => {
-  state.isShowDialog = true
-  state.dialogType = type
+  state.isShowDialog = true;
+  state.dialogType = type;
   switch (type) {
     case "add":
-      state.dialogTitle = t('message.adminNode.addAccess')
-      break
+      state.dialogTitle = t("message.adminNode.addAccess");
+      break;
     case "edit":
-      state.dialogTitle =  t('message.adminNode.modifyAccess')
-      nodeStoreData.currentAccess.value = row
-      break
+      state.dialogTitle = t("message.adminNode.modifyAccess");
+      nodeStoreData.currentAccess.value = row;
+      break;
     default:
-      break
+      break;
   }
-}
+};
 // 关闭弹窗
 const closeDialog = () => {
-  state.isShowDialog = false
+  state.isShowDialog = false;
 };
 
 //确认提交
 function onSubmit() {
   switch (state.dialogType) {
     case "add":
-      nodeStore.newAccess(nodeStoreData.currentAccess.value).then(()=>{
-        getAccess()
-      })
-      break
+      nodeStore.newAccess(nodeStoreData.currentAccess.value).then(() => {
+        getAccess();
+      });
+      break;
     case "edit":
-      nodeStore.updateAccess(nodeStoreData.currentAccess.value).then(()=>{
-        getAccess()
-      })
-      break
+      nodeStore.updateAccess(nodeStoreData.currentAccess.value).then(() => {
+        getAccess();
+      });
+      break;
     default:
-      break
+      break;
   }
-  closeDialog()
+  closeDialog();
 }
+
 // 暴露变量
 defineExpose({
-  openDrawer,
+  openDrawer
 });
 
 </script>

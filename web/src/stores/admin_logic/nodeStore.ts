@@ -20,7 +20,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
             vlessInfo: {
                 node_speed_limit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
-                node_type: 'vless',
+                protocol: 'vless',
                 uuid: '',
                 //基础参数
                 remarks: '',//别名
@@ -29,9 +29,8 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 node_order: 0,//节点排序
                 enabled: true,  //是否为激活节点
                 //中转参数
-                enable_transfer: false,//是否启用中转
                 transfer_address: '',//中转ip
-                transfer_port: 0,   //中转port
+                transfer_port: 80,   //中转port
                 total_up: 0,
                 total_down: 0,
                 goods: [] as Goods[],//多对多,关联商品
@@ -61,7 +60,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
             vmessInfo: {
                 node_speed_limit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
-                node_type: 'vmess',
+                protocol: 'vmess',
                 uuid: '',
                 //基础参数
                 remarks: '',//别名
@@ -70,9 +69,8 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 node_order: 0,//节点排序
                 enabled: true,  //是否为激活节点
                 //中转参数
-                enable_transfer: false,//是否启用中转
                 transfer_address: '',//中转ip
-                transfer_port: 0,   //中转port
+                transfer_port: 80,   //中转port
                 //
                 total_up: 0,
                 total_down: 0,
@@ -105,7 +103,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
             shadowsocksInfo: {
                 node_speed_limit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
-                node_type: 'shadowsocks',
+                protocol: 'shadowsocks',
                 uuid: '',
                 //基础参数
                 remarks: '',//别名
@@ -114,9 +112,8 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 node_order: 0,//节点排序
                 enabled: true,  //是否为激活节点
                 //中转参数
-                enable_transfer: false,//是否启用中转
                 transfer_address: '',//中转ip
-                transfer_port: 0,   //中转port
+                transfer_port: 80,   //中转port
                 //
                 total_up: 0,
                 total_down: 0,
@@ -149,7 +146,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
             hysteriaInfo: {
                 node_speed_limit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
-                node_type: 'hysteria',
+                protocol: 'hysteria',
                 uuid: '',
                 //基础参数
                 remarks: '',//别名
@@ -158,9 +155,8 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 node_order: 0,//节点排序
                 enabled: true,  //是否为激活节点
                 //中转参数
-                enable_transfer: false,//是否启用中转
                 transfer_address: '',//中转ip
-                transfer_port: 0,   //中转port
+                transfer_port: 80,   //中转port
                 //
                 total_up: 0,
                 total_down: 0,
@@ -194,15 +190,14 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 remarks: '',
                 enabled: true,
                 node_type: 'transfer',
-                enable_transfer: true,
                 transfer_address: '',
-                transfer_port: 0,
-                transfer_node_id: 0,
+                transfer_port: 80,
+                // transfer_node_id: 0,
             } as NodeInfo,
         },
         //节点状态页面数据
         serverStatusData: {
-            type: 0,
+            total: 0,
             data: [] as ServerStatusInfo[],
         },
         //共享节点页面数据
@@ -212,7 +207,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
             },
             nodeList: {
                 total:0,
-                data:[] as NodeSharedInfo[],
+                data:[] as NodeInfo[],
             },
         },
         accessList: {
@@ -223,16 +218,14 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
     }),
     actions: {
         //获取全部节点
-        async getAllNode() {
-            const res = await request(apiStoreData.adminApi.value.getAllNode)
+        async getNodeList(params?: object) {
+            const res = await request(apiStoreData.adminApi.value.getNodeList, params)
             this.nodeList = res.data
         },
         //获取全部节点 with Traffic,分页
-        async getNodeWithTraffic(params?: object) {
+        async getNodeListWithTraffic(params?: object) {
             const res = await request(apiStoreData.adminApi.value.getNodeListWithTraffic, params)
             this.nodeList = res.data
-            //处理节点的access
-
         },
         //更新节点
         async updateNode(params: NodeInfo) {
@@ -246,9 +239,19 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
         async newNode(params: NodeInfo) {
             return  request(apiStoreData.adminApi.value.newNode, this.accessHandlerWhenSubmit(params))
         },
+        //解析
+        async parseUrl() {
+            const res = await request(apiStoreData.adminApi.value.parseUrl, this.nodeSharedData.newNodeSharedUrl)
+            this.nodeSharedData.nodeList.data = res.data
+        },
         //新建共享节点
-        async newNodeShared(params: object) {
-            return  request(apiStoreData.adminApi.value.newNodeShared, params)
+        async newNodeShared() {
+            //添加默认的节点类型
+            this.nodeSharedData.nodeList.data.forEach((value, index, array)=>{
+                value.node_type =constantStore.NODE_TYPE_SHARED
+                this.nodeSharedData.nodeList.data[index] = value
+            })
+            return request(apiStoreData.adminApi.value.newNodeShared, this.nodeSharedData.nodeList.data)
         },
         //获取共享节点列表
         async getNodeSharedList() {
@@ -259,27 +262,10 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
         async deleteNodeShared(params: NodeInfo) {
             return  request(apiStoreData.adminApi.value.deleteNodeShared, params)
         },
-        //根据节点类型返回节点对象
-        returnNodeInfo(nodeType: string) {
-            let n = {} as NodeInfo
-            switch (nodeType) {
-                case constantStore.NODE_TYPE_VLESS:
-                    n= this.dialogData.vlessInfo
-                    break
-                case constantStore.NODE_TYPE_VMESS:
-                    n = this.dialogData.vmessInfo
-                    break
-                case constantStore.NODE_TYPE_SHADOWSOCKS:
-                    n = this.dialogData.shadowsocksInfo
-                    break
-                case constantStore.NODE_TYPE_HYSTERIA:
-                    n = this.dialogData.hysteriaInfo
-                    break
-                case constantStore.NODE_TYPE_TRANSFER:
-                    n = this.dialogData.transferInfo
-                    break
-            }
-            return n
+        //获取节点服务器状态
+        async getNodeServerStatus(){
+            const res = await request(apiStoreData.adminApi.value.getNodeServerStatus)
+            this.serverStatusData.data = res.data
         },
         accessHandler(node:NodeInfo){
             this.dialogData.checkedAccessIDs = []

@@ -2,6 +2,8 @@ export default {
   adminOrder: {
     query:"查询",
     modify_order:"修改订单",
+    submitOrder:"提交订单",
+    orderDetails:"订单详情",
     Order: {
       index:"序号",
       created_at: "创建时间",
@@ -13,7 +15,7 @@ export default {
       original_amount: "原始金额", //原始金额
       total_amount: "订单金额", //订单金额
       buyer_pay_amount: "付款金额", //付款金额
-      coupon_amount: "折扣码这块金额", //折扣码折扣金额
+      coupon_amount: "折扣码折扣金额", //折扣码折扣金额
       balance_amount: "余额折扣金额", //余额折扣金额
       // 关联用户
       user_id: "用户id",

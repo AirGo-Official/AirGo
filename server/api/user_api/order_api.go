@@ -40,10 +40,14 @@ func GetOrderInfo(ctx *gin.Context) {
 		response.Fail("GetOrderInfo error:"+err.Error(), nil, ctx)
 		return
 	}
-	preOrder, err := orderService.PreHandleOrder(orderReq)
+	preOrder, msg, err := orderService.PreHandleOrder(orderReq)
 
 	if err != nil {
 		response.Fail("GetOrderInfo error:"+err.Error(), nil, ctx)
+		return
+	}
+	if msg != "" {
+		response.Response(constant.RESPONSE_WARNING, msg, nil, ctx) //目前msg是用来提示折扣码处理信息
 		return
 	}
 	response.OK("GetOrderInfo success", preOrder, ctx)
@@ -66,7 +70,7 @@ func PreCreateOrder(ctx *gin.Context) {
 		return
 	}
 	// 3、订单预处理，计算价格
-	preOrder, err := orderService.PreHandleOrder(orderReq)
+	preOrder, _, err := orderService.PreHandleOrder(orderReq)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("PreCreateOrder error:"+err.Error(), nil, ctx)

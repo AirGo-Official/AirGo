@@ -26,13 +26,13 @@ type CustomerService struct {
 	GoodsID   int64  `json:"goods_id"      gorm:"comment:商品ID"`
 	Subject   string `json:"subject"       gorm:"comment:商品标题"`
 	Des       string `json:"des"           gorm:"comment:描述;type:text"`
-	Price     string `json:"price"         gorm:"comment:金额，单位为元，精确到小数点后两位"` //todo 前端修改
+	Price     string `json:"price"         gorm:"comment:金额，单位为元，精确到小数点后两位"`
 	GoodsType string `json:"goods_type"    gorm:"comment:类型，general=普通商品 subscribe=订阅 recharge=充值"`
 	Duration  int64  `json:"duration"      gorm:"comment:购买时长(单位：月)"`
 	// 商品参数-订阅
 	TotalBandwidth  int64     `json:"total_bandwidth"   gorm:"comment:总流量(Byte)"`
 	NodeConnector   int64     `json:"node_connector"    gorm:"comment:可连接客户端数量"`
-	NodeSpeedLimit  int64     `json:"node_speed_limit"  gorm:"comment:限速Mbps（Mbps）"` //todo node_speedlimit -> node_speed_limit
+	NodeSpeedLimit  int64     `json:"node_speed_limit"  gorm:"comment:限速Mbps（Mbps）"`
 	TrafficResetDay int64     `json:"traffic_reset_day" gorm:"comment:流量重置日"`
 	SubStatus       bool      `json:"sub_status"        gorm:"comment:订阅状态"`
 	SubUUID         uuid.UUID `json:"sub_uuid"          gorm:"comment:订阅UUID"`

@@ -2,9 +2,9 @@
   <div class="lazy-img-container layout-pd">
     <div class="home-card-one mb15">
       <el-radio-group v-model="state.goods_type" size="large" border @change="getAllEnabledGoods">
-        <el-radio-button :label="constantStore.GOODS_TYPE_SUBSCRIBE">订阅</el-radio-button>
-        <el-radio-button :label="constantStore.GOODS_TYPE_GENERAL">普通商品</el-radio-button>
-        <el-radio-button :label="constantStore.GOODS_TYPE_RECHARGE">充值卡</el-radio-button>
+        <el-radio-button :label="constantStore.GOODS_TYPE_SUBSCRIBE">{{$t('message.constant.GOODS_TYPE_SUBSCRIBE')}}</el-radio-button>
+        <el-radio-button :label="constantStore.GOODS_TYPE_GENERAL">{{$t('message.constant.GOODS_TYPE_GENERAL')}}</el-radio-button>
+        <el-radio-button :label="constantStore.GOODS_TYPE_RECHARGE">{{$t('message.constant.GOODS_TYPE_RECHARGE')}}</el-radio-button>
       </el-radio-group>
     </div>
     <el-card shadow="hover" >
@@ -29,8 +29,8 @@
                   <div class="item-txt-other">
                     <div style="width: 100%">
                       <div class="item-txt-msg mb10">
-                        <span>限购 {{ v.quota }}</span>
-                        <span class="ml10">库存 {{ v.stock }}</span>
+                        <span>{{$t('message.adminShop.Goods.quota')}} {{ v.quota }}</span>
+                        <span class="ml10">{{$t('message.adminShop.Goods.stock')}} {{ v.stock }}</span>
                       </div>
                       <div class="item-txt-msg item-txt-price">
 												<span class="font-price">
@@ -46,20 +46,23 @@
           </el-col>
         </el-row>
       </div>
-      <el-empty v-else description="暂无数据"></el-empty>
+      <el-empty v-else :description="$t('message.common.noData')"></el-empty>
     </el-card>
-    <el-dialog v-model="state.isShowGoodsDetails" width="60%" :title="$t('message.common.details')" destroy-on-close>
+    <el-dialog v-model="state.isShowGoodsDetails" width="80%"
+               :title="$t('message.common.details')"
+               destroy-on-close>
       <el-row :gutter="50">
         <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
           <div style="border-radius:10px;background: rgba(224,224,224,0.29);padding: 10px">
-            <div style="margin-top: 10px;">
+            <div style="margin-top: 10px;text-align: center">
               <el-image :src="shopStoreData.currentGoods.value.cover_image"
                         lazy
-                        fit="fill"
+                        style="height: 150px"
+                        fit="cover"
                         :preview-src-list="[shopStoreData.currentGoods.value.cover_image]">
                 <template #error>
                   <div class="image-slot">
-                    <el-icon><icon-picture /></el-icon>
+                    <el-icon><icon-picture/></el-icon>
                   </div>
                 </template>
               </el-image>
@@ -72,21 +75,22 @@
 
           <div style="margin-top: 10px;border-radius:10px;background: rgba(224,224,224,0.29);padding: 10px">
             <div style="margin-top: 10px;margin-bottom: 10px">
-              <el-tag class="ml-2" v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE">{{$t('message.adminShop.Goods.goods_type')}}: {{$t('message.constant.GOODS_TYPE_SUBSCRIBE')}}</el-tag>
-              <el-tag class="ml-2" v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_RECHARGE" >{{$t('message.adminShop.Goods.goods_type')}}: {{$t('message.constant.GOODS_TYPE_RECHARGE')}}</el-tag>
-              <el-tag class="ml-2" v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_GENERAL">{{$t('message.adminShop.Goods.goods_type')}}: {{$t('message.constant.GOODS_TYPE_GENERAL')}}</el-tag>
+              <el-tag v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE">{{$t('message.adminShop.Goods.goods_type')}}: {{$t('message.constant.GOODS_TYPE_SUBSCRIBE')}}</el-tag>
+              <el-tag v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_RECHARGE" >{{$t('message.adminShop.Goods.goods_type')}}: {{$t('message.constant.GOODS_TYPE_RECHARGE')}}</el-tag>
+              <el-tag v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_GENERAL">{{$t('message.adminShop.Goods.goods_type')}}: {{$t('message.constant.GOODS_TYPE_GENERAL')}}</el-tag>
 
-              <el-tag class="ml-2" v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_NONE" type="success">{{$t('message.adminShop.Goods.deliver_type')}}: {{$t('message.constant.DELIVER_TYPE_NONE')}}</el-tag>
-              <el-tag class="ml-2" v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_AUTO" type="success">{{$t('message.adminShop.Goods.deliver_type')}}: {{$t('message.constant.DELIVER_TYPE_AUTO')}}</el-tag>
-              <el-tag class="ml-2" v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_MANUAL"> type="success"{{$t('message.adminShop.Goods.deliver_type')}}: {{$t('message.constant.DELIVER_TYPE_MANUAL')}}</el-tag>
-
+              <el-tag v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_NONE">{{$t('message.adminShop.Goods.deliver_type')}}: {{$t('message.constant.DELIVER_TYPE_NONE')}}</el-tag>
+              <el-tag v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_AUTO">{{$t('message.adminShop.Goods.deliver_type')}}: {{$t('message.constant.DELIVER_TYPE_AUTO')}}</el-tag>
+              <el-tag v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_MANUAL">{{$t('message.adminShop.Goods.deliver_type')}}: {{$t('message.constant.DELIVER_TYPE_MANUAL')}}</el-tag>
+            </div>
+            <div style="margin-top: 10px;margin-bottom: 10px">
               <el-tag type="warning">{{$t('message.adminShop.Goods.quota')}}：{{ shopStoreData.currentGoods.value.quota }} / {{$t('message.adminShop.Goods.stock')}}：{{ shopStoreData.currentGoods.value.stock }}</el-tag>
             </div>
             <el-descriptions
-              :column="3"
+              :column="1"
               border
               size="small"
-              direction="vertical"
+              direction="horizontal"
             >
               <div v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE">
                 <el-descriptions-item :label="$t('message.adminShop.Goods.total_bandwidth')">{{ shopStoreData.currentGoods.value.total_bandwidth }}GB</el-descriptions-item>
@@ -108,15 +112,21 @@
         </el-col>
 
         <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <div style="margin-top: 10px;border-radius:10px;background: rgba(224,224,224,0.29)">
+          <div style="margin-top: 10px;border-radius:10px;background:rgba(224,224,224,0.29)">
             <div style="margin-top: 10px;padding: 10px" v-html="shopStoreData.currentGoods.value.des"></div>
           </div>
         </el-col>
       </el-row>
       <template #footer>
 				<span >
-					<el-button @click="state.isShowGoodsDetails = false" size="default">{{$t('message.common.button_cancel')}}</el-button>
-					<el-button type="primary" :disabled="shopStoreData.currentGoods.value.stock <= 0" @click="openPurchase(shopStoreData.currentGoods.value)" size="default">{{$t('message.common.purchase')}}</el-button>
+					<el-button @click="state.isShowGoodsDetails = false"
+                     size="default">{{$t('message.common.button_cancel')}}
+          </el-button>
+					<el-button type="primary"
+                     :disabled="shopStoreData.currentGoods.value.stock <= 0"
+                     @click="openPurchase(shopStoreData.currentGoods.value)"
+                     size="default">{{$t('message.adminShop.purchase')}}
+          </el-button>
 				</span>
       </template>
     </el-dialog>
@@ -127,7 +137,7 @@
 <script setup lang="ts" name="pagesLazyImg">
 import { reactive, onMounted ,ref,defineAsyncComponent} from 'vue';
 import { useRouter } from 'vue-router';
-import other from '/@/utils/other';
+// import other from '/@/utils/other';
 
 import { useShopStore } from "/@/stores/user_logic/shopStore";
 import { storeToRefs } from "pinia";
@@ -150,26 +160,27 @@ const showGoodsDetails = (v: Goods) => {
   shopStoreData.currentGoods.value = v
   state.isShowGoodsDetails = true
 };
-const openPurchase = (goods?: Goods) => {
+const openPurchase = () => {
   state.isShowGoodsDetails = false
   state.isShowLoading = true
   //初始化购买商品信息
-  if (goods){
-    shopStoreData.currentGoods.value = goods;
-  }
+  // if (goods){
+  //   shopStoreData.currentGoods.value = goods;
+  // }
   shopStoreData.currentOrder.value.duration = 1; // 默认订购时长
   shopStoreData.currentOrder.value.order_type = constantStore.ORDER_TYPE_NEW //订单类型：新购入
   shopStoreData.currentOrder.value.goods_id = shopStoreData.currentGoods.value.id //订购商品ID
 
+  PurchaseRef.value.openDialog(constantStore.ORDER_TYPE_NEW);
+
+
   //获取计算价格后的订单信息
-  shopStore.getOrderInfo(shopStoreData.currentOrder.value).then((res) => {
-    state.isShowLoading = false
-    shopStoreData.currentOrder.value = {} as Order
-    shopStoreData.currentOrder.value = res.data
-    PurchaseRef.value.openDialog();
-  }).catch(()=>{
-    state.isShowLoading = false
-  })
+  // shopStore.getOrderInfo(shopStoreData.currentOrder.value).then((res) => {
+  //   state.isShowLoading = false
+  //   shopStoreData.currentOrder.value = {} as Order
+  //   shopStoreData.currentOrder.value = res.data
+  //   PurchaseRef.value.openDialog();
+  // })
 };
 const getAllEnabledGoods = () => {
   shopStore.getAllEnabledGoods({ goods_type: state.goods_type });

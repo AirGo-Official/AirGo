@@ -1,5 +1,5 @@
 <template>
-  <div class="system-role-dialog-container">
+  <div>
     <el-dialog :title="state.title" v-model="state.isShowDialog" width="769px" destroy-on-close>
       <el-form ref="roleDialogFormRef" :model="roleStoreData.currentRole.value" size="default" label-position="top">
             <el-form-item :label="$t('message.adminRole.RoleInfo.role_name')">
@@ -18,7 +18,7 @@
                        :data="menuStoreData.allMenuList.value"
                        :props="{children:'children',label:'name'}"
                        :default-checked-keys="roleStoreData.checkedMenuIDs.value"
-                       show-checkbox class="menu-data-tree">
+                       show-checkbox class="data-tree">
                 <template #default="{ node, data }">
                   <span class="custom-tree-node">
                     <span>{{ $t(data.meta.title) }}</span>
@@ -31,7 +31,7 @@
                    :data="roleStoreData.allCasbinInfo.value.casbinItems"
                    :props="{label:'path'}"
                    :default-checked-keys="roleStoreData.checkedCasbinPath.value"
-                   show-checkbox class="menu-data-tree"/>
+                   show-checkbox class="data-tree"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -136,8 +136,8 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-.system-role-dialog-container {
-  .menu-data-tree {
+
+  .data-tree {
     width: 100%;
     border: 1px solid var(--el-border-color);
     border-radius: var(--el-input-border-radius, var(--el-border-radius-base));
@@ -151,5 +151,5 @@ defineExpose({
     font-size: 14px;
     padding-right: 8px;
   }
-}
+
 </style>

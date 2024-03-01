@@ -19,69 +19,62 @@ type User struct{}
 var userService *User
 
 // 新建用户
-func (u *User) NewUser(user model.User) error {
+func (u *User) NewUser(userParams model.User) error {
 	//判断是否存在
 	var userQuery model.User
-	err := global.DB.Where(&model.User{UserName: user.UserName}).First(&userQuery).Error
+	err := global.DB.Where(&model.User{UserName: userParams.UserName}).First(&userQuery).Error
 	if err == nil {
 		return errors.New("User already exists")
 	} else {
-		//处理角色, 前端传的是角色名字，
-		// todo 改为id
-		var roleArr []string
-		for _, v := range user.RoleGroup {
-			roleArr = append(roleArr, v.RoleName)
+		if userParams.Avatar == "" {
+			point := strings.Index(userParams.UserName, "@qq")
+			if point != -1 {
+				userParams.Avatar = fmt.Sprintf("https://q1.qlogo.cn/g?b=qq&nk=%s&s=100", userParams.UserName[0:point])
+			} else {
+				userParams.Avatar = fmt.Sprintf("https://api.multiavatar.com/%s.svg", userParams.UserName)
+			}
 		}
-		roles, err := roleService.FindRoleIdsByRoleNameArr(roleArr)
-		if err != nil {
-			return err
-		}
-		user.RoleGroup = roles
-		user.Password = encrypt_plugin.BcryptEncode(user.Password)
-		user.InvitationCode = encrypt_plugin.RandomString(8)
+		userParams.Password = encrypt_plugin.BcryptEncode(userParams.Password)
+		userParams.InvitationCode = encrypt_plugin.RandomString(8)
 		return global.DB.Transaction(func(tx *gorm.DB) error {
-			return tx.Create(&u).Error
+			return tx.Create(&userParams).Error
 		})
 	}
 }
 
 // 查用户
-func (u *User) FirstUser(user *model.User) (*model.User, error) {
+func (u *User) FirstUser(userParams *model.User) (*model.User, error) {
 	var userQuery model.User
-	err := global.DB.Where(&user).First(&userQuery).Error
+	err := global.DB.Where(&userParams).First(&userQuery).Error
 	return &userQuery, err
 }
 
 // 保存用户
-func (u *User) SaveUser(user *model.User) error {
+func (u *User) SaveUser(userParams *model.User) error {
 	return global.DB.Transaction(func(tx *gorm.DB) error {
-		return tx.Save(&user).Error
+		return tx.Save(&userParams).Error
+	})
+}
+func (u *User) UpdateUser(userParams *model.User, values map[string]any) error {
+	return global.DB.Transaction(func(tx *gorm.DB) error {
+		return tx.Model(&model.User{}).Where(&userParams).Updates(values).Error
 	})
 }
 
 // 删除用户
-func (u *User) DeleteUserOld(user *model.User) error {
-	//删除关联的角色组
-	err := roleService.DeleteUserRoleGroup(user)
-	if err != nil {
-		return err
-	}
-	//删除关联的订单
-	err = orderService.DeleteUserAllOrder(user)
-	if err != nil {
-		return err
-	}
-	//删除用户
-	return global.DB.Delete(&u).Error
-}
-
-// 删除用户
 func (u *User) DeleteUser(userParams *model.User) error {
-	return global.DB.Select(clause.Associations).Delete(&userParams).Error
+	//删除user，删除全部has many，has one，many to many，不删除belongs to
+	return global.DB.Transaction(func(tx *gorm.DB) error {
+		err := tx.Select(clause.Associations).Delete(&userParams).Error
+		if err != nil {
+			return err
+		}
+		return tx.Where("user_id = ?", userParams.ID).Delete(&model.CustomerService{}).Error
+	})
 }
 
-func (u *User) DeleteUserCacheTokenByID(user *model.User) {
-	global.LocalCache.Delete(fmt.Sprintf("%s%d", constant.CACHE_USER_TOKEN_BY_ID, user.ID))
+func (u *User) DeleteUserCacheTokenByID(userParams *model.User) {
+	global.LocalCache.Delete(fmt.Sprintf("%s%d", constant.CACHE_USER_TOKEN_BY_ID, userParams.ID))
 }
 
 // 获取用户列表

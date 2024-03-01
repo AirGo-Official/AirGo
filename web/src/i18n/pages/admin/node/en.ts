@@ -7,6 +7,9 @@ export default {
    modifyNode:"Modify node",
    sortNode:"Sort node",
    sharedNode:"Shared node",
+    parse:"Parse",
+    placeholder1:"Supports subscription, single node, multiple nodes, and base64 encoding resolution (vmess, vless, trojan, shadowlocks, hy2)",
+    serverStatus:"Server Status",
    NodeInfo: {
       node_type_transfer:"Transfer",
       node_type_direct:"Direct",
@@ -17,22 +20,24 @@ export default {
       node_speed_limit: "node_speed_limit", //节点限速/Mbps
       traffic_rate: "traffic_rate",    //倍率
       node_type: "node_type",       //类型 vless vmess shadowsocks
-      //共享节点额外需要的参数
-      uuid: "uuid",
       //基础参数
       remarks: "remarks",//别名
       address: "address",
       port: "port",
-      node_order: "node_order",//节点排序
+      node_order: "node order",//节点排序
       enabled: "status",  //是否为激活节点
+     protocol:"protocol",
       //中转参数
-      enable_transfer: "enable_transfer",//是否启用中转
-      transfer_address: "transfer_address",//中转ip
-      transfer_port: "transfer_port",   //中转port
-      transfer_node_id: "transfer_node_id", //中转绑定的节点ID
+      enable_transfer: "enable transfer",//是否启用中转
+      transfer_address: "transfer address",//中转ip
+      transfer_port: "transfer port",   //中转port
+      transfer_node_id: "transfer parent node", //中转绑定的节点ID
+     // 共享节点额外需要的参数
+     is_shared_node:"是否共享节点",
+     uuid:"uuid",
       //流量
-      total_up: "total_up",
-      total_down: "total_down",
+      total_up: "total up",
+      total_down: "total down",
 
       //vmess参数
       v: "v",
@@ -69,8 +74,8 @@ export default {
    modifyAccess:"Modify Access",
    Access:{
     index:"index",
-    created_at:"created_at",
-    updated_at:"updated_at",
+    created_at:"created at",
+    updated_at:"updated at",
     id:"id",
     name:"name",
     route:"route",

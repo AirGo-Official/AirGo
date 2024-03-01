@@ -2,7 +2,15 @@ export default {
   adminShop:{
     addGoods:"新增商品",
     modifyGoods:"修改商品",
+    selectGoods:"选择商品",
     sort:"排序",
+    purchase:"购买",
+    resultText1:"请返回首页查看服务状态",
+    resultText2:"请尽快完成支付",
+    resultText3:"支付遇到问题",
+    resultText4:"前往支付宝",
+    resultText5:"前往易支付",
+    resultText6:"请求超时，请稍后检查我的订单，有无订单记录",
     Goods:{
       index:"序号",
       created_at: "创建时间",
@@ -66,12 +74,12 @@ export default {
       created_at: "创建时间",
       updated_at: "更新时间",
       id:"id",
-      name: "名称",
+      name: "折扣码名称",
       discount_rate:"折扣率",
       limit:"次数",
       expired_at: "过期时间",
+      min_amount:"最低使用金额",
       goods:"关联商品",
-      checked_goods: "checked_goods",
     }
   }
 }

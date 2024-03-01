@@ -11,7 +11,7 @@ export const useShopStore = defineStore("shopStore", {
     state: () => ({
         //当前支付商品
         currentGoods: {
-            id: 0, //不能覆盖
+            id: 0,
             created_at: "",
             updated_at: "",
             good_order: 0,

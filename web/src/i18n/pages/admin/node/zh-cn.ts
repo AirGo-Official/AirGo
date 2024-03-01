@@ -7,6 +7,9 @@ export default {
     modifyNode:"修改节点",
     sortNode:"排序节点",
     sharedNode:"共享节点",
+    parse:"解析",
+    placeholder1:"支持订阅、单个节点、多个节点、base64编码解析（vmess，vless，trojan，shadowsocks, hy2）",
+    serverStatus:"服务器状态",
     NodeInfo: {
       node_type_transfer:"中转",
       node_type_direct:"直连",
@@ -17,19 +20,21 @@ export default {
       node_speed_limit: "节点限速", //节点限速/Mbps
       traffic_rate: "倍率",    //倍率
       node_type: "节点类型",       //类型 vless vmess shadowsocks
-      //共享节点额外需要的参数
-      uuid: "uuid",
       //基础参数
       remarks: "别名",//别名
       address: "地址",
       port: "端口",
       node_order: "节点排序",//节点排序
       enabled: "状态",  //是否为激活节点
+      protocol:"节点协议",
       //中转参数
       enable_transfer: "启用中转",//是否启用中转
       transfer_address: "中转地址",//中转ip
       transfer_port: "中转端口",   //中转port
-      transfer_node_id: "中转绑定的节点ID", //中转绑定的节点ID
+      transfer_node_id: "绑定的父节点", //中转绑定的节点ID
+      // 共享节点额外需要的参数
+      is_shared_node:"是否共享节点",
+      uuid:"uuid",
       //流量
       total_up: "上行流量",
       total_down: "下行流量",

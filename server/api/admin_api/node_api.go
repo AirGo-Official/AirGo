@@ -1,7 +1,6 @@
 package admin_api
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
@@ -10,21 +9,9 @@ import (
 	"github.com/ppoonk/AirGo/service/common_logic"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	"github.com/ppoonk/AirGo/utils/response"
-	"time"
 )
 
 var nodeService admin_logic.Node
-
-// 获取全部节点
-func GetAllNode(ctx *gin.Context) {
-	nodeArr, total, err := common_logic.CommonSqlFind[model.Node, string, []model.Node]("")
-	if err != nil {
-		global.Logrus.Error(err.Error())
-		response.Fail("GetAllNode error:"+err.Error(), nil, ctx)
-		return
-	}
-	response.OK("GetAllNode success", &model.CommonDataResp{total, nodeArr}, ctx)
-}
 
 // 新建节点
 func NewNode(ctx *gin.Context) {
@@ -35,40 +22,7 @@ func NewNode(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	//fmt.Println("新建节点")
-	//service.Show(node)
-	n, _, _ := common_logic.CommonSqlFirst[model.Node, string, model.Node](fmt.Sprintf("remarks = '%s'", node.Remarks))
-	if n.Remarks != "" {
-		response.Fail("Node name is duplicate", nil, ctx)
-		return
-	}
-	//根据节点类型，修改一些默认参数
-	switch node.NodeType {
-	case constant.NODE_TYPE_VMESS:
-	case constant.NODE_TYPE_VLESS:
-	case constant.NODE_TYPE_TROJAN:
-	case constant.NODE_TYPE_HYSTERIA:
-	case constant.NODE_TYPE_SHADOWSOCKS:
-		node.ServerKey = encrypt_plugin.RandomString(32)
-	case constant.NODE_TYPE_TRANSFER:
-		//查询中转绑定节点
-		n, _, err = common_logic.CommonSqlFirst[model.Node, string, model.Node](fmt.Sprintf("id = %d", node.TransferNodeID))
-		if err != nil {
-			global.Logrus.Error(err.Error())
-			response.Fail("NewNode error:"+err.Error(), nil, ctx)
-			return
-		}
-		//fmt.Println("查询中转绑定节点 n:", n)
-		n.ID = 0
-		n.CreatedAt, n.UpdatedAt = time.Now(), time.Now()
-		n.Remarks = node.Remarks
-		n.EnableTransfer = true
-		n.TransferNodeID = node.TransferNodeID
-		n.TransferAddress = node.TransferAddress
-		n.TransferPort = node.TransferPort
-		node = n
-	}
-	err = common_logic.CommonSqlCreate[model.Node](node)
+	err = nodeService.NewNode(&node)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("NewNode error:"+err.Error(), nil, ctx)
@@ -114,6 +68,23 @@ func UpdateNode(ctx *gin.Context) {
 
 }
 
+func GetNodeList(ctx *gin.Context) {
+	var params model.QueryParams
+	err := ctx.ShouldBind(&params)
+	if err != nil {
+		global.Logrus.Error(err.Error())
+		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
+		return
+	}
+	res, err := nodeService.GetNodeList(&params)
+	if err != nil {
+		global.Logrus.Error(err.Error())
+		response.Fail("GetNodeList error:"+err.Error(), nil, ctx)
+		return
+	}
+	response.OK("GetNodeList success", res, ctx)
+}
+
 // 查询节点流量
 func GetNodeListWithTraffic(ctx *gin.Context) {
 	var params model.QueryParams
@@ -150,8 +121,8 @@ func NodeSort(ctx *gin.Context) {
 	response.OK("NodeSort success", nil, ctx)
 }
 
-// 新增共享节点
-func NewNodeShared(ctx *gin.Context) {
+// 解析
+func ParseUrl(ctx *gin.Context) {
 	var url model.NodeSharedReq
 	err := ctx.ShouldBind(&url)
 	if err != nil {
@@ -160,53 +131,23 @@ func NewNodeShared(ctx *gin.Context) {
 		return
 	}
 	nodeArr := nodeService.ParseSubUrl(url.Url)
-	if nodeArr != nil {
-		for _, v := range *nodeArr {
-			n, _, _ := common_logic.CommonSqlFind[model.NodeShared, model.NodeShared, model.NodeShared](model.NodeShared{
-				Remarks: v.Remarks,
-			})
-			if n.Remarks != "" {
-				continue
-			}
-			err = common_logic.CommonSqlCreate[[]model.NodeShared](*nodeArr)
-			if err != nil {
-				global.Logrus.Error(err.Error())
-				response.Fail("NewNodeShared error:"+err.Error(), nil, ctx)
-				return
-			}
-		}
-		response.OK("NewNodeShared success", nil, ctx)
-	}
+	response.OK("NewNodeShared success", nodeArr, ctx)
 }
 
-// 获取共享节点列表
-func GetNodeSharedList(ctx *gin.Context) {
-	nodeArr, total, err := common_logic.CommonSqlFind[model.NodeShared, string, []model.NodeShared]("")
-	if err != nil {
-		global.Logrus.Error(err.Error())
-		response.Fail("GetNodeSharedList"+err.Error(), nil, ctx)
-		return
-	}
-	response.OK("GetNodeSharedList success", &model.CommonDataResp{total, nodeArr}, ctx)
-
-}
-
-// 删除共享节点
-func DeleteNodeShared(ctx *gin.Context) {
-	var node model.NodeShared
-	err := ctx.ShouldBind(&node)
+// 新增共享节点
+func NewNodeShared(ctx *gin.Context) {
+	var nodes []model.Node
+	err := ctx.ShouldBind(&nodes)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = common_logic.CommonSqlDelete[model.Node, model.NodeShared](node)
-	if err != nil {
-		global.Logrus.Error(err.Error())
-		response.Fail("DeleteNodeShared error:"+err.Error(), nil, ctx)
-		return
+	for _, v := range nodes {
+		_ = nodeService.NewNode(&v)
+
 	}
-	response.OK("DeleteNodeShared success", nil, ctx)
+	response.OK("NewNodeShared success", nil, ctx)
 }
 
 // reality x25519
@@ -218,4 +159,11 @@ func Createx25519(ctx *gin.Context) {
 		return
 	}
 	response.OK("Createx25519 success", model.AGREALITYx25519{PublicKey: pub, PrivateKey: pri}, ctx)
+}
+
+// 获取节点服务器状态
+func GetNodeServerStatus(ctx *gin.Context) {
+	list := nodeService.GetNodesStatus()
+	response.OK("GetNodeServerStatus success", list, ctx)
+
 }

@@ -29,12 +29,10 @@ const { messages, locale } = useI18n();
 const setingsRef = ref();
 const route = useRoute();
 const userStore = useUserStore()
-const userStoreData = storeToRefs(userStore)
 const stores = useTagsViewRoutes();
 const storesThemeConfig = useThemeConfig();
 const {themeConfig} = storeToRefs(storesThemeConfig);
 const publicStore = usePublicStore()
-const publicStoreData = storeToRefs(publicStore)
 
 // 设置锁屏时组件显示隐藏
 const setLockScreen = computed(() => {

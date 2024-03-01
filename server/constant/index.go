@@ -10,12 +10,16 @@ const (
 	CTX_SET_USERID   = "UserID"
 
 	//节点类型
-	NODE_TYPE_VMESS       = "vmess"
-	NODE_TYPE_VLESS       = "vless"
-	NODE_TYPE_TROJAN      = "trojan"
-	NODE_TYPE_HYSTERIA    = "hysteria"
-	NODE_TYPE_SHADOWSOCKS = "shadowsocks"
-	NODE_TYPE_TRANSFER    = "transfer"
+	NODE_TYPE_NORMAL   = "normal"
+	NODE_TYPE_TRANSFER = "transfer"
+	NODE_TYPE_SHARED   = "shared"
+
+	//节点协议类型
+	NODE_PROTOCOL_VMESS       = "vmess"
+	NODE_PROTOCOL_VLESS       = "vless"
+	NODE_PROTOCOL_TROJAN      = "trojan"
+	NODE_PROTOCOL_HYSTERIA    = "hysteria"
+	NODE_PROTOCOL_SHADOWSOCKS = "shadowsocks"
 
 	//传输协议
 	NETWORK_WS   = "ws"
@@ -27,6 +31,7 @@ const (
 	//邮件类型
 	EMAIL_TYPE_USER_REGISTER = "EMAIL_TYPE_USER_REGISTER"
 	EMAIL_TYPE_USER_RESETPWD = "EMAIL_TYPE_USER_RESETPWD"
+	EMAIL_TYPE_TEST          = "EMAIL_TYPE_TEST"
 
 	// 商品
 	GOODS_TYPE_GENERAL   = "general"

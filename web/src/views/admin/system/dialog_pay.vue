@@ -34,33 +34,36 @@
         <el-radio-group v-model="adminShopStoreData.payInfo.value.pay_type">
           <el-radio label="epay">epay</el-radio>
           <el-radio label="alipay">alipay</el-radio>
+          <el-radio label="balance">balance</el-radio>
         </el-radio-group>
       </el-form-item>
+      <div v-if="adminShopStoreData.payInfo.value.pay_type==='alipay'">
+        <el-form-item :label="$t('message.adminShop.Alipay.alipay_app_id')">
+          <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_app_id"/>
+        </el-form-item>
+        <el-form-item  :label="$t('message.adminShop.Alipay.alipay_app_private_key')">
+          <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_app_private_key" type="textarea"/>
+        </el-form-item>
+        <el-form-item  :label="$t('message.adminShop.Alipay.alipay_ali_public_key')">
+          <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_ali_public_key" type="textarea"/>
+        </el-form-item>
+        <el-form-item  :label="$t('message.adminShop.Alipay.alipay_encrypt_key')">
+          <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_encrypt_key"
+                    type="textarea"/>
+        </el-form-item>
+      </div>
+      <div v-else-if="adminShopStoreData.payInfo.value.pay_type==='epay'">
+        <el-form-item :label="$t('message.adminShop.Epay.epay_pid')">
+          <el-input v-model.number="adminShopStoreData.payInfo.value.epay.epay_pid"/>
+        </el-form-item>
+        <el-form-item :label="$t('message.adminShop.Epay.epay_key')">
+          <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_key"/>
+        </el-form-item>
+        <el-form-item  :label="$t('message.adminShop.Epay.epay_api_url')">
+          <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_api_url" placeholder="http://xxx.com/submit.php"/>
+        </el-form-item>
+      </div>
 
-      <el-form-item v-if="adminShopStoreData.payInfo.value.pay_type==='alipay'" :label="$t('message.adminShop.Alipay.alipay_app_id')">
-        <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_app_id"/>
-      </el-form-item>
-      <el-form-item v-if="adminShopStoreData.payInfo.value.pay_type==='alipay'" :label="$t('message.adminShop.Alipay.alipay_app_private_key')">
-        <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_app_private_key" type="textarea"/>
-      </el-form-item>
-      <el-form-item v-if="adminShopStoreData.payInfo.value.pay_type==='alipay'" :label="$t('message.adminShop.Alipay.alipay_ali_public_key')">
-        <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_ali_public_key" type="textarea"/>
-      </el-form-item>
-      <el-form-item v-if="adminShopStoreData.payInfo.value.pay_type==='alipay'" :label="$t('message.adminShop.Alipay.alipay_encrypt_key')">
-        <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_encrypt_key"
-                  type="textarea"/>
-      </el-form-item>
-
-
-      <el-form-item v-if="adminShopStoreData.payInfo.value.pay_type==='epay'" :label="$t('message.adminShop.Epay.epay_pid')">
-        <el-input v-model.number="adminShopStoreData.payInfo.value.epay.epay_pid"/>
-      </el-form-item>
-      <el-form-item v-if="adminShopStoreData.payInfo.value.pay_type==='epay'" :label="$t('message.adminShop.Epay.epay_key')">
-        <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_key"/>
-      </el-form-item>
-      <el-form-item v-if="adminShopStoreData.payInfo.value.pay_type==='epay'" :label="$t('message.adminShop.Epay.epay_api_url')">
-        <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_api_url" placeholder="http://xxx.com/submit.php"/>
-      </el-form-item>
     </el-form>
     <template #footer>
             <span class="dialog-footer">

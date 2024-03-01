@@ -92,8 +92,9 @@ func (s *Shop) UpdateGoods(goodsParams *model.Goods) error {
 }
 
 // 支付
-// todo BuyerPayAmount
 func (s *Shop) Purchase(sysOrder *model.Order) (*model.Order, error) {
+	//fmt.Println("user_logic Purchase:")
+	//Show(sysOrder)
 	//0元购，跳过支付
 	totalAmountFloat64, _ := strconv.ParseFloat(sysOrder.TotalAmount, 10)
 	if totalAmountFloat64 == 0 {
@@ -101,18 +102,13 @@ func (s *Shop) Purchase(sysOrder *model.Order) (*model.Order, error) {
 		sysOrder.BuyerPayAmount = "0.00"                           //付款金额
 		return sysOrder, orderService.PaymentSuccessfullyOrderHandler(sysOrder)
 	}
-	//处理支付
-	var pay *model.Pay
-	var err error
-	if sysOrder.PayType != constant.PAY_TYPE_BALANCE {
-		//根据支付id查询支付参数
-		pay, err = payService.FindPayment(&model.Pay{ID: sysOrder.PayID})
-		if err != nil {
-			return nil, err
-		}
-		sysOrder.PayID = pay.ID        //支付方式id
-		sysOrder.PayType = pay.PayType //
+	//根据支付id查询支付参数
+	pay, err := payService.FirstPayment(&model.Pay{ID: sysOrder.PayID})
+	if err != nil {
+		return nil, err
 	}
+	sysOrder.PayType = pay.PayType //
+
 	//判断支付方式
 	switch sysOrder.PayType {
 	case constant.PAY_TYPE_EPAY: // epay
@@ -143,9 +139,6 @@ func (s *Shop) Purchase(sysOrder *model.Order) (*model.Order, error) {
 			return nil, err
 		}
 		sysOrder.PayInfo.AlipayInfo.QRCode = res.QRCode //返回用户qrcode
-		_ = global.GoroutinePool.Submit(func() {
-			payService.PollAliPay(sysOrder, client) //5分钟等待付款，轮询 todo 优化
-		})
 		return sysOrder, nil
 	case constant.PAY_TYPE_BALANCE: // 余额支付
 		err = userService.UserRemainPayHandler(sysOrder)

@@ -2,6 +2,8 @@ export default {
   adminOrder: {
     query:"Query",
     modify_order:"Modify order",
+   submitOrder:"Submit order",
+   orderDetails:"Order details",
      Order: {
       index:"index",
       created_at: "created at",

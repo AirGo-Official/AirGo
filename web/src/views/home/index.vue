@@ -13,8 +13,8 @@
         <div class="home-card-item">
           <el-card>
             <template #header>
-              <div>
-                <el-button text class="card-header-left">{{ v.subject }}</el-button>
+              <div class="card-header-left">
+                <el-text >{{ v.subject }}</el-text>
               </div>
             </template>
             <el-descriptions
@@ -26,10 +26,10 @@
               <el-descriptions-item :label="$t('message.home.des_start')">{{ DateStrToTime(v.service_start_at) }}</el-descriptions-item>
               <el-descriptions-item :label="$t('message.home.des_end')">{{ DateStrToTime(v.service_end_at) }}</el-descriptions-item>
               <el-descriptions-item :label="$t('message.home.des_SubStatus')">
-                <el-icon v-if="v.sub_status" color="green">
+                <el-icon v-if="v.sub_status" color="green" size="large">
                   <SuccessFilled />
                 </el-icon>
-                <el-icon v-else color="red">
+                <el-icon v-else color="red" size="large">
                   <CircleCloseFilled />
                 </el-icon>
               </el-descriptions-item>
@@ -50,11 +50,11 @@
               </el-descriptions-item>
             </el-descriptions>
             <div style="margin-top: 15px">
-              <el-button style="margin-bottom: 10px" color="blue" @click="openDialogCustomerServiceDetails">{{$t('message.home.button_details')}}</el-button>
-              <el-button style="margin-bottom: 10px" color="blue" @click="renew(v)">{{$t('message.home.button_renew')}}</el-button>
-              <el-button style="margin-bottom: 10px" color="blue" @click="openPushDialog">{{$t('message.home.button_push')}}</el-button>
-              <el-button style="margin-bottom: 10px" color="blue" @click="resetSubscribeUUID(v)">{{$t('message.home.button_resetSub')}}</el-button>
-              <el-button style="margin-bottom: 10px" color="blue" @click="openSubDialog(v.sub_uuid)">{{$t('message.home.button_copySub')}}</el-button>
+              <el-button size="small" style="margin-bottom: 10px" type="primary" @click="openDialogCustomerServiceDetails">{{$t('message.home.button_details')}}</el-button>
+              <el-button size="small" style="margin-bottom: 10px" type="primary" @click="renew(v)">{{$t('message.home.button_renew')}}</el-button>
+              <el-button size="small" style="margin-bottom: 10px" type="primary" @click="openPushDialog">{{$t('message.home.button_push')}}</el-button>
+              <el-button size="small" style="margin-bottom: 10px" type="primary" @click="resetSubscribeUUID(v)">{{$t('message.home.button_resetSub')}}</el-button>
+              <el-button size="small" style="margin-bottom: 10px" type="primary" @click="openSubDialog(v.sub_uuid)">{{$t('message.home.button_copySub')}}</el-button>
             </div>
           </el-card>
         </div>
@@ -101,11 +101,12 @@
       </template>
 
     </el-dialog>
-
     <!--    续费弹窗-->
+    <Purchase ref="PurchaseRef"></Purchase>
     <!--    详情弹窗-->
     <DialogCustomerServiceDetails ref="DialogCustomerServiceDetailsRef"></DialogCustomerServiceDetails>
-    <Purchase ref="PurchaseRef"></Purchase>
+<!--    默认弹窗-->
+    <DefaultDialog ref="DefaultDialogRef"></DefaultDialog>
   </div>
 
 </template>
@@ -124,6 +125,7 @@ import { v4 as uuid } from 'uuid';
 import { useShopStore } from "/@/stores/user_logic/shopStore";
 import { useConstantStore } from "/@/stores/constantStore";
 import { useI18n } from "vue-i18n";
+import { useArticleStore } from "/@/stores/user_logic/articleStore";
 
 const constantStore = useConstantStore()
 const shopStore = useShopStore()
@@ -138,6 +140,9 @@ const qrcodeRef = ref();
 const Purchase = defineAsyncComponent(() => import("/@/views/shop/purchase.vue"));
 const PurchaseRef = ref();
 const {t} = useI18n()
+const articleStore = useArticleStore()
+const DefaultDialog = defineAsyncComponent( () => import('/@/views/default/defaultDialog.vue'));
+const DefaultDialogRef = ref();
 
 //组件
 const DialogCustomerServiceDetails = defineAsyncComponent(() => import("/@/views/home/dialog_customer_service_details.vue"));
@@ -183,14 +188,14 @@ const toPush = () => {
 const renew=(cs:CustomerService)=>{
   //保存用户服务
   customerServiceStoreData.customerService.value = cs
-  //构造订单数据
+  //构造订单数据。需要3个参数，user_id，order_type，customer_service_id。
+  // user_id由后端自动填充，前端传customer_service_id，order_type
   shopStoreData.currentOrder.value = {
     order_type:constantStore.ORDER_TYPE_RENEW,
-    subject:customerServiceStoreData.customerService.value.subject,
-    total_amount:customerServiceStoreData.customerService.value.renewal_amount,
+    customer_service_id:cs.id,
   } as Order
-  //打开弹窗
-  PurchaseRef.value.openDialog();
+
+  PurchaseRef.value.openDialog(constantStore.ORDER_TYPE_RENEW);
 }
 const resetSubscribeUUID=(cs:CustomerService)=>{
   ElMessageBox.alert(t('message.home.message_confirm_reset_sub'),t('message.common.tip'), {
@@ -211,9 +216,8 @@ const copyLink = (subType: string) => {
 const showQR = (subType: string) => {
   let link = publicStoreData.publicSetting.value.backend_url + "/api/public/sub/" + state.currentSubUUID + "?type=" + subType;
   //清除上一次二维码
-  let codeHtml = document.getElementById("qrcode");
-  codeHtml.innerHTML = "";
-  state.QRcode = new QRCode(qrcodeRef.value, {
+  qrcodeRef.value.innerHTML = "";
+  new QRCode(qrcodeRef.value, {
     text: link,
     width: 125,
     height: 125,
@@ -224,9 +228,18 @@ const showQR = (subType: string) => {
 const openDialogCustomerServiceDetails = () => {
   DialogCustomerServiceDetailsRef.value.openDialog();
 };
+const defaultArticle=()=>{
+  articleStore.getDefaultArticles().then(()=>{
+    setTimeout(()=>{
+      DefaultDialogRef.value.openDialog()
+    },2000)
+  })
+}
+
 onMounted(() => {
   getCustomerServiceList();
   getPublicSetting();
+  defaultArticle()
 });
 
 
@@ -246,6 +259,10 @@ onMounted(() => {
 }
 
 .card-header-left {
-  font-size: 20px;
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-weight: bolder;
 }
 </style>

@@ -20,7 +20,7 @@
         <el-collapse v-if="state.isShowCollapse" v-model="state.activeCollapseNames">
           <el-collapse-item name="1">
             <!--          report组件-->
-            <ReportComponent ref="reportRef" @getReportData="getReportData"></ReportComponent>
+            <ReportComponent ref="reportRef" @getReportData="emitsParams"></ReportComponent>
           </el-collapse-item>
         </el-collapse>
       </div>
@@ -162,8 +162,10 @@ const onShowCollapse = () => {
     }
   }, 500)
 }
-//
-const getReportData = () => {
+
+//接受子组件传值
+const emitsParams=(params:QueryParams)=>{
+  state.queryParams=params
   getOrderList()
 }
 onMounted(() => {

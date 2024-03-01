@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
@@ -14,11 +15,10 @@ import (
 	"time"
 )
 
-func ParseVMessLink(link string) *model.NodeShared {
-	node := new(model.NodeShared)
+func ParseVMessLink(link string) *model.Node {
+	node := new(model.Node)
 	node.Enabled = true
-	node.NodeType = "vmess"
-	node.IsSharedNode = true
+	node.Protocol = constant.NODE_PROTOCOL_VMESS
 	if strings.ToLower(link[:8]) == "vmess://" {
 		link = link[8:]
 	} else {
@@ -116,18 +116,17 @@ func ParseVMessLink(link string) *model.NodeShared {
 	return node
 }
 
-func ParseVLessLink(link string) *model.NodeShared {
+func ParseVLessLink(link string) *model.Node {
 	u, err := url.Parse(link)
 	if err != nil {
 		return nil
 	}
-	if u.User == nil || u.Scheme != "vless" {
+	if u.User == nil || u.Scheme != constant.NODE_PROTOCOL_VLESS {
 		return nil
 	}
-	node := new(model.NodeShared)
+	node := new(model.Node)
 	node.Enabled = true
-	node.NodeType = "vless"
-	node.IsSharedNode = true
+	node.Protocol = constant.NODE_PROTOCOL_VLESS
 
 	//remarks
 	node.Remarks = u.Fragment
@@ -188,18 +187,17 @@ func ParseVLessLink(link string) *model.NodeShared {
 	return node
 }
 
-func ParseTrojanLink(link string) *model.NodeShared {
+func ParseTrojanLink(link string) *model.Node {
 	u, err := url.Parse(link)
 	if err != nil {
 		return nil
 	}
-	if u.User == nil || u.Scheme != "trojan" {
+	if u.User == nil || u.Scheme != constant.NODE_PROTOCOL_TROJAN {
 		return nil
 	}
-	node := new(model.NodeShared)
+	node := new(model.Node)
 	node.Enabled = true
-	node.NodeType = "trojan"
-	node.IsSharedNode = true
+	node.Protocol = constant.NODE_PROTOCOL_TROJAN
 	//remarks
 	node.Remarks = u.Fragment
 	if node.Remarks == "" {
@@ -247,14 +245,14 @@ func ParseTrojanLink(link string) *model.NodeShared {
 	return node
 }
 
-func ParseSSLink(link string) *model.NodeShared {
+func ParseSSLink(link string) *model.Node {
 	ss, err := url.Parse(link)
-	var node model.NodeShared
+	var node model.Node
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		return nil
 	}
-	node.NodeType = "shadowsocks"
+	node.Protocol = constant.NODE_PROTOCOL_SHADOWSOCKS
 	node.Remarks = ss.Fragment
 	node.Address = ss.Hostname()
 	node.Port, err = strconv.ParseInt(ss.Port(), 10, 64)
@@ -267,7 +265,7 @@ func ParseSSLink(link string) *model.NodeShared {
 	return &node
 }
 
-func ParseHy2Link(link string) *model.NodeShared {
+func ParseHy2Link(link string) *model.Node {
 	u, err := url.Parse(link)
 	if err != nil {
 		return nil
@@ -275,10 +273,9 @@ func ParseHy2Link(link string) *model.NodeShared {
 	if u.User == nil || u.Scheme != "hy2" {
 		return nil
 	}
-	node := new(model.NodeShared)
+	node := new(model.Node)
 	node.Enabled = true
-	node.NodeType = "hysteria"
-	node.IsSharedNode = true
+	node.Protocol = constant.NODE_PROTOCOL_HYSTERIA
 	//remarks
 	node.Remarks = u.Fragment
 	if node.Remarks == "" {
@@ -301,11 +298,11 @@ func ParseHy2Link(link string) *model.NodeShared {
 	return node
 }
 
-func (n *Node) ParseSubUrl(urlStr string) *[]model.NodeShared {
+func (n *Node) ParseSubUrl(urlStr string) *[]model.Node {
 	//去掉前后空格
 	urlStr = strings.TrimSpace(urlStr)
 	//订阅url
-	if !strings.HasPrefix(urlStr, "vmess") && !strings.HasPrefix(urlStr, "vless") && !strings.HasPrefix(urlStr, "trojan") && !strings.HasPrefix(urlStr, "hy2") {
+	if !strings.HasPrefix(urlStr, constant.NODE_PROTOCOL_VMESS) && !strings.HasPrefix(urlStr, constant.NODE_PROTOCOL_VLESS) && !strings.HasPrefix(urlStr, constant.NODE_PROTOCOL_TROJAN) && !strings.HasPrefix(urlStr, "hy2") {
 		if _, err := url.ParseRequestURI(urlStr); err == nil {
 			rsp, err := net_plugin.ClientWithDNS("223.6.6.6", 5*time.Second).Get(urlStr)
 			if err != nil {
@@ -324,7 +321,7 @@ func (n *Node) ParseSubUrl(urlStr string) *[]model.NodeShared {
 		urlStr = urlStrBase64Decode
 	}
 	list := strings.Fields(urlStr) //节点url数组
-	var Nodes []model.NodeShared
+	var Nodes []model.Node
 	for _, v := range list {
 		data := ParseOne(v)
 		if data == nil {
@@ -336,21 +333,21 @@ func (n *Node) ParseSubUrl(urlStr string) *[]model.NodeShared {
 }
 
 // 解析一条节点,vmess vless trojan hysteria
-func ParseOne(link string) *model.NodeShared {
+func ParseOne(link string) *model.Node {
 	u, err := url.Parse(link)
 	if err != nil {
 		return nil
 	}
 	switch u.Scheme {
-	case "vmess":
+	case constant.NODE_PROTOCOL_VMESS:
 		if obj := ParseVMessLink(link); obj != nil {
 			return obj
 		}
-	case "vless":
+	case constant.NODE_PROTOCOL_VLESS:
 		if obj := ParseVLessLink(link); obj != nil {
 			return obj
 		}
-	case "trojan":
+	case constant.NODE_PROTOCOL_TROJAN:
 		if obj := ParseTrojanLink(link); obj != nil {
 			return obj
 		}

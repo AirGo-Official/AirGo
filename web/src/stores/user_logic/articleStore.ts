@@ -18,26 +18,7 @@ export const useArticleStore = defineStore("articleStore", {
             introduction: '',
             content: '',
         } as Article,
-        articleID1: {
-            created_at: '',
-            updated_at: '',
-            // id: 0,
-            status: false,
-            type: '',
-            title: '',
-            introduction: '',
-            content: '',
-        } as Article,
-        articleID2: {
-            created_at: '',
-            updated_at: '',
-            // id: 0,
-            status: false,
-            type: '',
-            title: '',
-            introduction: '',
-            content: '',
-        } as Article,
+        defaultArticles:[] as Article[],
     }),
     actions: {
         //获取article列表
@@ -49,18 +30,14 @@ export const useArticleStore = defineStore("articleStore", {
             //尝试从session中获取
             if (Session.get('defaultArticles')){
                 let temp: Article[] = Session.get('defaultArticles')
-                this.articleID1 = temp[0]
-                this.articleID2 = temp[1]
+                this.defaultArticles = temp
             } else {
                 const res = await request(apiStoreData.publicApi.value.getDefaultArticleList)
-                const total = res.data.total
                 let temp: Article[] = res.data.data
-                if (total === 2) {
-                    this.articleID1 = temp[0]
-                    this.articleID2 = temp[1]
-                    Session.set('defaultArticles',temp)
-                }
+                this.defaultArticles = temp
+                Session.set('defaultArticles',temp)
             }
+            return
         }
     }
 })

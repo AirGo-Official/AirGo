@@ -18,6 +18,7 @@ export const useAdminUserStore = defineStore('adminUserStore', {
           role_group: [] as RoleInfo[],
         } as SysUser,
         check_list: ['普通用户'], //选中的角色
+    checkedRoleIDs:[] as number[],
     queryParams:{
       table_name: 'user',
       field_params_list: [
@@ -66,6 +67,12 @@ export const useAdminUserStore = defineStore('adminUserStore', {
     //删除用户
     async deleteUser(params?: SysUser) {
      return  request(apiStore.adminApi.deleteUser, params)
+    },
+    roleIDsHandler(user:SysUser){
+      user.role_group.forEach((item)=>{
+        this.checkedRoleIDs = []
+        this.checkedRoleIDs.push(item.id)
+      })
     },
   },
 });

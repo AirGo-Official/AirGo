@@ -5,13 +5,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const (
-	TokenExpired     = "Token is expired"
-	TokenNotValidYet = "Token not active yet"
-	TokenMalformed   = "That's not even a token"
-	TokenInvalid     = "Couldn't handle this token:"
-)
-
 type MyCustomClaimsPrefix struct {
 	UserID     int64
 	UserName   string

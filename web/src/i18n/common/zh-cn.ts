@@ -2,7 +2,6 @@ export default {
   common: {
     tip:"提示",
     message_confirm_delete:"此操作将永久删除数据，是否继续?",
-
     button_cancel:"取消",
     button_confirm:"确认",
 
@@ -16,15 +15,17 @@ export default {
     sort:"排序",
     reply:"回复",
     close:"关闭",
+    back:"上一步",
     send:"发送",
     details:"详情",
     purchase:"购买",
-
 
     yes:"是",
     no:"否",
     enable:"启用",
     disable:"禁用",
+    display:"显示",
+    hide:"隐藏",
 
     startDate:"开始日期",
     endDate:"结束日期",
@@ -33,6 +34,12 @@ export default {
     lastMonth:"上月",
     lastThreeMonths:"最近3个月",
     month:"月",
+
+    noData:"暂无数据",
+
+    success:"成功",
+    warning:"警告",
+    error:"错误",
   },
   constant:{
     // 商品
@@ -62,12 +69,15 @@ export default {
     EMAIL_TYPE_USER_REGISTER : "EMAIL_TYPE_USER_REGISTER",
     EMAIL_TYPE_USER_RESETPWD : "EMAIL_TYPE_USER_RESETPWD",
     //节点类型
-    NODE_TYPE_TRANSFER    : "transfer",
-    NODE_TYPE_VMESS       : "vmess",
-    NODE_TYPE_VLESS       : "vless",
-    NODE_TYPE_TROJAN      : "trojan",
-    NODE_TYPE_HYSTERIA    : "hysteria",
-    NODE_TYPE_SHADOWSOCKS : "shadowsocks",
+    NODE_TYPE_NORMAL    : "正常节点",
+    NODE_TYPE_SHARED    : "共享节点",
+    NODE_TYPE_TRANSFER    : "中转节点",
+    //节点协议类型
+    NODE_PROTOCOL_VMESS       : "vmess",
+    NODE_PROTOCOL_VLESS       : "vless",
+    NODE_PROTOCOL_TROJAN      : "trojan",
+    NODE_PROTOCOL_HYSTERIA    : "hysteria",
+    NODE_PROTOCOL_SHADOWSOCKS : "shadowsocks",
     //文章类型
     ARTICLE_TYPE_HOME      : "首页",
     ARTICLE_TYPE_DIALOG    : "弹窗",

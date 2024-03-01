@@ -32,6 +32,12 @@ func (a *Article) GetDefaultArticle() (*model.CommonDataResp, error) {
 				Condition:      "=",
 				ConditionValue: "2",
 			},
+			{
+				Operator:       "AND",
+				Field:          "status",
+				Condition:      "=",
+				ConditionValue: "1",
+			},
 		},
 		Pagination: model.Pagination{
 			PageNum:  1,

@@ -52,17 +52,19 @@ func GetEmailCode(ctx *gin.Context) {
 	// 根据邮件类型，进行处理
 	switch e.EmailType {
 	case constant.EMAIL_TYPE_USER_REGISTER:
-		EmailVerificationCodeHandler(ctx, &e, constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME)
+		SendEmailCode(ctx, &e, constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME)
 	case constant.EMAIL_TYPE_USER_RESETPWD:
-		EmailVerificationCodeHandler(ctx, &e, constant.CACHE_USER_RESET_PWD_EMAIL_CODE_BY_USERNAME)
+		SendEmailCode(ctx, &e, constant.CACHE_USER_RESET_PWD_EMAIL_CODE_BY_USERNAME)
+	case constant.EMAIL_TYPE_TEST:
+		SendEmailCode(ctx, &e, "")
 	default:
-		response.Fail("Unknown operation", nil, ctx)
+		response.Fail("Illegal email type", nil, ctx)
 		return
 	}
 }
 
-// todo 优化逻辑
-func EmailVerificationCodeHandler(ctx *gin.Context, e *model.EmailRequest, keyPre string) {
+// 发送邮件验证码
+func SendEmailCode(ctx *gin.Context, e *model.EmailRequest, keyPre string) {
 	var randomStr string
 	// 查缓存，如有，则发送，不用生成新的验证码
 	cache, ok := global.LocalCache.Get(keyPre + e.TargetEmail)
@@ -72,8 +74,9 @@ func EmailVerificationCodeHandler(ctx *gin.Context, e *model.EmailRequest, keyPr
 		//生成验证码
 		randomStr = encrypt_plugin.RandomString(4) //4位随机数
 	}
-	// 更新缓存
-	global.LocalCache.Set(keyPre+e.TargetEmail, randomStr, 60*time.Second)
+	// 验证码默认3分钟缓存时间
+	// 前端在1分钟后，显示可以重新获取
+	global.LocalCache.Set(keyPre+e.TargetEmail, randomStr, 3*time.Minute)
 	//判断别名邮箱
 	from := global.Server.Email.EmailFrom
 	if global.Server.Email.EmailFromAlias != "" {
@@ -88,7 +91,7 @@ func EmailVerificationCodeHandler(ctx *gin.Context, e *model.EmailRequest, keyPr
 		Subject:   global.Server.Email.EmailSubject,
 		EmailText: originalText,
 	}
-	// 入队
+	// 入队:邮件验证码发送队列
 	global.Queue.Publish(constant.EMAIL_CODE, emailMsg)
 	response.OK("Email code has been sent.", nil, ctx)
 	return

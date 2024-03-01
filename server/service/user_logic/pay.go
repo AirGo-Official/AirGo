@@ -2,7 +2,6 @@ package user_logic
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
@@ -22,28 +21,25 @@ var payService *Pay
 
 // 支付宝-alipay初始化
 func (ps *Pay) InitAlipayClient(pay *model.Pay) (*alipay.Client, error) {
-	//false时用开发网关，https://openapi.alipaydev.com/gateway.do；true时用正式环境网关，https://openapi.alipay.com/gateway.do
-	client, err := alipay.New(pay.AliPay.AlipayAppID, pay.AliPay.AlipayAppPrivateKey, true)
+	// false时用开发网关，https://openapi.alipaydev.com/gateway.do
+	// true时用正式环境网关，https://openapi.alipay.com/gateway.do
+	client, err := alipay.New(pay.AliPay.AlipayAppID, pay.AliPay.AlipayAppPrivateKey, false)
 	if err != nil {
-		//fmt.Println("初始化支付宝失败, 错误信息为", err)
-		//os.Exit(-1)
 		return nil, err
 	}
 
 	// 加载内容密钥（可选），详情查看 https://opendocs.alipay.com/common/02mse3
-	client.SetEncryptKey(pay.AliPay.AlipayEncryptKey)
+	if pay.AliPay.AlipayEncryptKey != "" {
+		_ = client.SetEncryptKey(pay.AliPay.AlipayEncryptKey)
+	}
 
 	// 下面两种方式只能二选一
-	var cert = false
-	if cert {
-		// 使用支付宝证书
-		fmt.Println("加载证书", client.LoadAppCertPublicKeyFromFile("appPublicCert.crt"))
-		fmt.Println("加载证书", client.LoadAliPayRootCertFromFile("alipayRootCert.crt"))
-		fmt.Println("加载证书", client.LoadAlipayCertPublicKeyFromFile("alipayPublicCert.crt"))
-	} else {
-		// 使用支付宝公钥
-		fmt.Println("加载公钥", client.LoadAliPayPublicKey(pay.AliPay.AlipayAliPublicKey))
-	}
+	// 1、使用支付宝证书
+	//_ = client.LoadAppCertPublicKeyFromFile("appPublicCert.crt")
+	//_ = client.LoadAliPayRootCertFromFile("alipayRootCert.crt")
+	//_ = client.LoadAlipayCertPublicKeyFromFile("alipayPublicCert.crt")
+	// 2、使用支付宝公钥
+	_ = client.LoadAliPayPublicKey(pay.AliPay.AlipayAliPublicKey)
 	return client, nil
 }
 
@@ -69,13 +65,13 @@ func (p *Pay) TradePreCreatePay(client *alipay.Client, sysOrder *model.Order) (*
 	// }
 	//创建支付宝订单
 	var order alipay.TradePreCreate
-	//order.NotifyURL = global.Server.AliPaySetting.ReturnURL  //支付结果放在轮询里判断
+	order.NotifyURL = global.Server.Website.BackendUrl + "/api/public/shop/alipayNotify" //回调地址
 	order.Subject = sysOrder.Subject
 	order.OutTradeNo = sysOrder.OutTradeNo
 	order.TotalAmount = sysOrder.TotalAmount
 	order.ProductCode = "FACE_TO_FACE_PAYMENT"
 	res, err := client.TradePreCreate(order)
-	//fmt.Println("TradePreCreate:", res, err)
+	//fmt.Println("alipay TradePreCreate:", res, err)
 	return res, err
 	//响应模板
 	// 	{
@@ -137,42 +133,9 @@ func (p *Pay) TradeClose(client *alipay.Client, sysOrder *model.Order) (*alipay.
 	return rsp, err
 }
 
-// 支付宝-轮询
-func (p *Pay) PollAliPay(order *model.Order, client *alipay.Client) {
-	t := time.NewTicker(10 * time.Second)
-	//defer t.Stop()
-	i := 0
-	for {
-		if i == 30 { // 未付款则超时取消交易
-			if order.TradeNo != "" {
-				_, _ = p.TradeClose(client, order) //超时，取消订单
-				//fmt.Println("支付宝取消订单结果:", res)
-			}
-			order.TradeStatus = "TRADE_CLOSED"  //更新数据库订单状态(超时已取消)
-			_ = orderService.UpdateOrder(order) //更新数据库状态
-			t.Stop()
-			return
-		}
-		<-t.C
-		rsp, _ := p.TradeQuery(client, order)
-		//fmt.Println("支付宝TradeQuery rsp.Content.TradeStatus:", rsp.TradeStatus)
-		if rsp.TradeStatus == "TRADE_SUCCESS" || rsp.TradeStatus == "TRADE_FINISHED" { //交易结束
-			order.TradeStatus = "TRADE_SUCCESS"       //交易成功
-			order.BuyerLogonId = rsp.BuyerLogonId     //买家支付宝账号
-			order.BuyerPayAmount = rsp.BuyerPayAmount //付款金额
-			_ = orderService.PaymentSuccessfullyOrderHandler(order)
-			t.Stop()
-			return
-		}
-		if rsp.TradeStatus == "WAIT_BUYER_PAY" && order.TradeStatus != "WAIT_BUYER_PAY" { //等待付款
-			order.TradeNo = rsp.TradeNo
-			_ = orderService.UpdateOrder(order) //更新数据库状态
-		}
-		i++
-	}
-}
-
-// 易支付-交易预创建（api支付）（弃用）
+// EpayPreByApi
+// 易支付-交易预创建（api支付
+// Deprecated: use EpayPreByHTML instead.
 func (p *Pay) EpayPreByApi(epayConfig model.Epay, sysOrder *model.Order) (model.EpayPreCreatePayResponse, error) {
 	var epayRes model.EpayPreCreatePayResponse
 
@@ -216,6 +179,7 @@ func (p *Pay) EpayPreByApi(epayConfig model.Epay, sysOrder *model.Order) (model.
 
 }
 
+// EpayPreByHTML
 // 易支付-交易预创建（网页支付）
 func (p *Pay) EpayPreByHTML(sysOrder *model.Order, pay *model.Pay) (*model.EpayPreCreatePayToFrontend, error) {
 	var epayRsp model.EpayPreCreatePayToFrontend
@@ -223,8 +187,8 @@ func (p *Pay) EpayPreByHTML(sysOrder *model.Order, pay *model.Pay) (*model.EpayP
 		Pid:        pay.Epay.EpayPid,
 		Type:       "", //为空则直接跳转到易支付收银台
 		OutTradeNo: sysOrder.OutTradeNo,
-		NotifyUrl:  global.Server.Website.BackendUrl + "/api/public/epayNotify",
-		ReturnUrl:  global.Server.Website.BackendUrl + "/api/public/epayNotify",
+		NotifyUrl:  global.Server.Website.BackendUrl + "/api/public/shop/epayNotify",
+		ReturnUrl:  global.Server.Website.BackendUrl + "/api/public/shop/epayNotify",
 		Name:       sysOrder.Subject,
 		Money:      sysOrder.Price,
 		//ClientIP:   "",
@@ -248,7 +212,8 @@ func (p *Pay) CreateEpaySign(epay *model.EpayPreCreatePay, pay *model.Pay) strin
 	return encrypt_plugin.Md5Encode(text, false)
 }
 
-func (p *Pay) FindPayment(pay *model.Pay) (*model.Pay, error) {
+// 查询支付参数
+func (p *Pay) FirstPayment(pay *model.Pay) (*model.Pay, error) {
 	var payQuery model.Pay
 	err := global.DB.Where(&pay).First(&payQuery).Error
 	return &payQuery, err

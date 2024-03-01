@@ -8,7 +8,6 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/common_logic"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	uuid "github.com/satori/go.uuid"
 	"gopkg.in/ini.v1"
@@ -18,9 +17,8 @@ import (
 	"strings"
 )
 
-// todo v2rayng vless 流控 问题
 func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (string, string) {
-	var nodeArr, nodeList []model.Node
+	var nodeArr []model.Node
 	//查找用户
 	//var u model.User
 	//err := global.DB.Where("subscribe_url = ? and sub_status = 1 and d + u < t", url).First(&u).Error
@@ -41,8 +39,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	var goods model.Goods
 	err = global.DB.
 		Where(&model.Goods{ID: cs.GoodsID}).
-		//Preload("Nodes", func(db *gorm.DB) *gorm.DB { return db.Order("node_order") }).
-		Preload("Nodes", "ORDER BY node_order").
+		Preload("Nodes", "enabled = 1 AND ORDER BY node_order").
 		Find(&goods).
 		Error
 	// 计算剩余天数，流量
@@ -68,7 +65,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 			Aid:      0,
 			Network:  "ws",
 			Enabled:  true,
-			NodeType: "vmess",
+			Protocol: "vmess",
 		}
 		secondNode = model.Node{
 			Remarks:  "剩余流量:" + expiredBd2 + "GB",
@@ -77,7 +74,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 			Aid:      0,
 			Network:  "ws",
 			Enabled:  true,
-			NodeType: "vmess",
+			Protocol: "vmess",
 		}
 
 	}
@@ -94,29 +91,21 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	copy(goods.Nodes[2:], goods.Nodes[0:])
 	goods.Nodes[0] = firstNode
 	goods.Nodes[1] = secondNode
-	//再插入共享的节点
-	nodeList, _, err = common_logic.CommonSqlFind[model.NodeShared, string, []model.Node]("")
-	if err == nil {
-		for _, v := range nodeList {
-			v.Enabled = true      //设为启用
-			v.IsSharedNode = true //设为共享节点
-			goods.Nodes = append(goods.Nodes, v)
-		}
-	}
 	//最后处理一些参数
 	for k, _ := range goods.Nodes {
-		//剔除禁用节点
-		if !goods.Nodes[k].Enabled {
-			continue
-		}
-		//中转节点修改ip和端口
-		if goods.Nodes[k].EnableTransfer {
+		switch goods.Nodes[k].NodeType {
+		case constant.NODE_TYPE_NORMAL: // 替换uuid
+			goods.Nodes[k].UUID = cs.SubUUID.String()
+		case constant.NODE_TYPE_TRANSFER: //中转节点修改ip和端口
 			goods.Nodes[k].Address = goods.Nodes[k].TransferAddress
 			goods.Nodes[k].Port = goods.Nodes[k].TransferPort
+		case constant.NODE_TYPE_SHARED:
+
 		}
-		// 非共享节点替换uuid
-		if !goods.Nodes[k].IsSharedNode {
-			goods.Nodes[k].UUID = cs.SubUUID.String()
+		//如果 NodeType 不是 transfer，但是transfer_address transfer_port 均不为空，也修改地址和端口
+		if goods.Nodes[k].TransferAddress != "" && goods.Nodes[k].TransferPort != 0 {
+			goods.Nodes[k].Address = goods.Nodes[k].TransferAddress
+			goods.Nodes[k].Port = goods.Nodes[k].TransferPort
 		}
 		nodeArr = append(nodeArr, goods.Nodes[k])
 	}
@@ -150,16 +139,16 @@ subHandler:
 func v2rayNG(nodes *[]model.Node) string {
 	var nodeArr []string
 	for _, v := range *nodes {
-		switch v.NodeType {
-		case constant.NODE_TYPE_VMESS:
+		switch v.Protocol {
+		case constant.NODE_PROTOCOL_VMESS:
 			if res := VmessUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
-		case constant.NODE_TYPE_VLESS, constant.NODE_TYPE_TROJAN:
+		case constant.NODE_PROTOCOL_VLESS, constant.NODE_PROTOCOL_TROJAN:
 			if res := VlessTrojanHysteriaUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
-		case constant.NODE_TYPE_SHADOWSOCKS:
+		case constant.NODE_PROTOCOL_SHADOWSOCKS:
 			if res := ShadowsocksUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
@@ -174,18 +163,18 @@ func NekoBox(nodes *[]model.Node) string {
 	var nodeArr []string
 	for _, v := range *nodes {
 
-		switch v.NodeType {
-		case constant.NODE_TYPE_VMESS:
+		switch v.Protocol {
+		case constant.NODE_PROTOCOL_VMESS:
 			if res := VmessUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
 
-		case constant.NODE_TYPE_VLESS, constant.NODE_TYPE_TROJAN, constant.NODE_TYPE_HYSTERIA:
+		case constant.NODE_PROTOCOL_VLESS, constant.NODE_PROTOCOL_TROJAN, constant.NODE_PROTOCOL_HYSTERIA:
 			if res := VlessTrojanHysteriaUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
 
-		case constant.NODE_TYPE_SHADOWSOCKS:
+		case constant.NODE_PROTOCOL_SHADOWSOCKS:
 
 			if res := ShadowsocksUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
@@ -293,22 +282,22 @@ func Shadowrocket(nodes *[]model.Node) string {
 	nodeArr = append(nodeArr, "STATUS="+(*nodes)[0].Remarks+"|"+(*nodes)[1].Remarks)
 	for _, v := range *nodes {
 
-		switch v.NodeType {
-		case constant.NODE_TYPE_VMESS, constant.NODE_TYPE_VLESS:
+		switch v.Protocol {
+		case constant.NODE_PROTOCOL_VMESS, constant.NODE_PROTOCOL_VLESS:
 			if res := VmessUrlForShadowrocket(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
 
-		case constant.NODE_TYPE_SHADOWSOCKS:
+		case constant.NODE_PROTOCOL_SHADOWSOCKS:
 
 			if res := ShadowsocksUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
-		case constant.NODE_TYPE_TROJAN:
+		case constant.NODE_PROTOCOL_TROJAN:
 			if res := TrojanUrlForShadowrocket(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
-		case constant.NODE_TYPE_HYSTERIA:
+		case constant.NODE_PROTOCOL_HYSTERIA:
 			if res := Hy2UrlForShadowrocket(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
@@ -337,8 +326,8 @@ func Surge(nodes *[]model.Node) string {
 
 	for _, v := range *nodes {
 
-		switch v.NodeType {
-		case constant.NODE_TYPE_VMESS:
+		switch v.Protocol {
+		case constant.NODE_PROTOCOL_VMESS:
 			var nodeItem []string
 			//
 			nodeItem = append(nodeItem, v.Remarks+"="+"vmess")
@@ -350,7 +339,7 @@ func Surge(nodes *[]model.Node) string {
 			//
 			nodeItem = append(nodeItem, "vmess-aead=true")
 			//tls
-			if v.Security != "" || v.Security != "none" {
+			if v.Security != "" && v.Security != "none" {
 				nodeItem = append(nodeItem, "tls=true")
 				sni := v.Address
 				if v.Sni != "" {
@@ -371,7 +360,7 @@ func Surge(nodes *[]model.Node) string {
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
 			proxyGroupFallback = append(proxyGroupFallback, v.Remarks)
-		case constant.NODE_TYPE_TROJAN:
+		case constant.NODE_PROTOCOL_TROJAN:
 			var nodeItem []string
 			nodeItem = append(nodeItem, v.Remarks+"="+"trojan")
 			nodeItem = append(nodeItem, v.Address)
@@ -392,7 +381,7 @@ func Surge(nodes *[]model.Node) string {
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
 			proxyGroupFallback = append(proxyGroupFallback, v.Remarks)
-		case constant.NODE_TYPE_HYSTERIA:
+		case constant.NODE_PROTOCOL_HYSTERIA:
 			var nodeItem []string
 			nodeItem = append(nodeItem, v.Remarks+" = "+"hysteria2")
 			nodeItem = append(nodeItem, v.Address)
@@ -404,7 +393,7 @@ func Surge(nodes *[]model.Node) string {
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
 			proxyGroupFallback = append(proxyGroupFallback, v.Remarks)
-		case constant.NODE_TYPE_SHADOWSOCKS:
+		case constant.NODE_PROTOCOL_SHADOWSOCKS:
 			if strings.HasPrefix(v.Scy, "2022") {
 				continue
 			}
@@ -494,8 +483,8 @@ func Surge(nodes *[]model.Node) string {
 func Quantumult(nodes *[]model.Node) string {
 	var nodeArr []string
 	for _, v := range *nodes {
-		switch v.NodeType {
-		case constant.NODE_TYPE_VMESS:
+		switch v.Protocol {
+		case constant.NODE_PROTOCOL_VMESS:
 			var nodeItem []string
 			nodeItem = append(nodeItem, fmt.Sprintf("vmess=%s:%d", v.Address, v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("method=%s", "chacha20-ietf-poly1305")) //surge不能为auto
@@ -527,7 +516,7 @@ func Quantumult(nodes *[]model.Node) string {
 			nodeItem = append(nodeItem, fmt.Sprintf("tag=%s", v.Remarks))
 			nodeArr = append(nodeArr, strings.Join(nodeItem, ", "))
 
-		case constant.NODE_TYPE_SHADOWSOCKS:
+		case constant.NODE_PROTOCOL_SHADOWSOCKS:
 			if strings.HasPrefix(v.Scy, "2022") {
 				continue
 			}
@@ -547,7 +536,7 @@ func Quantumult(nodes *[]model.Node) string {
 			nodeItem = append(nodeItem, fmt.Sprintf("tag=%s", v.Remarks))
 			nodeArr = append(nodeArr, strings.Join(nodeItem, ", "))
 
-		case constant.NODE_TYPE_TROJAN:
+		case constant.NODE_PROTOCOL_TROJAN:
 			var nodeItem []string
 			nodeItem = append(nodeItem, fmt.Sprintf("trojan=%s:%d", v.Address, v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", v.UUID))
@@ -611,12 +600,12 @@ func VmessUrl(node model.Node) string {
 
 func VlessTrojanHysteriaUrl(node model.Node) string {
 	var nodeUrl url.URL
-	switch node.NodeType {
-	case "vless":
+	switch node.Protocol {
+	case constant.NODE_PROTOCOL_VLESS:
 		nodeUrl.Scheme = "vless"
-	case "trojan":
+	case constant.NODE_PROTOCOL_TROJAN:
 		nodeUrl.Scheme = "trojan"
-	case "hysteria":
+	case constant.NODE_PROTOCOL_HYSTERIA:
 		nodeUrl.Scheme = "hy2"
 	}
 
@@ -675,7 +664,7 @@ func VlessTrojanHysteriaUrl(node model.Node) string {
 }
 
 func ShadowsocksUrl(node model.Node) string {
-	if node.IsSharedNode {
+	if node.NodeType != constant.NODE_TYPE_SHARED {
 		var ss url.URL
 		ss.Scheme = "ss"
 		ss.User = url.UserPassword(base64.StdEncoding.EncodeToString([]byte(node.Scy+":"+node.UUID)), "")
@@ -695,26 +684,26 @@ func ShadowsocksUrl(node model.Node) string {
 
 func ClashGenerate(node model.Node) model.ClashProxy {
 	var proxy model.ClashProxy
-	switch node.NodeType {
-	case "vmess":
+	switch node.Protocol {
+	case constant.NODE_PROTOCOL_VMESS:
 		proxy.Type = "vmess"
 		proxy.Uuid = node.UUID
 		proxy.Alterid = node.Aid
 		proxy.Cipher = "auto"
-	case "vless":
+	case constant.NODE_PROTOCOL_VLESS:
 		proxy.Type = "vless"
 		proxy.Uuid = node.UUID
 		proxy.Flow = node.VlessFlow
-	case "trojan":
+	case constant.NODE_PROTOCOL_TROJAN:
 		proxy.Type = "trojan"
 		proxy.Uuid = node.UUID
 		proxy.Sni = node.Sni
-	case "hysteria":
+	case constant.NODE_PROTOCOL_HYSTERIA:
 		proxy.Type = "hysteria2"
 		proxy.Uuid = node.UUID
 		proxy.Password = node.UUID
 		proxy.Sni = node.Sni
-	case "shadowsocks":
+	case constant.NODE_PROTOCOL_SHADOWSOCKS:
 		proxy.Type = "ss"
 		proxy.Cipher = node.Scy
 		proxy.Password = node.UUID
@@ -777,11 +766,11 @@ func VmessUrlForShadowrocket(node model.Node) string {
 	var nodeUrl url.URL
 	var user string
 
-	switch node.NodeType {
-	case constant.NODE_TYPE_VMESS:
+	switch node.Protocol {
+	case constant.NODE_PROTOCOL_VMESS:
 		nodeUrl.Scheme = "vmess"
 		user = fmt.Sprintf("%s:%s@%s:%d", node.Scy, node.UUID, node.Address, node.Port)
-	case constant.NODE_TYPE_VLESS:
+	case constant.NODE_PROTOCOL_VLESS:
 		nodeUrl.Scheme = "vless"
 		node.Scy = "auto"
 		user = fmt.Sprintf("%s:%s@%s:%d", node.Scy, node.UUID, node.Address, node.Port)
@@ -797,8 +786,8 @@ func VmessUrlForShadowrocket(node model.Node) string {
 	//values.Add("mux", "1")             //多路复用
 	values.Add("remark", node.Remarks) //节点名
 
-	switch node.NodeType {
-	case constant.NODE_TYPE_VMESS:
+	switch node.Protocol {
+	case constant.NODE_PROTOCOL_VMESS:
 		values.Add("alterId", fmt.Sprintf("%d", node.Aid)) //vmess alterId
 	}
 

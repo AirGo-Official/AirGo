@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	startCmd.Flags().StringVarP(&startConfigPath, "config", "c", "config.yaml", "config.yaml directory to read from")
+	startCmd.Flags().StringVar(&startConfigPath, "config", "config.yaml", "config.yaml directory to read from")
 }
 
 var (

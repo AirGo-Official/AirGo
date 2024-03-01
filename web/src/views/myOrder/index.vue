@@ -36,7 +36,7 @@
             </el-button>
             <el-button v-if="scope.row.trade_status === constantStore.ORDER_STATUS_WAIT_BUYER_PAY || scope.row.trade_status === constantStore.ORDER_STATUS_CREATED"
                        size="small" text type="primary"
-                       @click="toPay(scope.row)">{{$t('message.common.purchase')}}
+                       @click="toPay(scope.row)">{{$t('message.adminShop.purchase')}}
             </el-button>
           </template>
         </el-table-column>
@@ -137,7 +137,7 @@ const showOrderInfo=(row:Order)=>{
 const toPay = (row: Order) => {
   //当前订单存入pinia
   shopStoreData.currentOrder.value = row
-  PurchaseDialogRef.value.openDialog()
+  PurchaseDialogRef.value.openDialog('fromMyOrder')
 }
 
 //打开二维码弹窗

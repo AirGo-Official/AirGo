@@ -130,7 +130,6 @@ function onOpenSortDialog() {
 //加载时
 onMounted(() => {
   shopStore.getGoodsList() //获取全部商品
-  nodeStore.getAllNode()  //获取全部节点
 });
 
 

@@ -33,4 +33,7 @@ const (
 
 	// 用户服务
 	ERROR_CUSTOMER_SERVICE_NO_RENEWAL = "Customer service is not allowed to be renewed."
+
+	//节点
+	ERROR_INVALID_NODE_TYPE = "Invalid node type."
 )

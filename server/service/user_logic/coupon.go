@@ -1,17 +1,25 @@
 package user_logic
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
 type Coupon struct{}
 
 var couponService *Coupon
+
+func Show(data any) {
+	b, _ := json.Marshal(data)
+	fmt.Println(string(b))
+}
 
 // 查询优惠券，预加载商品
 func (c *Coupon) GetCouponByName(couponName string) (*model.Coupon, error) {
@@ -29,42 +37,55 @@ func (c *Coupon) GetCouponByName(couponName string) (*model.Coupon, error) {
 	return &coupon, err
 }
 
-func (c *Coupon) VerifyCoupon(order *model.Order) (*model.Coupon, error) {
+func (c *Coupon) VerifyCoupon(preOrder *model.Order) string {
+	total, _ := strconv.ParseFloat(preOrder.TotalAmount, 64)
 	//查询折扣
-	coupon, err := c.GetCouponByName(order.CouponName)
+	coupon, err := c.GetCouponByName(preOrder.CouponName)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New(constant.ERROR_COUPON_NOT_EXIST)
+			return constant.ERROR_COUPON_NOT_EXIST
 		} else {
-			return nil, errors.New(constant.ERROR_COUPON_QUERY_ERROR)
+			return constant.ERROR_COUPON_QUERY_ERROR
 		}
 	}
 	//判断是否关联当前商品
 	var ok = false
 	for k := range coupon.Goods {
-		if coupon.Goods[k].ID == order.GoodsID {
+		if coupon.Goods[k].ID == preOrder.GoodsID {
 			ok = true //匹配到
 			break
 		}
 	}
 	if !ok {
-		return nil, errors.New(constant.ERROR_COUPON_NOT_APPLICABLE)
+		return constant.ERROR_COUPON_NOT_APPLICABLE
 	}
 	//判断有效期
 	if time.Now().After(coupon.ExpiredAt) {
-		return nil, errors.New(constant.ERROR_COUPON_HAS_EXPIRED)
+		return constant.ERROR_COUPON_HAS_EXPIRED
+	}
+	//判断最低使用金额
+	if total < coupon.MinAmount {
+		return constant.ERROR_COUPON_NOT_APPLICABLE
 	}
 	//判断使用次数
-	//orderArr, _, err := service.CommonSqlFind[model.Order, string, []model.Order](fmt.Sprintf("user_id = %d AND coupon_id = %d", order.UserID, c.ID))
 	var orders []model.Order
-	err = global.DB.Where(&model.Order{UserID: order.UserID, CouponID: order.CouponID}).Find(&orders).Error
+	err = global.DB.
+		Where(&model.Order{UserID: preOrder.UserID, CouponID: preOrder.CouponID}).
+		Where("trade_status <> ?", constant.ORDER_STATUS_TRADE_CLOSED). //订单关闭，不计算折扣码使用次数
+		Find(&orders).Error
 
 	if err != nil {
-		return nil, errors.New(constant.ERROR_COUPON_QUERY_ERROR)
+		return constant.ERROR_COUPON_QUERY_ERROR
 	}
 	if int64(len(orders)) >= coupon.Limit {
-		return nil, errors.New(constant.ERROR_COUPON_COUNT_EXHAUSTED)
+		return constant.ERROR_COUPON_COUNT_EXHAUSTED
+	}
+	//处理折扣价格
+	if coupon.DiscountRate != 0 {
+		preOrder.CouponAmount = fmt.Sprintf("%.2f", total*coupon.DiscountRate)
+		preOrder.CouponID = coupon.ID
+		preOrder.TotalAmount = fmt.Sprintf("%.2f", total-total*coupon.DiscountRate)
 	}
 	//返回
-	return coupon, nil
+	return ""
 }

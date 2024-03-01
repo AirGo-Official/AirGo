@@ -52,15 +52,15 @@
           <div>
             <el-table :data="adminShopStoreData.payList.value" stripe style="width: 100%;flex: 1;">
               <el-table-column type="index" :label="$t('message.adminShop.PayInfo.index')" fixed show-overflow-tooltip width="60px"/>
-              <el-table-column prop="id" :label="$t('message.adminShop.PayInfo.id')" fixed show-overflow-tooltip width="60px"/>
-              <el-table-column prop="name" :label="$t('message.adminShop.PayInfo.name')" fixed show-overflow-tooltip width="120px"/>
-              <el-table-column prop="pay_type" :label="$t('message.adminShop.PayInfo.pay_type')" show-overflow-tooltip fixed width="80px"/>
-              <el-table-column prop="pay_logo_url" :label="$t('message.adminShop.PayInfo.pay_logo_url')" fixed show-overflow-tooltip width="120px">
+              <el-table-column prop="id" :label="$t('message.adminShop.PayInfo.id')" show-overflow-tooltip width="60px"/>
+              <el-table-column prop="name" :label="$t('message.adminShop.PayInfo.name')" show-overflow-tooltip width="200px"/>
+              <el-table-column prop="pay_type" :label="$t('message.adminShop.PayInfo.pay_type')" show-overflow-tooltip width="120px"/>
+              <el-table-column prop="pay_logo_url" :label="$t('message.adminShop.PayInfo.pay_logo_url')" show-overflow-tooltip width="120px">
                 <template #default="{row}">
                   <el-image :src="row.pay_logo_url" style="width: 40px;height: 40px"></el-image>
                 </template>
               </el-table-column>
-              <el-table-column prop="status" :label="$t('message.adminShop.PayInfo.status')" fixed show-overflow-tooltip width="80px">
+              <el-table-column prop="status" :label="$t('message.adminShop.PayInfo.status')" show-overflow-tooltip width="80px">
                 <template #default="{row}">
                   <el-button v-if="row.status" type="warning">{{$t('message.common.enable')}}</el-button>
                   <el-button v-else type="info">{{$t('message.common.disable')}}</el-button>
@@ -86,10 +86,10 @@
               <el-input v-model.number="serverConfig.serverConfig.value.email.email_port" type="number"/>
             </el-form-item>
             <el-form-item :label="$t('message.adminServer.Server.email_from')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.email.email_from"/>
+              <el-input v-model="serverConfig.serverConfig.value.email.email_from" placeholder="admin@qq.com"/>
             </el-form-item>
             <el-form-item :label="$t('message.adminServer.Server.email_from_alias')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.email.email_from_alias"/>
+              <el-input v-model="serverConfig.serverConfig.value.email.email_from_alias" placeholder="admin@qq.com"/>
             </el-form-item>
             <el-form-item :label="$t('message.adminServer.Server.email_nickname')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.email.email_nickname" placeholder="Admin"/>
@@ -156,7 +156,8 @@
         </el-tab-pane>
 
         <el-tab-pane :label="$t('message.adminServer.tapNotice')" name="5">
-          <el-form :model="serverConfig.serverConfig.value.notice" label-width="120px" label-position="top">
+          <el-empty description="开发中，developing" />
+          <el-form v-if="false" :model="serverConfig.serverConfig.value.notice" label-width="120px" label-position="top">
               <el-form-item :label="$t('message.adminServer.Server.bot_token')" class="label">
                 <el-input v-model="serverConfig.serverConfig.value.notice.bot_token" placeholder="1234567890:AAAAABBBBBCCCCCDDDDFFFFGGGHHHJJKKLL"/>
               </el-form-item>
@@ -255,6 +256,7 @@ import {useUserStore} from "/@/stores/user_logic/userStore";
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { usePublicStore } from "/@/stores/publicStore";
 import { useI18n } from "vue-i18n";
+import { useConstantStore } from "/@/stores/constantStore";
 
 const apiStore = useApiStore()
 const apiStoreData = storeToRefs(apiStore)
@@ -267,13 +269,14 @@ const adminShopStoreData = storeToRefs(adminShopStore)
 const publicStore = usePublicStore()
 const userStore = useUserStore()
 const {t} = useI18n()
+const constantStore = useConstantStore()
 
 
 const state = reactive({
   currentTapName:"1",
   isShowTestEmailDialog: false,
   emailParams: {
-    email_type: "EmailTypeUserRegister",
+    email_type: constantStore.EMAIL_TYPE_TEST,
     target_email: "",
   },
   loading: false,
@@ -289,7 +292,6 @@ const state = reactive({
   migrationResult:"",
 });
 const tap=(tapName:string)=>{
-console.log("name:",tapName)
   switch (tapName){
     case "":
       break

@@ -2,59 +2,67 @@ export default {
   adminShop:{
     addGoods:"Add goods",
     modifyGoods:"Modify goods",
+    selectGoods:"Select goods",
     sort:"Sort",
+    purchase:"Purchase",
+    resultText1:"Please return to the homepage to check the service status",
+    resultText2:"请尽快完成支付",
+    resultText3:"Please complete the payment as soon as possible",
+    resultText4:"Go to Alipay",
+    resultText5:"Go to EPay",
+    resultText6:"Request timeout, please check my order later for any order records",
     Goods:{
       index:"index",
-      created_at: "created_at",
-      updated_at: "updated_at",
+      created_at: "created at",
+      updated_at: "updated at",
       id: "id",
-      good_order: "good_order",    //排序
+      good_order: "good order",    //排序
       cover_image:"cover image",//封面图片
       subject: "subject",       // 标题
       des: "des",     //商品描述
       price: "price",  // 商品价格
-      is_show: "is_show", //是否显示
-      is_sale: "is_sale",//是否售卖，是否上架
-      is_renew: "is_renew",//是否可续费
+      is_show: "is show", //是否显示
+      is_sale: "is sale",//是否售卖，是否上架
+      is_renew: "is renew",//是否可续费
       quota: "quota",//限购数量
       stock: "stock",//库存
-      goods_type: "goods_type",    //类型，general=普通商品 subscribe=订阅 recharge=充值
-      deliver_type: "deliver_type",  //发货类型，none=不发货，auto=自动发货，manual=手动发货
-      deliver_text: "deliver_text",  //发货内容;type:text
+      goods_type: "goods type",    //类型，general=普通商品 subscribe=订阅 recharge=充值
+      deliver_type: "deliver type",  //发货类型，none=不发货，auto=自动发货，manual=手动发货
+      deliver_text: "deliver text",  //发货内容;type:text
       //订阅参数
-      total_bandwidth: "total_bandwidth", //总流量
-      node_connector: "node_connector", //可连接客户端数量
-      node_speed_limit: "node_speed_limit",// 限速Mbps（Mbps）
+      total_bandwidth: "total bandwidth", //总流量
+      node_connector: "node connector", //可连接客户端数量
+      node_speed_limit: "node speed limit",// 限速Mbps（Mbps）
       //充值参数
-      recharge_amount: "recharge_amount",  //充值金额
+      recharge_amount: "recharge amount",  //充值金额
       nodes: "nodes",
     },
     PayInfo:{
       index:"index",
-      created_at: "created_at",
-      updated_at: "updated_at",
+      created_at: "created at",
+      updated_at: "updated at",
       id: "id",
       name: "name",
-      pay_type: "pay_type",
-      pay_logo_url: "pay_logo_url",
+      pay_type: "pay type",
+      pay_logo_url: "pay logo url",
       status: "status",
       alipay: "alipay",
       epay: "epay",
     },
     Alipay:{
-      alipay_app_id: "alipay_app_id",
-      alipay_return_url: "alipay_return_url",
-      alipay_app_private_key: "alipay_app_private_key",
-      alipay_ali_public_key: "alipay_ali_public_key",
-      alipay_encrypt_key: "alipay_encrypt_key",
+      alipay_app_id: "alipay app id",
+      alipay_return_url: "alipay return url",
+      alipay_app_private_key: "alipay app private key",
+      alipay_ali_public_key: "alipay ali public key",
+      alipay_encrypt_key: "alipay encrypt key",
     },
     Epay:{
-      epay_pid: "epay_pid",
-      epay_key: "epay_key",
-      epay_api_url: "epay_api_url",
-      epay_return_url: "epay_return_url",
-      epay_notify_url: "epay_notify_url",
-      epay_type: "epay_type",
+      epay_pid: "epay pid",
+      epay_key: "epay key",
+      epay_api_url: "epay api url",
+      epay_return_url: "epay return url",
+      epay_notify_url: "epay notify url",
+      epay_type: "epay type",
     },
     //
     coupon:"Coupon",
@@ -63,15 +71,15 @@ export default {
     modifyCoupon:"Modify coupon",
     Coupon:{
       index:"index",
-      created_at: "created_at",
-      updated_at: "updated_at",
+      created_at: "created at",
+      updated_at: "updated at",
       id:"id",
-      name: "name",
-      discount_rate:"discount_rate",
+      name: "coupon name",
+      discount_rate:"discount rate",
       limit:"limit",
-      expired_at: "expired_at",
+      expired_at: "expired at",
+      min_amount:"min amount",
       goods:"goods",
-      checked_goods: "checked_goods",
     }
   }
 }

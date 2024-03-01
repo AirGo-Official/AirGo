@@ -41,7 +41,7 @@ func InitializeAll(startConfigPath string) {
 	router.ListenAndServe() //启动路由监听
 }
 
-// InitializeUpdate 升级核心
+// InitializeUpdate 升级核心时的初始化
 func InitializeUpdate(startConfigPath string) {
 	InitLogrus()               //logrus
 	InitViper(startConfigPath) //初始化Viper
@@ -87,6 +87,13 @@ func InitializeUpdate(startConfigPath string) {
 	}
 	fmt.Println("升级核心完成")
 
+}
+
+// InitializeDB 仅加载数据库
+func InitializeDB(startConfigPath string) {
+	InitLogrus()               //logrus
+	InitViper(startConfigPath) //初始化Viper
+	database.StartGorm()       //gorm连接数据库
 }
 func InitLogrus() {
 	global.Logrus = logrus_plugin.InitLogrus()

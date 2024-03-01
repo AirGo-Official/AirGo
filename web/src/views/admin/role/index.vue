@@ -31,15 +31,6 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-          background
-          :page-sizes="[10, 30, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          @size-change="onHandleSizeChange" @current-change="onHandleCurrentChange" class="mt15"
-          v-model:current-page="state.queryParams.page_num"
-          v-model:page-size="state.queryParams.page_size"
-          :total="roleStoreData.roleList.value.total">
-      </el-pagination>
     </div>
     <RoleDialog ref="roleDialogRef" @refresh="getRoleList()"/>
   </div>
@@ -66,11 +57,6 @@ const {t} = useI18n()
 //定义参数
 const state = reactive({
   loading: false,
-  queryParams: {
-    search: '',
-    page_num: 1,
-    page_size: 30,
-  },
 })
 // 打开新增角色弹窗
 const onOpenAddRole = (type: string) => {
@@ -95,18 +81,9 @@ const deleteRole = (row: RoleInfo) => {
 };
 //查询
 const getRoleList = () => {
-  roleStore.getRoleList(state.queryParams)
+  roleStore.getRoleList()
 }
-// 分页改变
-const onHandleSizeChange = (val: number) => {
-  state.queryParams.page_size = val;
-  getRoleList()
-};
-// 分页改变
-const onHandleCurrentChange = (val: number) => {
-  state.queryParams.page_num = val;
-  getRoleList()
-};
+
 // 页面加载时
 onMounted(() => {
   getRoleList()

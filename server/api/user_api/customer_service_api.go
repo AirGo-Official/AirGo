@@ -58,13 +58,9 @@ func PushCustomerService(ctx *gin.Context) {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	res, err := customerService.FirstCustomerService(&model.CustomerService{ID: cs.CustomerServiceID, UserID: uID})
+	res, err := customerService.FirstCustomerService(&model.CustomerService{ID: cs.CustomerServiceID, UserID: uID, IsRenew: true, ServiceStatus: true})
 	if err != nil {
 		response.Fail(err.Error(), nil, ctx)
-		return
-	}
-	if !res.IsRenew {
-		response.Fail(constant.ERROR_CUSTOMER_SERVICE_NO_RENEWAL, nil, ctx)
 		return
 	}
 	err = customerService.UpdateCustomerService(res.ID, map[string]any{

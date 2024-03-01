@@ -31,7 +31,6 @@ func (o *Order) StartTask() {
 	go func() {
 		for v := range ch {
 			preOrder := v.(*model.Order)
-			// todo 优化逻辑，出错时进行库存补偿
 			switch preOrder.OrderType {
 			case constant.ORDER_TYPE_NEW:
 				// 1、查找商品
@@ -86,9 +85,8 @@ func (o *Order) StartTask() {
 					Delete(fmt.Sprintf("%s%d:%d", constant.CACHE_USERID_AND_CUSTOMERSERVICEID, preOrder.UserID, preOrder.CustomerServiceID))
 
 			case constant.ORDER_TYPE_RESTORE:
-				// 1、判断是否是续费订单
+				// 判断是否是续费订单
 				if preOrder.CustomerServiceID == 0 {
-					// 2、查找商品
 					goods, err := shopService.FirstGoods(&model.Goods{ID: preOrder.GoodsID})
 					if err == nil {
 						// 库存补偿
@@ -97,7 +95,7 @@ func (o *Order) StartTask() {
 						_ = shopService.UpdateGoods(goods)
 					}
 				}
-				// 4、更新订单，订单关闭
+				// 更新订单，订单关闭
 				preOrder.TradeStatus = constant.ORDER_STATUS_TRADE_CLOSED
 				_ = o.UpdateOrder(preOrder)
 			}
@@ -139,10 +137,11 @@ func (o *Order) PreCheckOrder(orderReq *model.Order) error {
 			return errors.New(constant.ERROR_DUPLICATE_ORDER)
 		}
 		// 检查服务
-		cs, err := customerService.FirstCustomerService(&model.CustomerService{UserID: orderReq.CustomerServiceID})
+		cs, err := customerService.FirstCustomerService(&model.CustomerService{ID: orderReq.CustomerServiceID, UserID: orderReq.UserID})
 		if err != nil {
 			return err
 		}
+		//是否允许续费
 		if !cs.IsRenew {
 			return errors.New(constant.ERROR_CUSTOMER_SERVICE_NO_RENEWAL)
 		}
@@ -151,6 +150,7 @@ func (o *Order) PreCheckOrder(orderReq *model.Order) error {
 		if err != nil {
 			return err
 		}
+		//原商品是否在售
 		if !goods.IsSale {
 			return errors.New(constant.ERROR_GOODS_NOT_SALE)
 		}
@@ -173,21 +173,21 @@ func (o *Order) CheckQuota(orderReq *model.Order, goods *model.Goods) (error, bo
 }
 
 // 订单预处理，计算价格
-func (o *Order) PreHandleOrder(orderReq *model.Order) (*model.Order, error) {
+func (o *Order) PreHandleOrder(orderReq *model.Order) (*model.Order, string, error) {
 	// 判断订单类型
 	var preOrder model.Order
+	var msg string
 	switch orderReq.OrderType {
 	case constant.ORDER_TYPE_NEW:
-		// TODO 加缓存
 		//通过商品id查找商品
 		goods, err := shopService.FirstGoods(&model.Goods{ID: orderReq.GoodsID})
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
 		//构造系统订单参数
 		price, err := strconv.ParseFloat(goods.Price, 64)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
 		if orderReq.Duration <= 0 {
 			orderReq.Duration = 1
@@ -215,6 +215,8 @@ func (o *Order) PreHandleOrder(orderReq *model.Order) (*model.Order, error) {
 			Price:    goods.Price,
 			Duration: orderReq.Duration,
 
+			//CustomerServiceID: 0,
+
 			//PayID:           0,
 			//PayType:         "",
 			//PayInfo:         model.PreCreatePayToFrontend{},
@@ -223,17 +225,14 @@ func (o *Order) PreHandleOrder(orderReq *model.Order) (*model.Order, error) {
 			//CouponID:        receiveOrder.CouponID,
 			CouponName: orderReq.CouponName,
 		}
-
-		// todo 优化Amount 参数
 	case constant.ORDER_TYPE_RENEW:
 		// 查找用户服务
 		cs, err := customerService.FirstCustomerService(&model.CustomerService{UserID: orderReq.UserID, ID: orderReq.CustomerServiceID})
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
-		if !cs.ServiceStatus {
-			return nil, errors.New("The service has been terminated")
-		}
+		//fmt.Println("构造系统订单参数:")
+		//Show(cs)
 		// 构造系统订单参数
 		preOrder = model.Order{
 			OrderType:      constant.ORDER_TYPE_RENEW,
@@ -257,6 +256,8 @@ func (o *Order) PreHandleOrder(orderReq *model.Order) (*model.Order, error) {
 			Price:    cs.Price,
 			Duration: cs.Duration,
 
+			CustomerServiceID: cs.ID,
+
 			//PayID:        0,
 			//PayType:      "",
 			//PayInfo:      model.PreCreatePayToFrontend{},
@@ -266,25 +267,14 @@ func (o *Order) PreHandleOrder(orderReq *model.Order) (*model.Order, error) {
 			//CouponName:   "",
 		}
 	default:
-		return nil, errors.New("Invalid order params")
+		return nil, "", errors.New("Invalid order params")
 
 	}
-
 	//折扣码处理
 	if preOrder.CouponName != "" {
-		total, _ := strconv.ParseFloat(preOrder.TotalAmount, 64)
-		coupon, err := couponService.VerifyCoupon(&preOrder)
-		if err != nil {
-			return nil, err
-		}
-		if coupon.DiscountRate != 0 {
-			preOrder.CouponAmount = fmt.Sprintf("%.2f", total*coupon.DiscountRate)
-			preOrder.CouponID = coupon.ID
-			total = total - total*coupon.DiscountRate //total-折扣码
-		}
-		preOrder.TotalAmount = fmt.Sprintf("%.2f", total)
+		msg = couponService.VerifyCoupon(&preOrder)
 	}
-	return &preOrder, nil
+	return &preOrder, msg, nil
 }
 
 // 订单预创建，生成系统订单
@@ -299,6 +289,13 @@ func (o *Order) UpdateOrder(order *model.Order) error {
 	return global.DB.Transaction(func(tx *gorm.DB) error {
 		return tx.Save(&order).Error
 	})
+}
+
+func (o *Order) FirstUserOrder(orderParams *model.Order) (*model.Order, error) {
+	var order model.Order
+	err := global.DB.Where(&orderParams).First(&order).Error
+	return &order, err
+
 }
 
 // 获取用户订单列表
@@ -362,9 +359,18 @@ func (o *Order) GoodsTypeSubscribeOrderHandler(order *model.Order) error {
 		}
 		// 更新客户服务
 		cs.ServiceStatus = true
-		//cs.ServiceStartAt = time.Now()
-		cs.ServiceEndAt = cs.ServiceEndAt.AddDate(0, int(cs.Duration), 0)
-		return customerService.SaveCustomerService(cs)
+		//如果没到期，就追加有效期，否则从当天开始设置开始时间
+		if cs.ServiceStatus {
+			cs.ServiceEndAt = cs.ServiceEndAt.AddDate(0, int(cs.Duration), 0)
+		} else {
+			cs.ServiceEndAt = time.Now().AddDate(0, int(cs.Duration), 0)
+		}
+		err = customerService.SaveCustomerService(cs)
+		if err != nil {
+			return err
+		}
+		//更新数据库订单状态
+		return o.UpdateOrder(order)
 	default:
 		return errors.New(constant.ERROR_INVALID_ORDER_TYPE)
 	}

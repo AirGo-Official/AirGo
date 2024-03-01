@@ -6,6 +6,6 @@ declare interface Coupon {
     discount_rate: number;
     limit: number;
     expired_at: string;
+    min_amount:number
     goods:Goods[]
-    checked_goods: number[];
 }

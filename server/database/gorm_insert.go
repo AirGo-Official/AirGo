@@ -158,8 +158,8 @@ func InsertIntoGoods() error {
 }
 func InsertIntoNode() error {
 	nodeData := []model.Node{
-		{ID: 1, Remarks: "测试节点1", Address: "www.10010.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, TrafficRate: 1},
-		{ID: 2, Remarks: "测试节点2", Address: "www.10086.com", Path: "/path", Port: 5566, NodeType: "vless", Enabled: true, TrafficRate: 1},
+		{ID: 1, Remarks: "测试节点1", Address: "www.10010.com", Path: "/path", Port: 5566, NodeType: constant.NODE_TYPE_NORMAL, Protocol: constant.NODE_PROTOCOL_VLESS, Enabled: true, TrafficRate: 1},
+		{ID: 2, Remarks: "测试节点2", Address: "www.10086.com", Path: "/path", Port: 5566, NodeType: constant.NODE_TYPE_NORMAL, Protocol: constant.NODE_PROTOCOL_VLESS, Enabled: true, TrafficRate: 1},
 	}
 	if err := global.DB.Create(&nodeData).Error; err != nil {
 		return errors.New("node表数据初始化失败!")
