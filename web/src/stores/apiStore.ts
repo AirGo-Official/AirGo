@@ -27,6 +27,7 @@ export const useApiStore = defineStore("apiStore", {
             getUserList:{path: adminApiPre + "/user/getUserList", method: "post"} as ApiItem,
             updateUser:{path: adminApiPre + "/user/updateUser", method: "post"} as ApiItem,
             deleteUser:{path: adminApiPre + "/user/deleteUser", method: "delete"} as ApiItem,
+            userSummary:{path: adminApiPre + "/user/userSummary", method: "post"} as ApiItem,
 
             // customerService
             getCustomerServiceList:{path: adminApiPre + "/customerService/getCustomerServiceList", method: "post"} as ApiItem,
@@ -76,7 +77,7 @@ export const useApiStore = defineStore("apiStore", {
 
             // order
             getOrderList:{path: adminApiPre + "/order/getOrderList", method: "post"} as ApiItem,
-            getOrderStatistics:{path: adminApiPre + "/order/getOrderStatistics", method: "post"} as ApiItem,
+            orderSummary:{path: adminApiPre + "/order/orderSummary", method: "post"} as ApiItem,
             updateOrder:{path: adminApiPre + "/order/updateOrder", method: "post"} as ApiItem,
 
             // pay

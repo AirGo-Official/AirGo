@@ -85,7 +85,7 @@ func GetNodeList(ctx *gin.Context) {
 	response.OK("GetNodeList success", res, ctx)
 }
 
-// 查询节点流量
+// 获取节点列表，带流量信息
 func GetNodeListWithTraffic(ctx *gin.Context) {
 	var params model.QueryParams
 	err := ctx.ShouldBind(&params)
@@ -94,6 +94,7 @@ func GetNodeListWithTraffic(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
+	params.TableName = "node"
 	res, err := nodeService.GetNodeListWithTraffic(&params)
 	if err != nil {
 		global.Logrus.Error(err.Error())

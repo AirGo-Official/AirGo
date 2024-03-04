@@ -105,7 +105,6 @@ func InsertIntoRole() error {
 func InsertIntoUserAndRole() error {
 	userAndRoleData := []model.UserAndRole{
 		{UserID: 1, RoleID: 1},
-		{UserID: 2, RoleID: 2},
 	}
 	if err := global.DB.Create(&userAndRoleData).Error; err != nil {
 		return errors.New("user_and_role_data表数据初始化失败!")
@@ -132,7 +131,6 @@ func InsertIntoRoleAndMenu() error {
 		{RoleID: 1, MenuID: 15},
 		{RoleID: 1, MenuID: 16},
 		{RoleID: 1, MenuID: 17},
-		{RoleID: 1, MenuID: 18},
 		//普通用户的权限
 		{RoleID: 2, MenuID: 12},
 		{RoleID: 2, MenuID: 13},

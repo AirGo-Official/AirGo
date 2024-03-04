@@ -45,6 +45,10 @@ golang, gin, gorm
     <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/5.png">
     <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/6.png">
 </table>
+<table>
+<tr>
+    <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/7.png">
+</table>
 
 
 TG群组：[https://t.me/AirGo_Group](https://t.me/AirGo_Group)

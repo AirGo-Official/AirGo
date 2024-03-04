@@ -37,9 +37,9 @@
                   <el-descriptions-item :label="$t('message.adminUser.CustomerService.subject')">
                     {{ customerServiceStoreData.customerService.value.subject }}</el-descriptions-item>
                   <el-descriptions-item :label="$t('message.adminUser.CustomerService.service_start_at')">
-                    {{ customerServiceStoreData.customerService.value.service_start_at }}</el-descriptions-item>
+                    {{ DateStrToTime(customerServiceStoreData.customerService.value.service_start_at) }}</el-descriptions-item>
                   <el-descriptions-item :label="$t('message.adminUser.CustomerService.service_end_at')">
-                    {{ customerServiceStoreData.customerService.value.service_end_at }}</el-descriptions-item>
+                    {{ DateStrToTime(customerServiceStoreData.customerService.value.service_end_at) }}</el-descriptions-item>
                   <el-descriptions-item :label="$t('message.adminUser.CustomerService.duration')">
                     {{ customerServiceStoreData.customerService.value.duration }}</el-descriptions-item>
                   <el-descriptions-item :label="$t('message.adminUser.CustomerService.renewal_amount')">

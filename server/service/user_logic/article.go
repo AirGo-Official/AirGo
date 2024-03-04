@@ -21,7 +21,8 @@ func (a *Article) GetDefaultArticle() (*model.CommonDataResp, error) {
 	params := model.QueryParams{
 		TableName: "article",
 		FieldParamsList: []model.FieldParamsItem{
-			{Operator: "",
+			{
+				Operator:       "",
 				Field:          "id",
 				Condition:      "=",
 				ConditionValue: "1",

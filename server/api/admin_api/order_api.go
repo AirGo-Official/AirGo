@@ -32,16 +32,16 @@ func GetOrderList(ctx *gin.Context) {
 }
 
 // 获取订单统计
-func GetOrderStatistics(ctx *gin.Context) {
+func OrderSummary(ctx *gin.Context) {
 	var params model.QueryParams
 	err := ctx.ShouldBind(&params)
-	res, err := orderService.GetMonthOrderStatistics(&params)
+	res, err := orderService.OrderSummary(&params)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	response.OK("GetOrderStatistics success", res, ctx)
+	response.OK("OrderSummary success", res, ctx)
 }
 
 // 更新用户订单

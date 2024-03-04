@@ -42,3 +42,11 @@ declare interface OrdersWithTotal {
     total_amount: number;
     total: number;
 }
+declare interface OrderSummary {
+    date:string
+    order_total:number
+    income_total:number
+    general_total:number
+    recharge_total:number
+    subscribe_total:number
+}

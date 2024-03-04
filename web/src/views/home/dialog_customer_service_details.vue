@@ -59,9 +59,6 @@ const openDialog = () => {
   getSubTrafficList().then(()=>{
     initLineChart(trafficStoreData.trafficLineChart.value.xAxis,trafficStoreData.trafficLineChart.value.u,trafficStoreData.trafficLineChart.value.d);
   })
-  // setTimeout(()=>{
-  //
-  // },1000)
 };
 const closeDialog = () => {
   state.isShowDialog = false;

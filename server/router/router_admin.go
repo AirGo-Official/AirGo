@@ -16,6 +16,7 @@ func InitAdminRouter(RouterGroup *gin.RouterGroup) {
 		userAdminRouter.POST("/getUserList", admin_api.GetUserlist) //获取用户列表
 		userAdminRouter.POST("/updateUser", admin_api.UpdateUser)   //修改用户
 		userAdminRouter.DELETE("/deleteUser", admin_api.DeleteUser) //删除用户
+		userAdminRouter.POST("/userSummary", admin_api.UserSummary) //获取订单统计
 	}
 	// customerService
 	customerServiceAdminRouter := adminRouter.Group("/customerService")
@@ -79,9 +80,9 @@ func InitAdminRouter(RouterGroup *gin.RouterGroup) {
 	// order
 	orderAdminRouter := adminRouter.Group("/order")
 	{
-		orderAdminRouter.POST("/getOrderList", admin_api.GetOrderList)             //获取全部订单，分页获取
-		orderAdminRouter.POST("/getOrderStatistics", admin_api.GetOrderStatistics) //获取订单统计
-		orderAdminRouter.POST("/updateOrder", admin_api.UpdateOrder)               //更新用户订单
+		orderAdminRouter.POST("/getOrderList", admin_api.GetOrderList) //获取订单列表
+		orderAdminRouter.POST("/orderSummary", admin_api.OrderSummary) //获取订单统计
+		orderAdminRouter.POST("/updateOrder", admin_api.UpdateOrder)   //更新用户订单
 	}
 	// pay
 	payAdminRouter := adminRouter.Group("/pay")

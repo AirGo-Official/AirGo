@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm/clause"
 	"os"
 	"strings"
+	"time"
 )
 
 type User struct{}
@@ -128,4 +129,32 @@ func (u *User) ResetAdminPassword() {
 		os.Exit(0)
 	}
 
+}
+
+func (u *User) UserSummary(params *model.QueryParams) (*[]model.UserSummary, error) {
+	//处理查询时间
+	var startTime, endTime time.Time
+	startTime, err := time.Parse("2006-01-02 15:04:05", params.FieldParamsList[0].ConditionValue)
+	if err != nil {
+		return nil, err
+	}
+	endTime, _ = time.Parse("2006-01-02 15:04:05", params.FieldParamsList[1].ConditionValue)
+	if err != nil {
+		return nil, err
+	}
+	const (
+		sql1 = `SELECT
+DATE(created_at) as date,
+COUNT(id) AS register_total
+	`
+		sql2 = "FROM `user`"
+	)
+	sql3 := fmt.Sprintf(" WHERE created_at > '%s' AND created_at < '%s'  GROUP BY date", startTime, endTime)
+	var userSummary []model.UserSummary
+	err = global.DB.
+		Raw(sql1 + sql2 + sql3).
+		Scan(&userSummary).
+		Error
+	//fmt.Println("result:", userSummary, "err:", err)
+	return &userSummary, err
 }

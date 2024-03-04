@@ -26,6 +26,12 @@ export const useAdminUserStore = defineStore('adminUserStore', {
       ] as FieldParams[],
       pagination: { page_num: 1, page_size: 1, order_by: 'id ASC', } as Pagination,//分页参数
     } as QueryParams,
+    userSummary:{
+        lastMonth:[] as UserSummary[],
+        thisMonth:[] as UserSummary[],
+    }
+
+
   }),
   actions: {
     // 重置数据
@@ -73,6 +79,15 @@ export const useAdminUserStore = defineStore('adminUserStore', {
         this.checkedRoleIDs = []
         this.checkedRoleIDs.push(item.id)
       })
+    },
+    async getUserSummary(params:QueryParams,m:number){
+      let mm = new Date().getMonth()
+      const res = await request(apiStore.adminApi.userSummary,params)
+      if (m === (mm+1)){
+        this.userSummary.thisMonth = res.data
+      } else {
+        this.userSummary.lastMonth = res.data
+      }
     },
   },
 });

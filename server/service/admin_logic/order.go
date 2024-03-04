@@ -1,6 +1,7 @@
 package admin_logic
 
 import (
+	"fmt"
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
@@ -12,35 +13,6 @@ import (
 type Order struct{}
 
 var orderService *Order
-
-func (o *Order) GetMonthOrderStatistics(params *model.QueryParams) (*model.OrderStatistics, error) {
-	var startTime, endTime time.Time
-	//时间格式转换
-	startTime, err := time.ParseInLocation("2006-01-02 15:04:05", params.FieldParamsList[0].ConditionValue, time.Local)
-	if err != nil {
-		return nil, err
-	}
-	endTime, _ = time.ParseInLocation("2006-01-02 15:04:05", params.FieldParamsList[1].ConditionValue, time.Local)
-	if err != nil {
-		return nil, err
-	}
-	return o.GetOrderStatistics(startTime, endTime)
-}
-
-func (o *Order) GetOrderStatistics(startTime, endTime time.Time) (*model.OrderStatistics, error) {
-	var orderStatistic model.OrderStatistics
-	err := global.DB.
-		Model(&model.Order{}).
-		Where("created_at > ? and created_at < ?", startTime, endTime).
-		Select("sum(buyer_pay_amount) as total_amount").
-		Find(&orderStatistic).
-		Count(&orderStatistic.Total).
-		Error
-	if err != nil {
-		return &model.OrderStatistics{}, err
-	}
-	return &orderStatistic, err
-}
 
 // 更新数据库订单
 func (o *Order) UpdateOrder(order *model.Order) error {
@@ -59,4 +31,37 @@ func (o *Order) UpdateOrder(order *model.Order) error {
 		userOrderService.UpdateOneOrderToCache(order) //更新缓存
 	}
 	return nil
+}
+
+func (o *Order) OrderSummary(params *model.QueryParams) (*[]model.OrderSummary, error) {
+	//处理查询时间
+	var startTime, endTime time.Time
+	startTime, err := time.Parse("2006-01-02 15:04:05", params.FieldParamsList[0].ConditionValue)
+	if err != nil {
+		return nil, err
+	}
+	endTime, _ = time.Parse("2006-01-02 15:04:05", params.FieldParamsList[1].ConditionValue)
+	if err != nil {
+		return nil, err
+	}
+	const (
+		sql1 = `SELECT
+DATE(created_at) as date,
+COUNT(id) AS order_total,
+SUM(CAST(buyer_pay_amount AS decimal(10,2))) AS income_total,
+COUNT(order.goods_type = 'subscribe' OR NULL) AS subscribe_total,
+COUNT(order.goods_type = 'general' OR NULL) AS general_total,
+COUNT(order.goods_type = 'recharge' OR NULL) AS recharge_total
+	`
+		sql2 = "FROM `order`"
+	)
+	sql3 := fmt.Sprintf(" WHERE created_at > '%s' AND created_at < '%s' AND trade_status = 'TRADE_SUCCESS'  GROUP BY date", startTime, endTime)
+	var orderSummary []model.OrderSummary
+	err = global.DB.
+		Raw(sql1 + sql2 + sql3).
+		Scan(&orderSummary).
+		Error
+	//fmt.Println("result:", orderSummary, "err:", err)
+	return &orderSummary, err
+
 }

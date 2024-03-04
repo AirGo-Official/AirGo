@@ -1,0 +1,19 @@
+export default {
+  income:{
+    todayOrder:"今日订单",
+    todayIncome:"今日收入",
+    OrdersThisMonth:"本月订单",
+    revenueThisMonth:"本月收入",
+    orderStatistics:"订单统计",
+    newUser:"新用户",
+    income:"收入",
+    order:"订单",
+    number:"数量",
+    amount:"金额",
+    orderTypes:"订单分类",
+    nodeTrafficStatistics:"节点流量统计",
+    nodeTraffic:"节点流量",
+    traffic:"流量(GB)",
+    summation:"合计",
+  }
+}

@@ -105,6 +105,10 @@ export const useAdminShopStore = defineStore("adminShopStore", {
     } as Coupon,
     checkedGoodsIDs:[] as number[],
     checkedNodeIDs:[] as number[],
+    orderSummary:{
+      lastMonth:[] as OrderSummary[],
+      thisMonth:[] as OrderSummary[],
+    }
   }),
   actions: {
     //获取全部商品
@@ -204,9 +208,16 @@ export const useAdminShopStore = defineStore("adminShopStore", {
       this.checkedNodeIDs.forEach((value: number, index: number, array: number[])=>{
         goods.nodes.push({id:value} as NodeInfo)
       })
-      console.log("this.checkedNodeIDs:",this.checkedNodeIDs)
-      console.log("goods.nodes:",goods.nodes)
       return goods
+    },
+    async getOrderSummary(params:QueryParams,m:number){
+      let mm = new Date().getMonth()
+      const res = await request(apiStore.adminApi.orderSummary,params)
+      if (m === (mm+1)){
+        this.orderSummary.thisMonth = res.data
+      } else {
+        this.orderSummary.lastMonth = res.data
+      }
     },
   },
 })

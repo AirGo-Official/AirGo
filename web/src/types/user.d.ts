@@ -40,3 +40,7 @@ declare interface Base64CaptchaInfo {
     b64s: string
 
 }
+declare interface UserSummary {
+    date:string
+    register_total:number
+}

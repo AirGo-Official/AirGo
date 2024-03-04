@@ -9,7 +9,7 @@ export function DateStrToTime(strTime: string) {
 }
 
 /**
- * 后端时间字符串转换 "2023-05-29T17:28:47.50276+08:00" ---> "2023/05/29"
+ * 后端时间字符串转换 "2023-05-29T17:28:47.50276+08:00" ---> "2023-05-29"
  * @param strTime
  * @constructor
  */
@@ -30,6 +30,24 @@ export function GetDurationMonth(n: number) {
     // let MonthDayNum = new Date(currentY,currentM,0).getDate();  //计算当月的天数
     let startDate = new Date(Y, M - n, 1);
     let endDate = new Date(Y, M + 1 - n, 0, 23, 59, 59);
+    // console.log("开始：", startDate)
+    // console.log("结束：", endDate)
+    let start = formatDate(startDate, "YYYY-mm-dd HH:MM:SS")
+    let end = formatDate(endDate, "YYYY-mm-dd HH:MM:SS")
+    return [start,end]
+}
+
+/**
+ * 获取某个月第一天到当前天的时间范围，m为第几月，范围1～12
+ * @param m
+ * @constructor
+ */
+export function GetDurationMonthFromFirstToCurrent(m: number) {
+    let currentDate = new Date();
+    let Y = currentDate.getFullYear();
+    let d = currentDate.getDate()
+    let startDate = new Date(Y, m+1, 1);
+    let endDate = new Date(Y, m + 1, d, 23, 59, 59);
     // console.log("开始：", startDate)
     // console.log("结束：", endDate)
     let start = formatDate(startDate, "YYYY-mm-dd HH:MM:SS")

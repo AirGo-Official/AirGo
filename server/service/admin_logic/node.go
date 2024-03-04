@@ -183,11 +183,12 @@ func (n *Node) GetNodeListWithTraffic(params *model.QueryParams) (*model.CommonD
 	if dataSql == "" {
 		dataSql = "id > 0" //当前端什么参数没有传时，默认添加一个参数
 	}
-	err = global.DB.Model(&model.Node{}).
-		Count(&total).Where(dataSql).
+	err = global.DB.
+		Model(&model.Node{}).
+		Count(&total).
+		Where(dataSql).
 		//Preload("TrafficLogs", global.DB.Where("created_at > ? and created_at < ?", startTime, endTime)).
 		Preload("TrafficLogs", "created_at > ? and created_at < ?", startTime, endTime).
-		Preload("Access").
 		Find(&nodeList).
 		Error
 	if err != nil {

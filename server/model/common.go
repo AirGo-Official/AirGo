@@ -1,11 +1,9 @@
 package model
 
 import (
-	"context"
 	"database/sql/driver"
 	"encoding/json"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
-	"sync"
 )
 
 // 结构体-字符串 对应map
@@ -55,10 +53,4 @@ func (s *SliceForGorm) Scan(value interface{}) error {
 }
 func (s SliceForGorm) Value() (driver.Value, error) {
 	return json.Marshal(s)
-}
-
-type ContextGroup struct {
-	MapLock   sync.RWMutex
-	CtxMap    map[string]*context.Context    //
-	CancelMap map[string]*context.CancelFunc //
 }

@@ -176,7 +176,7 @@ func MessageHandlerForAdmin(update *tgbotapi.Update, msg *tgbotapi.MessageConfig
 	case "查询用户":
 		msg.Text = "查询用户格式：/find xxx@qq.com"
 	case "收入概览":
-		Income(update, msg)
+
 	case "节点状态":
 		NodeStatus(update, msg)
 
@@ -312,32 +312,6 @@ func CmdUnbind(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 	}
 }
 
-func Income(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
-	//今日订单 今日收入
-	todayEnd := time.Now()
-	todayStart := time.Date(todayEnd.Year(), todayEnd.Month(), todayEnd.Day(), 0, 0, 0, 0, todayEnd.Location())
-	//本月订单 本月收入
-	thisMonthStart := time.Date(todayEnd.Year(), todayEnd.Month(), 1, 0, 0, 0, 0, todayEnd.Location())
-	thisMonthEnd := time.Date(todayEnd.Year(), todayEnd.Month()+1, 1, 0, 0, 0, 0, todayEnd.Location())
-	//上月订单 上月收入
-	lastMonthStart := time.Date(todayEnd.Year(), todayEnd.Month()-1, 1, 0, 0, 0, 0, todayEnd.Location())
-	lastMonthEnd := time.Date(todayEnd.Year(), todayEnd.Month(), 1, 0, 0, 0, 0, todayEnd.Location())
-
-	var (
-		todayOrder     = &model.OrderStatistics{}
-		thisMonthOrder = &model.OrderStatistics{}
-		lastMonthOrder = &model.OrderStatistics{}
-	)
-
-	todayOrder, _ = orderService.GetOrderStatistics(todayStart, todayEnd)
-
-	thisMonthOrder, _ = orderService.GetOrderStatistics(thisMonthStart, thisMonthEnd)
-
-	lastMonthOrder, _ = orderService.GetOrderStatistics(lastMonthStart, lastMonthEnd)
-
-	msg.Text = fmt.Sprintf("今日订单: %d, 今日收入: %.2f\n本月订单: %d, 本月收入: %.2f\n上月订单: %d, 上月订单: %.2f\n", todayOrder.Total, todayOrder.TotalAmount, thisMonthOrder.Total, thisMonthOrder.TotalAmount, lastMonthOrder.Total, lastMonthOrder.TotalAmount)
-
-}
 func NodeStatus(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 	text := GetNodeStatus()
 	if text == "" {

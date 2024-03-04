@@ -14,6 +14,10 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
             total: 0,
             data: [] as NodeInfo[],
         },
+        nodeListWithTraffic:{
+            total: 0,
+            data: [] as NodeInfo[],
+        },
         //弹窗页数据
         dialogData: {
             checkedAccessIDs:[] as number[],
@@ -222,10 +226,10 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
             const res = await request(apiStoreData.adminApi.value.getNodeList, params)
             this.nodeList = res.data
         },
-        //获取全部节点 with Traffic,分页
-        async getNodeListWithTraffic(params?: object) {
+        //获取全部节点 with Traffic
+        async getNodeListWithTraffic(params: object) {
             const res = await request(apiStoreData.adminApi.value.getNodeListWithTraffic, params)
-            this.nodeList = res.data
+            this.nodeListWithTraffic = res.data
         },
         //更新节点
         async updateNode(params: NodeInfo) {
