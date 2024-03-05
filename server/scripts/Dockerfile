@@ -16,4 +16,4 @@ VOLUME ["/air"]
 ENV TZ=Asia/Shanghai
 ENV LANG C.UTF-8
 ENTRYPOINT [ "/air/AirGo" ]
-CMD ["-start"]
+CMD ["start"]

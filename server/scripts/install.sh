@@ -173,7 +173,7 @@ add_service(){
   RestartSec=1
   Type=simple
   WorkingDirectory=/usr/local/$1/
-  ExecStart=/usr/local/$1/$1 -start
+  ExecStart=/usr/local/$1/$1 start
 
   [Install]
   WantedBy=multi-user.target
@@ -335,7 +335,7 @@ reset_admin(){
   fi
 
   cd /usr/local/${appName}/
-  ./${appName} -resetAdmin
+  ./${appName} reset --resetAdmin
   echo -e "${green}完成${plain}"
   echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
   main
