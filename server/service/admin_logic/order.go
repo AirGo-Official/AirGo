@@ -49,9 +49,9 @@ func (o *Order) OrderSummary(params *model.QueryParams) (*[]model.OrderSummary, 
 DATE(created_at) as date,
 COUNT(id) AS order_total,
 SUM(CAST(buyer_pay_amount AS decimal(10,2))) AS income_total,
-COUNT(order.goods_type = 'subscribe' OR NULL) AS subscribe_total,
-COUNT(order.goods_type = 'general' OR NULL) AS general_total,
-COUNT(order.goods_type = 'recharge' OR NULL) AS recharge_total
+COUNT(goods_type = 'subscribe' OR NULL) AS subscribe_total,
+COUNT(goods_type = 'general' OR NULL) AS general_total,
+COUNT(goods_type = 'recharge' OR NULL) AS recharge_total
 	`
 		sql2 = "FROM `order`"
 	)
