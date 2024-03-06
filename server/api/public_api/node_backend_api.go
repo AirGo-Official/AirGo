@@ -31,24 +31,6 @@ func AGGetNodeInfo(ctx *gin.Context) {
 		global.Logrus.Error("AGGetNodeInfo error,id="+id, err.Error())
 		return
 	}
-	//处理探针
-	global.GoroutinePool.Submit(func() {
-		//取消离线节点的通知状态
-		global.LocalCache.Delete(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_IS_NOTIFIED_BY_NODEID, node.ID))
-
-		cacheStatus, ok := global.LocalCache.Get(constant.CACHE_NODE_STATUS_BY_NODEID + id)
-		if ok && cacheStatus != nil {
-			oldStatus := cacheStatus.(model.NodeStatus)
-			oldStatus.Status = true
-			global.LocalCache.Set(constant.CACHE_NODE_STATUS_BY_NODEID+id, oldStatus, 2*time.Minute) //2分钟后过期
-
-		} else {
-			var status model.NodeStatus
-			status.Status = true
-			status.ID, _ = strconv.ParseInt(id, 64, 10)
-			global.LocalCache.Set(constant.CACHE_NODE_STATUS_BY_NODEID+id, status, 2*time.Minute) //2分钟后过期
-		}
-	})
 	//处理ss节点加密
 	if node.Protocol == "shadowsocks" {
 		switch node.Scy {
@@ -75,27 +57,26 @@ func AGReportNodeStatus(ctx *gin.Context) {
 		return
 	}
 	//处理探针
-	global.GoroutinePool.Submit(func() {
-		cacheStatus, ok := global.LocalCache.Get(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, AGNodeStatus.ID))
-		if ok && cacheStatus != nil {
-			oldStatus := cacheStatus.(model.NodeStatus)
-			oldStatus.Status = true
-			oldStatus.CPU = AGNodeStatus.CPU
-			oldStatus.Mem = AGNodeStatus.Mem
-			oldStatus.Disk = AGNodeStatus.Disk
-			//oldStatus.Uptime=AGNodeStatus.Uptime
-			global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, AGNodeStatus.ID), oldStatus, 2*time.Minute) //2分钟后过期
-		} else {
-			var status model.NodeStatus
-			status.Status = true
-			status.ID = AGNodeStatus.ID
-			status.CPU = AGNodeStatus.CPU
-			status.Mem = AGNodeStatus.Mem
-			status.Disk = AGNodeStatus.Disk
-			global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, AGNodeStatus.ID), status, 2*time.Minute) //2分钟后过期
-		}
-	})
-
+	//取消离线节点的通知状态
+	global.LocalCache.Delete(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_IS_NOTIFIED_BY_NODEID, AGNodeStatus.ID))
+	cacheStatus, ok := global.LocalCache.Get(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, AGNodeStatus.ID))
+	if ok {
+		oldStatus := cacheStatus.(model.NodeStatus)
+		oldStatus.Status = true
+		oldStatus.CPU = AGNodeStatus.CPU
+		oldStatus.Mem = AGNodeStatus.Mem
+		oldStatus.Disk = AGNodeStatus.Disk
+		//oldStatus.Uptime=AGNodeStatus.Uptime
+		global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, AGNodeStatus.ID), oldStatus, 2*time.Minute) //2分钟后过期
+	} else {
+		var status model.NodeStatus
+		status.Status = true
+		status.ID = AGNodeStatus.ID
+		status.CPU = AGNodeStatus.CPU
+		status.Mem = AGNodeStatus.Mem
+		status.Disk = AGNodeStatus.Disk
+		global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, AGNodeStatus.ID), status, 2*time.Minute) //2分钟后过期
+	}
 	ctx.String(200, "success")
 }
 
@@ -211,7 +192,6 @@ func AGReportUserTraffic(ctx *gin.Context) {
 	var trafficLog = model.NodeTrafficLog{
 		NodeID: node.ID,
 	}
-	//var userTrafficLog []model.UserTrafficLog
 	userTrafficLogMap := make(map[int64]model.UserTrafficLog)
 	for _, v := range AGUserTraffic.UserTraffic {
 		//每个用户流量
