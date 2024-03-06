@@ -5,6 +5,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
+	"strings"
+
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
@@ -12,9 +16,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"gopkg.in/ini.v1"
 	"gopkg.in/yaml.v3"
-	"net/url"
-	"strconv"
-	"strings"
 )
 
 func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (string, string) {
@@ -38,8 +39,9 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	//根据goodsID 查找具体的节点
 	var goods model.Goods
 	err = global.DB.
+		Preload("Nodes", "enabled = 1"). // Move the condition outside the Preload function
 		Where(&model.Goods{ID: cs.GoodsID}).
-		Preload("Nodes", "enabled = 1 AND ORDER BY node_order").
+		Order("goods_order"). // Correct the syntax for ordering
 		Find(&goods).
 		Error
 	// 计算剩余天数，流量
@@ -648,13 +650,18 @@ func VlessTrojanHysteriaUrl(node model.Node) string {
 		default:
 			values.Add("security", "none")
 		}
+		if node.AllowInsecure {
+			values.Add("allowInsecure", "1")
+		}
 	case "hy2":
 		values.Add("sni", node.Sni)
-
+		if node.AllowInsecure {
+			values.Add("insecure", "1")
+		}
 	case "trojan":
-	}
-	if node.AllowInsecure {
-		values.Add("allowInsecure", "1")
+		if node.AllowInsecure {
+			values.Add("allowInsecure", "1")
+		}
 	}
 
 	nodeUrl.RawQuery = values.Encode()
@@ -896,7 +903,7 @@ func Hy2UrlForShadowrocket(node model.Node) string {
 		values.Add("insecure", "1")
 	}
 
-	values.Add("obfs", "none")
+	// values.Add("obfs", "none")
 	nodeUrl.RawQuery = values.Encode()
 	return strings.ReplaceAll(nodeUrl.String(), ":@", "@")
 }
