@@ -151,7 +151,6 @@ func GetSub(ctx *gin.Context) {
 	}
 next:
 	id := ctx.Param("id")
-	//fmt.Println("id:", id)
 	res, header := customerService.GetSubscribe(id, clientType)
 	if res == "" {
 		return

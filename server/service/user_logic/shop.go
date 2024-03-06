@@ -100,6 +100,7 @@ func (s *Shop) Purchase(sysOrder *model.Order) (*model.Order, error) {
 	if totalAmountFloat64 == 0 {
 		sysOrder.TradeStatus = constant.ORDER_STATUS_TRADE_SUCCESS //更新订单状态
 		sysOrder.BuyerPayAmount = "0.00"                           //付款金额
+		sysOrder.PayType = constant.PAY_TYPE_BALANCE               //0元购时，分配一个默认的支付方式，防止前端判断逻辑混乱
 		return sysOrder, orderService.PaymentSuccessfullyOrderHandler(sysOrder)
 	}
 	//根据支付id查询支付参数
