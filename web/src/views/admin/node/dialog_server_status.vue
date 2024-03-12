@@ -1,6 +1,9 @@
 <template>
-  <el-dialog v-model="state.isShowDialog" width="90%" style="height: 90%" destroy-on-close align-center>
-    <el-row :gutter="15">
+  <el-dialog  v-model="state.isShowDialog" width="90%" destroy-on-close align-center @close="closeDialog">
+    <el-row :gutter="15"
+            v-loading="state.isShowLoading"
+            element-loading-text="Loading..."
+            element-loading-background="rgba(122, 122, 122, 0.8)">
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" v-for="(v,k) in serverStatusData.data" :key="k">
         <div class="home-card-item">
           <el-card>
@@ -44,7 +47,7 @@
 
             <el-row :gutter="10">
               <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8" style="margin-top: 5px;margin-bottom: 5px">
-                <el-progress :text-inside="true" :stroke-width="20" :percentage="v.cpu.toFixed(0)" striped striped-flow :color="customColors">
+                <el-progress :text-inside="true" :stroke-width="20" :percentage="Number(v.cpu.toFixed(0))" striped striped-flow :color="customColors">
                   <template #default="{ percentage }">
                     <span class="percentage-label">cpu：</span>
                     <span class="percentage-value">{{ percentage }}%</span>
@@ -52,7 +55,7 @@
                 </el-progress>
               </el-col>
               <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8" style="margin-top: 5px;margin-bottom: 5px">
-                <el-progress :text-inside="true" :stroke-width="20" :percentage="v.mem.toFixed(0)" striped striped-flow :color="customColors">
+                <el-progress :text-inside="true" :stroke-width="20" :percentage="Number(v.mem.toFixed(0))" striped striped-flow :color="customColors">
                   <template #default="{ percentage }">
                     <span class="percentage-label">memory：</span>
                     <span class="percentage-value">{{ percentage }}%</span>
@@ -60,7 +63,7 @@
                 </el-progress>
               </el-col>
               <el-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8" style="margin-top: 5px;margin-bottom: 5px">
-                <el-progress :text-inside="true" :stroke-width="20" :percentage="v.disk.toFixed(0)" striped striped-flow :color="customColors">
+                <el-progress :text-inside="true" :stroke-width="20" :percentage="Number(v.disk.toFixed(0))" striped striped-flow :color="customColors">
                   <template #default="{ percentage }">
                     <span class="percentage-label">disk：</span>
                     <span class="percentage-value">{{ percentage }}%</span>
@@ -98,6 +101,7 @@ const customColors = [
 ]
 const state = reactive({
   isShowDialog:false,
+  isShowLoading:false,
 })
 
 const openDialog = () => {
@@ -106,18 +110,23 @@ const openDialog = () => {
 }
 const closeDialog = () => {
   state.isShowDialog = false
+  clearInterval(timer);
 }
 
-
+let timer: NodeJS.Timeout
 const loop=()=>{
+  state.isShowLoading = true
+  setTimeout(()=>{
+    state.isShowLoading = false
+  },4000)
   let i = 0;
-  let timer = setInterval(() => {
+   timer = setInterval(() => {
     getNodeServerStatus(timer, i++);
-  }, 3000);
+  }, 5000);
 }
 const getNodeServerStatus=(timer: NodeJS.Timeout, i: number)=> {
   setTimeout(() => {
-    if (i >= 100) {
+    if (i >= 200) {
       clearInterval(timer);
     }
     nodeStore.getNodeServerStatus()

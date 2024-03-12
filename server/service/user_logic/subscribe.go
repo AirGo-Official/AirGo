@@ -20,13 +20,6 @@ import (
 
 func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (string, string) {
 	var nodeArr []model.Node
-	//查找用户
-	//var u model.User
-	//err := global.DB.Where("subscribe_url = ? and sub_status = 1 and d + u < t", url).First(&u).Error
-	//if err != nil {
-	//	return "", ""
-	//}
-
 	// 查找用户服务
 	subUUID, err := uuid.FromString(uuidStr)
 	if err != nil {
@@ -41,7 +34,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	err = global.DB.
 		Preload("Nodes", "enabled = 1"). // Move the condition outside the Preload function
 		Where(&model.Goods{ID: cs.GoodsID}).
-		Order("goods_order"). // Correct the syntax for ordering
+		Preload("Nodes", "enabled = 1 ORDER BY node_order ASC").
 		Find(&goods).
 		Error
 	// 计算剩余天数，流量
@@ -68,6 +61,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 			Network:  "ws",
 			Enabled:  true,
 			Protocol: "vmess",
+			NodeType: constant.NODE_TYPE_NORMAL,
 		}
 		secondNode = model.Node{
 			Remarks:  "剩余流量:" + expiredBd2 + "GB",
@@ -77,6 +71,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 			Network:  "ws",
 			Enabled:  true,
 			Protocol: "vmess",
+			NodeType: constant.NODE_TYPE_NORMAL,
 		}
 
 	}
@@ -94,6 +89,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	goods.Nodes[0] = firstNode
 	goods.Nodes[1] = secondNode
 	//最后处理一些参数
+	Show(goods.Nodes)
 	for k, _ := range goods.Nodes {
 		switch goods.Nodes[k].NodeType {
 		case constant.NODE_TYPE_NORMAL: // 替换uuid

@@ -208,8 +208,8 @@ func (n *Node) GetNodeListWithTraffic(params *model.QueryParams) (*model.CommonD
 // 更新node status
 func (n *Node) UpdateNodeStatus(userIds []int64, trafficLog *model.NodeTrafficLog) {
 	var duration float64 = 60 //默认60秒间隔
-	cacheStatus, ok := global.LocalCache.Get(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, trafficLog.ID))
-	if ok && cacheStatus != nil {
+	cacheStatus, ok := global.LocalCache.Get(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, trafficLog.NodeID))
+	if ok {
 		oldStatus := cacheStatus.(model.NodeStatus)
 		oldStatus.Status = true
 		oldStatus.UserAmount = int64(len(userIds))
@@ -218,7 +218,7 @@ func (n *Node) UpdateNodeStatus(userIds []int64, trafficLog *model.NodeTrafficLo
 		oldStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/duration), 64) //Byte per second
 		oldStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/duration), 64)
 		oldStatus.LastTime = now
-		global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, trafficLog.ID), oldStatus, 2*time.Minute)
+		global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, trafficLog.NodeID), oldStatus, 2*time.Minute)
 	} else {
 		var nodeStatus model.NodeStatus
 		nodeStatus.Status = true
@@ -227,7 +227,7 @@ func (n *Node) UpdateNodeStatus(userIds []int64, trafficLog *model.NodeTrafficLo
 		nodeStatus.D, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.D)/duration), 64) //Byte per second
 		nodeStatus.U, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", float64(trafficLog.U)/duration), 64)
 		nodeStatus.LastTime = time.Now()
-		global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, trafficLog.ID), nodeStatus, 2*time.Minute)
+		global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, trafficLog.NodeID), nodeStatus, 2*time.Minute)
 	}
 }
 

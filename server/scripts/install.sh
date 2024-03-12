@@ -18,7 +18,7 @@ githubApi="https://api.github.com/repos/ppoonk/AirGo/releases/latest"
 manageScript="https://raw.githubusercontent.com/ppoonk/AirGo/main/server/scripts/install.sh"
 acmeGit="https://github.com/acmesh-official/acme.sh.git"
 yamlFile="/usr/local/AirGo/config.yaml"
-ghproxy='https://mirror.ghproxy.com/'
+ghproxy='https://ghproxy.org/'
 ipv4=""
 ipv4_local=""
 
@@ -82,7 +82,7 @@ get_latest_version() {
           fi
 }
 get_current_version(){
-  currentVersion=$(/usr/local/AirGo/AirGo -version)
+  currentVersion=$(/usr/local/AirGo/AirGo version)
 }
 initialize(){
   get_arch
@@ -134,7 +134,7 @@ installation_status(){
 # 运行检测，1：未启动 0：已启动
 run_status() {
       temp=$(systemctl is-active $1)
-      if [[ x"${temp}" == x"active" ]]; then
+      if [[ x"${temp}" == x"active" || x"${temp}" == x"activating" ]]; then
           return 0
       else return 1
       fi
@@ -173,7 +173,7 @@ add_service(){
   RestartSec=1
   Type=simple
   WorkingDirectory=/usr/local/$1/
-  ExecStart=/usr/local/$1/$1 -start
+  ExecStart=/usr/local/$1/$1 start
 
   [Install]
   WantedBy=multi-user.target
@@ -335,7 +335,7 @@ reset_admin(){
   fi
 
   cd /usr/local/${appName}/
-  ./${appName} -resetAdmin
+  ./${appName} reset --resetAdmin
   echo -e "${green}完成${plain}"
   echo -n -e "${yellow}按回车返回主菜单: ${plain}" && read temp
   main

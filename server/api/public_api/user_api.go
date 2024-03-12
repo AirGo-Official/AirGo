@@ -25,7 +25,7 @@ func Register(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	//判断邮箱后缀
+	//判断邮箱后缀，目前注册时用户名和邮箱后缀是分开的，如：user_name = 123, email_suffix = @qq.com
 	ok := other_plugin.In(u.EmailSuffix, strings.Fields(global.Server.Website.AcceptableEmailSuffixes))
 	if !ok {
 		response.Fail("The suffix name of this email is not supported!", nil, ctx)
@@ -62,8 +62,8 @@ func Register(ctx *gin.Context) {
 		avatar = fmt.Sprintf("https://api.multiavatar.com/%s.svg", u.UserName)
 	}
 	err = userService.Register(&model.User{
-		UserName:       u.UserName,
-		NickName:       u.UserName,
+		UserName:       userEmail,
+		NickName:       userEmail,
 		Avatar:         avatar,                                  //头像
 		Password:       encrypt_plugin.BcryptEncode(u.Password), //密码
 		RoleGroup:      []model.Role{{ID: 2}},                   //默认角色：普通用户角色
