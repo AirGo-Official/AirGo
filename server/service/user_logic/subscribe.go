@@ -32,7 +32,6 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	//根据goodsID 查找具体的节点
 	var goods model.Goods
 	err = global.DB.
-		Preload("Nodes", "enabled = 1"). // Move the condition outside the Preload function
 		Where(&model.Goods{ID: cs.GoodsID}).
 		Preload("Nodes", "enabled = 1 ORDER BY node_order ASC").
 		Find(&goods).
