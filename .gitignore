@@ -6,3 +6,5 @@ server/main
 web/web
 .run
 
+server/air.db
+server/web/web
