@@ -98,11 +98,7 @@ func UpdateWebsocket(ctx *gin.Context, handler websocket_plugin.WebsocketMessage
 
 // Server-sent events
 func SSE(ctx *gin.Context) {
-	//w := ctx.Writer
 	ctx.Writer.Header().Set("Content-Type", "text/event-stream")
 	ctx.Writer.Header().Set("Cache-Control", "no-cache")
 	ctx.Writer.Header().Set("Connection", "keep-alive")
-	//w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	//ctx.SSEvent("close", "close")
 }

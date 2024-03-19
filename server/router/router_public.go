@@ -9,10 +9,6 @@ import (
 
 func InitPublicRouter(RouterGroup *gin.RouterGroup) {
 	publicRouter := RouterGroup.Group("/public")
-	//websocketRouter := publicRouter.Group("ws")
-	//{
-	//	websocketRouter.GET("/send", api.Send)
-	//}
 	//airgo
 	airgoRouter := publicRouter.Group("/airgo")
 	{

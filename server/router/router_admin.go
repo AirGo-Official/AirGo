@@ -3,11 +3,12 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/ppoonk/AirGo/api/admin_api"
+	"github.com/ppoonk/AirGo/middleware"
 )
 
 func InitAdminRouter(RouterGroup *gin.RouterGroup) {
 	adminRouter := RouterGroup.Group("/admin")
-	//adminRouter.Use(middleware.ParseJwt(), middleware.Casbin())
+	adminRouter.Use(middleware.ParseJwt(), middleware.Casbin())
 	// user
 	userAdminRouter := adminRouter.Group("/user")
 	{
