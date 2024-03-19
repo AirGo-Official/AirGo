@@ -66,6 +66,14 @@ export const useAdminServerStore = defineStore("serverAdminStore", {
             } as Notice,
 
         } as Server,
+        version:{
+            currentVersion:{
+                version:''
+            },
+            latestVersion:{
+                version:''
+            }
+        }
     }),
     actions: {
         //获取系统设置
@@ -76,6 +84,21 @@ export const useAdminServerStore = defineStore("serverAdminStore", {
         //修改系统设置
         async updateServerConfig(params?: object) {
             return  request(apiStoreData.adminApi.value.updateSetting, params)
+        },
+        //获取AirGo核心当前版本
+        async getCurrentVersion(){
+            const res = await request(apiStoreData.adminApi.value.getCurrentVersion)
+            this.version.currentVersion = res.data
+        },
+        //获取AirGo核心最新版本
+        async getLatestVersion(){
+            const res = await request(apiStoreData.adminApi.value.getLatestVersion)
+            this.version.latestVersion = res.data
+        },
+        //升级AirGo核心最新版本
+        async updateLatestVersion(){
+            const res = await request(apiStoreData.adminApi.value.updateLatestVersion)
+            // TODO 应提醒用户正在升级中
         }
     }
 })

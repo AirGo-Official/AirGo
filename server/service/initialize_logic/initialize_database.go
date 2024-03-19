@@ -1,44 +1,16 @@
-package database
+package initialize_logic
 
 import (
 	"errors"
+	"fmt"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
+	"github.com/gin-gonic/gin"
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/router"
 	utils "github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	"strings"
 )
-
-func InsertInto() {
-	var err error
-	defer global.Logrus.Error(err)
-
-	var funcs = []func() error{
-		InsertIntoUser,
-		InsertIntoMenu,
-		InsertIntoRole,
-		InsertIntoUserAndRole,
-		InsertIntoRoleAndMenu,
-		//InsertIntoGoods,
-		//InsertIntoNode,
-		//InsertIntoGoodsAndNodes,
-		//InsertIntoCasbinRule,
-		InsertIntoCasbinRule,
-		InsertIntoTheme,
-		InsertIntoServer,
-		InsertIntoArticle,
-		InsertIntoAccess,
-		InsertIntoPay,
-	}
-	for _, v := range funcs {
-		err = v()
-		if err != nil {
-			return
-		}
-	}
-}
 
 func InsertIntoUser() error {
 	sysUserData := []model.User{
@@ -176,10 +148,12 @@ func InsertIntoGoodsAndNodes() error {
 	}
 	return nil
 }
-
 func InsertIntoCasbinRule() error {
-	routes := router.Router.Routes()
-	//fmt.Println("routes:", routes)
+	cache, ok := global.LocalCache.Get(constant.GIN_ROUTES)
+	if !ok {
+		return errors.New("No data")
+	}
+	routes := cache.(gin.RoutesInfo)
 
 	casbinRuleData := []gormadapter.CasbinRule{}
 	adminCasbinRuleData := []gormadapter.CasbinRule{}
@@ -272,4 +246,31 @@ func InsertIntoPay() error {
 		return errors.New("pay表数据初始化失败!")
 	}
 	return nil
+}
+
+func DefaultForRoleMenuCasbin() error {
+	fmt.Println("初始化数据库 casbin")
+	err := global.DB.Where("id > 0").Delete(&gormadapter.CasbinRule{}).Error
+	if err != nil {
+		return err
+	}
+	err = InsertIntoCasbinRule()
+	if err != nil {
+		return err
+	}
+	fmt.Println("初始化数据库 角色和菜单")
+	err = global.DB.Where("role_id > 0").Delete(&model.RoleAndMenu{}).Error //先删除role_and_menu
+	if err != nil {
+		return err
+	}
+	err = global.DB.Where("id > 0").Delete(&model.Menu{}).Error //再删除菜单
+	if err != nil {
+		return err
+	}
+	err = InsertIntoMenu() //插入新的菜单
+	if err != nil {
+		return err
+	}
+	return InsertIntoRoleAndMenu() //插入新的role_and_menu
+
 }

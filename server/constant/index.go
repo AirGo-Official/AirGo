@@ -1,6 +1,10 @@
 package constant
 
 const (
+	//版本
+	V = "old-version"
+	//gin routes
+	GIN_ROUTES = "GinRoutes"
 	//工单状态
 	TICKET_PROCESSING = "TICKET_PROCESSING" //工单进行中
 	TICKET_CLOSED     = "TICKET_CLOSED"     //工单已关闭
@@ -65,4 +69,8 @@ const (
 	ARTICLE_TYPE_DIALOG    = "dialog"
 	ARTICLE_TYPE_NOTICE    = "notice"
 	ARTICLE_TYPE_KNOWLEDGE = "knowledge"
+
+	// github
+	AIRGO_GITHUB_API          = "https://api.github.com/repos/ppoonk/AirGo/releases/latest"
+	AIRGO_GITHUB_DOWNLOAD_PRE = "https://github.com/ppoonk/AirGo/releases/download"
 )

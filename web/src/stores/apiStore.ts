@@ -51,6 +51,9 @@ export const useApiStore = defineStore("apiStore", {
             updateThemeConfig:{path: adminApiPre + "/server/updateThemeConfig", method: "post"} as ApiItem,
             getSetting:{path: adminApiPre + "/server/getSetting", method: "get"} as ApiItem,
             updateSetting:{path: adminApiPre + "/server/updateSetting", method: "post"} as ApiItem,
+            getCurrentVersion:{path: adminApiPre + "/server/getCurrentVersion", method: "get"} as ApiItem,
+            getLatestVersion:{path: adminApiPre + "/server/getLatestVersion", method: "get"} as ApiItem,
+            updateLatestVersion:{path: adminApiPre + "/server/updateLatestVersion", method: "get"} as ApiItem,
 
             // node
             newNode:{path: adminApiPre + "/node/newNode", method: "post"} as ApiItem,

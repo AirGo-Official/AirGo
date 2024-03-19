@@ -1,6 +1,7 @@
 package logrus_plugin
 
 import (
+	"io"
 	"log"
 	"os"
 	"path"
@@ -12,11 +13,11 @@ import (
 func InitLogrus() *logrus.Logger {
 	//实例化
 	logger := logrus.New()
-	logger.SetReportCaller(true) //在输出日志中添加文件名和方法信息
+	//logger.SetReportCaller(true) //在输出日志中添加文件名和方法信息
 	src, _ := SetOutputFile()
 	//设置输出
-	logger.Out = src
-	//logger.Out = io.MultiWriter(src, os.Stdout) //同时打印到控制台及日志里
+	//logger.Out = src
+	logger.Out = io.MultiWriter(src, os.Stdout) //同时打印到控制台及日志里
 	//设置最低日志级别
 	//logger.SetLevel(logrus.DebugLevel)
 	logger.SetLevel(logrus.InfoLevel)

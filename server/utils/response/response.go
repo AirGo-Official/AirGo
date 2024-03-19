@@ -27,3 +27,11 @@ func OK(message string, data any, c *gin.Context) {
 func Fail(message string, data any, c *gin.Context) {
 	Response(constant.RESPONSE_ERROR, message, data, c)
 }
+func ResponseSSE(name, message string, ctx *gin.Context) {
+	flusher, ok := ctx.Writer.(http.Flusher)
+	if !ok {
+		return
+	}
+	ctx.SSEvent(name, message)
+	flusher.Flush()
+}

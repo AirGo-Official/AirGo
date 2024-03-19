@@ -23,10 +23,16 @@ jobs:
         with:
           node-version: '20.9.0'
 
+      - name: Set version
+        run: |
+          cd ${GITHUB_WORKSPACE}/web
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./src/layout/footer/index.vue
+          cd ${GITHUB_WORKSPACE}/server
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./constant/index.go
+
       - name: Build web
         run: |
           cd web
-          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./src/layout/footer/index.vue
           npm install
           npm run build
           rm -rf ../server/web/web
@@ -43,13 +49,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Set version
-        run: |
-          cd ${GITHUB_WORKSPACE}/web
-          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./src/layout/footer/index.vue
-          cd ${GITHUB_WORKSPACE}/server
-          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./main.go
 
       - name: Build Docker image
         uses: docker/build-push-action@v2

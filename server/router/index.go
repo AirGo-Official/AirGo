@@ -1,80 +1,71 @@
 package router
 
 import (
-	"context"
+	"crypto/tls"
+	"github.com/fvbock/endless"
 	"github.com/gin-gonic/gin"
-	"github.com/ppoonk/AirGo/docs"
+	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/middleware"
 	"github.com/ppoonk/AirGo/web"
-	swaggerfiles "github.com/swaggo/files"     // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
-	"net/http"
 	"os"
-	"os/signal"
 	"strconv"
-	"time"
+	"sync"
 )
 
-var Router *gin.Engine
+type GinServer struct {
+	Router *gin.Engine
+}
 
-func InitRouter() {
+var Server = &GinServer{
+	Router: nil,
+}
+
+func (g *GinServer) InitRouter() {
 	gin.SetMode(gin.ReleaseMode) //ReleaseMode TestMode DebugMode
-	Router = gin.Default()
+	g.Router = gin.Default()
 	// targetPtah=web 是embed和web文件夹的相对路径
-	Router.Use(middleware.Serve("/", middleware.EmbedFolder(web.Static, "web")))
-	Router.Use(middleware.Cors(), middleware.Recovery())
+	g.Router.Use(middleware.Serve("/", middleware.EmbedFolder(web.Static, "web")))
+	g.Router.Use(middleware.Cors(), middleware.Recovery())
 
 	//api路由
-	RouterGroup := Router.Group("/api")
+	RouterGroup := g.Router.Group("/api")
 
 	//swagger 路由
-	docs.SwaggerInfo.BasePath = ""
-	swaggerRouter := RouterGroup.Group("/swagger").Use(middleware.ParseJwt(), middleware.Casbin())
-	{
-		swaggerRouter.GET("/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	}
+	//docs.SwaggerInfo.BasePath = ""
+	//swaggerRouter := RouterGroup.Group("/swagger").Use(middleware.ParseJwt(), middleware.Casbin())
+	//{
+	//	swaggerRouter.GET("/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	//}
 	//注册路由
 	InitAdminRouter(RouterGroup)
 	InitUserRouter(RouterGroup)
 	InitPublicRouter(RouterGroup)
-
+	global.LocalCache.SetNoExpire(constant.GIN_ROUTES, Server.Router.Routes())
 }
 
-func ListenAndServe() {
-
-	srv := &http.Server{
-		Addr:    ":" + strconv.Itoa(global.Config.SystemParams.HTTPPort),
-		Handler: Router,
-	}
-	srvTls := &http.Server{
-		Addr:    ":" + strconv.Itoa(global.Config.SystemParams.HTTPSPort),
-		Handler: Router,
-	}
-
+func (g *GinServer) Start() {
+	w := sync.WaitGroup{}
+	w.Add(2)
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			global.Logrus.Fatalf("listen: %s\n", err)
+		err := endless.ListenAndServe(":"+strconv.Itoa(global.Config.SystemParams.HTTPPort), g.Router)
+		if err != nil {
+			global.Logrus.Error("listen: %s", err)
 		}
+		w.Done()
 	}()
 	go func() {
-		if err := srvTls.ListenAndServeTLS("./air.cer", "./air.key"); err != nil && err != http.ErrServerClosed {
-			global.Logrus.Error("tls listen: %s\n", err)
+		_, err := tls.LoadX509KeyPair("./air.cer", "./air.key") //先验证证书，否则endless fork进程时会空指针panic
+		if err == nil {
+			err = endless.ListenAndServeTLS(":"+strconv.Itoa(global.Config.SystemParams.HTTPSPort), "./air.cer", "./air.key", g.Router)
+			if err != nil {
+				global.Logrus.Error("listen: %s", err)
+			}
 		}
+		w.Done()
 	}()
-
-	quit := make(chan os.Signal)
-	signal.Notify(quit, os.Interrupt)
-	<-quit
-	global.Logrus.Info("Shutdown Server ...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		global.Logrus.Fatalf("Server Shutdown:", err)
-	}
-	if err := srvTls.Shutdown(ctx); err != nil {
-		global.Logrus.Fatalf("Server Shutdown:", err)
-	}
-	global.Logrus.Info("Server exiting")
+	w.Wait()
+	//syscall.SIGHUP 将触发重启; syscall.SIGINT, syscall.SIGTERM 并将触发服务器关闭（它将完成运行请求)。https://github.com/fvbock/endless
+	global.Logrus.Info("Server stop")
+	os.Exit(0)
 }

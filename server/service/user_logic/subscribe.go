@@ -30,7 +30,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	}
 	//根据goodsID 查找具体的节点
 	var goods model.Goods
-	err = global.DB.
+	err = global.DB.Debug().
 		Where(&model.Goods{ID: cs.GoodsID}).
 		Preload("Nodes", "enabled = 1 ORDER BY node_order ASC").
 		Find(&goods).

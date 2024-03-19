@@ -3,12 +3,11 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/ppoonk/AirGo/api/admin_api"
-	"github.com/ppoonk/AirGo/middleware"
 )
 
 func InitAdminRouter(RouterGroup *gin.RouterGroup) {
 	adminRouter := RouterGroup.Group("/admin")
-	adminRouter.Use(middleware.ParseJwt(), middleware.Casbin())
+	//adminRouter.Use(middleware.ParseJwt(), middleware.Casbin())
 	// user
 	userAdminRouter := adminRouter.Group("/user")
 	{
@@ -49,6 +48,10 @@ func InitAdminRouter(RouterGroup *gin.RouterGroup) {
 		serverAdminRouter.POST("/updateThemeConfig", admin_api.UpdateThemeConfig) //设置主题
 		serverAdminRouter.GET("/getSetting", admin_api.GetSetting)                //获取系统设置
 		serverAdminRouter.POST("/updateSetting", admin_api.UpdateSetting)         //修改系统设置
+
+		serverAdminRouter.GET("/getCurrentVersion", admin_api.GetCurrentVersion)
+		serverAdminRouter.GET("/getLatestVersion", admin_api.GetLatestVersion)
+		serverAdminRouter.GET("/updateLatestVersion", admin_api.UpdateLatestVersion)
 	}
 	// node
 	nodeAdminRouter := adminRouter.Group("/node")

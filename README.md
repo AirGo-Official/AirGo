@@ -16,6 +16,8 @@
 
 支持：vless，vmess，shadowsocks，hysteria2
 
+更多说明请移步：[wiki](https://github.com/ppoonk/AirGo/wiki)
+
 <div style="color: darkgray">AirGo, front and rear end separation, multi user, multi protocol proxy service management system, simple and easy to use.</div>
 <div style="color: darkgray">support: vless，vmess，shadowsocks，hysteria2</div>
 

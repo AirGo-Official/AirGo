@@ -8,7 +8,7 @@
       </el-radio-group>
     </div>
     <el-card shadow="hover" >
-      <div class="flex-warp" v-if="shopStoreData.goodsList.value.length > 0">
+      <div v-if="shopStoreData.goodsList.value.length > 0">
         <el-row :gutter="15">
           <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" class="mb15"
                   v-for="(v, k) in shopStoreData.goodsList.value"

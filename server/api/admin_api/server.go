@@ -2,6 +2,7 @@ package admin_api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/ppoonk/AirGo/api"
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
@@ -56,4 +57,28 @@ func UpdateSetting(ctx *gin.Context) {
 		return
 	}
 	response.OK("UpdateSetting success", nil, ctx)
+}
+
+func GetCurrentVersion(ctx *gin.Context) {
+	response.OK("GetCurrentVersion success", gin.H{"version": constant.V}, ctx)
+}
+
+func GetLatestVersion(ctx *gin.Context) {
+	v, err := systemService.GetLatestVersion()
+	if err != nil {
+		global.Logrus.Error(err.Error())
+		response.Fail("GetLatestVersion error:"+err.Error(), nil, ctx)
+		return
+	}
+	response.OK("GetLatestVersion success", gin.H{"version": v}, ctx)
+}
+
+func UpdateLatestVersion(ctx *gin.Context) {
+	api.SSE(ctx)
+	err := systemService.DownloadLatestVersion(ctx)
+	if err != nil {
+		response.ResponseSSE("message error", err.Error(), ctx)
+		return
+	}
+	response.ResponseSSE("success", "success", ctx)
 }

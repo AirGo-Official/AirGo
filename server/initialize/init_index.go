@@ -2,15 +2,14 @@ package initialize
 
 import (
 	"fmt"
-	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/mojocn/base64Captcha"
 	"github.com/panjf2000/ants/v2"
-	"github.com/ppoonk/AirGo/database"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/router"
 	"github.com/ppoonk/AirGo/service/admin_logic"
 	"github.com/ppoonk/AirGo/service/common_logic"
+	"github.com/ppoonk/AirGo/service/initialize_logic"
 	"github.com/ppoonk/AirGo/service/user_logic"
 	"github.com/ppoonk/AirGo/utils/logrus_plugin"
 	queue "github.com/ppoonk/AirGo/utils/queue_plugin"
@@ -23,77 +22,42 @@ import (
 func InitializeAll(startConfigPath string) {
 	InitLogrus()               //logrus
 	InitViper(startConfigPath) //初始化Viper
+	InitLocalCache()           //local cache
 
-	router.InitRouter()  //注册路由
-	database.StartGorm() //gorm连接数据库
+	router.Server.InitRouter() //注册路由
+	StartGorm()                //gorm连接数据库
 
-	InitServer()     //加载全局系统配置
-	InitCasbin()     //加载casbin
-	InitTheme()      //加载全局主题
-	InitLocalCache() //local cache
+	InitServer() //加载全局系统配置
+	InitCasbin() //加载casbin
+	InitTheme()  //加载全局主题
 
-	InitGoroutinePool()     //初始化协程池
-	InitBase64Captcha()     //Base64Captcha
-	InitRatelimit()         //限流
-	InitCrontab()           //定时任务
-	InitQueue()             //队列
-	InitTask()              //初始化一些任务
-	router.ListenAndServe() //启动路由监听
+	InitGoroutinePool()   //初始化协程池
+	InitBase64Captcha()   //Base64Captcha
+	InitRatelimit()       //限流
+	InitCrontab()         //定时任务
+	InitQueue()           //队列
+	InitTask()            //初始化一些任务
+	router.Server.Start() //启动路由监听
 }
 
-// InitializeUpdate 升级核心时的初始化
+// 主要用于开发时，初始化数据库 role_and_menu 、 menu 以及 casbin_rule
 func InitializeUpdate(startConfigPath string) {
 	InitLogrus()               //logrus
 	InitViper(startConfigPath) //初始化Viper
-	router.InitRouter()        //注册路由
-	database.StartGorm()       //gorm连接数据库
-	InitServer()               //加载全局系统配置
-	var funcs = []func() error{
-		func() error {
-			fmt.Println("升级数据库casbin_rule表")
-			err := global.DB.Where("id > 0").Delete(&gormadapter.CasbinRule{}).Error
-			if err != nil {
-				return err
-			}
-			return database.InsertIntoCasbinRule()
-		},
-		func() error {
-			fmt.Println("升级角色和菜单")
-			//先删除role_and_menu
-			err := global.DB.Where("role_id > 0").Delete(&model.RoleAndMenu{}).Error
-			if err != nil {
-				return err
-			}
-			//再删除菜单
-			err = global.DB.Where("id > 0").Delete(&model.Menu{}).Error
-			if err != nil {
-				return err
-			}
-			//插入新的菜单
-			err = database.InsertIntoMenu()
-			if err != nil {
-				return err
-			}
-			//插入新的role_and_menu
-			return database.InsertIntoRoleAndMenu()
-		},
+	InitLocalCache()           //local cache
+	router.Server.InitRouter() //注册路由
+	StartGorm()                //gorm连接数据库
+	err := initialize_logic.DefaultForRoleMenuCasbin()
+	if err != nil {
+		fmt.Println(err.Error())
 	}
-	for _, v := range funcs {
-		err := v()
-		if err != nil {
-			fmt.Println("升级核心出错：", err.Error())
-			return
-		}
-	}
-	fmt.Println("升级核心完成")
-
 }
 
 // InitializeDB 仅加载数据库
 func InitializeDB(startConfigPath string) {
 	InitLogrus()               //logrus
 	InitViper(startConfigPath) //初始化Viper
-	database.StartGorm()       //gorm连接数据库
+	StartGorm()                //gorm连接数据库
 }
 func InitLogrus() {
 	global.Logrus = logrus_plugin.InitLogrus()
@@ -147,6 +111,7 @@ func InitRatelimit() {
 }
 func InitGoroutinePool() {
 	global.GoroutinePool, _ = ants.NewPool(4, ants.WithPreAlloc(true))
+	global.GoroutinePool.Running()
 }
 func InitQueue() {
 	global.Queue = queue.NewQueue()

@@ -63,7 +63,7 @@ jobs:
       - name: Set version
         run: |
           cd server
-          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./main.go
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./constant/index.go
 
       - name: Build server
         uses: wangyoucao577/go-release-action@master
