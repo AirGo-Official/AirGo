@@ -18,8 +18,8 @@ func (m *Menu) NewMenu(menu *model.Menu) error {
 // 删除菜单
 func (m *Menu) DelMenu(menu *model.Menu) error {
 	return global.DB.Transaction(func(tx *gorm.DB) error {
-		//删除关联的路由
-		err := tx.Model(&menu).Association("Role").Replace(nil)
+		//删除与角色的关联
+		err := tx.Model(&menu).Association("Roles").Replace(nil)
 		if err != nil {
 			return err
 		}
