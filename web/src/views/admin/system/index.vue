@@ -326,7 +326,7 @@ import { defineAsyncComponent, onBeforeUnmount, onMounted, reactive, ref } from 
 import { useAdminServerStore } from "/@/stores/admin_logic/serverStore";
 import { storeToRefs } from "pinia";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { request,getApiUrl } from "/@/utils/request";
+import { request,getApiPrefixAddress } from "/@/utils/request";
 import { useApiStore } from "/@/stores/apiStore";
 import { useUserStore } from "/@/stores/user_logic/userStore";
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
@@ -455,7 +455,7 @@ const openUpdateDialog=()=>{
 const SSE = () => {
   state.isShowLogData = true
   state.logData=[]
-  let url = getApiUrl()+apiStore.adminApi.updateLatestVersion.path
+  let url = getApiPrefixAddress()+apiStore.adminApi.updateLatestVersion.path
   if (window.EventSource) {
    let sseSource = new EventSource(url)
     sseSource.onopen = function (e:any) {

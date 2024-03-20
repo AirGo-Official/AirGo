@@ -59,9 +59,7 @@ onBeforeMount(() => {
 //组件被挂载之前,获取布局配置,公共配置,
 onBeforeMount(() => {
   storesThemeConfig.getThemeConfig()
-  publicStore.getPublicSetting().then(()=>{
-    // userStoreData.registerData.value.email_suffix = publicStoreData.acceptable_email_suffixes_arr.value[0]//将注册邮箱后缀设为第一个
-  });
+  publicStore.getPublicSetting()
 })
 // 页面加载时
 onMounted(() => {

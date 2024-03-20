@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="home-card-item" v-for="(v,k) in articleStoreData.articleList.value.data" :key="k">
-      <el-card class="box-card">
+      <el-card class="box-card" @click="showArticle(v)">
         <template #header>
           <div class="card-header">
-            <span>{{v.title}}</span>
-            <span @click="showArticle(v)" style="color: #ff0000">详情>>></span>
+            <span style="font-size: 20px;font-weight: bolder">{{v.title}}</span>
+            <span style="color: #9b9da1">{{DateStrToTime(v.created_at)}}</span>
           </div>
         </template>
         <div>
@@ -49,7 +49,7 @@ const state = reactive({
     table_name: 'article',
     field_params_list: [
       {field: 'status', field_chinese_name: '', field_type: '', condition: '=', condition_value: "1", operator: ''},
-      {field: 'type', field_chinese_name: '', field_type: '', condition: '=', condition_value: "knowledge", operator: 'AND'},
+      {field: 'type', field_chinese_name: '', field_type: '', condition: '=', condition_value: "notice", operator: 'AND'},
     ] as FieldParams[],
     pagination: {
       page_num: 1,

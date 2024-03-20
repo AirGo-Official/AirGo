@@ -3,7 +3,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Local } from "/@/utils/storage";
 import qs from "qs";
 
-const apiUrl = getApiUrl()
+const apiUrl = getApiPrefixAddress()
 
 // 配置新建一个 axios 实例
 const service: AxiosInstance = axios.create({
@@ -114,12 +114,23 @@ export function request(apiItem: ApiItem, params?: any): Promise<AxiosResponse<a
     data: params
   });
 }
-export function getApiUrl(){
+
+/**
+ * 获取api前缀地址
+ */
+export function getApiPrefixAddress(){
   let apiUrl = import.meta.env.VITE_API_URL;
   if (!apiUrl) {
     apiUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
   }
   return apiUrl
+}
+
+/**
+ * 需要保持session时用此方法
+ */
+export function getCurrentApiPrefixAddress(){
+    return  window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 }
 
 

@@ -14,14 +14,14 @@
                    :inactive-text="$t('message.common.disable')"
                    style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
       </el-form-item>
-      <el-form-item :label="$t('message.adminArticle.Article.type')">
-        <el-radio-group v-model="articleStoreData.currentArticle.value.type">
-          <el-radio label="home">{{ $t('message.constant.ARTICLE_TYPE_HOME') }}</el-radio>
-          <el-radio label="dialog">{{ $t('message.constant.ARTICLE_TYPE_DIALOG') }}</el-radio>
-          <el-radio label="notice">{{ $t('message.constant.ARTICLE_TYPE_NOTICE') }}</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item :label="$t('message.adminArticle.Article.type')">
+<!--      <el-form-item :label="$t('message.adminArticle.Article.type')">-->
+<!--        <el-radio-group v-model="articleStoreData.currentArticle.value.type">-->
+<!--          <el-radio label="home">{{ $t('message.constant.ARTICLE_TYPE_HOME') }}</el-radio>-->
+<!--          <el-radio label="dialog">{{ $t('message.constant.ARTICLE_TYPE_DIALOG') }}</el-radio>-->
+<!--          <el-radio label="notice">{{ $t('message.constant.ARTICLE_TYPE_NOTICE') }}</el-radio>-->
+<!--        </el-radio-group>-->
+<!--      </el-form-item>-->
+      <el-form-item :label="$t('message.adminArticle.Article.content')">
         <el-input type="textarea" autosize
                   v-if="articleStoreData.currentArticle.value.type === constantStore.ARTICLE_TYPE_HOME"
                   v-model="articleStoreData.currentArticle.value.content"></el-input>
