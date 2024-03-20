@@ -88,12 +88,12 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	goods.Nodes[0] = firstNode
 	goods.Nodes[1] = secondNode
 	//最后处理一些参数
-	Show(goods.Nodes)
 	for k, _ := range goods.Nodes {
 		switch goods.Nodes[k].NodeType {
 		case constant.NODE_TYPE_NORMAL: // 替换uuid
 			goods.Nodes[k].UUID = cs.SubUUID.String()
-		case constant.NODE_TYPE_TRANSFER: //中转节点修改ip和端口
+		case constant.NODE_TYPE_TRANSFER: //中转节点修改ip和端口,以及uuid
+			goods.Nodes[k].UUID = cs.SubUUID.String()
 			goods.Nodes[k].Address = goods.Nodes[k].TransferAddress
 			goods.Nodes[k].Port = goods.Nodes[k].TransferPort
 		case constant.NODE_TYPE_SHARED:
