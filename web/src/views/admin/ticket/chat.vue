@@ -73,6 +73,7 @@ import { onMounted } from "vue";
 import { Session } from "/@/utils/storage";
 import { useAdminTicketStore } from "/@/stores/admin_logic/ticketStore";
 import { useConstantStore } from "/@/stores/constantStore";
+import { NextLoading } from "/@/utils/loading";
 
 const userStore = useAdminUserStore()
 const userStoreData = storeToRefs(userStore)
@@ -95,6 +96,7 @@ const sendMessage=()=>{
   })
 }
 onMounted(()=>{
+  NextLoading.done();
   firstUser()
 });
 

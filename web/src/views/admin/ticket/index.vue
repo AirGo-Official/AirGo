@@ -56,6 +56,10 @@ import {DateStrToTime} from "/@/utils/formatTime";
 import { useAdminTicketStore } from "/@/stores/admin_logic/ticketStore";
 import { useRouter } from "vue-router";
 import { useAdminUserStore } from "/@/stores/admin_logic/userStore";
+import { Session } from "/@/utils/storage"
+import { useConstantStore } from "/@/stores/constantStore";
+import { getApiPrefixAddress, getCurrentApiPrefixAddress } from "/@/utils/request";
+import { useApiStore } from "/@/stores/apiStore";
 const ticketStore = useAdminTicketStore()
 const ticketStoreData = storeToRefs(ticketStore)
 const themeConfig = useThemeConfig()
@@ -63,8 +67,8 @@ const userStore = useAdminUserStore()
 const userStoreData = storeToRefs(userStore)
 const router = useRouter();
 const constantStore = useConstantStore()
-import { Session } from "/@/utils/storage"
-import { useConstantStore } from "/@/stores/constantStore";
+const apiStore = useApiStore();
+
 
 
 const state = reactive({
@@ -86,9 +90,8 @@ const state = reactive({
 const openChat=(row:Ticket)=>{
   Session.set('ticketUserID',row.user_id)
   Session.set('ticketID',row.id)
-  const apiUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
- // console.log("apiUrl:",apiUrl)
-  window.open(apiUrl+'/#/static/ticketToChat',"_blank")
+  let url = getCurrentApiPrefixAddress()
+  window.open(url+'/#/static/ticketToChat',"_blank")
 }
 //关闭工单
 const closeTicket=(row:Ticket)=>{
