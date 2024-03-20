@@ -11,16 +11,9 @@ type Menu struct{}
 // 角色Ids对应的menu Ids
 func (m *Menu) GetMenuIdsByRoleIds(roleIds []int64) ([]int64, error) {
 	var RoleAndMenuArr []model.RoleAndMenu
-	if roleIds == nil {
-		err := global.DB.Find(&RoleAndMenuArr).Error
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		err := global.DB.Where("role_id in (?)", roleIds).Find(&RoleAndMenuArr).Error
-		if err != nil {
-			return nil, err
-		}
+	err := global.DB.Where("role_id in (?)", roleIds).Find(&RoleAndMenuArr).Error
+	if err != nil {
+		return nil, err
 	}
 
 	var menuIds []int64
@@ -34,18 +27,10 @@ func (m *Menu) GetMenuIdsByRoleIds(roleIds []int64) ([]int64, error) {
 // 根据menu Ids 查 menu Slice
 func (m *Menu) GetMenusByMenuIds(menuIds []int64) (*[]model.Menu, error) {
 	var menuArr []model.Menu
-	if menuIds == nil {
-		err := global.DB.Find(&menuArr).Error
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		err := global.DB.Where("id in (?)", menuIds).Find(&menuArr).Error
-		if err != nil {
-			return nil, err
-		}
+	err := global.DB.Where("id in (?)", menuIds).Find(&menuArr).Error
+	if err != nil {
+		return nil, err
 	}
-
 	return &menuArr, nil
 }
 

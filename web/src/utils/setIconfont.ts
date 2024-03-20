@@ -1,7 +1,7 @@
 // 字体图标 url
 const cssCdnUrlList: Array<string> = [
     '//at.alicdn.com/t/c/font_2298093_rnp72ifj3ba.css',
-    // '//cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+    '//cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
 ];
 
 // 第三方 js url

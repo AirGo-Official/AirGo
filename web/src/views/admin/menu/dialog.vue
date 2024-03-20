@@ -8,7 +8,7 @@
                            :props="{ checkStrictly: true, value: 'id', label: 'name' }"
                            clearable class="w100">
                 <template #default="{ node, data }">
-                  <span>{{ data.meta.title }}</span>
+                  <span>{{ $t(data.meta.title) }}</span>
                   <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
                 </template>
               </el-cascader>

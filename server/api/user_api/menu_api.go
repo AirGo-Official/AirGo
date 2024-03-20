@@ -39,6 +39,6 @@ func GetMenuList(ctx *gin.Context) {
 		return
 	}
 	route := menuService.GetMenus(menuSlice)
-	global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_USER_MENU_LIST_BY_ID, uIdInt), *route, 5*time.Minute)
+	global.LocalCache.Set(fmt.Sprintf("%s%d", constant.CACHE_USER_MENU_LIST_BY_ID, uIdInt), *route, 1*time.Minute) //缓存改为1分钟
 	response.OK("GetMenuList success", route, ctx)
 }

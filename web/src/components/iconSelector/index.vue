@@ -41,10 +41,10 @@
               <IconList :list="fontIconSheetsFilterList" :empty="emptyDescription" :prefix="state.fontIconPrefix"
                         @get-icon="onColClick"/>
             </el-tab-pane>
-<!--            <el-tab-pane lazy label="awe" name="awe">-->
-<!--              <IconList :list="fontIconSheetsFilterList" :empty="emptyDescription" :prefix="state.fontIconPrefix"-->
-<!--                        @get-icon="onColClick"/>-->
-<!--            </el-tab-pane>-->
+            <el-tab-pane lazy label="awe" name="awe">
+              <IconList :list="fontIconSheetsFilterList" :empty="emptyDescription" :prefix="state.fontIconPrefix"
+                        @get-icon="onColClick"/>
+            </el-tab-pane>
           </el-tabs>
         </div>
       </template>
