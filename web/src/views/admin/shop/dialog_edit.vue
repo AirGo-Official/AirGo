@@ -184,7 +184,9 @@ const closeDialog = () => {
 //确认提交
 function onSubmit() {
   //处理商品的关联节点
-  shopStoreData.checkedNodeIDs.value = [...nodes_tree_ref.value.getCheckedKeys()];
+  if (shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE){
+    shopStoreData.checkedNodeIDs.value = [...nodes_tree_ref.value.getCheckedKeys()];
+  }
   if (state.type === "add") {
     shopStore.newGoods().then((res) => {
       ElMessage.success(res.msg);
