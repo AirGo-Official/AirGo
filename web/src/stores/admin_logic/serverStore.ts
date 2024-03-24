@@ -37,14 +37,15 @@ export const useAdminServerStore = defineStore("serverAdminStore", {
                 enable_login_email_code: false,
                 acceptable_email_suffixes: '',
                 is_multipoint: true,
-                sub_name: '',
-                backend_url: '',
                 frontend_url: '',
                 api_prefix: '',
-                tek: '',
                 enabled_clock_in: true,
             } as Website,
-
+            subscribe:{
+                backend_url: '',
+                sub_name: '',
+                tek: '',
+            } as Subscribe,
             email: {
                 email_from: '',
                 email_from_alias: 'Admin',

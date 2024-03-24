@@ -1,6 +1,7 @@
 export default {
  adminServer:{
    tapWebsite:"Website",
+   tapSubscribe:"Subscribe",
    tapPayment:"Payment",
    tapEmail:"Email",
    tapSecurity:"Security",

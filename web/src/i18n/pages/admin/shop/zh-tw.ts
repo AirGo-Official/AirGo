@@ -51,7 +51,7 @@ export default {
     },
     Alipay:{
       alipay_app_id: "支付寶appID",
-      alipay_return_url: "支付寶非同步回檔地址",
+      alipay_notify_url: "支付寶非同步回檔地址",
       alipay_app_private_key: "支付寶應用私密金鑰",
       alipay_ali_public_key: "支付寶公開金鑰",
       alipay_encrypt_key: "支付寶介面加密金鑰",
@@ -60,8 +60,8 @@ export default {
       epay_pid: "易支付商戶ID",
       epay_key: "易支付商戶金鑰",
       epay_api_url: "易支付api地址",
-      epay_return_url: "易支付非同步通知地址",
-      epay_notify_url: "易支付同步通知地址",
+      epay_return_url: "易支付同步通知地址",
+      epay_notify_url: "易支付非同步通知地址",
       epay_type: "支付類型",
     },
     //

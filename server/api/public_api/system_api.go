@@ -18,7 +18,7 @@ func GetPublicSetting(ctx *gin.Context) {
 		EnableRegister:          global.Server.Website.EnableRegister,
 		EnableEmailCode:         global.Server.Website.EnableEmailCode,
 		EnableLoginEmailCode:    global.Server.Website.EnableLoginEmailCode,
-		BackendUrl:              global.Server.Website.BackendUrl,
+		BackendUrl:              global.Server.Subscribe.BackendUrl,
 		EnabledClockIn:          global.Server.Website.EnabledClockIn,
 		AcceptableEmailSuffixes: global.Server.Website.AcceptableEmailSuffixes,
 	}

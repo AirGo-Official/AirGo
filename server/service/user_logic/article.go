@@ -53,7 +53,6 @@ func (a *Article) GetDefaultArticle() (*model.CommonDataResp, error) {
 		//加入缓存
 		articleList := data.([]model.Article)
 		// 修改文章
-		//strings.ReplaceAll(articleList[0].Content, "auto_replace_backend_url", global.Server.Website.BackendUrl) //替换backend url
 		global.LocalCache.SetNoExpire(constant.CACHE_DEFAULT_ARTICLE, model.CommonDataResp{
 			Total: total,
 			Data:  articleList,

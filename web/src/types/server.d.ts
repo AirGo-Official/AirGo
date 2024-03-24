@@ -4,9 +4,15 @@ declare interface Server {
     id: number;
 
     website: Website;
+    subscribe: Subscribe
     email: Email;
     security: Security;
     notice: Notice;
+}
+declare interface Subscribe{
+    backend_url: string;
+    sub_name: string;
+    tek: string;
 }
 declare interface Notice {
     bot_token: string;
@@ -35,11 +41,8 @@ declare interface Website {
     enable_login_email_code: boolean;
     acceptable_email_suffixes: string;
     is_multipoint: boolean;
-    backend_url: string;
     frontend_url: string;
     api_prefix: string;
-    sub_name: string;
-    tek: string;
     enabled_clock_in: boolean
 }
 

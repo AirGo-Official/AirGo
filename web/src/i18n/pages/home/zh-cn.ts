@@ -23,6 +23,6 @@ export default {
     target_username:"目标用户名",
     message_confirm_reset_sub:"是否确认重置订阅?",
     subscription:"订阅",
-
+    selectSubPre:"选择订阅前缀",
   },
 };

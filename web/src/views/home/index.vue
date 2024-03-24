@@ -62,6 +62,17 @@
     </el-row>
     <!--    复制订阅弹窗-->
     <el-dialog v-model="state.isShowSubDialog" destroy-on-close>
+      <div>
+        <el-text size="large">{{$t('message.home.selectSubPre')}}</el-text>
+        <el-select v-model="state.currentSubUrlPre">
+          <el-option
+            v-for="item in state.subUrlPre"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
+      </div>
       <div class="qrcode-img-warp">
         <div class="mb30 mt30 qrcode-img">
           <!-- 二维码弹窗 -->
@@ -154,6 +165,8 @@ const state = reactive({
   subType: ["NekoBox", "v2rayNG", "v2rayN", "Shadowrocket", "Clash", "Surge", "Quantumult", "V2rayU"],
   currentSubUUID: "",
   QRcode: null,
+  subUrlPre:[''],
+  currentSubUrlPre:'',
 });
 const customColors = [
   { color: "#9af56c", percentage: 20 },
@@ -172,6 +185,8 @@ const getPublicSetting = () => {
 const openSubDialog = (subUUID: string) => {
   state.isShowSubDialog = true;
   state.currentSubUUID = subUUID.replace(/-/g, "");
+  state.subUrlPre = publicStoreData.publicSetting.value.backend_url.split('\n')
+  state.currentSubUrlPre = state.subUrlPre[0] //设置默认的订阅前缀
 };
 const openPushDialog = (cs: CustomerService) => {
   state.isShowPushDialog = true;
@@ -211,10 +226,11 @@ const resetSubscribeUUID=(cs:CustomerService)=>{
     });
 }
 const copyLink = (subType: string) => {
-  copyText(publicStoreData.publicSetting.value.backend_url + "/api/public/sub/" + state.currentSubUUID + "?type=" + subType);
+  copyText(state.currentSubUrlPre + "/api/public/sub/" + state.currentSubUUID + "?type=" + subType);
 };
 const showQR = (subType: string) => {
-  let link = publicStoreData.publicSetting.value.backend_url + "/api/public/sub/" + state.currentSubUUID + "?type=" + subType;
+  // TODO 多url处理
+  let link = state.currentSubUrlPre + "/api/public/sub/" + state.currentSubUUID + "?type=" + subType;
   //清除上一次二维码
   qrcodeRef.value.innerHTML = "";
   new QRCode(qrcodeRef.value, {

@@ -51,6 +51,9 @@
           <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_encrypt_key"
                     type="textarea"/>
         </el-form-item>
+        <el-form-item  :label="$t('message.adminShop.Alipay.alipay_notify_url')">
+          <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_notify_url"/>
+        </el-form-item>
       </div>
       <div v-else-if="adminShopStoreData.payInfo.value.pay_type==='epay'">
         <el-form-item :label="$t('message.adminShop.Epay.epay_pid')">
@@ -61,6 +64,9 @@
         </el-form-item>
         <el-form-item  :label="$t('message.adminShop.Epay.epay_api_url')">
           <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_api_url" placeholder="http://xxx.com/submit.php"/>
+        </el-form-item>
+        <el-form-item  :label="$t('message.adminShop.Epay.epay_notify_url')">
+          <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_notify_url"/>
         </el-form-item>
       </div>
 

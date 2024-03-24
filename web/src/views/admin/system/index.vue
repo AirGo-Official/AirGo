@@ -45,17 +45,8 @@
                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
             </el-form-item>
             <el-divider></el-divider>
-            <el-form-item :label="$t('message.adminServer.Server.tek')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.website.tek" />
-            </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.sub_name')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.website.sub_name" />
-            </el-form-item>
             <el-form-item :label="$t('message.adminServer.Server.frontend_url')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.website.frontend_url" placeholder="http://xxx.com" />
-            </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.backend_url')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.website.backend_url" placeholder="http://xxx.com" />
             </el-form-item>
             <el-divider></el-divider>
             <el-form-item>
@@ -63,8 +54,23 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
+        <el-tab-pane :label="$t('message.adminServer.tapSubscribe')" name="2">
+          <el-form-item :label="$t('message.adminServer.Server.tek')" class="label">
+            <el-input v-model="serverConfig.serverConfig.value.subscribe.tek" />
+          </el-form-item>
+          <el-form-item :label="$t('message.adminServer.Server.sub_name')" class="label">
+            <el-input v-model="serverConfig.serverConfig.value.subscribe.sub_name" />
+          </el-form-item>
+          <el-form-item :label="$t('message.adminServer.Server.backend_url')" class="label">
+            <el-input v-model="serverConfig.serverConfig.value.subscribe.backend_url" placeholder="http://xxx.com" type="textarea" autosize/>
+          </el-form-item>
+          <el-divider></el-divider>
+          <el-form-item>
+            <el-button @click="onSubmit()" type="primary">{{ $t("message.common.button_confirm") }}</el-button>
+          </el-form-item>
+        </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapPayment')" name="2">
+        <el-tab-pane :label="$t('message.adminServer.tapPayment')" name="3">
           <div>
             <el-button size="default" type="primary" class="ml10" @click="openPayDialog('add')">
               <el-icon>
@@ -110,7 +116,7 @@
           </div>
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapEmail')" name="3">
+        <el-tab-pane :label="$t('message.adminServer.tapEmail')" name="4">
           <el-form :model="serverConfig.serverConfig.value.email" label-position="top">
             <el-form-item :label="$t('message.adminServer.Server.email_host')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.email.email_host" placeholder="mail.example.com" />
@@ -147,7 +153,7 @@
 
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapSecurity')" name="4">
+        <el-tab-pane :label="$t('message.adminServer.tapSecurity')" name="5">
           <el-form :model="serverConfig.serverConfig.value.security" label-position="top">
             <el-form-item :label="$t('message.adminServer.Server.ip_role_param')" class="label">
               <el-col :span="2">
@@ -190,7 +196,7 @@
           </el-form>
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapNotice')" name="5">
+        <el-tab-pane :label="$t('message.adminServer.tapNotice')" name="6">
           <el-empty description="开发中，developing" />
           <el-form v-if="false" :model="serverConfig.serverConfig.value.notice" label-width="120px"
                    label-position="top">
@@ -229,7 +235,7 @@
           </el-form>
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapMigration')" name="6">
+        <el-tab-pane :label="$t('message.adminServer.tapMigration')" name="7">
           <div style="margin-bottom: 20px">
             <el-alert :title="$t('message.adminServer.migrationTip')" type="warning" effect="dark" />
           </div>

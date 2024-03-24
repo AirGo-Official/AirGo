@@ -23,5 +23,6 @@ export default {
     target_username:"Target username",
     message_confirm_reset_sub:"Are you sure to reset the subscription?",
     subscription:"Subscription",
+    selectSubPre:"Select subscription prefix",
   },
 };

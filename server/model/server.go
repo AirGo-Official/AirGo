@@ -9,10 +9,11 @@ type Server struct {
 	DeletedAt *time.Time `json:"-" gorm:"index"`
 	ID        int64      `json:"id"   gorm:"primaryKey"`
 
-	Website  Website  `json:"website"  gorm:"embedded"`
-	Email    Email    `json:"email"    gorm:"embedded"`
-	Security Security `json:"security" gorm:"embedded"`
-	Notice   Notice   `json:"notice"   gorm:"embedded"`
+	Website   Website   `json:"website"  gorm:"embedded"`
+	Email     Email     `json:"email"    gorm:"embedded"`
+	Security  Security  `json:"security" gorm:"embedded"`
+	Notice    Notice    `json:"notice"   gorm:"embedded"`
+	Subscribe Subscribe `json:"subscribe" gorm:"embedded"`
 }
 type Notice struct {
 	BotToken           string `json:"bot_token"            gorm:"comment:tg bot token"`
@@ -65,20 +66,22 @@ type Website struct {
 	EnableEmailCode         bool   `json:"enable_email_code"         gorm:"default:false;comment:是否开启注册email 验证码"`
 	EnableLoginEmailCode    bool   `json:"enable_login_email_code"   gorm:"default:false;comment:是否开启登录email 验证码"`
 	IsMultipoint            bool   `json:"is_multipoint"     gorm:"default:true;comment:是否多点登录"`
-	BackendUrl              string `json:"backend_url"       gorm:"comment:后端地址"`
 	FrontendUrl             string `json:"frontend_url"      gorm:"comment:官网地址"`
-	SubName                 string `json:"sub_name"          gorm:"default:AirGo;comment:订阅名称"`
-	TEK                     string `json:"tek"               gorm:"default:airgo;comment:前后端通信密钥"`
 	EnabledClockIn          bool   `json:"enabled_clock_in"  gorm:"default:true;comment:是否开启打卡"`
+}
+
+type Subscribe struct {
+	BackendUrl string `json:"backend_url"       gorm:"comment:后端地址"`
+	SubName    string `json:"sub_name"          gorm:"default:AirGo;comment:订阅名称"`
+	TEK        string `json:"tek"               gorm:"default:airgo;comment:前后端通信密钥"`
 }
 
 // 公共配置参数
 type PublicSystem struct {
-	EnableRegister          bool    `json:"enable_register"`           // 是否开启注册
-	AcceptableEmailSuffixes string  `json:"acceptable_email_suffixes"` // 可接受的邮箱后缀
-	EnableEmailCode         bool    `json:"enable_email_code"`         // 是否开启注册email 验证码
-	EnableLoginEmailCode    bool    `json:"enable_login_email_code"`   // 是否开启登录email 验证码
-	RebateRate              float64 `json:"rebate_rate"`               // 佣金率
-	BackendUrl              string  `json:"backend_url"`               // 后端地址
-	EnabledClockIn          bool    `json:"enabled_clock_in"`          // 是否开启打卡
+	EnableRegister          bool   `json:"enable_register"`           // 是否开启注册
+	AcceptableEmailSuffixes string `json:"acceptable_email_suffixes"` // 可接受的邮箱后缀
+	EnableEmailCode         bool   `json:"enable_email_code"`         // 是否开启注册email 验证码
+	EnableLoginEmailCode    bool   `json:"enable_login_email_code"`   // 是否开启登录email 验证码
+	BackendUrl              string `json:"backend_url"`               // 后端地址
+	EnabledClockIn          bool   `json:"enabled_clock_in"`          // 是否开启打卡
 }

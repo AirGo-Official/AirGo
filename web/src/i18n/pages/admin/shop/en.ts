@@ -51,7 +51,7 @@ export default {
     },
     Alipay:{
       alipay_app_id: "alipay app id",
-      alipay_return_url: "alipay return url",
+      alipay_notify_url: "alipay notify url",
       alipay_app_private_key: "alipay app private key",
       alipay_ali_public_key: "alipay ali public key",
       alipay_encrypt_key: "alipay encrypt key",

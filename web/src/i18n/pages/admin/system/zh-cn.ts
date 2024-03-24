@@ -1,6 +1,7 @@
 export default {
   adminServer:{
     tapWebsite:"网站",
+    tapSubscribe:"订阅",
     tapPayment:"支付",
     tapEmail:"邮件",
     tapSecurity:"安全",

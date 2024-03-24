@@ -16,7 +16,7 @@ import (
 
 func AGGetNodeInfo(ctx *gin.Context) {
 	//验证key
-	if global.Server.Website.TEK != ctx.Query("key") {
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
 		return
 	}
 	id := ctx.Query("id")
@@ -46,7 +46,7 @@ func AGGetNodeInfo(ctx *gin.Context) {
 
 func AGReportNodeStatus(ctx *gin.Context) {
 	//验证key
-	if global.Server.Website.TEK != ctx.Query("key") {
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
 		return
 	}
 	var AGNodeStatus model.AGNodeStatus
@@ -82,7 +82,7 @@ func AGReportNodeStatus(ctx *gin.Context) {
 
 func AGGetUserlist(ctx *gin.Context) {
 	//验证key
-	if global.Server.Website.TEK != ctx.Query("key") {
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
 		return
 	}
 	id := ctx.Query("id")
@@ -165,7 +165,7 @@ func ssEncryptionHandler(node model.Node, user *model.AGUserInfo) {
 
 func AGReportUserTraffic(ctx *gin.Context) {
 	//验证key
-	if global.Server.Website.TEK != ctx.Query("key") {
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
 		return
 	}
 	var AGUserTraffic model.AGUserTraffic
@@ -236,7 +236,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 
 func AGReportNodeOnlineUsers(ctx *gin.Context) {
 	//验证key
-	if global.Server.Website.TEK != ctx.Query("key") {
+	if global.Server.Subscribe.TEK != ctx.Query("key") {
 		return
 	}
 	var AGOnlineUser model.AGOnlineUser

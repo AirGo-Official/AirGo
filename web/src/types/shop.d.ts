@@ -40,7 +40,7 @@ declare interface PayInfo {
 
 declare interface Alipay {
   alipay_app_id: string;
-  alipay_return_url: string;
+  alipay_notify_url: string;
   alipay_app_private_key: string;
   alipay_ali_public_key: string;
   alipay_encrypt_key: string;

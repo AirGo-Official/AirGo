@@ -66,6 +66,7 @@ func (g *GinServer) Start() {
 	}()
 	w.Wait()
 	//syscall.SIGHUP 将触发重启; syscall.SIGINT, syscall.SIGTERM 并将触发服务器关闭（它将完成运行请求)。https://github.com/fvbock/endless
+	// TODO windows下使用endless报错：undefined: syscall.SIGUSR1
 	global.Logrus.Info("Server stop")
 	os.Exit(0)
 }

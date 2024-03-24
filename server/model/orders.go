@@ -2,16 +2,6 @@ package model
 
 import "time"
 
-const (
-	OrderCreated        = "Created"        //订单已创建
-	OrderCompleted      = "Completed"      //手动完成订单
-	OrderWAIT_BUYER_PAY = "WAIT_BUYER_PAY" //交易创建，等待买家付款
-	OrderTRADE_CLOSED   = "TRADE_CLOSED"   //未付款交易超时关闭，或支付完成后全额退款
-	OrderTRADE_SUCCESS  = "TRADE_SUCCESS"  //交易支付成功
-	OrderTRADE_FINISHED = "TRADE_FINISHED" //交易结束，不可退款
-
-)
-
 type Order struct {
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`

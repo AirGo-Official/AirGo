@@ -7,7 +7,6 @@ import (
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 type Shop struct {
@@ -95,20 +94,13 @@ func (s *Shop) UpdateGoods(goodsParams *model.Goods) error {
 func (s *Shop) Purchase(sysOrder *model.Order) (*model.Order, error) {
 	//fmt.Println("user_logic Purchase:")
 	//Show(sysOrder)
-	//0元购，跳过支付
-	totalAmountFloat64, _ := strconv.ParseFloat(sysOrder.TotalAmount, 10)
-	if totalAmountFloat64 == 0 {
-		sysOrder.TradeStatus = constant.ORDER_STATUS_TRADE_SUCCESS //更新订单状态
-		sysOrder.BuyerPayAmount = "0.00"                           //付款金额
-		sysOrder.PayType = constant.PAY_TYPE_BALANCE               //0元购时，分配一个默认的支付方式，防止前端判断逻辑混乱
-		return sysOrder, orderService.PaymentSuccessfullyOrderHandler(sysOrder)
-	}
+
 	//根据支付id查询支付参数
 	pay, err := payService.FirstPayment(&model.Pay{ID: sysOrder.PayID})
 	if err != nil {
 		return nil, err
 	}
-	sysOrder.PayType = pay.PayType //
+	sysOrder.PayType = pay.PayType
 
 	//判断支付方式
 	switch sysOrder.PayType {
@@ -117,8 +109,8 @@ func (s *Shop) Purchase(sysOrder *model.Order) (*model.Order, error) {
 		if err != nil {
 			return nil, err
 		}
-		sysOrder.TradeStatus = model.OrderWAIT_BUYER_PAY //订单状态：等待付款
-		err = orderService.UpdateOrder(sysOrder)         //更新数据库
+		sysOrder.TradeStatus = constant.ORDER_STATUS_WAIT_BUYER_PAY //订单状态：等待付款
+		err = orderService.UpdateOrder(sysOrder)                    //更新数据库
 		if err != nil {
 			return nil, err
 		}
@@ -130,12 +122,12 @@ func (s *Shop) Purchase(sysOrder *model.Order) (*model.Order, error) {
 		if err != nil {
 			return nil, err
 		}
-		res, err := payService.TradePreCreatePay(client, sysOrder)
+		res, err := payService.TradePreCreatePay(client, sysOrder, pay)
 		if err != nil {
 			return nil, err
 		}
-		sysOrder.TradeStatus = model.OrderWAIT_BUYER_PAY //订单状态：等待付款
-		err = orderService.UpdateOrder(sysOrder)         //更新数据库
+		sysOrder.TradeStatus = constant.ORDER_STATUS_WAIT_BUYER_PAY //订单状态：等待付款
+		err = orderService.UpdateOrder(sysOrder)                    //更新数据库
 		if err != nil {
 			return nil, err
 		}

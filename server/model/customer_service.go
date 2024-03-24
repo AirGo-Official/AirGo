@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// 用户当前生效的服务，例如 订阅 这种长期、持续性的服务
+// 用户当前生效的服务，例如 订阅、订阅聚合 这种长期、持续性的服务
 type CustomerService struct {
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
@@ -22,7 +22,7 @@ type CustomerService struct {
 	IsRenew       bool   `json:"is_renew"         gorm:"comment:是否可续费"`
 	RenewalAmount string `json:"renewal_amount"   gorm:"comment:续费金额"`
 	//OriginalAmount string `json:"original_amount"  gorm:"comment:原始金额"`
-	// 商品参数
+	// 商品参数-基础参数
 	GoodsID   int64  `json:"goods_id"      gorm:"comment:商品ID"`
 	Subject   string `json:"subject"       gorm:"comment:商品标题"`
 	Des       string `json:"des"           gorm:"comment:描述;type:text"`

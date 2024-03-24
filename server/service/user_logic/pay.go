@@ -44,7 +44,7 @@ func (ps *Pay) InitAlipayClient(pay *model.Pay) (*alipay.Client, error) {
 }
 
 // 支付宝-统一收单线下交易预创建,生成二维码后，展示给用户，由用户扫描二维码完成订单支付（当面付）
-func (p *Pay) TradePreCreatePay(client *alipay.Client, sysOrder *model.Order) (*alipay.TradePreCreateRsp, error) {
+func (p *Pay) TradePreCreatePay(client *alipay.Client, sysOrder *model.Order, pay *model.Pay) (*alipay.TradePreCreateRsp, error) {
 	//创建支付宝订单 请求模板
 	// order := alipay.TradePreCreate{
 	// 	Trade: alipay.Trade{
@@ -65,7 +65,7 @@ func (p *Pay) TradePreCreatePay(client *alipay.Client, sysOrder *model.Order) (*
 	// }
 	//创建支付宝订单
 	var order alipay.TradePreCreate
-	order.NotifyURL = global.Server.Website.BackendUrl + "/api/public/shop/alipayNotify" //回调地址
+	order.NotifyURL = pay.AliPay.AlipayNotifyURL + "/api/public/shop/alipayNotify" //回调地址
 	order.Subject = sysOrder.Subject
 	order.OutTradeNo = sysOrder.OutTradeNo
 	order.TotalAmount = sysOrder.TotalAmount
@@ -187,10 +187,10 @@ func (p *Pay) EpayPreByHTML(sysOrder *model.Order, pay *model.Pay) (*model.EpayP
 		Pid:        pay.Epay.EpayPid,
 		Type:       "", //为空则直接跳转到易支付收银台
 		OutTradeNo: sysOrder.OutTradeNo,
-		NotifyUrl:  global.Server.Website.BackendUrl + "/api/public/shop/epayNotify",
-		ReturnUrl:  global.Server.Website.BackendUrl + "/api/public/shop/epayNotify",
-		Name:       sysOrder.Subject,
-		Money:      sysOrder.Price,
+		NotifyUrl:  pay.Epay.EpayNotifyURL + "/api/public/shop/epayNotify",
+		//ReturnUrl:  pay.Epay.EpayReturnURL + "/api/public/shop/epayNotify",
+		Name:  sysOrder.Subject,
+		Money: sysOrder.Price,
 		//ClientIP:   "",
 		//Device:     "",
 		//Param:      "",
