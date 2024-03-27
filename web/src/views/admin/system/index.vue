@@ -197,8 +197,7 @@
         </el-tab-pane>
 
         <el-tab-pane :label="$t('message.adminServer.tapNotice')" name="6">
-          <el-empty description="开发中，developing" />
-          <el-form v-if="false" :model="serverConfig.serverConfig.value.notice" label-width="120px"
+          <el-form :model="serverConfig.serverConfig.value.notice" label-width="120px"
                    label-position="top">
             <el-form-item :label="$t('message.adminServer.Server.bot_token')" class="label">
               <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"

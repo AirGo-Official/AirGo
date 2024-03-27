@@ -18,6 +18,8 @@ import (
 type Node struct {
 }
 
+var nodeServer *Node
+
 // 新建节点
 func (n *Node) NewNode(nodeParams *model.Node) error {
 	return global.DB.Transaction(func(tx *gorm.DB) error {

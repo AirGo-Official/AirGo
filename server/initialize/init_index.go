@@ -119,6 +119,6 @@ func InitQueue() {
 }
 func InitTask() {
 	admin_logic.InitEmailSvc() //邮件
-	//service.InitTgBotSvc() //tg bot
-	user_logic.InitOrderSvc() //
+	admin_logic.InitTgBotSvc() //tg bot
+	user_logic.InitOrderSvc()  //
 }

@@ -4,22 +4,34 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
+	"github.com/ppoonk/AirGo/utils/font_plugin"
 	"github.com/ppoonk/AirGo/utils/net_plugin"
+	"github.com/ppoonk/AirGo/utils/time_plugin"
+	"github.com/vicanso/go-charts/v2"
 	"gorm.io/gorm"
+
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
 
+func init() {
+	err := charts.InstallFont("HarmonyOS", font_plugin.HarmonyOS_Sans_TC_Bold)
+	if err == nil {
+		font, _ := charts.GetFont("HarmonyOS")
+		charts.SetDefaultFont(font)
+	}
+}
+
 type TgBotService struct {
 	bot    *tgbotapi.BotAPI
-	cancel *context.CancelFunc
+	cancel context.CancelFunc
 }
 
 var EmailRegexp = regexp.MustCompile(`\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`)
@@ -40,40 +52,44 @@ func (ts *TgBotService) TGBotStart() {
 	}
 	ts.bot = bot
 	ctx, cancel := context.WithCancel(context.Background())
-	ts.cancel = &cancel
+	ts.cancel = cancel
 	go ts.TGBotListen(ctx)
 }
 func (ts *TgBotService) TGBotListen(ctx context.Context) {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
-	updates, _ := ts.bot.GetUpdatesChan(u)
-	for update := range updates { //注：这里tg无消息时会阻塞，可能直到下一次来消息时退出协程，未验证，不影响使用
+	updates := ts.bot.GetUpdatesChan(u)
+	for {
 		select {
 		case <-ctx.Done():
 			ts.bot.StopReceivingUpdates()
 			global.Logrus.Info("bot exit")
 			return
-		default:
+		case update := <-updates:
 			if update.Message != nil {
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "hhh")
 				//fmt.Println("msg.From.ID:", update.Message.From.ID)
+				//fmt.Println("update.Message.Text:", update.Message.Text)
+				//fmt.Println("update.Message.Command():", update.Message.Command())
+				var msg tgbotapi.Chattable
 				ok := MessageAuth(update.Message)
 				if ok { //管理员
-					MessageHandlerForAdmin(&update, &msg)
-
+					msg = MessageHandlerForAdmin(&update)
 				} else { //普通用户
-					MessageHandlerForUser(&update, &msg)
+					msg = MessageHandlerForUser(&update)
 				}
-				//ts.bot.Send(msg)
 				//消息入队
-				global.Queue.Publish(constant.TG_BOT_SEND_MESSAGE, msg)
+				if msg != nil {
+					global.Queue.Publish(constant.TG_BOT_SEND_MESSAGE, msg)
+				} else {
+					global.Queue.Publish(constant.TG_BOT_SEND_MESSAGE, returnMsgForNil(&update))
+				}
 			}
 		}
 	}
 }
 func (ts *TgBotService) TGBotCloseListen() {
 	if ts.cancel != nil {
-		(*ts.cancel)()
+		ts.cancel()
 	}
 }
 func (ts *TgBotService) TGBotSendMessage(chatID int64, text string) {
@@ -89,7 +105,7 @@ func (ts *TgBotService) StartTask() {
 	}
 	go func() {
 		for v := range ch {
-			msg := v.(tgbotapi.MessageConfig)
+			msg := v.(tgbotapi.Chattable)
 			_, err = ts.bot.Send(msg)
 			if err != nil {
 				global.Logrus.Error("Tg bot send msg error:", err)
@@ -107,7 +123,7 @@ func NewTGBot(token string) (*tgbotapi.BotAPI, error) {
 		port := socks[1]
 		portInt, _ := strconv.ParseInt(port, 10, 64)
 		c := net_plugin.ClientWithSocks5(add, int(portInt), 10*time.Second)
-		bot, err = tgbotapi.NewBotAPIWithClient(token, c)
+		bot, err = tgbotapi.NewBotAPIWithClient(token, tgbotapi.APIEndpoint, c)
 	} else {
 		bot, err = tgbotapi.NewBotAPI(token)
 	}
@@ -118,8 +134,6 @@ func NewTGBot(token string) (*tgbotapi.BotAPI, error) {
 	bot.Debug = false
 	return bot, nil
 }
-
-// tg bot message authentication
 func MessageAuth(msg *tgbotapi.Message) bool {
 	res := strings.Index(global.Server.Notice.TGAdmin, fmt.Sprintf("%d", msg.From.ID))
 	if res == -1 {
@@ -128,137 +142,169 @@ func MessageAuth(msg *tgbotapi.Message) bool {
 	return true
 
 }
-func MessageHandlerForUser(update *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
-
-	switch update.Message.Command() {
-	case "start":
-		ShowMenuForUser(update, msg)
-		goto tomsg
-	case "bind":
-		CmdBind(update, msg)
+func MessageHandlerForUser(update *tgbotapi.Update) tgbotapi.Chattable {
+	if update.Message.IsCommand() {
+		switch update.Message.Command() {
+		case "start":
+			return ShowMenuForUser(update)
+		case "bind":
+			return BindTG(update)
+		default:
+			return nil
+		}
+	} else {
+		switch update.Message.Text {
+		case "我的订阅":
+			return CreateSubChart(update)
+		case "绑定":
+			return BindTGPre(update)
+		case "解绑":
+			return UnbindTG(update)
+		case "TG ID":
+			return tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("您的tg id：%d", update.Message.Chat.ID))
+		case "官网":
+			return tgbotapi.NewMessage(update.Message.Chat.ID, "官网："+global.Server.Website.FrontendUrl)
+		default:
+			return nil
+		}
 	}
-	switch update.Message.Text {
-	case "打卡":
-		CmdClockin(update, msg)
-	case "绑定":
-		msg.Text = "绑定格式：/bind xxx@qq.com|your_password"
-	case "解绑":
-		CmdUnbind(update, msg)
-	case "TG ID":
-		msg.Text = fmt.Sprintf("您的tg id：%d", update.Message.Chat.ID)
-	case "官网":
-		msg.Text = "官网：" + global.Server.Website.FrontendUrl
-	case "刷新菜单":
-		ShowMenuForUser(update, msg)
-	}
-
-tomsg:
-	msg.ReplyToMessageID = update.Message.MessageID
-
 }
-func MessageHandlerForAdmin(update *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
-	switch update.Message.Command() {
-	case "start":
-		ShowMenuForUser(update, msg)
-		goto tomsg
-	case "bind":
-		CmdBind(update, msg)
+func MessageHandlerForAdmin(update *tgbotapi.Update) tgbotapi.Chattable {
+	if update.Message.IsCommand() {
+		switch update.Message.Command() {
+		case "start":
+			return ShowMenuForAdmin2(update)
+		case "bind":
+			return BindTG(update)
+		case "find":
+			return FindUser(update)
+		default:
+			return nil
+		}
+	} else {
+		switch update.Message.Text {
+		case "我的订阅":
+			return CreateSubChart(update)
+		case "绑定":
+			return BindTGPre(update)
+		case "解绑":
+			return UnbindTG(update)
+		case "TG ID":
+			return tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("您的tg id：%d", update.Message.Chat.ID))
+		case "官网":
+			return tgbotapi.NewMessage(update.Message.Chat.ID, "官网："+global.Server.Website.FrontendUrl)
+		case "查询用户":
+			return tgbotapi.NewMessage(update.Message.Chat.ID, "查询用户格式：/find xxx@qq.com")
+		case "用户分析":
+			return CreateUserSummaryChart(update)
+		case "收入概览":
+			return CreateOrderSummaryChart(update)
+		case "节点状态":
+			return CreateNodeStatusChart(update)
+		case "切换用户菜单":
+			return ShowMenuForAdmin1(update)
+		case "切换管理员菜单":
+			return ShowMenuForAdmin2(update)
+		default:
+			return nil
+		}
 	}
-	switch update.Message.Text {
-	case "绑定":
-		msg.Text = "绑定格式：/bind xxx@qq.com|your_password"
-	case "解绑":
-		CmdUnbind(update, msg)
-	case "打卡":
-		CmdClockin(update, msg)
-	case "TG ID":
-		msg.Text = fmt.Sprintf("您的tg id：%d", update.Message.Chat.ID)
-	case "查询用户":
-		msg.Text = "查询用户格式：/find xxx@qq.com"
-	case "收入概览":
-
-	case "节点状态":
-		NodeStatus(update, msg)
-
-	case "官网":
-		msg.Text = "官网：" + global.Server.Website.FrontendUrl
-
-	case "刷新菜单":
-		ShowMenuForAdmin(update, msg)
-	}
-
-tomsg:
-	msg.ReplyToMessageID = update.Message.MessageID
-
 }
-func ShowMenuForUser(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
+
+func ShowMenuForUser(update *tgbotapi.Update) tgbotapi.Chattable {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+	msg.ReplyToMessageID = update.Message.MessageID
 	msg.Text = "菜单"
-	bt1 := tgbotapi.NewKeyboardButton("打卡")
+	bt1 := tgbotapi.NewKeyboardButton("我的订阅")
+	bt2 := tgbotapi.NewKeyboardButton("绑定")
+	bt3 := tgbotapi.NewKeyboardButton("解绑")
+	bt4 := tgbotapi.NewKeyboardButton("TG ID")
+	bt5 := tgbotapi.NewKeyboardButton("官网")
 
-	bt2 := tgbotapi.NewKeyboardButton("订阅")
+	row1 := tgbotapi.NewKeyboardButtonRow(bt1)
+	row2 := tgbotapi.NewKeyboardButtonRow(bt2, bt3, bt4)
+	row3 := tgbotapi.NewKeyboardButtonRow(bt5)
 
-	bt3 := tgbotapi.NewKeyboardButton("绑定")
-	bt4 := tgbotapi.NewKeyboardButton("解绑")
-	bt5 := tgbotapi.NewKeyboardButton("TG ID")
+	keyboard := tgbotapi.NewReplyKeyboard(row1, row2, row3)
 
-	bt6 := tgbotapi.NewKeyboardButton("官网")
-	bt7 := tgbotapi.NewKeyboardButton("刷新菜单")
+	//keyboard.ResizeKeyboard = true
+	msg.ReplyMarkup = keyboard
+	//msg.ParseMode = tgbotapi.ModeMarkdown
+	return msg
+}
+func ShowMenuForAdmin1(update *tgbotapi.Update) tgbotapi.Chattable {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+	msg.ReplyToMessageID = update.Message.MessageID
+	msg.Text = "菜单"
+	bt1 := tgbotapi.NewKeyboardButton("我的订阅")
+	bt2 := tgbotapi.NewKeyboardButton("绑定")
+	bt3 := tgbotapi.NewKeyboardButton("解绑")
+	bt4 := tgbotapi.NewKeyboardButton("TG ID")
+	bt5 := tgbotapi.NewKeyboardButton("官网")
+	bt6 := tgbotapi.NewKeyboardButton("切换管理员菜单")
+
+	row1 := tgbotapi.NewKeyboardButtonRow(bt1)
+	row2 := tgbotapi.NewKeyboardButtonRow(bt2, bt3, bt4)
+	row3 := tgbotapi.NewKeyboardButtonRow(bt5)
+	row4 := tgbotapi.NewKeyboardButtonRow(bt6)
+
+	keyboard := tgbotapi.NewReplyKeyboard(row1, row2, row3, row4)
+
+	//keyboard.ResizeKeyboard = true
+	msg.ReplyMarkup = keyboard
+	msg.ParseMode = tgbotapi.ModeMarkdown
+	return msg
+}
+func ShowMenuForAdmin2(update *tgbotapi.Update) tgbotapi.Chattable {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+	msg.ReplyToMessageID = update.Message.MessageID
+	msg.Text = "菜单"
+
+	bt1 := tgbotapi.NewKeyboardButton("查询用户")
+	bt2 := tgbotapi.NewKeyboardButton("用户分析")
+
+	bt3 := tgbotapi.NewKeyboardButton("收入概览")
+	bt4 := tgbotapi.NewKeyboardButton("节点状态")
+
+	bt5 := tgbotapi.NewKeyboardButton("切换用户菜单")
 
 	row1 := tgbotapi.NewKeyboardButtonRow(bt1, bt2)
-	row2 := tgbotapi.NewKeyboardButtonRow(bt3, bt4, bt5)
-	row3 := tgbotapi.NewKeyboardButtonRow(bt6, bt7)
+	row2 := tgbotapi.NewKeyboardButtonRow(bt3, bt4)
+	row3 := tgbotapi.NewKeyboardButtonRow(bt5)
 
 	keyboard := tgbotapi.NewReplyKeyboard(row1, row2, row3)
 	keyboard.ResizeKeyboard = true
 
 	msg.ReplyMarkup = keyboard
 	msg.ParseMode = tgbotapi.ModeMarkdown
+	return msg
 }
-func ShowMenuForAdmin(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
-	msg.Text = "菜单"
-
-	bt1 := tgbotapi.NewKeyboardButton("打卡")
-	bt2 := tgbotapi.NewKeyboardButton("订阅")
-
-	bt3 := tgbotapi.NewKeyboardButton("绑定")
-	bt4 := tgbotapi.NewKeyboardButton("解绑")
-	bt5 := tgbotapi.NewKeyboardButton("TG ID")
-
-	bt6 := tgbotapi.NewKeyboardButton("查询用户")
-
-	bt7 := tgbotapi.NewKeyboardButton("用户分析")
-	bt8 := tgbotapi.NewKeyboardButton("收入概览")
-	bt9 := tgbotapi.NewKeyboardButton("节点状态")
-
-	bt10 := tgbotapi.NewKeyboardButton("官网")
-	bt11 := tgbotapi.NewKeyboardButton("刷新菜单")
-
-	row1 := tgbotapi.NewKeyboardButtonRow(bt1, bt2)
-	row2 := tgbotapi.NewKeyboardButtonRow(bt3, bt4, bt5)
-	row3 := tgbotapi.NewKeyboardButtonRow(bt6)
-	row4 := tgbotapi.NewKeyboardButtonRow(bt7, bt8, bt9)
-	row5 := tgbotapi.NewKeyboardButtonRow(bt10, bt11)
-
-	keyboard := tgbotapi.NewReplyKeyboard(row1, row2, row3, row4, row5)
-	keyboard.ResizeKeyboard = true
-
-	msg.ReplyMarkup = keyboard
-	msg.ParseMode = tgbotapi.ModeMarkdown
-}
-func CmdClockin(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
-
-}
-
-func CmdBind(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
+func BindTGPre(update *tgbotapi.Update) tgbotapi.Chattable {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+	msg.ReplyToMessageID = update.Message.MessageID
 	//查询用户
-	user, _ := userService.FirstUser(&model.User{ID: int64(up.Message.From.ID)})
+	user, _ := userService.FirstUser(&model.User{TgID: int64(update.Message.From.ID)})
 	if user != nil {
 		if user.TgID != 0 {
-			msg.Text = "已经绑定账户：" + user.UserName
-			return
+			msg.Text = fmt.Sprintf("已经绑定账户: %s\n绑定其他用户请先解绑", user.UserName)
+			return msg
 		}
 	}
-	userText := strings.TrimSpace(up.Message.Text[strings.LastIndex(up.Message.Text, "/bind")+6:])
+	msg.Text = "绑定格式：/bind xxx@qq.com|your_password"
+	return msg
+}
+func BindTG(update *tgbotapi.Update) tgbotapi.Chattable {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+	msg.ReplyToMessageID = update.Message.MessageID
+	//查询用户
+	user, _ := userService.FirstUser(&model.User{TgID: int64(update.Message.From.ID)})
+	if user != nil {
+		if user.TgID != 0 {
+			msg.Text = fmt.Sprintf("已经绑定账户: %s\n绑定其他用户请先解绑", user.UserName)
+			return msg
+		}
+	}
+	userText := strings.TrimSpace(update.Message.Text[strings.LastIndex(update.Message.Text, "/bind")+6:])
 
 	userName := strings.Split(userText, "|")[0]
 	pwd := strings.Split(userText, "|")[1]
@@ -266,79 +312,54 @@ func CmdBind(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
 	ok := EmailRegexp.MatchString(userName)
 	if !ok {
 		msg.Text = "邮箱格式错误！绑定格式：/bind xxx@qq.com|your_password"
-		return
+		return msg
 	} else {
-
 		user, err := userService.FirstUser(&model.User{UserName: userName})
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			msg.Text = "账户不存在！绑定格式：/bind xxx@qq.com|your_password"
-			return
+			return msg
 		}
 		if err != nil {
 			msg.Text = "账户查询错误！绑定格式：/bind xxx@qq.com|your_password"
-			return
+			return msg
 		}
 		if user != nil {
 			if err = encrypt_plugin.BcryptDecode(pwd, user.Password); err != nil {
 				msg.Text = "密码错误！绑定格式：/bind xxx@qq.com|your_password"
-				return
+				return msg
 
 			}
-			user.TgID = int64(up.Message.From.ID)
+			user.TgID = int64(update.Message.From.ID)
 			userService.SaveUser(user)
-			msg.Text = fmt.Sprintf("TG ID: %d\n绑定账户：%s", up.Message.From.ID, userName)
+			msg.Text = fmt.Sprintf("TG ID: %d\n绑定账户：%s", update.Message.From.ID, userName)
+			return msg
 		}
+		return nil
 	}
-
 }
-
-func CmdUnbind(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
-	user, err := userService.FirstUser(&model.User{ID: int64(up.Message.From.ID)})
+func UnbindTG(update *tgbotapi.Update) tgbotapi.Chattable {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+	msg.ReplyToMessageID = update.Message.MessageID
+	user, err := userService.FirstUser(&model.User{TgID: int64(update.Message.From.ID)})
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		msg.Text = "未绑定账户"
-		return
+		return msg
 	}
 	if err != nil {
 		msg.Text = "账户查询错误！"
-		return
+		return msg
 	}
 	if user != nil {
 		if user.TgID != 0 {
 			user.TgID = 0
 			userService.SaveUser(user)
 			msg.Text = "已经解绑账户：" + user.UserName
-			return
+			return msg
 		}
 	}
+	return nil
 }
 
-func NodeStatus(up *tgbotapi.Update, msg *tgbotapi.MessageConfig) {
-	text := GetNodeStatus()
-	if text == "" {
-		msg.Text = "查询错误"
-		return
-	}
-	msg.Text = text
-
-}
-func GetNodeStatus() string {
-	var NodeArr []model.Node
-	err := global.DB.Where("enabled = ?", true).Find(&NodeArr).Error
-	if err != nil {
-		return ""
-	}
-	var msgArr []string
-	for k, _ := range NodeArr {
-		_, ok := global.LocalCache.Get(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, NodeArr[k].ID))
-		if ok {
-			msgArr = append(msgArr, fmt.Sprintf("节点: %s, 状态: %s ", NodeArr[k].Remarks, "✅"))
-		} else {
-			msgArr = append(msgArr, fmt.Sprintf("节点: %s, 状态: %s ", NodeArr[k].Remarks, "❌"))
-		}
-	}
-	text := strings.Join(msgArr, "\n")
-	return text
-}
 func GetOfflineNodeStatus() string {
 	var NodeArr []model.Node
 	err := global.DB.Find(&NodeArr).Error
@@ -361,4 +382,207 @@ func GetOfflineNodeStatus() string {
 	}
 	text := strings.Join(msgArr, "\n")
 	return text
+}
+func FindUser(update *tgbotapi.Update) tgbotapi.Chattable {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+	msg.ReplyToMessageID = update.Message.MessageID
+
+	text := strings.TrimSpace(update.Message.Text[strings.LastIndex(update.Message.Text, "/bind")+6:])
+	user, err := userService.FirstUser(&model.User{UserName: text})
+	if err != nil {
+		return returnMsgForErr(update, err)
+	}
+	msg.Text = strings.Join([]string{
+		fmt.Sprintf("[ID]: %d", user.ID),
+		fmt.Sprintf("[Name]: %s", user.UserName),
+		fmt.Sprintf("[Balance]: %.2f", user.Balance),
+		fmt.Sprintf("[Enable]: %v", user.Enable),
+	}, "\n")
+	return msg
+}
+func CreateSubChart(update *tgbotapi.Update) tgbotapi.Chattable {
+	header := []string{
+		"Name",
+		"Expiration",
+		"Total",
+		"Remain",
+	}
+	spans := map[int]int{
+		0: 3,
+		1: 4,
+		2: 2,
+		3: 2,
+	}
+	var data [][]string
+	user, err := userService.FirstUser(&model.User{TgID: int64(update.Message.From.ID)})
+	if err != nil {
+		return returnMsgForErr(update, err)
+	}
+	list, err := customerSvc.GetCustomerServiceList(&model.CustomerService{UserID: user.ID})
+	if err != nil {
+		return returnMsgForErr(update, err)
+	}
+	for _, v := range *list {
+		//过期时间
+		date := v.ServiceEndAt.Format("2006-01-02 15:04:05")
+		//总流量
+		remain1 := (float64(v.TotalBandwidth - v.UsedUp - v.UsedDown)) / 1024 / 1024 / 1024
+		remain2 := strconv.FormatFloat(remain1, 'f', 2, 64)
+		//剩余流量
+		total1 := (float64(v.TotalBandwidth)) / 1024 / 1024 / 1024
+		total2 := strconv.FormatFloat(total1, 'f', 2, 64)
+		data = append(data, []string{v.Subject, date, total2 + " GB", remain2 + " GB"})
+	}
+	return returnMsgForPhoto(update, header, spans, data)
+}
+func CreateNodeStatusChart(update *tgbotapi.Update) tgbotapi.Chattable {
+	header := []string{
+		"ID",
+		"Name",
+		"Status",
+		"UserAmount",
+		"TrafficRate",
+	}
+	spans := map[int]int{
+		0: 1,
+		1: 4,
+		2: 2,
+		3: 3,
+		4: 3,
+	}
+	var data, onlineNodes, offlineNodes [][]string
+	nodeStatusList := nodeServer.GetNodesStatus()
+	for _, v := range *nodeStatusList {
+		if v.Status {
+			onlineNodes = append(onlineNodes, []string{
+				fmt.Sprintf("%d", v.ID), v.Name, "online", fmt.Sprintf("%d", v.UserAmount),
+			})
+
+		} else {
+			offlineNodes = append(offlineNodes, []string{
+				fmt.Sprintf("%d", v.ID), v.Name, "offline", fmt.Sprintf("%d", v.UserAmount),
+			})
+		}
+	}
+	data = append(data, onlineNodes...)
+	data = append(data, offlineNodes...)
+	if len(data) == 0 {
+		return nil
+	}
+	return returnMsgForPhoto(update, header, spans, data)
+}
+
+func CreateUserSummaryChart(update *tgbotapi.Update) tgbotapi.Chattable {
+	header := []string{
+		"Date",
+		"Number of registrations",
+	}
+	spans := map[int]int{
+		0: 1,
+		1: 2,
+	}
+	var data [][]string
+
+	params := model.QueryParams{
+		FieldParamsList: []model.FieldParamsItem{
+			{
+				ConditionValue: "",
+			},
+			{
+				ConditionValue: "",
+			},
+		},
+	}
+	start, end := time_plugin.GetFirstToTodayForMonth()
+	params.FieldParamsList[0].ConditionValue = start.Format("2006-01-02 15:04:05")
+	params.FieldParamsList[1].ConditionValue = end.Format("2006-01-02 15:04:05")
+
+	list, err := userService.UserSummary(&params)
+	if err != nil {
+		return returnMsgForErr(update, err)
+	}
+	for _, v := range *list {
+		data = append(data, []string{
+			v.Date, fmt.Sprintf("%d", v.RegisterTotal),
+		})
+	}
+	return returnMsgForPhoto(update, header, spans, data)
+}
+
+func CreateOrderSummaryChart(update *tgbotapi.Update) tgbotapi.Chattable {
+	header := []string{
+		"Date",
+		"General",
+		"Recharge",
+		"Subscribe",
+		"Order",
+		"Income",
+	}
+	spans := map[int]int{
+		0: 4,
+		1: 3,
+		2: 3,
+		3: 3,
+		4: 3,
+		5: 3,
+	}
+	var data [][]string
+
+	params := model.QueryParams{
+		FieldParamsList: []model.FieldParamsItem{
+			{
+				ConditionValue: "",
+			},
+			{
+				ConditionValue: "",
+			},
+		},
+	}
+	start, end := time_plugin.GetFirstToTodayForMonth()
+	params.FieldParamsList[0].ConditionValue = start.Format("2006-01-02 15:04:05")
+	params.FieldParamsList[1].ConditionValue = end.Format("2006-01-02 15:04:05")
+
+	list, err := orderService.OrderSummary(&params)
+	if err != nil {
+		return returnMsgForErr(update, err)
+	}
+	for _, v := range *list {
+		data = append(data, []string{
+			v.Date,
+			fmt.Sprintf("%d", v.OrderTotal),
+			fmt.Sprintf("%d", v.GeneralTotal),
+			fmt.Sprintf("%d", v.RechargeTotal),
+			fmt.Sprintf("%d", v.SubscribeTotal),
+			fmt.Sprintf("%.2f", v.IncomeTotal),
+		})
+	}
+	return returnMsgForPhoto(update, header, spans, data)
+}
+
+func returnMsgForErr(update *tgbotapi.Update, err error) tgbotapi.Chattable {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, err.Error())
+	msg.ReplyToMessageID = update.Message.MessageID
+	return msg
+}
+func returnMsgForNil(update *tgbotapi.Update) tgbotapi.Chattable {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, "No data")
+	msg.ReplyToMessageID = update.Message.MessageID
+	return msg
+}
+func returnMsgForPhoto(update *tgbotapi.Update, header []string, spans map[int]int, data [][]string) tgbotapi.Chattable {
+	p, err := charts.TableRender(
+		header,
+		data,
+		spans,
+	)
+	if err != nil {
+		return returnMsgForErr(update, err)
+	}
+	b, err := p.Bytes()
+	if err != nil {
+		return returnMsgForErr(update, err)
+	}
+	msg := tgbotapi.NewPhoto(update.Message.Chat.ID, tgbotapi.FileBytes{Name: "image.png", Bytes: b})
+	msg.ReplyToMessageID = update.Message.MessageID
+	return msg
 }

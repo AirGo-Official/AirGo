@@ -27,3 +27,9 @@ func ParseDuration(d string) (time.Duration, error) {
 	dv, err := strconv.ParseInt(d, 10, 64)
 	return time.Duration(dv), err
 }
+
+// 获取月初第一天（00:00:00）到当天（23:59:59）的起止时间
+func GetFirstToTodayForMonth() (start time.Time, end time.Time) {
+	today := time.Now()
+	return time.Date(today.Year(), today.Month(), 1, 0, 0, 0, 0, today.Location()), time.Date(today.Year(), today.Month(), today.Day()+1, 0, 0, -1, 0, today.Location())
+}
