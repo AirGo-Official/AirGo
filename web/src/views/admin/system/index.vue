@@ -394,6 +394,8 @@ import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { usePublicStore } from "/@/stores/publicStore";
 import { useI18n } from "vue-i18n";
 import { useConstantStore } from "/@/stores/constantStore";
+import { EventSourcePolyfill } from 'event-source-polyfill';
+import { Local } from "/@/utils/storage";
 
 const apiStore = useApiStore();
 const apiStoreData = storeToRefs(apiStore);
@@ -517,8 +519,16 @@ const SSE = () => {
   state.isShowLogData = true;
   state.logData = [];
   let url = getApiPrefixAddress() + apiStore.adminApi.updateLatestVersion.path;
+  let token = Local.get("token")
   if (window.EventSource) {
-    let sseSource = new EventSource(url);
+    // let sseSource = new EventSource(url, { withCredentials: true });
+    const sseSource = new EventSourcePolyfill(url, {
+      headers: {
+        'Authorization': token
+      }
+    });
+
+    console.log("url:",url)
     sseSource.onopen = function(e: any) {
       console.log("建立连接", e);
     };
