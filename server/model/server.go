@@ -16,12 +16,17 @@ type Server struct {
 	Subscribe Subscribe `json:"subscribe" gorm:"embedded"`
 }
 type Notice struct {
-	BotToken           string `json:"bot_token"            gorm:"comment:tg bot token"`
-	TGAdmin            string `json:"tg_admin"             gorm:"comment:tg admin"`
-	TGSocks5           string `json:"tg_socks5"            gorm:"comment:tg socks5代理"`
-	WhenUserRegistered bool   `json:"when_user_registered" gorm:"comment:用户注册后通知"`
-	WhenUserPurchased  bool   `json:"when_user_purchased"  gorm:"comment:用户购买成功后通知"`
-	WhenNodeOffline    bool   `json:"when_node_offline"    gorm:"comment:节点离线时通知"`
+	EnableTGBot          bool               `json:"enable_tg_bot"`
+	EnableEmail          bool               `json:"enable_email"`
+	EnableWebMail        bool               `json:"enable_web_mail"`
+	AdminID              string             `json:"admin_id"`
+	AdminIDCache         map[int64]struct{} `json:"-" gorm:"-"` //用来存储通知消息时的管理员id，key=user_id
+	AdminIDCacheWithTGID map[int64]struct{} `json:"-" gorm:"-"` //用来存储通知消息时的管理员id，key=tg_id
+	BotToken             string             `json:"bot_token"            gorm:"comment:tg bot token"`
+	TGSocks5             string             `json:"tg_socks5"            gorm:"comment:tg socks5代理"`
+	WhenUserRegistered   bool               `json:"when_user_registered" gorm:"comment:用户注册后通知"`
+	WhenUserPurchased    bool               `json:"when_user_purchased"  gorm:"comment:用户购买成功后通知"`
+	WhenNodeOffline      bool               `json:"when_node_offline"    gorm:"comment:节点离线时通知"`
 }
 
 type Email struct {

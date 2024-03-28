@@ -56,6 +56,10 @@ func (s *System) UpdateSetting(setting *model.Server) error {
 			TgBotSvc.TGBotCloseListen()
 		})
 	}
+	//重新加载通知消息时的管理员id
+	global.GoroutinePool.Submit(func() {
+		PushMessageSvc.AdminAccountHandler()
+	})
 	return nil
 }
 

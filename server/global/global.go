@@ -13,6 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// TODO 精简
 var (
 	//Viper              *viper.Viper
 	Config             model.Config                 //全局配置（本地yaml）

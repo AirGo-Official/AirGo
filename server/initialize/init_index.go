@@ -70,6 +70,7 @@ func InitServer() {
 		return
 	}
 	global.Server = res
+	admin_logic.PushMessageSvc.AdminAccountHandler()
 }
 func InitCasbin() {
 	var casbinService admin_logic.Casbin
@@ -118,7 +119,8 @@ func InitQueue() {
 	global.Queue.SetConditions(100)
 }
 func InitTask() {
-	admin_logic.InitEmailSvc() //邮件
-	admin_logic.InitTgBotSvc() //tg bot
-	user_logic.InitOrderSvc()  //
+	admin_logic.InitEmailSvc()       //邮件
+	admin_logic.InitTgBotSvc()       //tg bot
+	user_logic.InitOrderSvc()        //订单
+	admin_logic.InitPushMessageSvc() //推送消息
 }

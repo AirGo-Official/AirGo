@@ -57,8 +57,6 @@ func AGReportNodeStatus(ctx *gin.Context) {
 		return
 	}
 	//处理探针
-	//取消离线节点的通知状态
-	global.LocalCache.Delete(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_IS_NOTIFIED_BY_NODEID, AGNodeStatus.ID))
 	cacheStatus, ok := global.LocalCache.Get(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, AGNodeStatus.ID))
 	if ok {
 		oldStatus := cacheStatus.(model.NodeStatus)

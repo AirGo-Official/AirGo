@@ -70,8 +70,9 @@ func (ts *TgBotService) TGBotListen(ctx context.Context) {
 				//fmt.Println("msg.From.ID:", update.Message.From.ID)
 				//fmt.Println("update.Message.Text:", update.Message.Text)
 				//fmt.Println("update.Message.Command():", update.Message.Command())
+				fmt.Println("update.Message.Chat.ID:", update.Message.Chat.ID) //6749478020
 				var msg tgbotapi.Chattable
-				ok := MessageAuth(update.Message)
+				ok := IsAdmin(update.Message)
 				if ok { //管理员
 					msg = MessageHandlerForAdmin(&update)
 				} else { //普通用户
@@ -79,9 +80,9 @@ func (ts *TgBotService) TGBotListen(ctx context.Context) {
 				}
 				//消息入队
 				if msg != nil {
-					global.Queue.Publish(constant.TG_BOT_SEND_MESSAGE, msg)
+					ts.TGBotSendMessage(msg)
 				} else {
-					global.Queue.Publish(constant.TG_BOT_SEND_MESSAGE, returnMsgForNil(&update))
+					ts.TGBotSendMessage(returnMsgForNil(&update))
 				}
 			}
 		}
@@ -92,8 +93,7 @@ func (ts *TgBotService) TGBotCloseListen() {
 		ts.cancel()
 	}
 }
-func (ts *TgBotService) TGBotSendMessage(chatID int64, text string) {
-	msg := tgbotapi.NewMessage(chatID, text)
+func (ts *TgBotService) TGBotSendMessage(msg tgbotapi.Chattable) {
 	global.Queue.Publish(constant.TG_BOT_SEND_MESSAGE, msg)
 }
 
@@ -134,13 +134,13 @@ func NewTGBot(token string) (*tgbotapi.BotAPI, error) {
 	bot.Debug = false
 	return bot, nil
 }
-func MessageAuth(msg *tgbotapi.Message) bool {
-	res := strings.Index(global.Server.Notice.TGAdmin, fmt.Sprintf("%d", msg.From.ID))
-	if res == -1 {
-		return false
-	}
-	return true
 
+func IsAdmin(msg *tgbotapi.Message) bool {
+	_, ok := global.Server.Notice.AdminIDCacheWithTGID[msg.From.ID]
+	if ok {
+		return true
+	}
+	return false
 }
 func MessageHandlerForUser(update *tgbotapi.Update) tgbotapi.Chattable {
 	if update.Message.IsCommand() {
@@ -329,7 +329,7 @@ func BindTG(update *tgbotapi.Update) tgbotapi.Chattable {
 				return msg
 
 			}
-			user.TgID = int64(update.Message.From.ID)
+			user.TgID = update.Message.From.ID
 			userService.SaveUser(user)
 			msg.Text = fmt.Sprintf("TG ID: %d\n绑定账户：%s", update.Message.From.ID, userName)
 			return msg
@@ -358,30 +358,6 @@ func UnbindTG(update *tgbotapi.Update) tgbotapi.Chattable {
 		}
 	}
 	return nil
-}
-
-func GetOfflineNodeStatus() string {
-	var NodeArr []model.Node
-	err := global.DB.Find(&NodeArr).Error
-	if err != nil {
-		return ""
-	}
-	var msgArr []string
-	for k, _ := range NodeArr {
-		_, ok := global.LocalCache.Get(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_BY_NODEID, NodeArr[k].ID))
-		if !ok {
-			//获取离线节点的通知状态，防止频繁推送
-			_, ok = global.LocalCache.Get(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_IS_NOTIFIED_BY_NODEID, NodeArr[k].ID))
-			if ok {
-				continue
-			}
-			//设置离线节点的通知状态，防止频繁推送
-			global.LocalCache.SetNoExpire(fmt.Sprintf("%s%d", constant.CACHE_NODE_STATUS_IS_NOTIFIED_BY_NODEID, NodeArr[k].ID), constant.CACHE_NODE_STATUS_IS_NOTIFIED_BY_NODEID)
-			msgArr = append(msgArr, fmt.Sprintf("节点: %s, 状态: %s ", NodeArr[k].Remarks, "❌"))
-		}
-	}
-	text := strings.Join(msgArr, "\n")
-	return text
 }
 func FindUser(update *tgbotapi.Update) tgbotapi.Chattable {
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
