@@ -96,7 +96,12 @@ func (n *Node) GetNodeList(params *model.QueryParams) (*model.CommonDataResp, er
 func (n *Node) UpdateNode(node *model.Node) error {
 	return global.DB.Transaction(func(tx *gorm.DB) error {
 		//更新节点
-		err := tx.Save(&node).Error
+		err := tx.Model(&node).Association("Access").Replace(&node.Access)
+		if err != nil {
+			return err
+		}
+		//关联的 Access 已在上面更新，另外两个关联不需更新
+		err = tx.Omit("Access", "Goods", "TrafficLogs").Save(&node).Error
 		if err != nil {
 			return err
 		}

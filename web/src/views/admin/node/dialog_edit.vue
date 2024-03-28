@@ -689,6 +689,7 @@ import { request } from "/@/utils/request";
 import { useConstantStore } from "/@/stores/constantStore";
 import { DateStrToTime } from "../../../utils/formatTime";
 import { useI18n } from "vue-i18n";
+import {ElMessage} from "element-plus";
 
 const apiStore = useApiStore();
 const apiStoreData = storeToRefs(apiStore);
@@ -855,11 +856,13 @@ const submitForAdd = () => {
   // console.log("data:",data)
   //发送请求
   if (state.nodeType === constantStore.NODE_TYPE_SHARED) {
-    nodeStore.newNodeShared().then(() => {
+    nodeStore.newNodeShared().then((res) => {
+      ElMessage.success(res.msg)
       emit("refresh");
     });
   } else {
-    nodeStore.newNode(data).then(() => {
+    nodeStore.newNode(data).then((res) => {
+      ElMessage.success(res.msg)
       emit("refresh");
     });
   }
@@ -886,7 +889,8 @@ const submitForModify = () => {
       data.node_type = state.nodeType;
       break;
   }
-  nodeStore.updateNode(data).then(() => {
+  nodeStore.updateNode(data).then((res) => {
+    ElMessage.success(res.msg)
     emit("refresh");
   });
   closeDialog();
