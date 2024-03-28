@@ -31,7 +31,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	}
 	//根据goodsID 查找具体的节点
 	var goods model.Goods
-	err = global.DB.Debug().
+	err = global.DB.
 		Where(&model.Goods{ID: cs.GoodsID}).
 		Preload("Nodes", "enabled = 1 ORDER BY node_order ASC").
 		Find(&goods).
@@ -231,7 +231,7 @@ func ClashMeta(nodes *[]model.Node) string {
 		Interval: 86400,
 		Path:     "./rule-set/cn_domain.yaml",
 		Type:     "http",
-		Url:      "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/cn_domain.yaml",
+		Url:      "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt",
 	}
 
 	clashYaml.RuleProviders.Proxy = model.RuleProvidersItem{
@@ -239,7 +239,7 @@ func ClashMeta(nodes *[]model.Node) string {
 		Interval: 86400,
 		Path:     "./rule-set/proxy.yaml",
 		Type:     "http",
-		Url:      "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/proxy.yaml",
+		Url:      "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt",
 	}
 	clashYaml.Rules = []string{
 		"RULE-SET,cn,DIRECT",
