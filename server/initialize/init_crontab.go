@@ -24,7 +24,7 @@ func InitCrontab() {
 	var funcs = []FuncItem{
 		FuncItem{CrontabSubExpirationCheck, "0 */1 * * * *", "已启动任务：检测用户服务有效期"},
 		FuncItem{CrontabClearTraffic, "0 0 0 */10 * *", "已启动任务：清理数据库流量记录"},
-		FuncItem{CrontabNodeOffline, "0 */1 * * * *", "已启动任务：检查节点离线状态"},
+		FuncItem{CrontabNodeOffline, "0 */5 * * * *", "已启动任务：检查节点离线状态"},
 		FuncItem{CrontabUserTrafficReset, "1 0 0 * * *", "已启动任务：用户订阅服务流量重置"},
 	}
 	global.Crontab = cron.New(cron.WithSeconds())
@@ -62,8 +62,8 @@ func CrontabNodeOffline() {
 		return
 	}
 	var text = []string{
+		"【节点离线通知】",
 		"时间：" + time.Now().Format("2006-01-02 15:04:05"),
-		"节点离线通知：",
 	}
 	list := nodeService.GetNodesStatus()
 	if len(*list) == 0 {

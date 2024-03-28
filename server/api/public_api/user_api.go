@@ -6,10 +6,12 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service/admin_logic"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	"github.com/ppoonk/AirGo/utils/other_plugin"
 	"github.com/ppoonk/AirGo/utils/response"
 	"strings"
+	"time"
 )
 
 // 用户注册
@@ -32,25 +34,18 @@ func Register(ctx *gin.Context) {
 	}
 	//处理base64Captcha
 	if !global.Base64CaptchaStore.Verify(u.Base64Captcha.ID, u.Base64Captcha.B64s, true) {
-		response.Fail("Verification code error,please try again!", nil, ctx) //验证错校验失败会清除store中的value，需要前端重新获取
+		response.Fail("Base64Captcha Verification code error,please try again!", nil, ctx) //验证错校验失败会清除store中的value，需要前端重新获取
 		return
 	}
 	//处理邮箱验证码
-	userEmail := u.UserName + u.EmailSuffix //处理邮箱后缀
 	if global.Server.Website.EnableEmailCode {
-		cacheEmail, ok := global.LocalCache.Get(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
-		if ok {
-			if !strings.EqualFold(cacheEmail.(string), u.EmailCode) {
-				//验证失败，返回错误响应，但不删除缓存的验证码。因为用户输错了，需要重新输入，而不需要重新发送验证码
-				response.Fail("Email verification error", nil, ctx)
-				return
-			} else {
-				//验证成功，删除缓存的验证码
-				global.LocalCache.Delete(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
-			}
-		} else {
-			//cache缓存超时
-			response.Fail("Timeout, please try again", nil, ctx)
+		ok, err = userService.VerifyEmailWhenRegister(u)
+		if err != nil {
+			response.Fail(err.Error(), nil, ctx)
+			return
+		}
+		if !ok {
+			response.Fail("Email Verification code error,please try again!", nil, ctx)
 			return
 		}
 	}
@@ -61,6 +56,7 @@ func Register(ctx *gin.Context) {
 	} else {
 		avatar = fmt.Sprintf("https://api.multiavatar.com/%s.svg", u.UserName)
 	}
+	userEmail := u.UserName + u.EmailSuffix //处理邮箱后缀,注册时，用户名和邮箱后缀是分开的
 	err = userService.Register(&model.User{
 		UserName:       userEmail,
 		NickName:       userEmail,
@@ -76,7 +72,22 @@ func Register(ctx *gin.Context) {
 		response.Fail("Register error:"+err.Error(), nil, ctx)
 		return
 	}
-	global.LocalCache.Delete(userEmail + "emailcode")
+	// 推送通知
+	if global.Server.Notice.WhenUserRegistered {
+		global.GoroutinePool.Submit(func() {
+			for k, _ := range global.Server.Notice.AdminIDCache {
+				var msg = admin_logic.MessageInfo{
+					UserID: k,
+					Message: strings.Join([]string{
+						"【新注册用户】",
+						fmt.Sprintf("时间：%s", time.Now().Format("2006-01-02 15:04:05")),
+						fmt.Sprintf("用户名：%s", userEmail),
+					}, "\n"),
+				}
+				admin_logic.PushMessageSvc.PushMessage(&msg)
+			}
+		})
+	}
 	response.OK("Register success", nil, ctx)
 }
 
@@ -114,19 +125,13 @@ func ResetUserPassword(ctx *gin.Context) {
 		return
 	}
 	//校验邮箱验证码
-	cacheEmail, ok := global.LocalCache.Get(constant.CACHE_USER_RESET_PWD_EMAIL_CODE_BY_USERNAME + u.UserName)
-	if ok {
-		if !strings.EqualFold(cacheEmail.(string), u.EmailCode) {
-			//验证失败，返回错误响应，但不删除缓存的验证码。因为用户输错了，需要重新输入，而不需要重新发送验证码
-			response.Fail("Email verification error", nil, ctx)
-			return
-		} else {
-			//验证成功，删除缓存的验证码
-			global.LocalCache.Delete(constant.CACHE_USER_RESET_PWD_EMAIL_CODE_BY_USERNAME + u.UserName)
-		}
-	} else {
-		//cache缓存超时
-		response.Fail("Timeout, please try again", nil, ctx)
+	ok, err := userService.VerifyEmailWhenResetPassword(u)
+	if err != nil {
+		response.Fail(err.Error(), nil, ctx)
+		return
+	}
+	if !ok {
+		response.Fail("Email Verification code error,please try again!", nil, ctx)
 		return
 	}
 

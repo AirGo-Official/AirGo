@@ -6,6 +6,7 @@ import (
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/service/common_logic"
+	"github.com/ppoonk/AirGo/service/user_logic"
 	"github.com/ppoonk/AirGo/utils/response"
 )
 
@@ -58,6 +59,21 @@ func UpdateOrder(ctx *gin.Context) {
 		global.Logrus.Error(err)
 		response.Fail("UpdateOrder error:"+err.Error(), nil, ctx)
 		return
+	}
+	//如果订单状态是 支付成功 或 交易结束，将订单进行处理
+	var userOrderService user_logic.Order
+	if order.TradeStatus == constant.ORDER_STATUS_TRADE_SUCCESS || order.TradeStatus == constant.ORDER_STATUS_TRADE_FINISHED {
+		userOrderService.DeleteOneOrderFromCache(&order) //删除缓存
+		err = userOrderService.PaymentSuccessfullyOrderHandler(&order)
+		if err != nil {
+			if err != nil {
+				global.Logrus.Error(err)
+				response.Fail("UpdateOrder error:"+err.Error(), nil, ctx)
+				return
+			}
+		}
+	} else {
+		userOrderService.UpdateOneOrderToCache(&order) //更新缓存
 	}
 	response.OK("UpdateOrder success", nil, ctx)
 }

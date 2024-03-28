@@ -15,12 +15,15 @@ declare interface Subscribe{
     tek: string;
 }
 declare interface Notice {
-    bot_token: string;
-    tg_admin: string;
-    tg_socks5 :string;
-    when_user_registered: boolean;
-    when_user_purchased: boolean;
-    when_node_offline: boolean;
+    enable_tg_bot:boolean
+    enable_email:boolean
+    enable_web_mail:boolean
+    admin_id:string
+    bot_token:string
+    tg_socks5:string
+    when_user_registered:boolean
+    when_user_purchased:boolean
+    when_node_offline:boolean
 }
 declare interface Security {
     captcha: Captcha

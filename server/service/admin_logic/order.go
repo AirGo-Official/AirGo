@@ -2,10 +2,8 @@ package admin_logic
 
 import (
 	"fmt"
-	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/user_logic"
 	"gorm.io/gorm"
 	"time"
 )
@@ -16,21 +14,9 @@ var orderService *Order
 
 // 更新数据库订单
 func (o *Order) UpdateOrder(order *model.Order) error {
-	var userOrderService user_logic.Order
-	err := global.DB.Transaction(func(tx *gorm.DB) error {
+	return global.DB.Transaction(func(tx *gorm.DB) error {
 		return tx.Save(&order).Error
 	})
-	if err != nil {
-		return err
-	}
-	//如果订单状态是 支付成功 或 交易结束，将订单进行处理
-	if order.TradeStatus == constant.ORDER_STATUS_TRADE_SUCCESS || order.TradeStatus == constant.ORDER_STATUS_TRADE_FINISHED {
-		userOrderService.DeleteOneOrderFromCache(order) //删除缓存
-		return userOrderService.PaymentSuccessfullyOrderHandler(order)
-	} else {
-		userOrderService.UpdateOneOrderToCache(order) //更新缓存
-	}
-	return nil
 }
 
 func (o *Order) OrderSummary(params *model.QueryParams) (*[]model.OrderSummary, error) {

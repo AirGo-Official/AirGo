@@ -9,6 +9,7 @@ import (
 	timeTool "github.com/ppoonk/AirGo/utils/time_plugin"
 	"gorm.io/gorm"
 	"strconv"
+	"strings"
 	"time"
 
 	"errors"
@@ -37,7 +38,9 @@ func (us *User) Register(userParams *model.User) error {
 
 // 创建用户
 func (us *User) CreateUser(u *model.User) error {
-	return global.DB.Create(&u).Error
+	return global.DB.Transaction(func(tx *gorm.DB) error {
+		return tx.Create(&u).Error
+	})
 }
 
 // 用户登录
@@ -137,4 +140,39 @@ func (us *User) SaveUser(u *model.User) error {
 // 删除cache
 func (us *User) DeleteUserCacheTokenByID(user *model.User) {
 	global.LocalCache.Delete(fmt.Sprintf("%s%d", constant.CACHE_USER_TOKEN_BY_ID, user.ID))
+}
+func (us *User) VerifyEmailWhenRegister(params model.UserRegister) (bool, error) {
+	//处理邮箱验证码
+	userEmail := params.UserName + params.EmailSuffix //处理邮箱后缀,注册时，用户名和邮箱后缀是分开的
+	cacheEmail, ok := global.LocalCache.Get(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
+	if ok {
+		if !strings.EqualFold(cacheEmail.(string), params.EmailCode) {
+			//验证失败，返回错误响应，但不删除缓存的验证码。因为用户输错了，需要重新输入，而不需要重新发送验证码
+			return false, nil
+		} else {
+			//验证成功，删除缓存的验证码
+			global.LocalCache.Delete(constant.CACHE_USER_REGISTER_EMAIL_CODE_BY_USERNAME + userEmail)
+			return true, nil
+		}
+	} else {
+		//cache缓存超时
+		return false, errors.New("The verification code has expired, please try again")
+	}
+
+}
+func (us *User) VerifyEmailWhenResetPassword(params model.UserLoginRequest) (bool, error) {
+	cacheEmail, ok := global.LocalCache.Get(constant.CACHE_USER_RESET_PWD_EMAIL_CODE_BY_USERNAME + params.UserName)
+	if ok {
+		if !strings.EqualFold(cacheEmail.(string), params.EmailCode) {
+			//验证失败，返回错误响应，但不删除缓存的验证码。因为用户输错了，需要重新输入，而不需要重新发送验证码
+			return false, nil
+		} else {
+			//验证成功，删除缓存的验证码
+			global.LocalCache.Delete(constant.CACHE_USER_RESET_PWD_EMAIL_CODE_BY_USERNAME + params.UserName)
+			return true, nil
+		}
+	} else {
+		//cache缓存超时
+		return false, errors.New("The verification code has expired, please try again")
+	}
 }

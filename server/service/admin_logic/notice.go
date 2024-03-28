@@ -1,6 +1,7 @@
 package admin_logic
 
 import (
+	"errors"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
@@ -60,6 +61,7 @@ func (pm *PushMessageService) AdminAccountHandler() {
 	for _, v := range temp1 {
 		k, _ := strconv.Atoi(v)
 		global.Server.Notice.AdminIDCache[int64(k)] = struct{}{}
+
 		user, _ := userService.FirstUser(&model.User{ID: int64(k)})
 		if user != nil && user.TgID != 0 {
 			global.Server.Notice.AdminIDCacheWithTGID[user.TgID] = struct{}{}
@@ -70,6 +72,9 @@ func (pm *PushMessageService) AdminAccountHandler() {
 type PushMessageByTGBot struct{}
 
 func (p *PushMessageByTGBot) SendToUser(m *MessageInfo) error {
+	if !global.Server.Notice.EnableTGBot {
+		return errors.New("TGBot is disabled")
+	}
 	user, err := userService.FirstUser(&model.User{ID: m.UserID})
 	if err != nil {
 		return err

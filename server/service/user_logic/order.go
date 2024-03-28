@@ -6,6 +6,7 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service/admin_logic"
 	"github.com/ppoonk/AirGo/service/common_logic"
 	"gorm.io/gorm"
 	"strconv"
@@ -403,6 +404,27 @@ func (o *Order) PaymentSuccessfullyOrderHandler(order *model.Order) error {
 		return err
 	}
 	o.DeleteOneOrderFromCache(order)
+	//通知
+	if global.Server.Notice.WhenUserPurchased {
+		global.GoroutinePool.Submit(func() {
+			for k, _ := range global.Server.Notice.AdminIDCache {
+				var msg = admin_logic.MessageInfo{
+					UserID: k,
+					Message: strings.Join([]string{
+						"【用户新订单】",
+						fmt.Sprintf("时间：%s", time.Now().Format("2006-01-02 15:04:05")),
+						fmt.Sprintf("用户id：%d", order.ID),
+						fmt.Sprintf("用户名：%s", order.UserName),
+						fmt.Sprintf("套餐：%s", order.Subject),
+						fmt.Sprintf("支付方式：%s", order.PayType),
+						fmt.Sprintf("支付金额：%s", order.TotalAmount),
+						fmt.Sprintf("发货类型：%s", order.DeliverType),
+					}, "\n"),
+				}
+				admin_logic.PushMessageSvc.PushMessage(&msg)
+			}
+		})
+	}
 	return nil
 }
 

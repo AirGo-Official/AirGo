@@ -6,16 +6,21 @@
           <el-row style="margin-bottom: 20px">
             <el-col :span="12">
               <div>
-                <el-icon style="margin-right: 4px" :size="12"><InfoFilled /></el-icon>
+                <el-icon style="margin-right: 4px" :size="12">
+                  <InfoFilled />
+                </el-icon>
                 当前版本
               </div>
-              <div style="font-size: 20px">{{serverConfig.version.value.currentVersion.version}}</div>
+              <div style="font-size: 20px">{{ serverConfig.version.value.currentVersion.version }}</div>
             </el-col>
             <el-col :span="12">
-              <div><el-icon style="margin-right: 4px" :size="12"><UploadFilled /></el-icon>
+              <div>
+                <el-icon style="margin-right: 4px" :size="12">
+                  <UploadFilled />
+                </el-icon>
                 最新版本
               </div>
-              <div style="color: red;font-size: 20px">{{serverConfig.version.value.latestVersion.version}}</div>
+              <div style="color: red;font-size: 20px">{{ serverConfig.version.value.latestVersion.version }}</div>
             </el-col>
           </el-row>
 
@@ -62,7 +67,8 @@
             <el-input v-model="serverConfig.serverConfig.value.subscribe.sub_name" />
           </el-form-item>
           <el-form-item :label="$t('message.adminServer.Server.backend_url')" class="label">
-            <el-input v-model="serverConfig.serverConfig.value.subscribe.backend_url" placeholder="http://xxx.com" type="textarea" autosize/>
+            <el-input v-model="serverConfig.serverConfig.value.subscribe.backend_url" placeholder="http://xxx.com"
+                      type="textarea" autosize />
           </el-form-item>
           <el-divider></el-divider>
           <el-form-item>
@@ -197,41 +203,84 @@
         </el-tab-pane>
 
         <el-tab-pane :label="$t('message.adminServer.tapNotice')" name="6">
-          <el-form :model="serverConfig.serverConfig.value.notice" label-width="120px"
-                   label-position="top">
-            <el-form-item :label="$t('message.adminServer.Server.bot_token')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"
-                        placeholder="1234567890:AAAAABBBBBCCCCCDDDDFFFFGGGHHHJJKKLL" />
-            </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.tg_socks5')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.notice.tg_socks5" placeholder="127.0.0.1:1080" />
-            </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.tg_admin')" class="label">
-              <el-input v-model="serverConfig.serverConfig.value.notice.tg_admin" type="textarea" autosize />
-            </el-form-item>
+          <el-tabs tab-position="left">
+            <el-tab-pane :label="$t('message.adminServer.Server.push_method')">
+              <el-collapse accordion>
+                <el-collapse-item title="TG Bot" name="1">
+                  <el-form :model="serverConfig.serverConfig.value.notice" label-width="100px"
+                           label-position="left">
+                    <el-form-item :label="$t('message.adminServer.Server.enable_tg_bot')" class="label">
+                      <el-switch v-model="serverConfig.serverConfig.value.notice.enable_tg_bot" inline-prompt
+                                 :active-text="$t('message.common.enable')"
+                                 :inactive-text="$t('message.common.disable')"
+                                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+                    </el-form-item>
 
-            <el-form-item :label="$t('message.adminServer.Server.when_node_offline')" class="label">
-              <el-switch v-model="serverConfig.serverConfig.value.notice.when_node_offline" inline-prompt
-                         :active-text="$t('message.common.enable')"
-                         :inactive-text="$t('message.common.disable')"
-                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-            </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.when_user_registered')" class="label">
-              <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_registered" inline-prompt
-                         :active-text="$t('message.common.enable')"
-                         :inactive-text="$t('message.common.disable')"
-                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-            </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.when_user_purchased')" class="label">
-              <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_purchased" inline-prompt
-                         :active-text="$t('message.common.enable')"
-                         :inactive-text="$t('message.common.disable')"
-                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-            </el-form-item>
-            <el-form-item style="margin-top: 20px">
-              <el-button @click="onSubmit()" type="primary">{{ $t("message.common.button_confirm") }}</el-button>
-            </el-form-item>
-          </el-form>
+                    <el-form-item :label="$t('message.adminServer.Server.bot_token')" class="label">
+                      <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"
+                                placeholder="1234567890:AAAAABBBBBCCCCCDDDDFFFFGGGHHHJJKKLL" />
+                    </el-form-item>
+                    <el-form-item :label="$t('message.adminServer.Server.tg_socks5')" class="label">
+                      <el-input v-model="serverConfig.serverConfig.value.notice.tg_socks5"
+                                placeholder="127.0.0.1:1080" />
+                    </el-form-item>
+                    <el-form-item style="margin-top: 20px">
+                      <el-button @click="onSubmit()" type="primary">{{ $t("message.common.button_confirm") }}
+                      </el-button>
+                    </el-form-item>
+                  </el-form>
+
+                </el-collapse-item>
+                <el-collapse-item title="WebMail" name="2">
+                  待开发
+                </el-collapse-item>
+                <el-collapse-item title="Email" name="3">
+                  待开发
+                </el-collapse-item>
+                <el-collapse-item title="WeChat" name="4">
+                  待开发
+                </el-collapse-item>
+              </el-collapse>
+            </el-tab-pane>
+            <el-tab-pane :label="$t('message.adminServer.Server.trigger_condition')">
+              <div>
+                <el-form :model="serverConfig.serverConfig.value.notice" label-width="150px"
+                         label-position="left">
+                  <el-form-item :label="$t('message.adminServer.Server.admin_id')" class="label">
+                    <el-input v-model="serverConfig.serverConfig.value.notice.admin_id" type="textarea" autosize />
+                  </el-form-item>
+                  <el-form-item :label="$t('message.adminServer.Server.when_node_offline')" class="label">
+                    <el-switch v-model="serverConfig.serverConfig.value.notice.when_node_offline" inline-prompt
+                               :active-text="$t('message.common.enable')"
+                               :inactive-text="$t('message.common.disable')"
+                               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+                  </el-form-item>
+                  <el-form-item :label="$t('message.adminServer.Server.when_user_registered')" class="label">
+                    <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_registered" inline-prompt
+                               :active-text="$t('message.common.enable')"
+                               :inactive-text="$t('message.common.disable')"
+                               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+                  </el-form-item>
+                  <el-form-item :label="$t('message.adminServer.Server.when_user_purchased')" class="label">
+                    <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_purchased" inline-prompt
+                               :active-text="$t('message.common.enable')"
+                               :inactive-text="$t('message.common.disable')"
+                               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+                  </el-form-item>
+                  <el-form-item label="新工单时通知" class="label">
+                    <span>待开发</span>
+                  </el-form-item>
+                  <el-form-item label="新订单（手动发货）" class="label">
+                    <span>待开发</span>
+                  </el-form-item>
+                  <el-form-item style="margin-top: 20px">
+                    <el-button @click="onSubmit()" type="primary">{{ $t("message.common.button_confirm") }}
+                    </el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
         </el-tab-pane>
 
         <el-tab-pane :label="$t('message.adminServer.tapMigration')" name="7">
@@ -290,34 +339,41 @@
     </el-dialog>
     <el-dialog v-model="state.isShowUpdateDialog" title="升级AirGo核心" width="80%"
                destroy-on-close center>
-      <div v-if="serverConfig.version.value.currentVersion.version === serverConfig.version.value.latestVersion.version">
+      <div
+        v-if="serverConfig.version.value.currentVersion.version === serverConfig.version.value.latestVersion.version">
         <span>当前已是最新版本</span>
       </div>
       <div v-else>
         <el-row style="margin-bottom: 20px">
           <el-col :span="12" style="text-align: center;">
-            <div >
-              <el-icon style="margin-right: 4px" :size="12"><InfoFilled /></el-icon>
+            <div>
+              <el-icon style="margin-right: 4px" :size="12">
+                <InfoFilled />
+              </el-icon>
               <span>当前版本</span>
             </div>
-            <div style="font-size: 20px">{{serverConfig.version.value.currentVersion.version}}</div>
+            <div style="font-size: 20px">{{ serverConfig.version.value.currentVersion.version }}</div>
           </el-col>
           <el-col :span="12" style="text-align: center;">
-            <div><el-icon style="margin-right: 4px" :size="12"><UploadFilled /></el-icon>
+            <div>
+              <el-icon style="margin-right: 4px" :size="12">
+                <UploadFilled />
+              </el-icon>
               <span>最新版本</span>
             </div>
-            <div style="color: red;font-size: 20px">{{serverConfig.version.value.latestVersion.version}}</div>
+            <div style="color: red;font-size: 20px">{{ serverConfig.version.value.latestVersion.version }}</div>
           </el-col>
         </el-row>
         <el-result icon="warning" title="升级有风险，请做好数据备份！"></el-result>
         <div v-if="state.isShowLogData">
-          <el-alert style="margin: 10px 0 0" v-for="(v,k) in state.logData" :key="k" :title="v.title" :type="v.type" effect="dark" :closable="false"/>
+          <el-alert style="margin: 10px 0 0" v-for="(v,k) in state.logData" :key="k" :title="v.title" :type="v.type"
+                    effect="dark" :closable="false" />
         </div>
 
       </div>
       <template #footer>
       <span class="dialog-footer">
-        <el-button @click="state.isShowUpdateDialog = false" >{{ $t("message.common.button_cancel") }}</el-button>
+        <el-button @click="state.isShowUpdateDialog = false">{{ $t("message.common.button_cancel") }}</el-button>
         <el-button type="primary" @click="SSE" :disabled="state.isShowLogData">开始升级</el-button>
       </span>
       </template>
@@ -327,11 +383,11 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+import { defineAsyncComponent, onMounted, reactive, ref } from "vue";
 import { useAdminServerStore } from "/@/stores/admin_logic/serverStore";
 import { storeToRefs } from "pinia";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { request,getApiPrefixAddress } from "/@/utils/request";
+import { getApiPrefixAddress, request } from "/@/utils/request";
 import { useApiStore } from "/@/stores/apiStore";
 import { useUserStore } from "/@/stores/user_logic/userStore";
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
@@ -373,8 +429,8 @@ const state = reactive({
   migrationResult: "",
   inShowUpdateButton: false,
   isShowUpdateDialog: false,
-  isShowLogData:false,
-  logData:[{}],
+  isShowLogData: false,
+  logData: [{}]
 });
 const tap = (tapName: string) => {
   switch (tapName) {
@@ -453,40 +509,40 @@ const getVersion = () => {
   serverStore.getLatestVersion();
 };
 //打开升级弹窗
-const openUpdateDialog=()=>{
-  state.isShowUpdateDialog = true
-}
+const openUpdateDialog = () => {
+  state.isShowUpdateDialog = true;
+};
 
 const SSE = () => {
-  state.isShowLogData = true
-  state.logData=[]
-  let url = getApiPrefixAddress()+apiStore.adminApi.updateLatestVersion.path
+  state.isShowLogData = true;
+  state.logData = [];
+  let url = getApiPrefixAddress() + apiStore.adminApi.updateLatestVersion.path;
   if (window.EventSource) {
-   let sseSource = new EventSource(url)
-    sseSource.onopen = function (e:any) {
-      console.log('建立连接', e)
-    }
-    sseSource.onmessage = function (e:any) {
-      console.log("onmessage 收到数据",e.data,"消息类型",e.type)
-      state.logData.push({"type":"info","title":e.data})
-    }
-    sseSource.onerror = function (e:any) {
-      console.log('关闭连接', e)
-      sseSource.close()
-    }
+    let sseSource = new EventSource(url);
+    sseSource.onopen = function(e: any) {
+      console.log("建立连接", e);
+    };
+    sseSource.onmessage = function(e: any) {
+      console.log("onmessage 收到数据", e.data, "消息类型", e.type);
+      state.logData.push({ "type": "info", "title": e.data });
+    };
+    sseSource.onerror = function(e: any) {
+      console.log("关闭连接", e);
+      sseSource.close();
+    };
     //自定义2个类型的监听，其中message error是为了和默认的 onerror 区别
-    sseSource.addEventListener("success",function (e:any) {
-      console.log("onmessage 收到数据",e.data,"消息类型",e.type)
-      state.logData.push({"type":"success","title":e.data})
-    })
-    sseSource.addEventListener("message error",function (e:any) {
-      console.log("onmessage 收到数据",e.data,"消息类型",e.type)
-      state.logData.push({"type":"warning","title":e.data})
-    })
+    sseSource.addEventListener("success", function(e: any) {
+      console.log("onmessage 收到数据", e.data, "消息类型", e.type);
+      state.logData.push({ "type": "success", "title": e.data });
+    });
+    sseSource.addEventListener("message error", function(e: any) {
+      console.log("onmessage 收到数据", e.data, "消息类型", e.type);
+      state.logData.push({ "type": "warning", "title": e.data });
+    });
   } else {
-    console.log('浏览器不支持SSE')
+    console.log("浏览器不支持SSE");
   }
-}
+};
 
 onMounted(() => {
   serverStore.getServerConfig(); //获取设置参数

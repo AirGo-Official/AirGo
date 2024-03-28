@@ -7,22 +7,15 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-// 订阅
-const (
-	EmailCode         = "EMAIL_CODE"
-	Base64CaptchaCode = "Base64CaptchaCode"
-)
-
 var EmailSvc *Email
 
 func InitEmailSvc() {
-	EmailSvc = NewEmailService(global.Server.Email.EmailHost, int(global.Server.Email.EmailPort), global.Server.Email.EmailFrom, global.Server.Email.EmailSecret)
+	EmailSvc = NewEmailService()
 	EmailSvc.StartTask()
 }
 
 type Email struct {
 	Dialer *gomail.Dialer
-	//TaskChannel <-chan any
 }
 type EmailMsg struct {
 	From      string
@@ -32,35 +25,44 @@ type EmailMsg struct {
 	EmailText string
 }
 
-func NewEmailService(host string, port int, username string, password string) *Email {
+func NewEmailService() *Email {
 	var e Email
-	e.Dialer = gomail.NewDialer(host, port, username, password)
+	e.Dialer = NewDialer()
 	// 关闭SSL协议认证
 	e.Dialer.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	return &e
 }
-func (es *Email) SendEmail(from, fromNickname, to, mailSubject, mailText string) error {
+func NewDialer() *gomail.Dialer {
+	return gomail.NewDialer(global.Server.Email.EmailHost, int(global.Server.Email.EmailPort), global.Server.Email.EmailFrom, global.Server.Email.EmailSecret)
+}
+func (es *Email) Reload() {
+	es.Dialer = NewDialer()
+}
+func (es *Email) SendEmail(msg *EmailMsg) error {
 	m := gomail.NewMessage()
-	m.SetHeader("From", m.FormatAddress(from, fromNickname)) // 发件人
+	m.SetHeader("From", m.FormatAddress(msg.From, msg.NickName)) // 发件人
 	//m.SetHeader("From", from) // 发件人
-	m.SetHeader("Subject", mailSubject) // 邮件主题
-	m.SetHeader("To", to)               // 收件人，可以多个收件人，但必须使用相同的 SMTP 连接
-	m.SetBody("text/html", mailText)
+	m.SetHeader("Subject", msg.Subject) // 邮件主题
+	m.SetHeader("To", msg.To)           // 收件人，可以多个收件人，但必须使用相同的 SMTP 连接
+	m.SetBody("text/html", msg.EmailText)
 	return es.Dialer.DialAndSend(m)
 }
 func (es *Email) StartTask() {
-	ch, err := global.Queue.Subscribe(constant.EMAIL_CODE)
+	ch, err := global.Queue.Subscribe(constant.SEND_EMAIL)
 	if err != nil {
 		global.Logrus.Error("Email StartTask error:", err)
 		return
 	}
 	go func() {
 		for v := range ch {
-			emailMsg := v.(EmailMsg)
-			err = es.SendEmail(emailMsg.From, emailMsg.NickName, emailMsg.To, emailMsg.Subject, emailMsg.EmailText)
+			emailMsg := v.(*EmailMsg)
+			err = es.SendEmail(emailMsg)
 			if err != nil {
 				global.Logrus.Error("SendEmail error:", err)
 			}
 		}
 	}()
+}
+func (es *Email) PushEmailToQueue(email *EmailMsg) {
+	global.Queue.Publish(constant.SEND_EMAIL, email)
 }

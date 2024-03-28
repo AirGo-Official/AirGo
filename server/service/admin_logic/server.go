@@ -38,17 +38,20 @@ func (s *System) UpdateSetting(setting *model.Server) error {
 	global.Server = *setting
 	//重新加载email
 	global.GoroutinePool.Submit(func() {
-		InitEmailSvc()
+		global.Logrus.Info("重新加载 email")
+		EmailSvc.Reload()
 	})
 	//重新加载tg bot
-	if global.Server.Notice.BotToken != "" {
-		global.GoroutinePool.Submit(func() {
-			global.Logrus.Info("重新加载tg bot")
-			//关闭
-			TgBotSvc.TGBotCloseListen()
-			//重启
-			TgBotSvc.TGBotStart()
-		})
+	if global.Server.Notice.EnableTGBot {
+		if global.Server.Notice.BotToken != "" {
+			global.GoroutinePool.Submit(func() {
+				global.Logrus.Info("重新加载tg bot")
+				//关闭
+				TgBotSvc.TGBotCloseListen()
+				//重启
+				TgBotSvc.TGBotStart()
+			})
+		}
 	} else {
 		global.GoroutinePool.Submit(func() {
 			global.Logrus.Info("停止 tg bot")
@@ -58,6 +61,7 @@ func (s *System) UpdateSetting(setting *model.Server) error {
 	}
 	//重新加载通知消息时的管理员id
 	global.GoroutinePool.Submit(func() {
+		global.Logrus.Info("重新加载通知消息时的管理员id")
 		PushMessageSvc.AdminAccountHandler()
 	})
 	return nil

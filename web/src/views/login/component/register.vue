@@ -70,7 +70,7 @@
       <el-col :span="1"></el-col>
       <el-col :span="10">
         <el-button class="login-content-code" type="primary" :disabled="state.isCountDown" @click="onGetEmailCode">
-          {{ state.isCountDown ? `$t('message.login.retry'):${state.countDownTime}s` : $t('message.login.codeText') }}
+          {{ state.isCountDown ? `${t('message.login.retry')}:${state.countDownTime}s` : $t('message.login.codeText') }}
         </el-button>
       </el-col>
     </el-form-item>
