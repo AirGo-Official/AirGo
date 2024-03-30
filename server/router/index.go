@@ -8,6 +8,7 @@ import (
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/middleware"
 	"github.com/ppoonk/AirGo/web"
+	"io"
 	"os"
 	"strconv"
 	"sync"
@@ -22,7 +23,8 @@ var Server = &GinServer{
 }
 
 func (g *GinServer) InitRouter() {
-	gin.SetMode(gin.ReleaseMode) //ReleaseMode TestMode DebugMode
+	gin.SetMode(gin.ReleaseMode)   //ReleaseMode TestMode DebugMode
+	gin.DefaultWriter = io.Discard //关闭控制台输出
 	g.Router = gin.Default()
 	// targetPtah=web 是embed和web文件夹的相对路径
 	g.Router.Use(middleware.Serve("/", middleware.EmbedFolder(web.Static, "web")))

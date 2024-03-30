@@ -22,6 +22,9 @@ export default {
      current_version:"current version",
      latest_version:"latest version",
      starting_upgrade:"starting upgrade",
+     is_latest:"Currently, it is the latest version",
+     upgrade_warning:"Upgrading carries risks, please backup your data properly!",
+
      enable_register: "enable register",
      enable_email_code: "enable register email code",
      enable_login_email_code: "enable login email code",

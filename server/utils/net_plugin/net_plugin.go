@@ -5,7 +5,10 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"github.com/dustin/go-humanize"
+	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
+	"github.com/ppoonk/AirGo/utils/response"
 	"golang.org/x/net/context"
 	"io"
 	"io/fs"
@@ -90,11 +93,57 @@ func DownloadFile(url, fileName string, mode fs.FileMode) error {
 	if err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
 	if resp.StatusCode() != http.StatusOK {
 		return errors.New(fmt.Sprintf("%s%d", "Download failed: code = ", resp.StatusCode()))
 	}
-	return os.Chmod(fileName, mode)
+	err = os.Chmod(fileName, mode)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type WriteCounter struct {
+	Total uint64
+	Ctx   *gin.Context
+	num   uint
+}
+
+func (wc *WriteCounter) Write(p []byte) (int, error) {
+	n := len(p)
+	wc.Total += uint64(n)
+	if wc.num == 80 { //间隔发送
+		wc.PrintProgress()
+	}
+	if wc.num--; wc.num == 0 {
+		wc.num = 80
+	}
+	return n, nil
+}
+func (wc WriteCounter) PrintProgress() {
+	response.ResponseSSE("message", fmt.Sprintf("Downloading........................ %s completed", humanize.Bytes(wc.Total)), wc.Ctx)
+}
+
+func DownloadFileWithProgress(url, fileName string, mode fs.FileMode, ctx *gin.Context) error {
+	out, err := os.Create(fileName + ".tmp")
+	if err != nil {
+		return err
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		out.Close()
+		return err
+	}
+	defer resp.Body.Close()
+	counter := &WriteCounter{Ctx: ctx, num: 80}
+	if _, err = io.Copy(out, io.TeeReader(resp.Body, counter)); err != nil {
+		out.Close()
+		return err
+	}
+	out.Close()
+	if err = os.Rename(fileName+".tmp", fileName); err != nil {
+		return err
+	}
+	_ = os.Chmod(fileName, mode)
+	return nil
 }

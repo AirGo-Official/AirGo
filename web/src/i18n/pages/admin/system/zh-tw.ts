@@ -22,6 +22,9 @@ export default {
       current_version:"當前版本",
       latest_version:"最新版本",
       starting_upgrade:"開始陞級",
+      is_latest:"當前已是最新版本",
+      upgrade_warning:"陞級有風險，請做好資料備份!",
+
       enable_register: "啟用注册",
       enable_email_code: "啟用注册驗證碼",
       enable_login_email_code: "啟用登入驗證碼",

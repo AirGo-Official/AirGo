@@ -22,6 +22,9 @@ export default {
       current_version:"当前版本",
       latest_version:"最新版本",
       starting_upgrade:"开始升级",
+      is_latest:"当前已是最新版本",
+      upgrade_warning:"升级有风险，请做好数据备份!",
+
       enable_register: "启用注册",
       enable_email_code: "启用注册验证码",
       enable_login_email_code: "启用登录验证码",

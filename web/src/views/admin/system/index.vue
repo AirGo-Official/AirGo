@@ -334,11 +334,11 @@
       </span>
       </template>
     </el-dialog>
-    <el-dialog v-model="state.isShowUpdateDialog" title="升级AirGo核心" width="80%"
-               destroy-on-close center>
+    <el-dialog v-model="state.isShowUpdateDialog" :title="$t('message.adminServer.Server.starting_upgrade')" width="80%"
+               destroy-on-close center @close="closeSEE">
       <div
         v-if="serverConfig.version.value.currentVersion.version === serverConfig.version.value.latestVersion.version">
-        <span>当前已是最新版本</span>
+        <span>{{$t('message.adminServer.Server.is_latest')}}</span>
       </div>
       <div v-else>
         <el-row style="margin-bottom: 20px">
@@ -347,7 +347,7 @@
               <el-icon style="margin-right: 4px" :size="12">
                 <InfoFilled />
               </el-icon>
-              <span>当前版本</span>
+              <span>{{$t('message.adminServer.Server.current_version')}}</span>
             </div>
             <div style="font-size: 20px">{{ serverConfig.version.value.currentVersion.version }}</div>
           </el-col>
@@ -356,22 +356,23 @@
               <el-icon style="margin-right: 4px" :size="12">
                 <UploadFilled />
               </el-icon>
-              <span>最新版本</span>
+              <span>{{$t('message.adminServer.Server.latest_version')}}</span>
             </div>
             <div style="color: red;font-size: 20px">{{ serverConfig.version.value.latestVersion.version }}</div>
           </el-col>
         </el-row>
-        <el-result icon="warning" title="升级有风险，请做好数据备份！"></el-result>
+        <el-result icon="warning" :title="$t('message.adminServer.Server.upgrade_warning')"></el-result>
         <div v-if="state.isShowLogData">
-          <el-alert style="margin: 10px 0 0" v-for="(v,k) in state.logData" :key="k" :title="v.title" :type="v.type"
-                    effect="dark" :closable="false" />
+          <div>
+            <codemirror ref="codemirrorRef" v-model="state.logContent"></codemirror>
+          </div>
         </div>
 
       </div>
       <template #footer>
       <span class="dialog-footer">
         <el-button @click="state.isShowUpdateDialog = false">{{ $t("message.common.button_cancel") }}</el-button>
-        <el-button type="primary" @click="SSE" :disabled="state.isShowLogData">开始升级</el-button>
+        <el-button type="primary" @click="SSE" :disabled="state.isShowLogData">{{$t('message.adminServer.Server.starting_upgrade')}}</el-button>
       </span>
       </template>
 
@@ -393,6 +394,7 @@ import { useI18n } from "vue-i18n";
 import { useConstantStore } from "/@/stores/constantStore";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { Local } from "/@/utils/storage";
+import { Codemirror } from "vue-codemirror";
 
 const apiStore = useApiStore();
 const apiStoreData = storeToRefs(apiStore);
@@ -406,6 +408,7 @@ const publicStore = usePublicStore();
 const userStore = useUserStore();
 const { t } = useI18n();
 const constantStore = useConstantStore();
+const codemirrorRef = ref()
 
 
 const state = reactive({
@@ -429,7 +432,22 @@ const state = reactive({
   inShowUpdateButton: false,
   isShowUpdateDialog: false,
   isShowLogData: false,
-  logData: [{}]
+  logContent:'',
+  logOptions:{
+    tabSize: 2, // 缩进格式
+    // theme: 'rubyblue', // 指定主题，对应主题库 JS 需要提前引入
+    lineNumbers: true, // 是否显示行号
+    //指定语言类型,如果需要编辑和显示其他语言,需要import语言js然后修改此配置
+    // mode: 'javascript',
+    line: true,
+    styleActiveLine: true, // 高亮选中行
+    //是否为只读,如果为"nocursor" 不仅仅为只读 连光标都无法在区域聚焦
+    readOnly: true,
+    // hintOptions: {
+    //   completeSingle: true // 当匹配只有一项的时候是否自动补全
+    // },
+    viewportMargin: 30
+  },
 });
 const tap = (tapName: string) => {
   switch (tapName) {
@@ -514,7 +532,6 @@ const openUpdateDialog = () => {
 
 const SSE = () => {
   state.isShowLogData = true;
-  state.logData = [];
   let url = getApiPrefixAddress() + apiStore.adminApi.updateLatestVersion.path;
   let token = Local.get("token");
   if (window.EventSource) {
@@ -522,16 +539,15 @@ const SSE = () => {
     const sseSource = new EventSourcePolyfill(url, {
       headers: {
         "Authorization": token
-      }
+      },
+      "heartbeatTimeout":200000,
     });
-
-    console.log("url:", url);
     sseSource.onopen = function(e: any) {
       console.log("建立连接", e);
     };
     sseSource.onmessage = function(e: any) {
       console.log("onmessage 收到数据", e.data, "消息类型", e.type);
-      state.logData.push({ "type": "info", "title": e.data });
+      showMsg(e.data)
     };
     sseSource.onerror = function(e: any) {
       console.log("关闭连接", e);
@@ -540,16 +556,26 @@ const SSE = () => {
     //自定义2个类型的监听，其中message error是为了和默认的 onerror 区别
     sseSource.addEventListener("success", function(e: any) {
       console.log("onmessage 收到数据", e.data, "消息类型", e.type);
-      state.logData.push({ "type": "success", "title": e.data });
+      showMsg(e.data)
     });
     sseSource.addEventListener("message error", function(e: any) {
       console.log("onmessage 收到数据", e.data, "消息类型", e.type);
-      state.logData.push({ "type": "warning", "title": e.data });
+      showMsg(e.data)
     });
   } else {
     console.log("浏览器不支持SSE");
   }
 };
+const showMsg=(msg:string)=>{
+  state.logContent+=msg+'\r'
+  //滚动到最后一行
+  // let sc = codemirrorRef.value.codemirror.codemirror.getScrollInfo();
+  // codemirrorRef.value.codemirror.codemirror.scrollTo(sc.left,( sc.height + sc.top));
+}
+const closeSEE=()=>{
+  state.isShowLogData = false
+  state.logContent = ''
+}
 
 onMounted(() => {
   serverStore.getServerConfig(); //获取设置参数

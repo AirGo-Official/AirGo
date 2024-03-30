@@ -20,7 +20,6 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"syscall"
 	"time"
 )
@@ -118,10 +117,11 @@ func (s *System) DownloadLatestVersion(ctx *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	filePath := path.Join(currentPath, "AirGo")
+	filePath := path.Join(currentPath, "AirGo.tar.gz")
 	// example:https://github.com/ppoonk/AirGo/releases/download/v0.2.1/AirGo-v0.2.1-darwin-arm64.tar.gz
 	downloadFilePath := fmt.Sprintf("%s/%s/%s-%s-%s-%s%s", constant.AIRGO_GITHUB_DOWNLOAD_PRE, version, "AirGo", version, runtime.GOOS, runtime.GOARCH, ".tar.gz")
-	err = net_plugin.DownloadFile(downloadFilePath, filePath, 0666)
+	//err = net_plugin.DownloadFile(downloadFilePath, filePath, 0666)
+	err = net_plugin.DownloadFileWithProgress(downloadFilePath, filePath, 0666, ctx)
 	if err != nil {
 		return err
 	}
@@ -179,7 +179,7 @@ func (s *System) DownloadLatestVersion(ctx *gin.Context) error {
 	}
 	outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
 	if outStr != "" {
-		response.ResponseSSE("message", strings.Join(strings.Fields(outStr), " | \n"), ctx)
+		response.ResponseSSE("message", outStr, ctx)
 	}
 	if errStr != "" {
 		response.ResponseSSE("message", errStr, ctx)
