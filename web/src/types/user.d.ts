@@ -14,6 +14,14 @@ declare interface SysUser {
     tg_id: number
     role_group: RoleInfo[];	//角色组
     orders: [];      //订单
+
+    //通知参数
+    enable_tg_bot:boolean
+    enable_email:boolean
+    enable_web_mail:boolean
+    when_purchased:boolean
+    when_service_almost_expired:boolean
+    when_balance_changed:boolean
 }
 
 // 登录

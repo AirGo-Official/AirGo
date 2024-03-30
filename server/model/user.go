@@ -23,6 +23,13 @@ type User struct {
 	//关联参数
 	RoleGroup []Role  `json:"role_group" gorm:"many2many:user_and_role;"`    //角色组，多对多
 	Orders    []Order `json:"orders" gorm:"foreignKey:UserID;references:ID"` //订单，has many
+	//通知参数
+	EnableTGBot              bool `json:"enable_tg_bot"`
+	EnableEmail              bool `json:"enable_email"`
+	EnableWebMail            bool `json:"enable_web_mail"`
+	WhenPurchased            bool `json:"when_purchased"`
+	WhenServiceAlmostExpired bool `json:"when_service_almost_expired"`
+	WhenBalanceChanged       bool `json:"when_balance_changed"`
 }
 
 // 用户与角色 多对多 表

@@ -23,6 +23,13 @@ export default {
       tg_id: "tg id",
       role_group: "角色組",	//角色组
       orders: "訂單",     //订单
+      //通知参数
+      enable_tg_bot:"TG Bot",
+      enable_email:"Email",
+      enable_web_mail:"Web mail",
+      when_purchased:"交易成功時",
+      when_service_almost_expired:"服務快到期時",
+      when_balance_changed:"餘額變動時",
     },
     CustomerService: {
       index:"序號",

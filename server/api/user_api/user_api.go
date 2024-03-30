@@ -85,3 +85,31 @@ func ChangeUserAvatar(ctx *gin.Context) {
 func ClockIn(ctx *gin.Context) {
 	// TODO
 }
+func SetUserNotice(ctx *gin.Context) {
+	uIDInt, ok := api.GetUserIDFromGinContext(ctx)
+	if !ok {
+		response.Fail("user id error", nil, ctx)
+		return
+	}
+	var u model.User
+	err := ctx.ShouldBind(&u)
+	if err != nil {
+		global.Logrus.Error(err)
+		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
+		return
+	}
+	err = userService.UpdateUser(&model.User{ID: uIDInt}, map[string]any{
+		"enable_tg_bot":               u.EnableTGBot,
+		"enable_email":                u.EnableEmail,
+		"enable_web_mail":             u.EnableWebMail,
+		"when_purchased":              u.WhenPurchased,
+		"when_service_almost_expired": u.WhenServiceAlmostExpired,
+		"when_balance_changed":        u.WhenBalanceChanged,
+	})
+	if err != nil {
+		global.Logrus.Error(err)
+		response.Fail("SetUserNotice error:"+err.Error(), nil, ctx)
+		return
+	}
+	response.OK("SetUserNotice success", nil, ctx)
+}

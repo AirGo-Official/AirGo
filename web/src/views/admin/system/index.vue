@@ -9,7 +9,7 @@
                 <el-icon style="margin-right: 4px" :size="12">
                   <InfoFilled />
                 </el-icon>
-                当前版本
+                {{$t('message.adminServer.Server.current_version')}}
               </div>
               <div style="font-size: 20px">{{ serverConfig.version.value.currentVersion.version }}</div>
             </el-col>
@@ -18,14 +18,14 @@
                 <el-icon style="margin-right: 4px" :size="12">
                   <UploadFilled />
                 </el-icon>
-                最新版本
+                {{$t('message.adminServer.Server.latest_version')}}
               </div>
               <div style="color: red;font-size: 20px">{{ serverConfig.version.value.latestVersion.version }}</div>
             </el-col>
           </el-row>
 
           <el-row>
-            <el-button type="primary" :disabled="state.inShowUpdateButton" @click="openUpdateDialog">升级</el-button>
+            <el-button type="primary" :disabled="state.inShowUpdateButton" @click="openUpdateDialog">{{$t('message.adminServer.Server.starting_upgrade')}}</el-button>
           </el-row>
           <el-divider></el-divider>
 
@@ -69,6 +69,7 @@
           <el-form-item :label="$t('message.adminServer.Server.backend_url')" class="label">
             <el-input v-model="serverConfig.serverConfig.value.subscribe.backend_url" placeholder="http://xxx.com"
                       type="textarea" autosize />
+            <span style="color: #9b9da1">*{{ $t("message.adminServer.Server.sub_prefix_msg") }}</span>
           </el-form-item>
           <el-divider></el-divider>
           <el-form-item>
@@ -203,84 +204,80 @@
         </el-tab-pane>
 
         <el-tab-pane :label="$t('message.adminServer.tapNotice')" name="6">
-          <el-tabs tab-position="left">
-            <el-tab-pane :label="$t('message.adminServer.Server.push_method')">
-              <el-collapse accordion>
-                <el-collapse-item title="TG Bot" name="1">
-                  <el-form :model="serverConfig.serverConfig.value.notice" label-width="100px"
-                           label-position="left">
-                    <el-form-item :label="$t('message.adminServer.Server.enable_tg_bot')" class="label">
-                      <el-switch v-model="serverConfig.serverConfig.value.notice.enable_tg_bot" inline-prompt
-                                 :active-text="$t('message.common.enable')"
-                                 :inactive-text="$t('message.common.disable')"
-                                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-                    </el-form-item>
+          <div style="margin-bottom: 50px">
+            <el-divider content-position="left"><span style="color: var(--el-color-primary) !important">{{ $t("message.adminServer.Server.admin_id") }}</span></el-divider>
+            <div>
+              <el-form :model="serverConfig.serverConfig.value.notice" label-width="150px"
+                       label-position="left">
+                <el-form-item :label="$t('message.adminServer.Server.admin_id')" class="label">
+                  <el-input v-model="serverConfig.serverConfig.value.notice.admin_id" type="textarea" autosize />
+                  <span style="color: #9b9da1">*{{$t('message.adminServer.Server.admin_id_msg')}}</span>
+                </el-form-item>
+              </el-form>
+            </div>
+          </div>
 
-                    <el-form-item :label="$t('message.adminServer.Server.bot_token')" class="label">
-                      <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"
-                                placeholder="1234567890:AAAAABBBBBCCCCCDDDDFFFFGGGHHHJJKKLL" />
-                    </el-form-item>
-                    <el-form-item :label="$t('message.adminServer.Server.tg_socks5')" class="label">
-                      <el-input v-model="serverConfig.serverConfig.value.notice.tg_socks5"
-                                placeholder="127.0.0.1:1080" />
-                    </el-form-item>
-                    <el-form-item style="margin-top: 20px">
-                      <el-button @click="onSubmit()" type="primary">{{ $t("message.common.button_confirm") }}
-                      </el-button>
-                    </el-form-item>
-                  </el-form>
+          <div style="margin-bottom: 50px">
+            <el-divider content-position="left"><span style="color: var(--el-color-primary) !important">{{ $t("message.adminServer.Server.push_method") }}</span></el-divider>
+            <div>
+              <el-form :model="serverConfig.serverConfig.value.notice" label-width="100px"
+                       label-position="left">
+                <el-form-item :label="$t('message.adminServer.Server.enable_tg_bot')" class="label">
+                  <el-switch v-model="serverConfig.serverConfig.value.notice.enable_tg_bot" inline-prompt
+                             :active-text="$t('message.common.enable')"
+                             :inactive-text="$t('message.common.disable')"
+                             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+                </el-form-item>
 
-                </el-collapse-item>
-                <el-collapse-item title="WebMail" name="2">
-                  待开发
-                </el-collapse-item>
-                <el-collapse-item title="Email" name="3">
-                  待开发
-                </el-collapse-item>
-                <el-collapse-item title="WeChat" name="4">
-                  待开发
-                </el-collapse-item>
-              </el-collapse>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('message.adminServer.Server.trigger_condition')">
-              <div>
-                <el-form :model="serverConfig.serverConfig.value.notice" label-width="150px"
-                         label-position="left">
-                  <el-form-item :label="$t('message.adminServer.Server.admin_id')" class="label">
-                    <el-input v-model="serverConfig.serverConfig.value.notice.admin_id" type="textarea" autosize />
-                  </el-form-item>
-                  <el-form-item :label="$t('message.adminServer.Server.when_node_offline')" class="label">
-                    <el-switch v-model="serverConfig.serverConfig.value.notice.when_node_offline" inline-prompt
-                               :active-text="$t('message.common.enable')"
-                               :inactive-text="$t('message.common.disable')"
-                               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-                  </el-form-item>
-                  <el-form-item :label="$t('message.adminServer.Server.when_user_registered')" class="label">
-                    <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_registered" inline-prompt
-                               :active-text="$t('message.common.enable')"
-                               :inactive-text="$t('message.common.disable')"
-                               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-                  </el-form-item>
-                  <el-form-item :label="$t('message.adminServer.Server.when_user_purchased')" class="label">
-                    <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_purchased" inline-prompt
-                               :active-text="$t('message.common.enable')"
-                               :inactive-text="$t('message.common.disable')"
-                               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
-                  </el-form-item>
-                  <el-form-item label="新工单时通知" class="label">
-                    <span>待开发</span>
-                  </el-form-item>
-                  <el-form-item label="新订单（手动发货）" class="label">
-                    <span>待开发</span>
-                  </el-form-item>
-                  <el-form-item style="margin-top: 20px">
-                    <el-button @click="onSubmit()" type="primary">{{ $t("message.common.button_confirm") }}
-                    </el-button>
-                  </el-form-item>
-                </el-form>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
+                <el-form-item :label="$t('message.adminServer.Server.bot_token')" class="label">
+                  <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"
+                            placeholder="1234567890:AAAAABBBBBCCCCCDDDDFFFFGGGHHHJJKKLL" />
+                </el-form-item>
+                <el-form-item :label="$t('message.adminServer.Server.tg_socks5')" class="label">
+                  <el-input v-model="serverConfig.serverConfig.value.notice.tg_socks5"
+                            placeholder="127.0.0.1:1080" />
+                </el-form-item>
+              </el-form>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 50px">
+            <el-divider content-position="left"><span style="color: var(--el-color-primary) !important">{{ $t("message.adminServer.Server.trigger_condition") }}</span></el-divider>
+            <div>
+              <el-form :model="serverConfig.serverConfig.value.notice" label-width="150px"
+                       label-position="left">
+                <el-form-item :label="$t('message.adminServer.Server.when_node_offline')" class="label">
+                  <el-switch v-model="serverConfig.serverConfig.value.notice.when_node_offline" inline-prompt
+                             :active-text="$t('message.common.enable')"
+                             :inactive-text="$t('message.common.disable')"
+                             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+                </el-form-item>
+                <el-form-item :label="$t('message.adminServer.Server.when_user_registered')" class="label">
+                  <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_registered" inline-prompt
+                             :active-text="$t('message.common.enable')"
+                             :inactive-text="$t('message.common.disable')"
+                             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+                </el-form-item>
+                <el-form-item :label="$t('message.adminServer.Server.when_user_purchased')" class="label">
+                  <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_purchased" inline-prompt
+                             :active-text="$t('message.common.enable')"
+                             :inactive-text="$t('message.common.disable')"
+                             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+                </el-form-item>
+                <el-form-item :label="$t('message.adminServer.Server.when_new_ticket')" class="label">
+                  <el-switch v-model="serverConfig.serverConfig.value.notice.when_new_ticket" inline-prompt
+                             :active-text="$t('message.common.enable')"
+                             :inactive-text="$t('message.common.disable')"
+                             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+                </el-form-item>
+                <el-form-item style="margin-top: 20px">
+                  <el-button @click="onSubmit()" type="primary">{{ $t("message.common.button_confirm") }}
+                  </el-button>
+                </el-form-item>
+              </el-form>
+            </div>
+          </div>
+
         </el-tab-pane>
 
         <el-tab-pane :label="$t('message.adminServer.tapMigration')" name="7">
@@ -394,7 +391,7 @@ import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { usePublicStore } from "/@/stores/publicStore";
 import { useI18n } from "vue-i18n";
 import { useConstantStore } from "/@/stores/constantStore";
-import { EventSourcePolyfill } from 'event-source-polyfill';
+import { EventSourcePolyfill } from "event-source-polyfill";
 import { Local } from "/@/utils/storage";
 
 const apiStore = useApiStore();
@@ -519,16 +516,16 @@ const SSE = () => {
   state.isShowLogData = true;
   state.logData = [];
   let url = getApiPrefixAddress() + apiStore.adminApi.updateLatestVersion.path;
-  let token = Local.get("token")
+  let token = Local.get("token");
   if (window.EventSource) {
     // let sseSource = new EventSource(url, { withCredentials: true });
     const sseSource = new EventSourcePolyfill(url, {
       headers: {
-        'Authorization': token
+        "Authorization": token
       }
     });
 
-    console.log("url:",url)
+    console.log("url:", url);
     sseSource.onopen = function(e: any) {
       console.log("建立连接", e);
     };

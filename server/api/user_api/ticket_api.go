@@ -5,9 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ppoonk/AirGo/api"
 	"github.com/ppoonk/AirGo/constant"
+	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service/admin_logic"
 	"github.com/ppoonk/AirGo/service/common_logic"
 	"github.com/ppoonk/AirGo/utils/response"
+	"strings"
 )
 
 func NewTicket(ctx *gin.Context) {
@@ -28,6 +31,29 @@ func NewTicket(ctx *gin.Context) {
 		response.Fail("NewTicket error:"+err.Error(), nil, ctx)
 		return
 	}
+	//通知
+	global.GoroutinePool.Submit(func() {
+		if !global.Server.Notice.WhenNewTicket {
+			return
+		}
+		user, err := userService.FirstUser(&model.User{ID: uID})
+		if err != nil {
+			return
+		}
+		msg := admin_logic.MessageInfo{
+			UserID:      uID,
+			MessageType: admin_logic.MESSAGE_TYPE_USER,
+			User:        user,
+			Message: strings.Join([]string{
+				"【新工单提醒】",
+				fmt.Sprintf("用户ID：%d", user.ID),
+				fmt.Sprintf("用户名：%s", user.UserName),
+				fmt.Sprintf("工单标题：%s", ticket.Title),
+				fmt.Sprintf("工单详情：%s\n", ticket.Details),
+			}, "\n"),
+		}
+		admin_logic.PushMessageSvc.PushMessage(&msg)
+	})
 	response.OK("NewTicket success", nil, ctx)
 
 }

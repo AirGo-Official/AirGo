@@ -1,6 +1,7 @@
 package format_plugin
 
 import (
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -54,4 +55,10 @@ func CamelCaseToUdnderscore(s string) string {
 		}
 	}
 	return string(output)
+}
+
+// 流量 Byte -> GB
+func ByteToGB(b int64) string {
+	b1 := (float64(b)) / 1024 / 1024 / 1024
+	return strconv.FormatFloat(b1, 'f', 2, 64)
 }

@@ -70,7 +70,7 @@ func (ts *TgBotService) TGBotListen(ctx context.Context) {
 				//fmt.Println("msg.From.ID:", update.Message.From.ID)
 				//fmt.Println("update.Message.Text:", update.Message.Text)
 				//fmt.Println("update.Message.Command():", update.Message.Command())
-				fmt.Println("update.Message.Chat.ID:", update.Message.Chat.ID) //6749478020
+				//fmt.Println("update.Message.Chat.ID:", update.Message.Chat.ID)
 				var msg tgbotapi.Chattable
 				ok := IsAdmin(update.Message)
 				if ok { //管理员

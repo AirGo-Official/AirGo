@@ -16,6 +16,7 @@ func InitUserRouter(RouterGroup *gin.RouterGroup) {
 		userRouter.POST("/changeUserPassword", user_api.ChangeUserPassword) //修改密码
 		userRouter.POST("/changeUserAvatar", user_api.ChangeUserAvatar)     //修改头像
 		userRouter.GET("/clockin", user_api.ClockIn)                        //打卡
+		userRouter.POST("/setUserNotice", user_api.SetUserNotice)           //设置通知
 	}
 	// customer
 	customerServiceRouter := customerRouter.Group("/customerService")

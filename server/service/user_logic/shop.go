@@ -134,7 +134,7 @@ func (s *Shop) Purchase(sysOrder *model.Order) (*model.Order, error) {
 		sysOrder.PayInfo.AlipayInfo.QRCode = res.QRCode //返回用户qrcode
 		return sysOrder, nil
 	case constant.PAY_TYPE_BALANCE: // 余额支付
-		err = userService.UserRemainPayHandler(sysOrder)
+		err = userService.UserBalancePayHandler(sysOrder)
 		if err != nil {
 			return nil, err
 		}

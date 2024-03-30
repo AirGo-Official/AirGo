@@ -3,11 +3,11 @@
     <el-row>
       <!-- 个人信息 -->
       <el-col :xs="24" :sm="24">
-        <el-card shadow="hover" header="个人信息">
+        <el-card shadow="hover" :header="$t('message.personal.personal_information')">
           <div class="personal-user">
             <div class="personal-user-left">
               <div class="h400 personal-user-left-upload" @click="state.isShowChangeAvatarDialog = true">
-                <img :src="userInfos.avatar"/>
+                <img :src="userInfos.avatar" />
               </div>
             </div>
             <div class="personal-user-right">
@@ -16,7 +16,7 @@
                 <el-col :span="24">
                   <el-row>
                     <el-col :xs="24" :sm="24" class="personal-item mb6">
-                      <div class="personal-item-label">昵称：</div>
+                      <div class="personal-item-label">{{$t('message.personal.nickname')}}：</div>
                       <span>{{ userInfos.nick_name }}</span>
                     </el-col>
                   </el-row>
@@ -26,25 +26,67 @@
           </div>
         </el-card>
       </el-col>
-
-      <!-- 更新信息 -->
       <el-col :span="24">
-        <el-card shadow="hover" class="mt15 personal-edit" header="个人信息">
-          <div class="personal-edit-title">基本信息</div>
+        <el-card shadow="hover" class="mt15 personal-edit" :header="$t('message.personal.notification_setting')">
+          <el-divider content-position="left"><span>{{ $t("message.adminServer.Server.push_method") }}</span>
+          </el-divider>
+          <el-form :model="userInfos" label-width="150px"
+                   label-position="left">
+            <el-form-item :label="$t('message.adminServer.Server.enable_tg_bot')" class="label">
+              <el-switch v-model="userInfos.enable_tg_bot" inline-prompt
+                         :active-text="$t('message.common.enable')"
+                         :inactive-text="$t('message.common.disable')"
+                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+            </el-form-item>
+            <el-form-item :label="$t('message.adminUser.SysUser.tg_id')" class="label">
+              <el-input v-model.number="userInfos.tg_id"/>
+            </el-form-item>
+            <el-divider content-position="left"><span>{{ $t("message.adminServer.Server.trigger_condition") }}</span>
+            </el-divider>
+            <el-form-item :label="$t('message.adminUser.SysUser.when_service_almost_expired')" class="label">
+              <el-switch v-model="userInfos.when_service_almost_expired" inline-prompt
+                         :active-text="$t('message.common.enable')"
+                         :inactive-text="$t('message.common.disable')"
+                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+            </el-form-item>
+            <el-form-item :label="$t('message.adminUser.SysUser.when_purchased')" class="label">
+              <el-switch v-model="userInfos.when_purchased" inline-prompt
+                         :active-text="$t('message.common.enable')"
+                         :inactive-text="$t('message.common.disable')"
+                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+            </el-form-item>
+            <el-form-item :label="$t('message.adminUser.SysUser.when_balance_changed')" class="label">
+              <el-switch v-model="userInfos.when_balance_changed" inline-prompt
+                         :active-text="$t('message.common.enable')"
+                         :inactive-text="$t('message.common.disable')"
+                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+            </el-form-item>
+            <el-form-item style="margin-top: 20px">
+              <el-button @click="onSubmitForNotice()" type="primary">{{ $t("message.common.button_confirm") }}
+              </el-button>
+            </el-form-item>
+
+          </el-form>
+        </el-card>
+      </el-col>
+      <el-col :span="24">
+        <el-card shadow="hover" class="mt15 personal-edit" :header="$t('message.personal.security_setting')">
+          <div class="personal-edit-title">{{$t('message.personal.login_password')}}</div>
           <div class="personal-edit-safe-box">
             <div class="personal-edit-safe-item">
               <div class="personal-edit-safe-item-left">
-                <div class="personal-edit-safe-item-left-label">账户密码</div>
-                <!--                <div class="personal-edit-safe-item-left-value">当前密码强度：强</div>-->
+                <div class="personal-edit-safe-item-left-label">{{$t('message.personal.login_password')}}</div>
               </div>
               <div class="personal-edit-safe-item-right">
-                <el-button type="primary" @click="state.isShowChangePasswordDialog = true">立即修改</el-button>
+                <el-button type="primary" @click="state.isShowChangePasswordDialog = true">{{$t('message.common.modify')}}</el-button>
               </div>
             </div>
           </div>
-          <div class="personal-edit-title">
-            余额
-          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="24">
+        <el-card shadow="hover" class="mt15 personal-edit" :header="$t('message.personal.financial_management')">
+          <div class="personal-edit-title">{{$t('message.personal.balance')}}</div>
           <div class="personal-edit-safe-box">
             <div class="personal-edit-safe-item">
               <div class="personal-edit-safe-item-left">
@@ -52,48 +94,35 @@
               </div>
             </div>
           </div>
-          <div class="personal-edit-title">
-            打卡
-          </div>
-          <div class="personal-edit-safe-box">
-            <div class="personal-edit-safe-item">
-              <div class="personal-edit-safe-item-left">
-                <div class="personal-edit-safe-item-left-value">
-<!--                  <el-button type="primary" @click="clockin()">立即打卡</el-button>-->
-                </div>
-              </div>
-            </div>
-          </div>
-
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog v-model="state.isShowChangePasswordDialog" title="修改密码" width="500px">
+    <el-dialog v-model="state.isShowChangePasswordDialog" :title="$t('message.personal.change_password')" width="500px">
       <el-form size="default" label-position="top">
-        <el-form-item label="新密码">
-          <el-input v-model="registerData.password" placeholder="请输入密码" clearable></el-input>
+        <el-form-item :label="$t('message.personal.new_password')">
+          <el-input v-model="registerData.password":placeholder="$t('message.personal.please_enter_password')" clearable></el-input>
         </el-form-item>
-        <el-form-item label="确认密码">
-          <el-input v-model="registerData.re_password" placeholder="请输入密码" clearable></el-input>
+        <el-form-item :label="$t('message.personal.confirm_password')">
+          <el-input v-model="registerData.re_password" :placeholder="$t('message.personal.please_enter_password')" clearable></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
 				<span class="dialog-footer">
-					<el-button @click="state.isShowChangePasswordDialog = false" size="default">取 消</el-button>
-					<el-button type="primary" @click="changePassword" size="default">确认</el-button>
+					<el-button @click="state.isShowChangePasswordDialog = false" size="default">{{$t('message.common.button_cancel')}}</el-button>
+					<el-button type="primary" @click="changePassword" size="default">{{$t('message.common.button_confirm')}}</el-button>
 				</span>
       </template>
     </el-dialog>
-    <el-dialog v-model="state.isShowChangeAvatarDialog" title="修改头像" width="500px">
+    <el-dialog v-model="state.isShowChangeAvatarDialog" :title="$t('message.personal.modify_avatar')" width="500px">
       <el-form size="default" label-position="top">
-        <el-form-item label="头像链接">
+        <el-form-item :label="$t('message.personal.avatar_link')">
           <el-input v-model="userAvatar.avatar"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
 				<span class="dialog-footer">
-					<el-button @click="state.isShowChangeAvatarDialog = false" size="default">取 消</el-button>
-					<el-button type="primary" @click="changeAvatar" size="default">确认</el-button>
+					<el-button @click="state.isShowChangeAvatarDialog = false" size="default">{{$t('message.common.button_cancel')}}</el-button>
+					<el-button type="primary" @click="changeAvatar" size="default">{{$t('message.common.button_confirm')}}</el-button>
 				</span>
       </template>
     </el-dialog>
@@ -101,29 +130,29 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineAsyncComponent, onMounted, reactive, ref} from 'vue';
-import {formatAxis} from '/@/utils/formatTime';
-import * as imageConversion from 'image-conversion'
-import {useUserStore} from "/@/stores/user_logic/userStore";
-import {storeToRefs} from 'pinia';
-import {useAdminServerStore} from "/@/stores/admin_logic/serverStore";
-import {useApiStore} from "/@/stores/apiStore";
-import {request} from "/@/utils/request";
-import {ElMessage} from "element-plus";
+import { computed, defineAsyncComponent, onMounted, reactive, ref } from "vue";
+import { formatAxis } from "/@/utils/formatTime";
+import * as imageConversion from "image-conversion";
+import { useUserStore } from "/@/stores/user_logic/userStore";
+import { storeToRefs } from "pinia";
+import { useAdminServerStore } from "/@/stores/admin_logic/serverStore";
+import { useApiStore } from "/@/stores/apiStore";
+import { request } from "/@/utils/request";
+import { ElMessage } from "element-plus";
 import { usePublicStore } from "/@/stores/publicStore";
 
-const userStore = useUserStore()
-const {userInfos,registerData,userAvatar} = storeToRefs(userStore)
+const userStore = useUserStore();
+const { userInfos, registerData, userAvatar } = storeToRefs(userStore);
 
-const publicStore = usePublicStore()
-const publicStoreData = storeToRefs(publicStore)
-const apiStore = useApiStore()
+const publicStore = usePublicStore();
+const publicStoreData = storeToRefs(publicStore);
+const apiStore = useApiStore();
 
 const state = reactive({
-  url: '',
-  isShowChangePasswordDialog:false,
-  isShowChangeAvatarDialog:false,
-})
+  url: "",
+  isShowChangePasswordDialog: false,
+  isShowChangeAvatarDialog: false
+});
 // 当前时间提示语
 const currentTime = computed(() => {
   return formatAxis(new Date());
@@ -132,24 +161,32 @@ const currentTime = computed(() => {
 //打卡
 const clockin = () => {
   //是否开启打卡
-}
+};
 
 //获取当前url
 const getUrl = () => {
-  state.url = window.location.host
-}
+  state.url = window.location.host;
+};
 
 const changePassword = () => {
-  userStore.changePassword().then(()=>{
-  })
-  state.isShowChangePasswordDialog = false
+  userStore.changePassword().then(() => {
+  });
+  state.isShowChangePasswordDialog = false;
 };
-const changeAvatar=()=>{
-  userStore.changeAvatar().then(()=>{
-    userStore.getUserInfo()
-  })
-  state.isShowChangeAvatarDialog = false
-}
+const changeAvatar = () => {
+  userStore.changeAvatar().then(() => {
+    userStore.setUserNotice().then((res) => {
+      ElMessage.success(res.msg);
+    });
+    userStore.getUserInfo();
+  });
+  state.isShowChangeAvatarDialog = false;
+};
+const onSubmitForNotice = () => {
+  userStore.setUserNotice().then((res) => {
+    ElMessage.success(res.msg);
+  });
+};
 
 onMounted(() => {
   getUrl(); //获取邀请url

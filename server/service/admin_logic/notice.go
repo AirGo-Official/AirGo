@@ -20,11 +20,20 @@ var PushMessageSvc *PushMessageService
 type PushMessageService struct {
 	engine []Send
 }
+
+const (
+	MESSAGE_TYPE_ADMIN = "admin"
+	MESSAGE_TYPE_USER  = "user"
+)
+
 type MessageInfo struct {
-	UserID  int64
-	Message string
+	UserID      int64
+	Message     string
+	MessageType string
+	User        *model.User
 }
 type Send interface {
+	SendToAdmin(*MessageInfo) error
 	SendToUser(*MessageInfo) error
 }
 
@@ -46,7 +55,13 @@ func (pm *PushMessageService) StartTask() {
 		for v := range ch {
 			msg := v.(*MessageInfo)
 			for _, e := range pm.engine {
-				_ = e.SendToUser(msg)
+				switch msg.MessageType {
+				case MESSAGE_TYPE_ADMIN:
+					_ = e.SendToAdmin(msg)
+				case MESSAGE_TYPE_USER:
+					_ = e.SendToUser(msg)
+				default:
+				}
 			}
 		}
 	}()
@@ -61,7 +76,6 @@ func (pm *PushMessageService) AdminAccountHandler() {
 	for _, v := range temp1 {
 		k, _ := strconv.Atoi(v)
 		global.Server.Notice.AdminIDCache[int64(k)] = struct{}{}
-
 		user, _ := userService.FirstUser(&model.User{ID: int64(k)})
 		if user != nil && user.TgID != 0 {
 			global.Server.Notice.AdminIDCacheWithTGID[user.TgID] = struct{}{}
@@ -71,7 +85,7 @@ func (pm *PushMessageService) AdminAccountHandler() {
 
 type PushMessageByTGBot struct{}
 
-func (p *PushMessageByTGBot) SendToUser(m *MessageInfo) error {
+func (p *PushMessageByTGBot) SendToAdmin(m *MessageInfo) error {
 	if !global.Server.Notice.EnableTGBot {
 		return errors.New("TGBot is disabled")
 	}
@@ -86,17 +100,34 @@ func (p *PushMessageByTGBot) SendToUser(m *MessageInfo) error {
 	}
 	return nil
 }
+func (p *PushMessageByTGBot) SendToUser(m *MessageInfo) error {
+	if !m.User.EnableTGBot {
+		return errors.New("TGBot is disabled")
+	}
+	if m.User.TgID != 0 {
+		var msg tgbotapi.Chattable
+		msg = tgbotapi.NewMessage(m.User.TgID, m.Message)
+		TgBotSvc.TGBotSendMessage(msg) // TODO 好像 update.Message.Chat.ID = update.Message.From.ID，暂时没发现问题
+	}
+	return nil
+}
 
 type PushMessageByWebMail struct{}
 
-func (p *PushMessageByWebMail) SendToUser(m *MessageInfo) error {
+func (p *PushMessageByWebMail) SendToAdmin(m *MessageInfo) error {
 	//TODO implement me
+	return nil
+}
+func (p *PushMessageByWebMail) SendToUser(m *MessageInfo) error {
 	return nil
 }
 
 type PushMessageByEmail struct{}
 
-func (p *PushMessageByEmail) SendToUser(m *MessageInfo) error {
+func (p *PushMessageByEmail) SendToAdmin(m *MessageInfo) error {
 	//TODO implement me
+	return nil
+}
+func (p *PushMessageByEmail) SendToUser(m *MessageInfo) error {
 	return nil
 }

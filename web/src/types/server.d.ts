@@ -24,6 +24,7 @@ declare interface Notice {
     when_user_registered:boolean
     when_user_purchased:boolean
     when_node_offline:boolean
+    when_new_ticket:boolean
 }
 declare interface Security {
     captcha: Captcha

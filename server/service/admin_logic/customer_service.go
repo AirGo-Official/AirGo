@@ -37,6 +37,14 @@ func (c *CustomerService) SubExpirationCheck() error {
 		return tx.Exec("UPDATE customer_service SET sub_status = 0 WHERE ( used_up + used_down ) > total_bandwidth").Error
 	})
 }
+func (c *CustomerService) GetCustomerServiceListAlmostExpired() (*[]model.CustomerService, error) {
+	var list []model.CustomerService
+	//到期前3天
+	d := time.Now()
+	date := time.Date(d.Year(), d.Month(), d.Day()+10, d.Hour(), d.Minute(), d.Second(), 0, d.Location())
+	err := global.DB.Model(&model.CustomerService{}).Where("service_end_at < ?", date).Find(&list).Error
+	return &list, err
+}
 
 // 用户流量重置任务
 func (c *CustomerService) TrafficReset() error {

@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/service/admin_logic"
 	"github.com/ppoonk/AirGo/utils/jwt_plugin"
 	timeTool "github.com/ppoonk/AirGo/utils/time_plugin"
 	"gorm.io/gorm"
@@ -101,33 +102,71 @@ func (us *User) UpdateUser(userParams *model.User, values map[string]any) error 
 func (us *User) RechargeHandle(order *model.Order) error {
 	//查询商品信息
 	goods, _ := shopService.FirstGoods(&model.Goods{ID: order.GoodsID})
-	orderRemainAmount, _ := strconv.ParseFloat(order.BalanceAmount, 64)
 	rechargeFloat64, _ := strconv.ParseFloat(goods.RechargeAmount, 64)
 	user, err := us.FirstUser(&model.User{ID: order.UserID})
 	if err != nil {
 		return err
 	}
-	user.Balance = user.Balance - orderRemainAmount + rechargeFloat64
+	startAmount := user.Balance
+	res, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", user.Balance+rechargeFloat64), 64)
+	user.Balance = res
 	if user.Balance < 0 {
 		user.Balance = 0
 	}
-	return us.SaveUser(user)
+	err = userService.SaveUser(user)
+	if err != nil {
+		return err
+	}
+	if user.WhenBalanceChanged {
+		global.GoroutinePool.Submit(func() {
+			us.PushMessageWhenBalanceChanged(user, startAmount, rechargeFloat64)
+		})
+	}
+	return nil
 }
 
 // 处理余额支付
-func (us *User) UserRemainPayHandler(order *model.Order) error {
+func (us *User) UserBalancePayHandler(order *model.Order) error {
 	// 查询user
 	user, err := us.FirstUser(&model.User{ID: order.UserID})
 	if err != nil {
 		return err
 	}
+	startAmount := user.Balance
 	totalAmount, _ := strconv.ParseFloat(order.TotalAmount, 64)
+	if totalAmount == 0 {
+		return nil
+	}
 	if user.Balance < totalAmount {
 		return errors.New(constant.ERROR_BALANCE_IS_NOT_ENOUGH)
 	}
 	res, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", user.Balance-totalAmount), 64)
 	user.Balance = res
-	return userService.SaveUser(user)
+	err = userService.SaveUser(user)
+	if err != nil {
+		return err
+	}
+	if user.WhenBalanceChanged {
+		global.GoroutinePool.Submit(func() {
+			us.PushMessageWhenBalanceChanged(user, startAmount, totalAmount)
+		})
+	}
+	return nil
+}
+func (us *User) PushMessageWhenBalanceChanged(user *model.User, startAmount, changedAmount float64) {
+	msg := admin_logic.MessageInfo{
+		UserID:      user.ID,
+		MessageType: admin_logic.MESSAGE_TYPE_USER,
+		User:        user,
+		Message: strings.Join([]string{
+			"【余额变动提醒】",
+			fmt.Sprintf("时间：%s", time.Now().Format("2006-01-02 15:04:05")),
+			fmt.Sprintf("开始余额：%s", fmt.Sprintf("%.2f", startAmount)),
+			fmt.Sprintf("结束余额：%s", fmt.Sprintf("%.2f", user.Balance)),
+			fmt.Sprintf("变动值：%s\n", fmt.Sprintf("%.2f", changedAmount)),
+		}, "\n"),
+	}
+	admin_logic.PushMessageSvc.PushMessage(&msg)
 }
 
 // 保存用户信息

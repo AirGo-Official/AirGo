@@ -67,6 +67,7 @@ export const useAdminServerStore = defineStore("serverAdminStore", {
                 when_user_registered:false,
                 when_user_purchased:false,
                 when_node_offline:false,
+                when_new_ticket:false,
             } as Notice,
 
         } as Server,

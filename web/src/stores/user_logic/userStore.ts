@@ -51,6 +51,13 @@ export const useUserStore = defineStore('userStore', {
             balance: 0,
             role_group: [] as RoleInfo[],	//角色组
             orders: [],      //订单
+            //通知参数
+            enable_tg_bot:false,
+            enable_email:false,
+            enable_web_mail:false,
+            when_purchased:false,
+            when_service_almost_expired:false,
+            when_balance_changed:false,
         } as SysUser,
     }),
     actions: {
@@ -90,5 +97,9 @@ export const useUserStore = defineStore('userStore', {
         async submitResetPassword() {
             return request(apiStore.publicApi.resetUserPassword, this.loginData)
         },
+        async setUserNotice() {
+            return  request(apiStore.userApi.setUserNotice, this.userInfos)
+        },
+
     },
 });

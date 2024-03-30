@@ -77,7 +77,8 @@ func Register(ctx *gin.Context) {
 		global.GoroutinePool.Submit(func() {
 			for k, _ := range global.Server.Notice.AdminIDCache {
 				var msg = admin_logic.MessageInfo{
-					UserID: k,
+					MessageType: admin_logic.MESSAGE_TYPE_ADMIN,
+					UserID:      k,
 					Message: strings.Join([]string{
 						"【新注册用户】",
 						fmt.Sprintf("时间：%s", time.Now().Format("2006-01-02 15:04:05")),

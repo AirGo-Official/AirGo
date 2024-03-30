@@ -19,6 +19,9 @@ export default {
       created_at: "創建時間",
       updated_at: "更新時間",
       //website
+      current_version:"當前版本",
+      latest_version:"最新版本",
+      starting_upgrade:"開始陞級",
       enable_register: "啟用注册",
       enable_email_code: "啟用注册驗證碼",
       enable_login_email_code: "啟用登入驗證碼",
@@ -29,6 +32,7 @@ export default {
       api_prefix: "管理員api首碼",
       sub_name: "訂閱名稱",
       tek: "通信金鑰",
+      sub_prefix_msg:"訂閱首碼，一行一個",
       enabled_clock_in: "啟用打卡",
       // email
       email_from: "發件人",
@@ -62,10 +66,12 @@ export default {
       enable_web_mail:"啟用站內信",
       bot_token: "tg bot token",
       tg_admin: "管理員 id",
+      admin_id_msg:"管理員的帳戶ID，每行一個",
       tg_socks5 :"tg socks5代理",
-      when_user_registered: "用戶註冊時通知",
-      when_user_purchased: "用戶購買時通知",
-      when_node_offline: "節點離線通知",
+      when_user_registered: "用戶註冊時",
+      when_user_purchased: "用戶購買時",
+      when_node_offline: "節點離線時",
+      when_new_ticket:"新工單時",
     },
     Migration:{
       panel_type:"面板類型",

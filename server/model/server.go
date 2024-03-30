@@ -27,6 +27,7 @@ type Notice struct {
 	WhenUserRegistered   bool               `json:"when_user_registered" gorm:"comment:用户注册后通知"`
 	WhenUserPurchased    bool               `json:"when_user_purchased"  gorm:"comment:用户购买成功后通知"`
 	WhenNodeOffline      bool               `json:"when_node_offline"    gorm:"comment:节点离线时通知"`
+	WhenNewTicket        bool               `json:"when_new_ticket"      gorm:"comment:新工单时通知"`
 }
 
 type Email struct {
