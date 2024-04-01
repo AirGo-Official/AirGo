@@ -1,5 +1,3 @@
-
-
 <img width="200px" src="https://telegraph-image.pages.dev/file/c48a2f45ebf102dd66131.png" align="left"/>
 
 # AirGo 前后端分离，多用户，多协议代理服务管理系统，简单易用
@@ -23,28 +21,30 @@
 
 <hr/>
 
-
-
 <!-- TOC -->
+
 * [AirGo 前后端分离，多用户，多协议代理服务管理系统，简单易用](#airgo-前后端分离多用户多协议代理服务管理系统简单易用)
 * [面板部分功能展示](#面板部分功能展示)
-* [1、部署](#1部署)
-  * [1-1 安装AirGo核心](#1-1-安装airgo核心)
-    * [1-1-1 直接安装](#1-1-1-直接安装)
-    * [1-1-2 使用docker安装](#1-1-2-使用docker安装)
-  * [1-2 配置ssl（可选）](#1-2-配置ssl可选)
-  * [1-3 部署前端静态资源（可选，但推荐）](#1-3-部署前端静态资源可选但推荐)
-    * [1-3-1 部署到Vercel](#1-3-1-部署到vercel)
-    * [1-3-2 部署到nginx、caddy等](#1-3-2-部署到nginxcaddy等)
-  * [1-4 配置文件说明](#1-4-配置文件说明)
-  * [1-5 启动](#1-5-启动)
-* [2、对接节点](#2对接节点)
-  * [2-1 XrayR](#2-1-xrayr)
-  * [2-2 hysteria2](#2-2-hysteria2)
-* [TG群组：https://t.me/AirGo_Group](#tg群组-httpstmeairgogroup)
+* [一、部署](#一部署)
+  * [1.安装核心：](#1安装核心)
+    * [a.直接安装](#a直接安装)
+    * [b.使用Docker安装](#b使用docker安装)
+  * [2. 配置ssl（可选）](#2配置ssl可选)
+  * [3.部署前端静态资源（可选，但推荐）](#3部署前端静态资源可选但推荐)
+    * [a. 部署到Vercel](#a部署到vercel)
+    * [b. 部署到Nginx、Caddy等](#b部署到nginxcaddy等)
+  * [4.配置文件说明](#4配置文件说明)
+  * [5.启动](#5启动)
+* [二、对接节点](#二对接节点)
+  * [a.XrayR](#axrayr)
+  * [b.Hysteria2](#bhysteria2)
+* [TG频道：https://t.me/Air_Go](https://t.me/Air_Go)
+* [TG群组：https://t.me/AirGo_Group](https://t.me/AirGo_Group)
+
 <!-- TOC -->
 
 # 面板部分功能展示
+
 <div style="color: darkgray" >Display of panel functions</div>
 
 <table>
@@ -62,19 +62,26 @@
     <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/7.png">
 </table>
 
-# 1、部署
-## 1-1 安装AirGo核心
+# 一、部署
 
-### 1-1-1 直接安装
-- 使用debian，ununtu，centos等系统，执行以下命令，根据提示安装
+
+
+## 1.安装核心：
+
+- **安装方式分为：直接安装（支持前后端分离）、使用docker安装**
+
+### a.直接安装
+
+- 使用Ubuntu、Debian、Centos等Linux系统，执行以下命令，然后根据提示安装
 
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/AirGo/main/server/scripts/install.sh)
 ```
 
+- 安装完成后 请参考配置文件说明 修改配置文件
+- 管理脚本命令：```AirGo```
 
-### 1-1-2 使用docker安装
-
+### b.使用Docker安装
 
 - 在合适的目录新建配置文件，例如：/$PWD/air/config.yaml，配置文件内容如下：
 
@@ -96,9 +103,10 @@ mysql:
   max-open-conns: 100
 sqlite:
   path: ./air.db
-
 ```
-- 根据自己的需求，修改配置文件，启动docker命令参考如下：
+
+- 根据自己的需求，修改配置文件（关于配置文件 请见配置文件说明）
+- 启动docker命令参考如下：
 
 ```
 docker run -tid \
@@ -112,6 +120,7 @@ docker run -tid \
 ```
 
 docker compose参考如下：
+
 ```
 version: '3'
 
@@ -128,29 +137,33 @@ services:
       - ./config.yaml:/air/config.yaml
 ```
 
+## 2.配置ssl（可选）
 
-## 1-2 配置ssl（可选）
+- 为了网站的传输中的安全，可选择申请ssl证书
+- 可通过管理脚本中acme.sh申请脚本进行证书申请（通过DNS TXT记录手动模式申请，无80和443端口也可申请证书
+- 如果您已经拥有证书，只需要复制在安装目录（/usr/local/AirGo/）下，将其重命名为 `air.cer`，`air.key`即可
 
-- 不需要前后分离的话，进行到这一步就可以了
-- 如果使用`宝塔面板`或者`1panel`，请直接自动申请
-- 如果您已有证书，只需在安装目录（/usr/local/AirGo/）下，配置 `air.cer`，`air.key`即可
+## 3.部署前端静态资源（可选，但推荐）
 
+- **支持部署到Vercel、Nginx、Caddy等**
 
-## 1-3 部署前端静态资源（可选，但推荐）
+### a.部署到Vercel
 
-### 1-3-1 部署到Vercel
-- fork本项目，修改`项目/web/.env`的`VITE_API_URL`字段为自己的后端地址（由于vercel的限制，请填https接口地址）
+- fork本项目，修改`./web/.env`的`VITE_API_URL`字段为自己的后端地址（由于vercel的限制，请填https接口地址）
 - 登录[Vercel](https://vercel.com)，Add New Project，参考下图配置，注意红圈内的设置！
   ![image](https://telegraph-image.pages.dev/file/afe97f45857b988ebd005.png)
 - 部署成功后，自定义域名即可（域名解析到76.76.21.21)
 
-### 1-3-2 部署到nginx、caddy等
+### b.部署到Nginx、Caddy等
+
 推荐使用 `github codespaces`编译，这不会在您电脑上安装额外的依赖
-- fork本项目，修改`项目/web/.env`的`VITE_API_URL`字段为自己的后端地址
+
+- fork本项目，修改`./web/.env`的`VITE_API_URL`字段为自己的后端地址
 - 在 项目/web/ 下，执行  `npm i && npm run build`
 - 打包后的静态资源文件夹为 web，将web文件夹上传到服务器合适位置。新建网站（纯静态），网站位置选择该web文件夹
 
-## 1-4 配置文件说明
+## 4.配置文件说明
+
 ```
 system:
   admin-email: admin@oicq.com  //管理员账号，初始化之前需要修改！
@@ -171,34 +184,50 @@ sqlite:
   path: ./air.db               //sqlite数据库文件名
 ```
 
-## 1-5 启动
+## 5.启动
 
-注意！如果首次安装，启动核心时，会根据配置文件config.yaml自动初始化数据。务必修改 1-4 中需要修改的部分。
+**注意！如果首次安装，启动核心时，会根据配置文件config.yaml自动初始化数据。务必修改配置文件！**
 
-- 启动核心 `systemctl start AirGo`，或者以 docker 方式启动
-- 前后端不分离，网站访问地址的端口和配置文件 config.yaml 中的端口保持一致。例如config.yaml中端口为8888，则浏览器需要访问 http://example.com/8888 
-- 前后端分离，网站访问地址为vercel或者nginx（caddy）设置的地址
+- 直接安装可使用管理脚本```AirGo```启动核心，也可以使用 `systemctl start AirGo`启动核心
+- Docker请使用Docker的方式启动
 
+**需注意：**
 
-# 2、对接节点
+- 关于网站访问地址：
+  - 前后端不分离：网站访问地址的端口和配置文件 config.yaml 中的端口保持一致。例如config.yaml中端口为8888，则浏览器需要访问 http(s)://example.com:8888
+  - 前后端分离，网站访问地址为Vercel或者Nginx（Caddy）设置的地址
 
-## 2-1 XrayR
+# 二、对接节点
+
+**现支持XrayR、Hysteria2的对接，暂不支持官方版本，请使用下面的版本：**
+
+## a.XrayR
+
+- 安装：
 
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/XrayR-for-AirGo/main/scripts/manage.sh)
 ```
-启动
-`systemctl start XrayR`
+- 安装完成后请根据需要在```/usr/local/XrayR/config.yml```中修改配置文件
+- 启动：使用管理脚本```XrayR```或直接 `systemctl start XrayR`
 
 - docker仓库：[https://hub.docker.com/repository/docker/ppoiuty/xrayr](https://hub.docker.com/repository/docker/ppoiuty/xrayr)
 
-## 2-2 hysteria2
+## b.Hysteria2
+
+- 安装：
+
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/shy/main/scripts/install.sh)
 ```
-启动
-`systemctl start shy`
 
+- 安装完成后请根据需要在```/usr/local/shy/config.yml```中修改配置文件
+- 启动：使用管理脚本```shy```或直接`systemctl start shy`
 
+---
+
+# TG频道：[https://t.me/Air_Go](https://t.me/Air_Go)
 
 # TG群组：[https://t.me/AirGo_Group](https://t.me/AirGo_Group)
+
+###### 文档上次更新日期：2024.4.1
