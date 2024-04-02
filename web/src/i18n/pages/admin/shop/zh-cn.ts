@@ -59,8 +59,9 @@ export default {
     Epay:{
       epay_pid: "易支付商户ID",
       epay_key: "易支付商户密钥",
+      epay_main_url: "易支付网址",
       epay_api_url: "易支付api地址",
-      epay_return_url: "易支付同步通知地址",
+      epay_return_url: "易支付跳转通知地址",
       epay_notify_url: "易支付异步通知地址",
       epay_type: "支付类型",
     },
