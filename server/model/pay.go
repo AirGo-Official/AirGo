@@ -52,16 +52,14 @@ type EpayPreCreatePay struct {
 	ReturnUrl  string `json:"return_url"`   //页面跳转通知地址
 	Name       string `json:"name"`         //商品名称,如超过127个字节会自动截取
 	Money      string `json:"money"`        //商品金额,如：1.00	单位：元，最大2位小数
-	ClientIP   string `json:"clientip"`     //用户发起支付的IP地址
-	Device     string `json:"device"`       //设备类型，根据当前用户浏览器的UA判断传入用户所使用的浏览器或设备类型，默认为pc
-	Param      string `json:"param"`        //业务扩展参数
 	Sign       string `json:"sign"`         //签名字符串，所有参数按照参数名ASCII码从小到大排序（a-z），sign、sign_type、和空值不参与签名！sign = md5 ( a=b&c=d&e=f + KEY ) （注意：+ 为各语言的拼接符，不是字符！），md5结果为小写。
 	SignType   string `json:"sign_type"`    //签名类型
 }
 
 // 易支付支付预创建返回给前端
 type EpayPreCreatePayToFrontend struct {
-	EpayApiURL       string           `json:"epay_api_url"`
+	EpayApiURL string `json:"epay_api_url"`
+
 	EpayPreCreatePay EpayPreCreatePay `json:"epay_pre_create_pay"`
 }
 

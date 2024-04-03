@@ -37,7 +37,7 @@
           <el-radio label="balance">balance</el-radio>
         </el-radio-group>
       </el-form-item>
-      <div v-if="adminShopStoreData.payInfo.value.pay_type==='alipay'">
+      <div v-if="adminShopStoreData.payInfo.value.pay_type==='alipay'">               <!--支付宝相关-->
         <el-form-item :label="$t('message.adminShop.Alipay.alipay_app_id')">
           <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_app_id"/>
         </el-form-item>
@@ -55,19 +55,25 @@
           <el-input v-model="adminShopStoreData.payInfo.value.alipay.alipay_notify_url"/>
         </el-form-item>
       </div>
-      <div v-else-if="adminShopStoreData.payInfo.value.pay_type==='epay'">
+      <div v-else-if="adminShopStoreData.payInfo.value.pay_type==='epay'">              <!--易支付相关-->
         <el-form-item :label="$t('message.adminShop.Epay.epay_pid')">
           <el-input v-model.number="adminShopStoreData.payInfo.value.epay.epay_pid"/>
         </el-form-item>
         <el-form-item :label="$t('message.adminShop.Epay.epay_key')">
           <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_key"/>
         </el-form-item>
+        <!--<el-form-item :label="$t('message.adminShop.Epay.epay_main_url')">
+          <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_main_url" placeholder="https://epay_domain.com"/>
+        </el-form-item> -->
         <el-form-item  :label="$t('message.adminShop.Epay.epay_api_url')">
-          <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_api_url" placeholder="http://xxx.com/submit.php"/>
+          <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_api_url" placeholder="https://epay_domain.com/submit.php"/>
         </el-form-item>
         <el-form-item  :label="$t('message.adminShop.Epay.epay_notify_url')">
-          <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_notify_url"/>
+          <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_notify_url" placeholder="https://your_domain.com"/>
         </el-form-item>
+        <el-form-item  :label="$t('message.adminShop.Epay.epay_return_url')">
+          <el-input v-model="adminShopStoreData.payInfo.value.epay.epay_return_url" placeholder="https://your_domain.com/return_url"/>
+        </el-form-item> 
       </div>
 
     </el-form>

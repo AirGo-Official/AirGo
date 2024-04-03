@@ -34,7 +34,6 @@
     </div>
     <LayoutFooter class="login-footer" v-if="isFooter"/>
   </div>
-  ->
 </template>
 
 <script setup lang="ts" name="loginIndex">
@@ -187,5 +186,8 @@ onMounted(() => {
   left: 50%;
   top: 98%;
   transform: translate(-50%, -50%); /* 50%为自身尺寸的一半 */
+}
+.html{
+  overflow:hidden;
 }
 </style>

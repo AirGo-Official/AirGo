@@ -2,16 +2,17 @@ package user_logic
 
 import (
 	"encoding/json"
-	"github.com/ppoonk/AirGo/global"
-	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
-	"github.com/ppoonk/AirGo/utils/net_plugin"
-	"github.com/smartwalle/alipay/v3"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ppoonk/AirGo/global"
+	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
+	"github.com/ppoonk/AirGo/utils/net_plugin"
+	"github.com/smartwalle/alipay/v3"
 )
 
 type Pay struct {
@@ -188,9 +189,9 @@ func (p *Pay) EpayPreByHTML(sysOrder *model.Order, pay *model.Pay) (*model.EpayP
 		Type:       "", //为空则直接跳转到易支付收银台
 		OutTradeNo: sysOrder.OutTradeNo,
 		NotifyUrl:  pay.Epay.EpayNotifyURL + "/api/public/shop/epayNotify",
-		//ReturnUrl:  pay.Epay.EpayReturnURL + "/api/public/shop/epayNotify",
-		Name:  sysOrder.Subject,
-		Money: sysOrder.Price,
+		ReturnUrl:  pay.Epay.EpayReturnURL,
+		Name:       sysOrder.Subject,
+		Money:      sysOrder.Price,
 		//ClientIP:   "",
 		//Device:     "",
 		//Param:      "",
