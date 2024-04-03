@@ -64,8 +64,6 @@
 
 # 一、部署
 
-
-
 ## 1.安装核心：
 
 - **安装方式分为：直接安装（支持前后端分离）、使用docker安装**
@@ -195,7 +193,8 @@ sqlite:
 
 - 关于网站访问地址：
   - 前后端不分离：网站访问地址的端口和配置文件 config.yaml 中的端口保持一致。例如config.yaml中端口为8888，则浏览器需要访问 http(s)://example.com:8888
-  - 前后端分离，网站访问地址为Vercel或者Nginx（Caddy）设置的地址
+  - 前后端分离：网站访问地址为Vercel或者Nginx（Caddy）设置的地址
+- **请务必注意：如需设置CDN，非特殊情况请勿打开CDN的缓存选项，可能会导致CDN缓存并展现给不符合用户权限的网页！**
 
 # 二、对接节点
 
@@ -208,9 +207,9 @@ sqlite:
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/XrayR-for-AirGo/main/scripts/manage.sh)
 ```
+
 - 安装完成后请根据需要在```/usr/local/XrayR/config.yml```中修改配置文件
 - 启动：使用管理脚本```XrayR```或直接 `systemctl start XrayR`
-
 - docker仓库：[https://hub.docker.com/repository/docker/ppoiuty/xrayr](https://hub.docker.com/repository/docker/ppoiuty/xrayr)
 
 ## b.Hysteria2
@@ -230,4 +229,6 @@ bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/shy/main/scripts/instal
 
 # TG群组：[https://t.me/AirGo_Group](https://t.me/AirGo_Group)
 
-###### 文档上次更新日期：2024.4.1
+###### 文档上次更新日期：2024.4.3
+
+
