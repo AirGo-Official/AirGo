@@ -45,6 +45,7 @@ type RuleProvidersItem struct {
 	Url      string `yaml:"url"`
 }
 
+// 参考 https://github.com/MetaCubeX/mihomo/blob/Meta/docs/config.yaml
 type ClashProxy struct {
 	//基础参数
 	Name    string `yaml:"name" json:"name"`
@@ -61,6 +62,13 @@ type ClashProxy struct {
 	Password string `yaml:"password,omitempty" json:"password"`
 	//vless流控
 	Flow string `yaml:"flow" json:"flow"`
+	//hysteria2参数
+	Ports        string `yaml:"ports,omitempty" json:"ports"`
+	HopInterval  int64  `yaml:"hop-interval,omitempty" json:"hop-interval"`
+	Up           string `yaml:"up,omitempty" json:"up"`
+	Down         string `yaml:"down,omitempty" json:"down"`
+	Obfs         string `yaml:"obfs,omitempty" json:"obfs"`
+	ObfsPassword string `yaml:"obfs-password,omitempty" json:"obfs-password"`
 
 	Tls               bool        `yaml:"tls,omitempty" json:"tls"`
 	Sni               string      `yaml:"sni,omitempty" json:"sni"`

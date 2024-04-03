@@ -40,6 +40,7 @@ func AGGetNodeInfo(ctx *gin.Context) {
 			node.ServerKey = base64.StdEncoding.EncodeToString([]byte(node.ServerKey))
 		}
 	}
+	//fmt.Println("node:", node)
 	//etag
 	api.EtagHandler(node, ctx)
 }
@@ -173,7 +174,6 @@ func AGReportUserTraffic(ctx *gin.Context) {
 		ctx.AbortWithStatus(400)
 		return
 	}
-	//fmt.Println("上报用户流量：", AGUserTraffic)
 	//查询节点倍率
 	node, err := nodeService.FirstNode(&model.Node{ID: AGUserTraffic.ID})
 	if err != nil {

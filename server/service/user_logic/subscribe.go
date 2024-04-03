@@ -12,7 +12,6 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	uuid "github.com/satori/go.uuid"
 	"gopkg.in/ini.v1"
 	"gopkg.in/yaml.v3"
@@ -112,10 +111,10 @@ subHandler:
 	case "v2rayNG", "V2rayU":
 		return v2rayNG(&nodeArr), headerInfo
 
-	case "NekoBox", "v2rayN":
+	case "v2rayN":
 		return NekoBox(&nodeArr), headerInfo
 
-	case "Clash":
+	case "Clash", "NekoBox":
 		return ClashMeta(&nodeArr), headerInfo
 
 	case "Shadowrocket":
@@ -128,9 +127,8 @@ subHandler:
 		return Quantumult(&nodeArr), headerInfo
 
 	default:
-
+		return "", headerInfo
 	}
-	return "", headerInfo
 }
 
 func v2rayNG(nodes *[]model.Node) string {
@@ -399,7 +397,7 @@ func Surge(nodes *[]model.Node) string {
 			nodeItem = append(nodeItem, v.Address)
 			nodeItem = append(nodeItem, fmt.Sprintf("%d", v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("encrypt-method=%s", v.Scy))
-			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordHandler(v)))
+			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordEncodeToString(v)))
 			nodeItem = append(nodeItem, "tfo=true")
 			//nodeItem = append(nodeItem, "udp-relay=true")
 			nodeArr = append(nodeArr, strings.Join(nodeItem, ", "))
@@ -520,7 +518,7 @@ func Quantumult(nodes *[]model.Node) string {
 			var nodeItem []string
 			nodeItem = append(nodeItem, fmt.Sprintf("shadowsocks=%s:%d", v.Address, v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("method=%s", v.Scy))
-			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordHandler(v)))
+			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordEncodeToString(v)))
 			switch v.Type {
 			case "http":
 				nodeItem = append(nodeItem, fmt.Sprintf("obfs=http"))
@@ -649,7 +647,16 @@ func VlessTrojanHysteriaUrl(node model.Node) string {
 			values.Add("allowInsecure", "1")
 		}
 	case "hy2":
-		values.Add("sni", node.Sni)
+		if node.HyPorts != "" {
+			values.Add("mport", node.HyPorts)
+		}
+		if node.HyObfs != "" {
+			values.Add("obfs", node.HyObfs)
+			values.Add("obfs-password", node.HyObfsPassword)
+		}
+		if node.Sni != "" {
+			values.Add("sni", node.Sni)
+		}
 		if node.AllowInsecure {
 			values.Add("insecure", "1")
 		}
@@ -677,7 +684,7 @@ func ShadowsocksUrl(node model.Node) string {
 
 	var ss url.URL
 	ss.Scheme = "ss"
-	ss.User = url.UserPassword(SSPasswordHandler(node), "")
+	ss.User = url.UserPassword(SSPasswordEncodeToString(node), "")
 	ss.Host = node.Address + ":" + fmt.Sprintf("%d", node.Port)
 	ss.Fragment = node.Remarks
 	return strings.ReplaceAll(ss.String(), ":@", "@")
@@ -705,10 +712,17 @@ func ClashGenerate(node model.Node) model.ClashProxy {
 		proxy.Uuid = node.UUID
 		proxy.Password = node.UUID
 		proxy.Sni = node.Sni
+		proxy.Ports = node.HyPorts
+		proxy.HopInterval = 15 //给个默认值吧，用户自行修改
+		proxy.Up = fmt.Sprintf("%d Mbps", node.HyUpMbps)
+		proxy.Down = fmt.Sprintf("%d Mbps", node.HyDownMbps)
+		proxy.Obfs = node.HyObfs
+		proxy.ObfsPassword = node.HyObfsPassword
+
 	case constant.NODE_PROTOCOL_SHADOWSOCKS:
 		proxy.Type = "ss"
 		proxy.Cipher = node.Scy
-		proxy.Password = node.UUID
+		proxy.Password = GetSSPassword(node)
 	}
 	proxy.Name = node.Remarks
 	proxy.Server = node.Address
@@ -716,6 +730,7 @@ func ClashGenerate(node model.Node) model.ClashProxy {
 	proxy.Udp = true
 	proxy.Network = node.Network //传输协议
 	proxy.SkipCertVerify = node.AllowInsecure
+
 	switch proxy.Network {
 	case "ws":
 		proxy.WsOpts = model.WsOpts{
@@ -887,14 +902,17 @@ func Hy2UrlForShadowrocket(node model.Node) string {
 	//values.Add("tfo", "1") //tcp快速打开
 	//values.Add("mux", "1") //多路复用
 
-	sni := node.Address
-	if node.Sni != "" {
-		sni = node.Sni
+	if node.HyPorts != "" {
+		values.Add("mport", node.HyPorts)
 	}
-	values.Add("peer", sni)
-
-	switch node.AllowInsecure {
-	case true:
+	if node.HyObfs != "" {
+		values.Add("obfs", node.HyObfs)
+		values.Add("obfs-password", node.HyObfsPassword)
+	}
+	if node.Sni != "" {
+		values.Add("sni", node.Sni)
+	}
+	if node.AllowInsecure {
 		values.Add("insecure", "1")
 	}
 
@@ -903,30 +921,27 @@ func Hy2UrlForShadowrocket(node model.Node) string {
 	return strings.ReplaceAll(nodeUrl.String(), ":@", "@")
 }
 
-func SSPasswordHandler(node model.Node) string {
-	switch strings.HasPrefix(node.Scy, "2022") {
-	case true:
-		p1 := node.Scy
-		p2 := node.ServerKey
-		if p2 == "" {
-			p2 = encrypt_plugin.RandomString(32)
-		}
-		p3 := node.UUID
-		if p1 == "2022-blake3-aes-128-gcm" {
-			p2 = p2[:16]
-			p3 = p3[0:16]
-		}
-		p2 = base64.StdEncoding.EncodeToString([]byte(p2))
-		p3 = base64.StdEncoding.EncodeToString([]byte(p3))
-		p := base64.StdEncoding.EncodeToString([]byte(p1 + ":" + p2 + ":" + p3))
-		return p
+// 格式：serverKey:userKey
+// 参考：ZDZiNDE5YjUzNDFiNzhmOWNjMTA0YTU0ZWJmNDYzNTc=:NzQ2NGIxZWQtMDQ1MS00NzZhLWIxODItN2JiZTU2YmU=
+func GetSSPassword(node model.Node) string {
+	switch node.Scy {
+	case "2022-blake3-aes-128-gcm":
+		serverKey := base64.StdEncoding.EncodeToString([]byte(node.ServerKey[:16]))
+		userKey := base64.StdEncoding.EncodeToString([]byte(node.UUID[:16]))
+		return serverKey + ":" + userKey
+	case "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305":
+		serverKey := base64.StdEncoding.EncodeToString([]byte(node.ServerKey))
+		userKey := base64.StdEncoding.EncodeToString([]byte(node.UUID))
+		return serverKey + ":" + userKey
 	default:
-		p1 := node.Scy
-		p2 := node.UUID
-		p := base64.StdEncoding.EncodeToString([]byte(p1 + ":" + p2))
-		return p
+		return node.UUID
 	}
+}
 
+// 原始数据：2022-blake3-aes-256-gcm:ZDZiNDE5YjUzNDFiNzhmOWNjMTA0YTU0ZWJmNDYzNTc=:NzQ2NGIxZWQtMDQ1MS00NzZhLWIxODItN2JiZTU2YmU=
+// 输出：MjAyMi1ibGFrZTMtYWVzLTI1Ni1nY206WkRaaU5ERTVZalV6TkRGaU56aG1PV05qTVRBMFlUVTBaV0ptTkRZek5UYz06TnpRMk5HSXhaV1F0TURRMU1TMDBOelpoTFdJeE9ESXROMkppWlRVMlltVT0=
+func SSPasswordEncodeToString(node model.Node) string {
+	return base64.StdEncoding.EncodeToString([]byte(node.Scy + ":" + GetSSPassword(node)))
 }
 
 const DefaultSurgeRules = `

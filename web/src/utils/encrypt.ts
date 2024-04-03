@@ -38,7 +38,7 @@ export function TelecomRSAEncrypt(str: string){
 }
 
 
-// 随机字符串
+// 随机字符串,不包含大写字母
 export function randomString(length:number) {
     // const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const chars = '123456789abcdefghijklmnopqrstuvwxyz';

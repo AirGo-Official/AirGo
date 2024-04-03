@@ -1,19 +1,19 @@
 export default {
-  adminNode:{
-   basicParameters:"Basic parameters",
-   otherParameters:"Other parameters",
-   //
-   addNode:"Add node",
-   modifyNode:"Modify node",
-   sortNode:"Sort node",
-   sharedNode:"Shared node",
-    parse:"Parse",
-    placeholder1:"Supports subscription, single node, multiple nodes, and base64 encoding resolution (vmess, vless, trojan, shadowlocks, hy2)",
-    serverStatus:"Server Status",
-   NodeInfo: {
-      node_type_transfer:"Transfer",
-      node_type_direct:"Direct",
-      index:"index",
+  adminNode: {
+    basicParameters: "Basic parameters",
+    otherParameters: "Other parameters",
+    //
+    addNode: "Add node",
+    modifyNode: "Modify node",
+    sortNode: "Sort node",
+    sharedNode: "Shared node",
+    parse: "Parse",
+    placeholder1: "Supports subscription, single node, multiple nodes, and base64 encoding resolution (vmess, vless, trojan, shadowlocks, hy2)",
+    serverStatus: "Server Status",
+    NodeInfo: {
+      node_type_transfer: "Transfer",
+      node_type_direct: "Direct",
+      index: "index",
       created_at: "created_at",
       updated_at: "updated_at",
       id: "id",
@@ -26,15 +26,15 @@ export default {
       port: "port",
       node_order: "node order",//节点排序
       enabled: "status",  //是否为激活节点
-     protocol:"protocol",
+      protocol: "protocol",
       //中转参数
       enable_transfer: "enable transfer",//是否启用中转
       transfer_address: "transfer address",//中转ip
       transfer_port: "transfer port",   //中转port
       transfer_node_id: "transfer parent node", //中转绑定的节点ID
-     // 共享节点额外需要的参数
-     is_shared_node:"是否共享节点",
-     uuid:"uuid",
+      // 共享节点额外需要的参数
+      is_shared_node: "是否共享节点",
+      uuid: "uuid",
       //流量
       total_up: "total up",
       total_down: "total down",
@@ -46,6 +46,14 @@ export default {
       //vless参数
       flow: "flow",//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
       encryption: "encryption",//加密方式 none
+      //shadowsocks
+      server_key: "server key",
+      //Hysteria2参数
+      hy_ports: "hy2 ports",
+      hy_up_mbps: "maximum uplink rate (Mbps)",
+      hy_down_mbps: "maximum downlink rate (Mbps)",
+      hy_obfs: "hy2 obfs",
+      hy_obfs_password: "hy2 obfs password",
 
       network: "network",//传输协议 tcp,kcp,ws,h2,quic,grpc
       type: "type",   //伪装类型 ws,h2：无    tcp,kcp：none，http    quic：none，srtp，utp，wechat-video，dtls，wireguard
@@ -65,20 +73,20 @@ export default {
       sid: "sid",
       spx: "spx",
       //关联参数
-      goods:"goods",//关联商品
-      access: "access",
+      goods: "goods",//关联商品
+      access: "access"
     },
-   //
-   access:"Access",
-   addAccess:"Add Access",
-   modifyAccess:"Modify Access",
-   Access:{
-    index:"index",
-    created_at:"created at",
-    updated_at:"updated at",
-    id:"id",
-    name:"name",
-    route:"route",
-   },
-  },
-}
+    //
+    access: "Access",
+    addAccess: "Add Access",
+    modifyAccess: "Modify Access",
+    Access: {
+      index: "index",
+      created_at: "created at",
+      updated_at: "updated at",
+      id: "id",
+      name: "name",
+      route: "route"
+    }
+  }
+};
