@@ -191,7 +191,7 @@ func (p *Pay) EpayPreByHTML(sysOrder *model.Order, pay *model.Pay) (*model.EpayP
 		NotifyUrl:  pay.Epay.EpayNotifyURL + "/api/public/shop/epayNotify",
 		ReturnUrl:  pay.Epay.EpayReturnURL,
 		Name:       sysOrder.Subject,
-		Money:      sysOrder.Price,
+		Money:      sysOrder.TotalAmount,
 		//ClientIP:   "",
 		//Device:     "",
 		//Param:      "",
