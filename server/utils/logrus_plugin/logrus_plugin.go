@@ -1,6 +1,7 @@
 package logrus_plugin
 
 import (
+	"github.com/ppoonk/AirGo/global"
 	"io"
 	"log"
 	"os"
@@ -13,14 +14,15 @@ import (
 func InitLogrus() *logrus.Logger {
 	//实例化
 	logger := logrus.New()
-	//logger.SetReportCaller(true) //在输出日志中添加文件名和方法信息
 	src, _ := SetOutputFile()
-	//设置输出
-	//logger.Out = src
-	logger.Out = io.MultiWriter(src, os.Stdout) //同时打印到控制台及日志里
-	//设置最低日志级别
-	//logger.SetLevel(logrus.DebugLevel)
-	logger.SetLevel(logrus.InfoLevel)
+	if global.Config.SystemParams.Mode == "dev" {
+		logger.SetReportCaller(true)                //在输出日志中添加文件名和方法信息
+		logger.Out = io.MultiWriter(src, os.Stdout) //同时打印到控制台及日志里
+		logger.SetLevel(logrus.DebugLevel)
+	} else {
+		logger.Out = src
+		logger.SetLevel(logrus.InfoLevel)
+	}
 	//设置日志格式
 	//logger.SetFormatter(&logrus.JSONFormatter{})
 	logger.SetFormatter(&logrus.TextFormatter{

@@ -140,6 +140,7 @@ func (s *Shop) Purchase(sysOrder *model.Order) (*model.Order, error) {
 		}
 		//修改支付状态
 		sysOrder.TradeStatus = constant.ORDER_STATUS_TRADE_SUCCESS
+		sysOrder.BuyerPayAmount = sysOrder.TotalAmount
 		err = orderService.PaymentSuccessfullyOrderHandler(sysOrder)
 		if err != nil {
 			return nil, err

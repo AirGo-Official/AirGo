@@ -16,7 +16,7 @@ func InitPublicRouter(RouterGroup *gin.RouterGroup) {
 		airgoRouter.POST("/node/reportNodeStatus", public_api.AGReportNodeStatus)
 		airgoRouter.GET("/user/getUserlist", public_api.AGGetUserlist)
 		airgoRouter.POST("/user/reportUserTraffic", public_api.AGReportUserTraffic)
-		airgoRouter.POST("/user/ReportNodeOnlineUsers", public_api.AGReportNodeOnlineUsers)
+		airgoRouter.POST("/user/reportNodeOnlineUsers", public_api.AGReportNodeOnlineUsers)
 	}
 	//shop
 	shopRouter := publicRouter.Group("/shop").Use(middleware.RateLimitIP())

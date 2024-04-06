@@ -77,14 +77,14 @@
                     v-else-if="item.node_type ===constantStore.NODE_TYPE_SHARED">{{ $t("message.constant.NODE_TYPE_SHARED") }}</el-tag>
               </span>
               <span style="float: right">
-                <el-button type="success" v-if="item.protocol ===constantStore.NODE_PROTOCOL_VMESS">vmess</el-button>
+                <el-button type="success" v-if="item.protocol ===constantStore.NODE_PROTOCOL_VMESS">{{ $t("message.constant.NODE_PROTOCOL_VMESS") }}</el-button>
                 <el-button type="warning"
-                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_VLESS">vless</el-button>
+                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_VLESS">{{ $t("message.constant.NODE_PROTOCOL_VLESS") }}</el-button>
                 <el-button type="info"
-                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_TROJAN">trojan</el-button>
-                <el-button type="danger" v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_SHADOWSOCKS">shadowsocks</el-button>
+                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_TROJAN">{{ $t("message.constant.NODE_PROTOCOL_TROJAN") }}</el-button>
+                <el-button type="danger" v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_SHADOWSOCKS">{{ $t("message.constant.NODE_PROTOCOL_SHADOWSOCKS") }}</el-button>
                 <el-button type="primary"
-                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_HYSTERIA">hysteria</el-button>
+                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_HYSTERIA">{{ $t("message.constant.NODE_PROTOCOL_HYSTERIA") }}</el-button>
               </span>
             </el-option>
           </el-select>
@@ -230,8 +230,9 @@
               <el-input v-model="nodeStoreData.dialogData.value.vlessInfo.path" />
             </el-form-item>
             <el-form-item :label="$t('message.adminNode.NodeInfo.security')">
+
               <el-radio-group v-model="nodeStoreData.dialogData.value.vlessInfo.security">
-                <el-radio label="none">none</el-radio>
+                <el-radio label="">none</el-radio>
                 <el-radio label="tls">tls</el-radio>
                 <el-radio label="reality">reality</el-radio>
               </el-radio-group>
@@ -429,7 +430,7 @@
 
             <el-form-item :label="$t('message.adminNode.NodeInfo.security')">
               <el-radio-group v-model="nodeStoreData.dialogData.value.vmessInfo.security">
-                <el-radio label="none">none</el-radio>
+                <el-radio label="">none</el-radio>
                 <el-radio label="tls">tls</el-radio>
               </el-radio-group>
             </el-form-item>

@@ -275,7 +275,7 @@ func ParseHy2Link(link string) *model.Node {
 	}
 	node := new(model.Node)
 	node.Enabled = true
-	node.Protocol = constant.NODE_PROTOCOL_HYSTERIA
+	node.Protocol = constant.NODE_PROTOCOL_HYSTERIA2
 	//remarks
 	node.Remarks = u.Fragment
 	if node.Remarks == "" {
@@ -332,7 +332,7 @@ func (n *Node) ParseSubUrl(urlStr string) *[]model.Node {
 	return &Nodes
 }
 
-// 解析一条节点,vmess vless trojan hysteria
+// 解析一条节点,vmess vless trojan hysteria2
 func ParseOne(link string) *model.Node {
 	u, err := url.Parse(link)
 	if err != nil {

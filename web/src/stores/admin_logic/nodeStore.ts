@@ -36,7 +36,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 transfer_address: '',//中转ip
                 transfer_port: 80,   //中转port
                 //vless参数
-                flow: '',//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
+                flow: '',//流控 null,xtls-rprx-vision,xtls-rprx-vision-udp443
                 encryption: 'none',//加密方式
                 network: 'ws',//传输协议
                 type: '',   //伪装类型
@@ -45,7 +45,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 mode: 'multi',   //grpc传输模式 gun，multi
                 service_name: '',
                 //传输层参数
-                security: 'none',//传输层安全类型 none,tls,reality
+                security: '',//传输层安全类型 tls,reality
                 sni: '',
                 fp: 'chrome',
                 alpn: '',
@@ -84,7 +84,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 mode: 'multi',   //grpc传输模式 gun，multi
                 service_name: '',
                 //传输层安全参数
-                security: 'none',//传输层安全类型 none,tls,reality
+                security: '',//传输层安全类型 tls,reality
                 sni: '',
                 fp: 'chrome',
                 alpn: '',
@@ -114,13 +114,13 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 transfer_port: 80,   //中转port
                 //shadowsocks参数
                 server_key:'',
-                scy: 'none',//加密方式
+                scy: 'chacha20-ietf-poly1305',//加密方式
                 network: '',//传输协议
                 type: '',   //伪装类型
                 host: '',   //伪装域名
                 path: '/',   //path
                 //传输层安全类型
-                security: 'none',//传输层安全类型 none,tls,reality
+                security: '',//传输层安全类型 tls,reality
                 sni: '',
                 fp: 'chrome',
                 alpn: '',
@@ -143,7 +143,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 enabled: true,  //是否为激活节点
                 node_speed_limit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
-                protocol: 'hysteria',
+                protocol: 'hysteria2',
                 uuid: '',
                 //中转参数
                 transfer_address: '',//中转ip
@@ -155,7 +155,7 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 hy_obfs:'',
                 hy_obfs_password:'',
                 //传输层安全类型
-                security: 'none',//传输层安全类型 none,tls,reality
+                security: 'tls',//传输层安全类型 tls,reality
                 sni: '',
                 fp: 'chrome',
                 alpn: '',

@@ -76,7 +76,7 @@ export default {
     NODE_PROTOCOL_VMESS       : "vmess",
     NODE_PROTOCOL_VLESS       : "vless",
     NODE_PROTOCOL_TROJAN      : "trojan",
-    NODE_PROTOCOL_HYSTERIA    : "hysteria",
+    NODE_PROTOCOL_HYSTERIA    : "hysteria2",
     NODE_PROTOCOL_SHADOWSOCKS : "shadowsocks",
     //文章类型
     ARTICLE_TYPE_HOME      : "home",

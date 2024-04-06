@@ -62,19 +62,19 @@
         >
           <template #default="{row}">
             <el-button type="success" style="width: 100px" v-if="row.protocol ===constantStore.NODE_PROTOCOL_VMESS">
-              vmess
+              {{ $t("message.constant.NODE_PROTOCOL_VMESS") }}
             </el-button>
             <el-button type="warning" style="width: 100px"
-                       v-else-if="row.protocol ===constantStore.NODE_PROTOCOL_VLESS">vless
+                       v-else-if="row.protocol ===constantStore.NODE_PROTOCOL_VLESS">{{ $t("message.constant.NODE_PROTOCOL_VLESS") }}
             </el-button>
             <el-button type="info" style="width: 100px" v-else-if="row.protocol ===constantStore.NODE_PROTOCOL_TROJAN">
-              trojan
+              {{ $t("message.constant.NODE_PROTOCOL_TROJAN") }}
             </el-button>
             <el-button type="danger" style="width: 100px"
-                       v-else-if="row.protocol ===constantStore.NODE_PROTOCOL_SHADOWSOCKS">shadowsocks
+                       v-else-if="row.protocol ===constantStore.NODE_PROTOCOL_SHADOWSOCKS">{{ $t("message.constant.NODE_PROTOCOL_SHADOWSOCKS") }}
             </el-button>
             <el-button type="primary" style="width: 100px"
-                       v-else-if="row.protocol ===constantStore.NODE_PROTOCOL_HYSTERIA">hysteria
+                       v-else-if="row.protocol ===constantStore.NODE_PROTOCOL_HYSTERIA">{{ $t("message.constant.NODE_PROTOCOL_HYSTERIA") }}
             </el-button>
           </template>
         </el-table-column>

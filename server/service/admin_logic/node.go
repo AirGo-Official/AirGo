@@ -1,6 +1,7 @@
 package admin_logic
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/ppoonk/AirGo/constant"
@@ -33,7 +34,7 @@ func (n *Node) NewNode(nodeParams *model.Node) error {
 			if nodeParams.Protocol == constant.NODE_PROTOCOL_SHADOWSOCKS && nodeParams.ServerKey == "" {
 				nodeParams.ServerKey = encrypt_plugin.RandomString(32)
 			}
-			if nodeParams.Protocol == constant.NODE_PROTOCOL_HYSTERIA && nodeParams.HyObfs == "Salamander" && nodeParams.HyObfsPassword == "" {
+			if nodeParams.Protocol == constant.NODE_PROTOCOL_HYSTERIA2 && nodeParams.HyObfs == "Salamander" && nodeParams.HyObfsPassword == "" {
 				nodeParams.HyObfsPassword = encrypt_plugin.RandomString(32)
 			}
 
@@ -274,4 +275,15 @@ func (n *Node) GetNodesStatus() *[]model.NodeStatus {
 		}
 	}
 	return &nodestatusArr
+}
+
+func (n *Node) GetShadowsocksServerKey(node model.Node) string {
+	switch node.Scy {
+	case "2022-blake3-aes-128-gcm":
+		return base64.StdEncoding.EncodeToString([]byte(node.ServerKey[:16]))
+	case "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305":
+		return base64.StdEncoding.EncodeToString([]byte(node.ServerKey))
+	default:
+		return node.UUID
+	}
 }

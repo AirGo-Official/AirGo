@@ -1,10 +1,11 @@
 module github.com/ppoonk/AirGo
 
-go 1.21.1
+go 1.22.2
 
 require (
 	github.com/casbin/casbin/v2 v2.80.0
 	github.com/casbin/gorm-adapter/v3 v3.20.0
+	github.com/dustin/go-humanize v1.0.1
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6
 	github.com/gin-gonic/gin v1.9.1
@@ -28,7 +29,6 @@ require (
 	github.com/yudeguang/ratelimit v0.0.0-20230316132559-4d9cafca864e
 	golang.org/x/crypto v0.17.0
 	golang.org/x/net v0.19.0
-	gopkg.in/antage/eventsource.v1 v1.0.0-20150318155416-803f4c5af225
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -41,7 +41,6 @@ require (
 	github.com/casbin/govaluate v1.1.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
-	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/glebarez/go-sqlite v1.22.0 // indirect

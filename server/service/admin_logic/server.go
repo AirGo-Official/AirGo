@@ -187,6 +187,8 @@ func (s *System) DownloadLatestVersion(ctx *gin.Context) error {
 	if err != nil {
 		return err
 	}
+	// 5、额外需要处理的数据
+	s.ChangeDataForUpdate()
 	// 6、重启（新进程）
 	response.ResponseSSE("message", "3秒后自动重启...", ctx)
 	err = s.Reload()
@@ -212,4 +214,24 @@ func (s *System) Reload() error {
 		}
 	}()
 	return nil
+}
+
+// 版本升级时，额外需要处理的数据，例如数据库字段值批量修改
+func (s *System) ChangeDataForUpdate() error {
+	return global.DB.Transaction(func(tx *gorm.DB) error {
+		err := tx.Exec("UPDATE node SET protocol = 'hysteria2' WHERE protocol = 'hysteria' ").Error
+		if err != nil {
+			return err
+		}
+		err = tx.Exec("UPDATE node SET vless_flow = '' WHERE vless_flow = 'none' ").Error
+		if err != nil {
+			return err
+		}
+		err = tx.Exec("UPDATE node SET security = '' WHERE security = 'none' ").Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
 }
