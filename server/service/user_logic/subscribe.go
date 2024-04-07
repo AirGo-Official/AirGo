@@ -301,6 +301,7 @@ func Shadowrocket(nodes *[]model.Node) string {
 	return base64.StdEncoding.EncodeToString([]byte(strings.Join(nodeArr, "\r\n")))
 }
 
+// Surge 客户端订阅
 func Surge(nodes *[]model.Node) string {
 	var nodeArr, proxyGroupProxy, proxyGroupAuto, proxyGroupFallback []string
 	var subscribeInfo, proxyText string
@@ -320,7 +321,7 @@ func Surge(nodes *[]model.Node) string {
 	for _, v := range *nodes {
 
 		switch v.Protocol {
-		case constant.NODE_PROTOCOL_VMESS:
+		case constant.NODE_PROTOCOL_VMESS: //VMESS协议
 			var nodeItem []string
 			//
 			nodeItem = append(nodeItem, v.Remarks+"="+"vmess")
@@ -339,6 +340,7 @@ func Surge(nodes *[]model.Node) string {
 					sni = v.Sni
 				}
 				nodeItem = append(nodeItem, fmt.Sprintf("sni=%s", sni))
+
 				if v.AllowInsecure {
 					nodeItem = append(nodeItem, "skip-cert-verify=true")
 				}
@@ -353,7 +355,7 @@ func Surge(nodes *[]model.Node) string {
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
 			proxyGroupFallback = append(proxyGroupFallback, v.Remarks)
-		case constant.NODE_PROTOCOL_TROJAN:
+		case constant.NODE_PROTOCOL_TROJAN: //Trojan协议
 			var nodeItem []string
 			nodeItem = append(nodeItem, v.Remarks+"="+"trojan")
 			nodeItem = append(nodeItem, v.Address)
@@ -374,18 +376,23 @@ func Surge(nodes *[]model.Node) string {
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
 			proxyGroupFallback = append(proxyGroupFallback, v.Remarks)
-		case constant.NODE_PROTOCOL_HYSTERIA2:
+		case constant.NODE_PROTOCOL_HYSTERIA2: //hy2协议
 			var nodeItem []string
 			nodeItem = append(nodeItem, v.Remarks+" = "+"hysteria2")
 			nodeItem = append(nodeItem, v.Address)
 			nodeItem = append(nodeItem, fmt.Sprintf("%d", v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", v.UUID))
+			nodeItem = append(nodeItem, "sni="+v.Address)
+			if v.AllowInsecure {
+				nodeItem = append(nodeItem, "skip-cert-verify=true")
+			}
 			//nodeItem = append(nodeItem, "tfo=true")
 			//nodeItem = append(nodeItem, "udp-relay=true")
 			nodeArr = append(nodeArr, strings.Join(nodeItem, ", "))
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
 			proxyGroupFallback = append(proxyGroupFallback, v.Remarks)
+
 		case constant.NODE_PROTOCOL_SHADOWSOCKS:
 			if strings.HasPrefix(v.Scy, "2022") {
 				continue
@@ -397,6 +404,9 @@ func Surge(nodes *[]model.Node) string {
 			nodeItem = append(nodeItem, fmt.Sprintf("encrypt-method=%s", v.Scy))
 			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordEncodeToString(v)))
 			nodeItem = append(nodeItem, "tfo=true")
+			if v.AllowInsecure {
+				nodeItem = append(nodeItem, "skip-cert-verify=true")
+			}
 			//nodeItem = append(nodeItem, "udp-relay=true")
 			nodeArr = append(nodeArr, strings.Join(nodeItem, ", "))
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
@@ -429,9 +439,10 @@ func Surge(nodes *[]model.Node) string {
 			Network_framework:          false,
 			Exclude_simple_hostnames:   true,
 			Ipv6:                       true,
-			Test_timeout:               4,
-			Proxy_test_url:             "http://www.gstatic.com/generate_204",
-			Geoip_maxmind_url:          "https://unpkg.zhimg.com/rulestatic@1.0.1/Country.mmdb",
+			//Skip_server_cert_verify:    true,
+			Test_timeout:      4,
+			Proxy_test_url:    "http://www.gstatic.com/generate_204",
+			Geoip_maxmind_url: "https://cdn.jsdelivr.net/gh/Hackl0us/GeoIP2-CN@release/Country.mmdb",
 		},
 		Replica: model.Replica{
 			Hide_apple_request:       true,
