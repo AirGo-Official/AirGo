@@ -100,8 +100,11 @@ func GetSub(ctx *gin.Context) {
 	//V2rayU/4.0.0 CFNetwork/1128.0.1 Darwin/19.6.0 (x86_64)
 	//v2rayN/6.30
 
-	clientType := ""
+	clientType := ctx.Query("type")
 	ua := ctx.Request.Header.Get("User-Agent")
+	if clientType != "" { //手动指定客户端的优先级最高
+		goto next
+	}
 	if strings.HasPrefix(ua, "NekoBox") {
 		clientType = "NekoBox"
 		goto next
@@ -134,13 +137,11 @@ func GetSub(ctx *gin.Context) {
 		clientType = "V2rayU"
 		goto next
 	}
-	if clientType == "" {
-		clientType = ctx.Query("type")
-	}
-	if clientType == "" {
-		clientType = "NekoBox"
+	if clientType == "" { //兜底客户端为v2rayNG
+		clientType = "v2rayNG"
 	}
 next:
+	//fmt.Println("clientType:", clientType)
 	id := ctx.Param("id")
 	res, header := customerService.GetSubscribe(id, clientType)
 	if res == "" {

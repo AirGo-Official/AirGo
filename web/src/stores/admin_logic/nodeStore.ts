@@ -22,26 +22,21 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
         dialogData: {
             checkedAccessIDs:[] as number[],
             vlessInfo: {
-                node_speed_limit: 0, //节点限速/Mbps
-                traffic_rate: 1,    //倍率
-                protocol: 'vless',
-                uuid: '',
                 //基础参数
                 remarks: '',//别名
                 address: '',
                 port: 80,
                 node_order: 0,//节点排序
                 enabled: true,  //是否为激活节点
+                node_speed_limit: 0, //节点限速/Mbps
+                traffic_rate: 1,    //倍率
+                protocol: 'vless',
+                uuid: '',
                 //中转参数
                 transfer_address: '',//中转ip
                 transfer_port: 80,   //中转port
-                total_up: 0,
-                total_down: 0,
-                goods: [] as Goods[],//多对多,关联商品
-                v: '2',
-                scy: 'none',
-                aid: 0,//额外ID
-                flow: '',//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
+                //vless参数
+                flow: '',//流控 null,xtls-rprx-vision,xtls-rprx-vision-udp443
                 encryption: 'none',//加密方式
                 network: 'ws',//传输协议
                 type: '',   //伪装类型
@@ -49,7 +44,8 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 path: '/',   //path
                 mode: 'multi',   //grpc传输模式 gun，multi
                 service_name: '',
-                security: 'none',//传输层安全类型 none,tls,reality
+                //传输层参数
+                security: '',//传输层安全类型 tls,reality
                 sni: '',
                 fp: 'chrome',
                 alpn: '',
@@ -59,40 +55,36 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 pbk: '',
                 sid: '',
                 spx: '',
+                //关联参数
+                goods: [] as Goods[],//多对多,关联商品
                 access:[] as Access[],
             } as NodeInfo,
             vmessInfo: {
+                //基础参数
+                remarks: '',//别名
+                address: '',
+                port: 80,
+                node_order: 0,//节点排序
+                enabled: true,  //是否为激活节点
                 node_speed_limit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
                 protocol: 'vmess',
                 uuid: '',
-                //基础参数
-                remarks: '',//别名
-                address: '',
-                port: 80,
-                node_order: 0,//节点排序
-                enabled: true,  //是否为激活节点
                 //中转参数
                 transfer_address: '',//中转ip
                 transfer_port: 80,   //中转port
-                //
-                total_up: 0,
-                total_down: 0,
-                goods: [] as Goods[],//多对多,关联商品
                 //vmess参数
                 v: '2',
                 scy: 'auto',//加密方式
                 aid: 0,//额外ID
-                //vless参数
-                flow: '',//流控
-                encryption: '',//加密方式 none
                 network: '',//传输协议
                 type: '',   //伪装类型
                 host: '',   //伪装域名
                 path: '/',   //path
                 mode: 'multi',   //grpc传输模式 gun，multi
                 service_name: '',
-                security: 'none',//传输层安全类型 none,tls,reality
+                //传输层安全参数
+                security: '',//传输层安全类型 tls,reality
                 sni: '',
                 fp: 'chrome',
                 alpn: '',
@@ -102,40 +94,33 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 pbk: '',
                 sid: '',
                 spx: '',
+                //关联参数
+                goods: [] as Goods[],//多对多,关联商品
                 access:[] as Access[],
             } as NodeInfo,
             shadowsocksInfo: {
+                //基础参数
+                remarks: '',//别名
+                address: '',
+                port: 80,
+                node_order: 0,//节点排序
+                enabled: true,  //是否为激活节点
                 node_speed_limit: 0, //节点限速/Mbps
                 traffic_rate: 1,    //倍率
                 protocol: 'shadowsocks',
                 uuid: '',
-                //基础参数
-                remarks: '',//别名
-                address: '',
-                port: 80,
-                node_order: 0,//节点排序
-                enabled: true,  //是否为激活节点
                 //中转参数
                 transfer_address: '',//中转ip
                 transfer_port: 80,   //中转port
-                //
-                total_up: 0,
-                total_down: 0,
-                goods: [] as Goods[],//多对多,关联商品
-                //vmess参数
-                v: '2',
-                scy: 'none',//加密方式
-                aid: 0,//额外ID
-                //vless参数
-                flow: '',//流控
-                encryption: '',//加密方式 none
+                //shadowsocks参数
+                server_key:'',
+                scy: 'chacha20-ietf-poly1305',//加密方式
                 network: '',//传输协议
                 type: '',   //伪装类型
                 host: '',   //伪装域名
                 path: '/',   //path
-                mode: 'multi',   //grpc传输模式 gun，multi
-                service_name: '',
-                security: 'none',//传输层安全类型 none,tls,reality
+                //传输层安全类型
+                security: '',//传输层安全类型 tls,reality
                 sni: '',
                 fp: 'chrome',
                 alpn: '',
@@ -145,40 +130,32 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 pbk: '',
                 sid: '',
                 spx: '',
+                //关联参数
+                goods: [] as Goods[],//多对多,关联商品
                 access:[] as Access[],
             } as NodeInfo,
             hysteriaInfo: {
-                node_speed_limit: 0, //节点限速/Mbps
-                traffic_rate: 1,    //倍率
-                protocol: 'hysteria',
-                uuid: '',
                 //基础参数
                 remarks: '',//别名
                 address: '',
                 port: 80,
                 node_order: 0,//节点排序
                 enabled: true,  //是否为激活节点
+                node_speed_limit: 0, //节点限速/Mbps
+                traffic_rate: 1,    //倍率
+                protocol: 'hysteria2',
+                uuid: '',
                 //中转参数
                 transfer_address: '',//中转ip
                 transfer_port: 80,   //中转port
-                //
-                total_up: 0,
-                total_down: 0,
-                goods: [] as Goods[],//多对多,关联商品
-                //vmess参数
-                v: '2',
-                scy: 'none',//加密方式 auto,none,chacha20-poly1305,aes-128-gcm,zero
-                aid: 0,//额外ID
-                //vless参数
-                flow: '',//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
-                encryption: '',//加密方式 none
-                network: '',//传输协议 tcp,kcp,ws,h2,quic,grpc
-                type: '',   //伪装类型 ws,h2：无    tcp,kcp：none，http    quic：none，srtp，utp，wechat-video，dtls，wireguard
-                host: '',   //伪装域名
-                path: '/',   //path
-                mode: 'multi',   //grpc传输模式 gun，multi
-                service_name: '',
-                security: 'none',//传输层安全类型 none,tls,reality
+                //hy2参数
+                hy_ports:'',
+                hy_up_mbps:0,
+                hy_down_mbps:0,
+                hy_obfs:'',
+                hy_obfs_password:'',
+                //传输层安全类型
+                security: 'tls',//传输层安全类型 tls,reality
                 sni: '',
                 fp: 'chrome',
                 alpn: '',
@@ -188,6 +165,8 @@ export const useAdminNodeStore = defineStore("adminNodeStore", {
                 pbk: '',
                 sid: '',
                 spx: '',
+                //关联参数
+                goods: [] as Goods[],//多对多,关联商品
                 access:[] as Access[],
             } as NodeInfo,
             transferInfo: {

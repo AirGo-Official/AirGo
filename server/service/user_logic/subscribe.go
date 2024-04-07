@@ -12,7 +12,6 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
 	uuid "github.com/satori/go.uuid"
 	"gopkg.in/ini.v1"
 	"gopkg.in/yaml.v3"
@@ -112,7 +111,7 @@ subHandler:
 	case "v2rayNG", "V2rayU":
 		return v2rayNG(&nodeArr), headerInfo
 
-	case "NekoBox", "v2rayN":
+	case "v2rayN", "NekoBox":
 		return NekoBox(&nodeArr), headerInfo
 
 	case "Clash":
@@ -128,9 +127,8 @@ subHandler:
 		return Quantumult(&nodeArr), headerInfo
 
 	default:
-
+		return "", headerInfo
 	}
-	return "", headerInfo
 }
 
 func v2rayNG(nodes *[]model.Node) string {
@@ -159,20 +157,18 @@ func v2rayNG(nodes *[]model.Node) string {
 func NekoBox(nodes *[]model.Node) string {
 	var nodeArr []string
 	for _, v := range *nodes {
-
 		switch v.Protocol {
 		case constant.NODE_PROTOCOL_VMESS:
 			if res := VmessUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
 
-		case constant.NODE_PROTOCOL_VLESS, constant.NODE_PROTOCOL_TROJAN, constant.NODE_PROTOCOL_HYSTERIA:
+		case constant.NODE_PROTOCOL_VLESS, constant.NODE_PROTOCOL_TROJAN, constant.NODE_PROTOCOL_HYSTERIA2:
 			if res := VlessTrojanHysteriaUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
 
 		case constant.NODE_PROTOCOL_SHADOWSOCKS:
-
 			if res := ShadowsocksUrl(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
@@ -294,7 +290,7 @@ func Shadowrocket(nodes *[]model.Node) string {
 			if res := TrojanUrlForShadowrocket(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
-		case constant.NODE_PROTOCOL_HYSTERIA:
+		case constant.NODE_PROTOCOL_HYSTERIA2:
 			if res := Hy2UrlForShadowrocket(v); res != "" {
 				nodeArr = append(nodeArr, res)
 			}
@@ -380,7 +376,7 @@ func Surge(nodes *[]model.Node) string {
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
 			proxyGroupFallback = append(proxyGroupFallback, v.Remarks)
-		case constant.NODE_PROTOCOL_HYSTERIA: //hy2协议
+		case constant.NODE_PROTOCOL_HYSTERIA2:
 			var nodeItem []string
 			nodeItem = append(nodeItem, v.Remarks+" = "+"hysteria2")
 			nodeItem = append(nodeItem, v.Address)
@@ -406,7 +402,7 @@ func Surge(nodes *[]model.Node) string {
 			nodeItem = append(nodeItem, v.Address)
 			nodeItem = append(nodeItem, fmt.Sprintf("%d", v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("encrypt-method=%s", v.Scy))
-			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordHandler(v)))
+			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordEncodeToString(v)))
 			nodeItem = append(nodeItem, "tfo=true")
 			if v.AllowInsecure {
 				nodeItem = append(nodeItem, "skip-cert-verify=true")
@@ -531,7 +527,7 @@ func Quantumult(nodes *[]model.Node) string {
 			var nodeItem []string
 			nodeItem = append(nodeItem, fmt.Sprintf("shadowsocks=%s:%d", v.Address, v.Port))
 			nodeItem = append(nodeItem, fmt.Sprintf("method=%s", v.Scy))
-			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordHandler(v)))
+			nodeItem = append(nodeItem, fmt.Sprintf("password=%s", SSPasswordEncodeToString(v)))
 			switch v.Type {
 			case "http":
 				nodeItem = append(nodeItem, fmt.Sprintf("obfs=http"))
@@ -613,7 +609,7 @@ func VlessTrojanHysteriaUrl(node model.Node) string {
 		nodeUrl.Scheme = "vless"
 	case constant.NODE_PROTOCOL_TROJAN:
 		nodeUrl.Scheme = "trojan"
-	case constant.NODE_PROTOCOL_HYSTERIA:
+	case constant.NODE_PROTOCOL_HYSTERIA2:
 		nodeUrl.Scheme = "hy2"
 	}
 
@@ -625,7 +621,13 @@ func VlessTrojanHysteriaUrl(node model.Node) string {
 	case "vless":
 		values.Add("encryption", "none")
 		values.Add("type", node.Network)
-		values.Add("flow", node.VlessFlow)
+
+		switch node.VlessFlow {
+		case "xtls-rprx-vision", "xtls-rprx-vision-udp443":
+			values.Add("flow", node.VlessFlow)
+		default:
+		}
+
 		switch node.Network {
 		case "ws":
 			values.Add("host", node.Host)
@@ -654,13 +656,22 @@ func VlessTrojanHysteriaUrl(node model.Node) string {
 			values.Add("sni", node.Sni)
 			values.Add("sid", node.ShortId)
 		default:
-			values.Add("security", "none")
+
 		}
 		if node.AllowInsecure {
 			values.Add("allowInsecure", "1")
 		}
 	case "hy2":
-		values.Add("sni", node.Sni)
+		if node.HyPorts != "" {
+			values.Add("mport", node.HyPorts)
+		}
+		if node.HyObfs != "" {
+			values.Add("obfs", node.HyObfs)
+			values.Add("obfs-password", node.HyObfsPassword)
+		}
+		if node.Sni != "" {
+			values.Add("sni", node.Sni)
+		}
 		if node.AllowInsecure {
 			values.Add("insecure", "1")
 		}
@@ -677,7 +688,7 @@ func VlessTrojanHysteriaUrl(node model.Node) string {
 }
 
 func ShadowsocksUrl(node model.Node) string {
-	if node.NodeType != constant.NODE_TYPE_SHARED {
+	if node.NodeType == constant.NODE_TYPE_SHARED {
 		var ss url.URL
 		ss.Scheme = "ss"
 		ss.User = url.UserPassword(base64.StdEncoding.EncodeToString([]byte(node.Scy+":"+node.UUID)), "")
@@ -688,7 +699,7 @@ func ShadowsocksUrl(node model.Node) string {
 
 	var ss url.URL
 	ss.Scheme = "ss"
-	ss.User = url.UserPassword(SSPasswordHandler(node), "")
+	ss.User = url.UserPassword(SSPasswordEncodeToString(node), "")
 	ss.Host = node.Address + ":" + fmt.Sprintf("%d", node.Port)
 	ss.Fragment = node.Remarks
 	return strings.ReplaceAll(ss.String(), ":@", "@")
@@ -711,15 +722,22 @@ func ClashGenerate(node model.Node) model.ClashProxy {
 		proxy.Type = "trojan"
 		proxy.Uuid = node.UUID
 		proxy.Sni = node.Sni
-	case constant.NODE_PROTOCOL_HYSTERIA:
+	case constant.NODE_PROTOCOL_HYSTERIA2:
 		proxy.Type = "hysteria2"
-		proxy.Uuid = node.UUID
+		//proxy.Uuid = node.UUID
 		proxy.Password = node.UUID
 		proxy.Sni = node.Sni
+		proxy.Ports = node.HyPorts
+		proxy.HopInterval = 15 //给个默认值吧，用户自行修改
+		proxy.Up = fmt.Sprintf("%d Mbps", node.HyUpMbps)
+		proxy.Down = fmt.Sprintf("%d Mbps", node.HyDownMbps)
+		proxy.Obfs = node.HyObfs
+		proxy.ObfsPassword = node.HyObfsPassword
+
 	case constant.NODE_PROTOCOL_SHADOWSOCKS:
 		proxy.Type = "ss"
 		proxy.Cipher = node.Scy
-		proxy.Password = node.UUID
+		proxy.Password = GetSSPassword(node)
 	}
 	proxy.Name = node.Remarks
 	proxy.Server = node.Address
@@ -727,6 +745,7 @@ func ClashGenerate(node model.Node) model.ClashProxy {
 	proxy.Udp = true
 	proxy.Network = node.Network //传输协议
 	proxy.SkipCertVerify = node.AllowInsecure
+
 	switch proxy.Network {
 	case "ws":
 		proxy.WsOpts = model.WsOpts{
@@ -771,6 +790,8 @@ func ClashGenerate(node model.Node) model.ClashProxy {
 		proxy.RealityOpts.ShortID = node.ShortId
 		proxy.ClientFingerprint = node.Fingerprint
 		proxy.Alpn = append(proxy.Alpn, node.Alpn)
+	default:
+		proxy.Tls = false
 	}
 	return proxy
 }
@@ -778,10 +799,12 @@ func ClashGenerate(node model.Node) model.ClashProxy {
 func VmessUrlForShadowrocket(node model.Node) string {
 	var nodeUrl url.URL
 	var user string
+	values := url.Values{}
 
 	switch node.Protocol {
 	case constant.NODE_PROTOCOL_VMESS:
 		nodeUrl.Scheme = "vmess"
+		values.Add("alterId", fmt.Sprintf("%d", node.Aid)) //vmess alterId
 		user = fmt.Sprintf("%s:%s@%s:%d", node.Scy, node.UUID, node.Address, node.Port)
 	case constant.NODE_PROTOCOL_VLESS:
 		nodeUrl.Scheme = "vless"
@@ -793,16 +816,10 @@ func VmessUrlForShadowrocket(node model.Node) string {
 	user = strings.ReplaceAll(user, "=", "")
 	nodeUrl.User = url.UserPassword(user, "")
 
-	values := url.Values{}
 	//基础参数
 	//values.Add("tfo", "1") //tcp快速打开
 	//values.Add("mux", "1")             //多路复用
 	values.Add("remark", node.Remarks) //节点名
-
-	switch node.Protocol {
-	case constant.NODE_PROTOCOL_VMESS:
-		values.Add("alterId", fmt.Sprintf("%d", node.Aid)) //vmess alterId
-	}
 
 	//network
 	switch node.Network {
@@ -848,12 +865,11 @@ func VmessUrlForShadowrocket(node model.Node) string {
 	}
 	//
 	switch node.VlessFlow {
-	case "none", "":
 	case "xtls-rprx-direct":
 		values.Add("xtls", "1")
 	case "xtls-rprx-vision", "xtls-rprx-vision-udp443":
 		values.Add("xtls", "2")
-
+	default:
 	}
 	//
 	switch node.AllowInsecure {
@@ -898,14 +914,17 @@ func Hy2UrlForShadowrocket(node model.Node) string {
 	//values.Add("tfo", "1") //tcp快速打开
 	//values.Add("mux", "1") //多路复用
 
-	sni := node.Address
-	if node.Sni != "" {
-		sni = node.Sni
+	if node.HyPorts != "" {
+		values.Add("mport", node.HyPorts)
 	}
-	values.Add("peer", sni)
-
-	switch node.AllowInsecure {
-	case true:
+	if node.HyObfs != "" {
+		values.Add("obfs", node.HyObfs)
+		values.Add("obfs-password", node.HyObfsPassword)
+	}
+	if node.Sni != "" {
+		values.Add("sni", node.Sni)
+	}
+	if node.AllowInsecure {
 		values.Add("insecure", "1")
 	}
 
@@ -914,30 +933,28 @@ func Hy2UrlForShadowrocket(node model.Node) string {
 	return strings.ReplaceAll(nodeUrl.String(), ":@", "@")
 }
 
-func SSPasswordHandler(node model.Node) string {
-	switch strings.HasPrefix(node.Scy, "2022") {
-	case true:
-		p1 := node.Scy
-		p2 := node.ServerKey
-		if p2 == "" {
-			p2 = encrypt_plugin.RandomString(32)
-		}
-		p3 := node.UUID
-		if p1 == "2022-blake3-aes-128-gcm" {
-			p2 = p2[:16]
-			p3 = p3[0:16]
-		}
-		p2 = base64.StdEncoding.EncodeToString([]byte(p2))
-		p3 = base64.StdEncoding.EncodeToString([]byte(p3))
-		p := base64.StdEncoding.EncodeToString([]byte(p1 + ":" + p2 + ":" + p3))
-		return p
+// 格式：serverKey:userKey
+// 参考：ZDZiNDE5YjUzNDFiNzhmOWNjMTA0YTU0ZWJmNDYzNTc=:NzQ2NGIxZWQtMDQ1MS00NzZhLWIxODItN2JiZTU2YmU=
+func GetSSPassword(node model.Node) string {
+	switch node.Scy {
+	case "2022-blake3-aes-128-gcm":
+		serverKey := base64.StdEncoding.EncodeToString([]byte(node.ServerKey[:16]))
+		userKey := base64.StdEncoding.EncodeToString([]byte(node.UUID[:16]))
+		return serverKey + ":" + userKey
+	case "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305":
+		serverKey := base64.StdEncoding.EncodeToString([]byte(node.ServerKey))
+		userKey := base64.StdEncoding.EncodeToString([]byte(node.UUID))
+		return serverKey + ":" + userKey
 	default:
-		p1 := node.Scy
-		p2 := node.UUID
-		p := base64.StdEncoding.EncodeToString([]byte(p1 + ":" + p2))
-		return p
+		return node.UUID
 	}
+}
 
+// 原始数据：2022-blake3-aes-256-gcm:ZDZiNDE5YjUzNDFiNzhmOWNjMTA0YTU0ZWJmNDYzNTc=:NzQ2NGIxZWQtMDQ1MS00NzZhLWIxODItN2JiZTU2YmU=
+// 输出：MjAyMi1ibGFrZTMtYWVzLTI1Ni1nY206WkRaaU5ERTVZalV6TkRGaU56aG1PV05qTVRBMFlUVTBaV0ptTkRZek5UYz06TnpRMk5HSXhaV1F0TURRMU1TMDBOelpoTFdJeE9ESXROMkppWlRVMlltVT0=
+func SSPasswordEncodeToString(node model.Node) string {
+	p := base64.StdEncoding.EncodeToString([]byte(node.Scy + ":" + GetSSPassword(node)))
+	return p
 }
 
 const DefaultSurgeRules = `

@@ -23,8 +23,14 @@ var Server = &GinServer{
 }
 
 func (g *GinServer) InitRouter() {
-	gin.SetMode(gin.ReleaseMode)   //ReleaseMode TestMode DebugMode
-	gin.DefaultWriter = io.Discard //关闭控制台输出
+	gin.SetMode(gin.ReleaseMode)
+	var writer io.Writer
+	if global.Config.SystemParams.Mode == "dev" {
+		writer = os.Stdout
+	} else {
+		writer = io.Discard //关闭控制台输出
+	}
+	gin.DefaultWriter = writer
 	g.Router = gin.Default()
 	// targetPtah=web 是embed和web文件夹的相对路径
 	g.Router.Use(middleware.Serve("/", middleware.EmbedFolder(web.Static, "web")))

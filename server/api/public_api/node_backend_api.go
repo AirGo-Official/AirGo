@@ -33,12 +33,7 @@ func AGGetNodeInfo(ctx *gin.Context) {
 	}
 	//处理ss节点加密
 	if node.Protocol == "shadowsocks" {
-		switch node.Scy {
-		case "2022-blake3-aes-128-gcm":
-			node.ServerKey = base64.StdEncoding.EncodeToString([]byte(node.ServerKey[:16]))
-		default:
-			node.ServerKey = base64.StdEncoding.EncodeToString([]byte(node.ServerKey))
-		}
+		node.ServerKey = nodeService.GetShadowsocksServerKey(node)
 	}
 	//etag
 	api.EtagHandler(node, ctx)
@@ -141,26 +136,6 @@ func AGGetUserlist(ctx *gin.Context) {
 	api.EtagHandler(users, ctx)
 }
 
-func ssEncryptionHandler(node model.Node, user *model.AGUserInfo) {
-	switch node.Protocol {
-	case constant.NODE_PROTOCOL_SHADOWSOCKS:
-		if strings.HasPrefix(node.Scy, "2022") {
-			//
-			p := user.UUID.String()
-			if node.Scy == "2022-blake3-aes-128-gcm" {
-				p = p[:16]
-			}
-			p = base64.StdEncoding.EncodeToString([]byte(p))
-			user.Passwd = p
-
-		} else {
-			user.Passwd = user.UUID.String()
-		}
-	default:
-
-	}
-}
-
 func AGReportUserTraffic(ctx *gin.Context) {
 	//验证key
 	if global.Server.Subscribe.TEK != ctx.Query("key") {
@@ -173,7 +148,7 @@ func AGReportUserTraffic(ctx *gin.Context) {
 		ctx.AbortWithStatus(400)
 		return
 	}
-	//fmt.Println("上报用户流量：", AGUserTraffic)
+	//fmt.Println("用户流量统计", AGUserTraffic)
 	//查询节点倍率
 	node, err := nodeService.FirstNode(&model.Node{ID: AGUserTraffic.ID})
 	if err != nil {
@@ -245,4 +220,5 @@ func AGReportNodeOnlineUsers(ctx *gin.Context) {
 		return
 	}
 	ctx.String(200, "success")
+	//TODO 未用到
 }

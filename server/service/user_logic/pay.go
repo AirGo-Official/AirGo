@@ -1,18 +1,11 @@
 package user_logic
 
 import (
-	"encoding/json"
-	"net/http"
-	"net/url"
-	"strconv"
-	"strings"
-	"time"
-
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
 	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
-	"github.com/ppoonk/AirGo/utils/net_plugin"
 	"github.com/smartwalle/alipay/v3"
+	"strconv"
 )
 
 type Pay struct {
@@ -132,52 +125,6 @@ func (p *Pay) TradeClose(client *alipay.Client, sysOrder *model.Order) (*alipay.
 	}
 	rsp, err := client.TradeClose(tc)
 	return rsp, err
-}
-
-// EpayPreByApi
-// 易支付-交易预创建（api支付
-// Deprecated: use EpayPreByHTML instead.
-func (p *Pay) EpayPreByApi(epayConfig model.Epay, sysOrder *model.Order) (model.EpayPreCreatePayResponse, error) {
-	var epayRes model.EpayPreCreatePayResponse
-
-	client := net_plugin.ClientWithDNS("114.114.114.114", 10*time.Second)
-
-	var formValues url.Values
-	formValues.Add("pid", strconv.FormatInt(epayConfig.EpayPid, 10))
-	formValues.Add("type", epayConfig.EpayType) //支付方式, alipay	支付宝 wxpay	微信支付 qqpay	QQ钱包 bank	网银支付
-	formValues.Add("out_trade_no", sysOrder.OutTradeNo)
-	formValues.Add("notify_url", epayConfig.EpayNotifyURL)
-	formValues.Add("return_url", epayConfig.EpayReturnURL)
-	formValues.Add("name", sysOrder.Subject)
-	formValues.Add("money", sysOrder.Price)
-	//formValues.Add("clientip", "")
-	//formValues.Set("device", "")
-	//formValues.Set("param", "")
-	formValues.Add("sign", epayConfig.EpayKey)
-	formValues.Add("sign_type", encrypt_plugin.Md5Encode(formValues.Encode()+epayConfig.EpayKey, false))
-
-	reader := strings.NewReader(formValues.Encode())
-
-	req, err := http.NewRequest("POST", epayConfig.EpayApiURL, reader)
-	if err != nil {
-		return epayRes, err
-	}
-	req.Header.Set("Accept", "application/x-www-form-urlencode")
-	//fmt.Println("请求参数：", req)
-	resp, err := client.Do(req)
-	defer resp.Body.Close()
-	if err != nil {
-		return epayRes, err
-	}
-	out := net_plugin.ReadDate(resp)
-
-	err = json.Unmarshal([]byte(out), &epayRes)
-	if err != nil {
-		return epayRes, err
-	}
-	//fmt.Println("响应：", epayRes)
-	return epayRes, nil
-
 }
 
 // EpayPreByHTML

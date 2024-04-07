@@ -22,7 +22,7 @@ const (
 	NODE_PROTOCOL_VMESS       = "vmess"
 	NODE_PROTOCOL_VLESS       = "vless"
 	NODE_PROTOCOL_TROJAN      = "trojan"
-	NODE_PROTOCOL_HYSTERIA    = "hysteria"
+	NODE_PROTOCOL_HYSTERIA2   = "hysteria2"
 	NODE_PROTOCOL_SHADOWSOCKS = "shadowsocks"
 
 	//传输协议

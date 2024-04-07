@@ -45,6 +45,14 @@ export default {
       //vless参数
       flow: "flow",//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
       encryption: "encryption",//加密方式 none
+      //shadowsocks
+      server_key: "server key",
+      //Hysteria2参数
+      hy_ports:"hy2端口跳跃",
+      hy_up_mbps:"上行最大速率(Mbps)",
+      hy_down_mbps:"下行最大速率(Mbps)",
+      hy_obfs:"混淆",
+      hy_obfs_password:"混淆密碼",
 
       network: "network",//传输协议 tcp,kcp,ws,h2,quic,grpc
       type: "type",   //伪装类型 ws,h2：无    tcp,kcp：none，http    quic：none，srtp，utp，wechat-video，dtls，wireguard

@@ -1,6 +1,7 @@
 package admin_logic
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/ppoonk/AirGo/constant"
@@ -25,29 +26,36 @@ func (n *Node) NewNode(nodeParams *model.Node) error {
 	return global.DB.Transaction(func(tx *gorm.DB) error {
 		//检查remarks冲突，避免clash等客户端更新订阅时会报错
 		tempNode, err := n.FirstNode(&model.Node{Remarks: nodeParams.Remarks})
-		if err == nil { //已存在
+		if err == nil { //已存在,重新命名，防止clash客户端等无法解析同名节点
 			nodeParams.Remarks = fmt.Sprintf("%s-%s", tempNode.Remarks, encrypt_plugin.RandomString(4))
 		}
 		switch nodeParams.NodeType {
 		case constant.NODE_TYPE_NORMAL:
-			if nodeParams.Protocol == constant.NODE_PROTOCOL_SHADOWSOCKS {
+			if nodeParams.Protocol == constant.NODE_PROTOCOL_SHADOWSOCKS && nodeParams.ServerKey == "" {
 				nodeParams.ServerKey = encrypt_plugin.RandomString(32)
+			}
+			if nodeParams.Protocol == constant.NODE_PROTOCOL_HYSTERIA2 && nodeParams.HyObfs == "Salamander" && nodeParams.HyObfsPassword == "" {
+				nodeParams.HyObfsPassword = encrypt_plugin.RandomString(32)
 			}
 
 		case constant.NODE_TYPE_TRANSFER:
-			//如果该节点是中转节点，则把父节点的参数拷贝给该节点，减少更新订阅时查询次数
-			transferNode, err := n.FirstNode(&model.Node{ID: nodeParams.TransferNodeID})
+			//如果该节点是中转节点，则把父节点(对接xrayr等的正常节点)的参数拷贝给该节点，减少更新订阅时查询次数
+			//步骤  1、先把父节点基础参数修改为前端传过来的 nodeParams  2、父节点全部参数赋值给 nodeParams 3、由 nodeParams 数据创建节点
+			parentNode, err := n.FirstNode(&model.Node{ID: nodeParams.TransferNodeID})
 			if err != nil {
 				return err
 			}
-			transferNode.ID = 0
-			transferNode.NodeType = constant.NODE_TYPE_TRANSFER //更换父节点类型为中转
-			transferNode.CreatedAt, transferNode.UpdatedAt = time.Now(), time.Now()
-			transferNode.Remarks = nodeParams.Remarks
-			transferNode.TransferNodeID = nodeParams.TransferNodeID
-			transferNode.TransferAddress = nodeParams.TransferAddress
-			transferNode.TransferPort = nodeParams.TransferPort
-			nodeParams = transferNode
+			if parentNode.NodeType != constant.NODE_TYPE_NORMAL {
+				return errors.New("Parent node is not 'normal node'")
+			}
+			parentNode.ID = 0
+			parentNode.NodeType = constant.NODE_TYPE_TRANSFER //更换类型为中转
+			parentNode.CreatedAt, parentNode.UpdatedAt = time.Now(), time.Now()
+			parentNode.Remarks = nodeParams.Remarks
+			parentNode.TransferNodeID = nodeParams.TransferNodeID
+			parentNode.TransferAddress = nodeParams.TransferAddress
+			parentNode.TransferPort = nodeParams.TransferPort
+			nodeParams = parentNode
 		case constant.NODE_TYPE_SHARED:
 
 		default:
@@ -55,8 +63,8 @@ func (n *Node) NewNode(nodeParams *model.Node) error {
 		}
 
 		//矫正一些参数
-		nodeParams.ID = 0
-		nodeParams.Enabled = true
+		nodeParams.ID = 0           //防止前端意外传过来id，导致数据库无法创建
+		nodeParams.Enabled = true   //默认启用节点
 		nodeParams.NodeOrder = 9999 //默认将排序放到最低下
 
 		//创建
@@ -112,16 +120,16 @@ func (n *Node) UpdateNode(node *model.Node) error {
 				return err
 			}
 			if len(nodeArr) > 0 {
-				for k, v := range nodeArr { //遍历中转节点
+				for k, _ := range nodeArr { //遍历中转节点
 					temp := *node
 					temp.NodeType = constant.NODE_TYPE_TRANSFER
-					temp.NodeOrder = v.NodeOrder
-					temp.ID = v.ID
-					temp.CreatedAt, temp.UpdatedAt = v.CreatedAt, v.UpdatedAt
-					temp.Remarks = v.Remarks
-					temp.TransferNodeID = v.TransferNodeID
-					temp.TransferAddress = v.TransferAddress
-					temp.TransferPort = v.TransferPort
+					temp.NodeOrder = nodeArr[k].NodeOrder
+					temp.ID = nodeArr[k].ID
+					temp.CreatedAt, temp.UpdatedAt = nodeArr[k].CreatedAt, nodeArr[k].UpdatedAt
+					temp.Remarks = nodeArr[k].Remarks
+					temp.TransferNodeID = nodeArr[k].TransferNodeID
+					temp.TransferAddress = nodeArr[k].TransferAddress
+					temp.TransferPort = nodeArr[k].TransferPort
 					nodeArr[k] = temp
 				}
 				return tx.Save(&nodeArr).Error
@@ -267,4 +275,15 @@ func (n *Node) GetNodesStatus() *[]model.NodeStatus {
 		}
 	}
 	return &nodestatusArr
+}
+
+func (n *Node) GetShadowsocksServerKey(node model.Node) string {
+	switch node.Scy {
+	case "2022-blake3-aes-128-gcm":
+		return base64.StdEncoding.EncodeToString([]byte(node.ServerKey[:16]))
+	case "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305":
+		return base64.StdEncoding.EncodeToString([]byte(node.ServerKey))
+	default:
+		return node.UUID
+	}
 }

@@ -45,22 +45,30 @@ type RuleProvidersItem struct {
 	Url      string `yaml:"url"`
 }
 
+// 参考 https://github.com/MetaCubeX/mihomo/blob/Meta/docs/config.yaml
 type ClashProxy struct {
 	//基础参数
-	Name    string `yaml:"name" json:"name"`
-	Type    string `yaml:"type" json:"type"`
-	Server  string `yaml:"server" json:"server"`
-	Port    int    `yaml:"port" json:"port"`
-	Uuid    string `yaml:"uuid" json:"uuid"`
-	Network string `yaml:"network" json:"network"`
-	Udp     bool   `yaml:"udp" json:"udp"`
+	Name    string `yaml:"name,omitempty"   json:"name"`
+	Type    string `yaml:"type,omitempty"   json:"type"`
+	Server  string `yaml:"server,omitempty" json:"server"`
+	Port    int    `yaml:"port,omitempty"   json:"port"`
+	Uuid    string `yaml:"uuid,omitempty"   json:"uuid"`
+	Network string `yaml:"network,omitempty" json:"network"`
+	Udp     bool   `yaml:"udp,omitempty"     json:"udp"`
 	//vmess参数
-	Alterid int64  `yaml:"alterId" json:"alterId"`
-	Cipher  string `yaml:"cipher" json:"cipher"`
+	Alterid int64  `yaml:"alterId,omitempty" json:"alterId"`
+	Cipher  string `yaml:"cipher,omitempty"  json:"cipher"`
 	//trojan 参数
 	Password string `yaml:"password,omitempty" json:"password"`
 	//vless流控
-	Flow string `yaml:"flow" json:"flow"`
+	Flow string `yaml:"flow,omitempty" json:"flow"`
+	//hysteria2参数
+	Ports        string `yaml:"ports,omitempty" json:"ports"`
+	HopInterval  int64  `yaml:"hop-interval,omitempty" json:"hop-interval"`
+	Up           string `yaml:"up,omitempty" json:"up"`
+	Down         string `yaml:"down,omitempty" json:"down"`
+	Obfs         string `yaml:"obfs,omitempty" json:"obfs"`
+	ObfsPassword string `yaml:"obfs-password,omitempty" json:"obfs-password"`
 
 	Tls               bool        `yaml:"tls,omitempty" json:"tls"`
 	Sni               string      `yaml:"sni,omitempty" json:"sni"`

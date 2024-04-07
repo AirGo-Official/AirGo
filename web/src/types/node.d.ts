@@ -31,6 +31,14 @@ declare interface NodeInfo {
     //vless参数
     flow: string;//流控 none,xtls-rprx-vision,xtls-rprx-vision-udp443
     encryption: string;//加密方式 none
+    //shadowsocks参数
+    server_key:string
+    //Hysteria2参数
+    hy_ports:string
+    hy_up_mbps:number
+    hy_down_mbps:number
+    hy_obfs:string
+    hy_obfs_password:string
 
     network: string;//传输协议 tcp,kcp,ws,h2,quic,grpc
     type: string;   //伪装类型 ws,h2：无    tcp,kcp：none，http    quic：none，srtp，utp，wechat-video，dtls，wireguard

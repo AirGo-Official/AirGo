@@ -77,14 +77,14 @@
                     v-else-if="item.node_type ===constantStore.NODE_TYPE_SHARED">{{ $t("message.constant.NODE_TYPE_SHARED") }}</el-tag>
               </span>
               <span style="float: right">
-                <el-button type="success" v-if="item.protocol ===constantStore.NODE_PROTOCOL_VMESS">vmess</el-button>
+                <el-button type="success" v-if="item.protocol ===constantStore.NODE_PROTOCOL_VMESS">{{ $t("message.constant.NODE_PROTOCOL_VMESS") }}</el-button>
                 <el-button type="warning"
-                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_VLESS">vless</el-button>
+                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_VLESS">{{ $t("message.constant.NODE_PROTOCOL_VLESS") }}</el-button>
                 <el-button type="info"
-                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_TROJAN">trojan</el-button>
-                <el-button type="danger" v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_SHADOWSOCKS">shadowsocks</el-button>
+                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_TROJAN">{{ $t("message.constant.NODE_PROTOCOL_TROJAN") }}</el-button>
+                <el-button type="danger" v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_SHADOWSOCKS">{{ $t("message.constant.NODE_PROTOCOL_SHADOWSOCKS") }}</el-button>
                 <el-button type="primary"
-                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_HYSTERIA">hysteria</el-button>
+                           v-else-if="item.protocol ===constantStore.NODE_PROTOCOL_HYSTERIA">{{ $t("message.constant.NODE_PROTOCOL_HYSTERIA") }}</el-button>
               </span>
             </el-option>
           </el-select>
@@ -230,8 +230,9 @@
               <el-input v-model="nodeStoreData.dialogData.value.vlessInfo.path" />
             </el-form-item>
             <el-form-item :label="$t('message.adminNode.NodeInfo.security')">
+
               <el-radio-group v-model="nodeStoreData.dialogData.value.vlessInfo.security">
-                <el-radio label="none">none</el-radio>
+                <el-radio label="">none</el-radio>
                 <el-radio label="tls">tls</el-radio>
                 <el-radio label="reality">reality</el-radio>
               </el-radio-group>
@@ -316,13 +317,13 @@
                   <el-input v-model="nodeStoreData.dialogData.value.vlessInfo.transfer_address" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.transfer_port')">
-                  <el-input v-model.number="nodeStoreData.dialogData.value.vlessInfo.transfer_port" />
+                  <el-input-number v-model.number="nodeStoreData.dialogData.value.vlessInfo.transfer_port" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.node_speed_limit')">
-                  <el-input type="number" v-model.number="nodeStoreData.dialogData.value.vlessInfo.node_speed_limit" />
+                  <el-input-number v-model.number="nodeStoreData.dialogData.value.vlessInfo.node_speed_limit" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.traffic_rate')">
-                  <el-input type="number" v-model.number="nodeStoreData.dialogData.value.vlessInfo.traffic_rate" />
+                  <el-input-number v-model.number="nodeStoreData.dialogData.value.vlessInfo.traffic_rate" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.access')">
                   <el-tree ref="access_tree_ref" node-key="id"
@@ -429,7 +430,7 @@
 
             <el-form-item :label="$t('message.adminNode.NodeInfo.security')">
               <el-radio-group v-model="nodeStoreData.dialogData.value.vmessInfo.security">
-                <el-radio label="none">none</el-radio>
+                <el-radio label="">none</el-radio>
                 <el-radio label="tls">tls</el-radio>
               </el-radio-group>
             </el-form-item>
@@ -480,13 +481,13 @@
                   <el-input v-model="nodeStoreData.dialogData.value.vmessInfo.transfer_address" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.transfer_port')">
-                  <el-input v-model.number="nodeStoreData.dialogData.value.vmessInfo.transfer_port" />
+                  <el-input-number v-model.number="nodeStoreData.dialogData.value.vmessInfo.transfer_port" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.node_speed_limit')">
-                  <el-input type="number" v-model.number="nodeStoreData.dialogData.value.vmessInfo.node_speed_limit" />
+                  <el-input-number  v-model.number="nodeStoreData.dialogData.value.vmessInfo.node_speed_limit" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.traffic_rate')">
-                  <el-input type="number" v-model.number="nodeStoreData.dialogData.value.vmessInfo.traffic_rate" />
+                  <el-input-number v-model.number="nodeStoreData.dialogData.value.vmessInfo.traffic_rate" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.access')">
                   <el-tree ref="access_tree_ref" node-key="id"
@@ -535,6 +536,17 @@
                 </el-option>
               </el-select>
             </el-form-item>
+            <el-form-item :label="$t('message.adminNode.NodeInfo.server_key')">
+              <el-input v-model="nodeStoreData.dialogData.value.shadowsocksInfo.server_key">
+                <template #append>
+                  <el-button @click="setShadowsocksServerKey()">
+                    <el-icon>
+                      <Refresh />
+                    </el-icon>
+                  </el-button>
+                </template>
+              </el-input>
+            </el-form-item>
             <el-form-item :label="$t('message.adminNode.NodeInfo.type')">
               <el-select
                 v-model="nodeStoreData.dialogData.value.shadowsocksInfo.type"
@@ -577,14 +589,14 @@
                 <el-input v-model="nodeStoreData.dialogData.value.shadowsocksInfo.transfer_address" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.transfer_port')">
-                <el-input v-model.number="nodeStoreData.dialogData.value.shadowsocksInfo.transfer_port" />
+                <el-input-number v-model.number="nodeStoreData.dialogData.value.shadowsocksInfo.transfer_port" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.node_speed_limit')">
-                <el-input type="number"
+                <el-input-number
                           v-model.number="nodeStoreData.dialogData.value.shadowsocksInfo.node_speed_limit" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.traffic_rate')">
-                <el-input type="number" v-model.number="nodeStoreData.dialogData.value.shadowsocksInfo.traffic_rate" />
+                <el-input-number v-model.number="nodeStoreData.dialogData.value.shadowsocksInfo.traffic_rate" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.access')">
                 <el-tree ref="access_tree_ref" node-key="id"
@@ -614,8 +626,44 @@
             <el-form-item :label="$t('message.adminNode.NodeInfo.port')">
               <el-input-number v-model.number="nodeStoreData.dialogData.value.hysteriaInfo.port" />
             </el-form-item>
+            <el-form-item :label="$t('message.adminNode.NodeInfo.hy_ports')">
+              <el-input v-model="nodeStoreData.dialogData.value.hysteriaInfo.hy_ports" />
+            </el-form-item>
+            <el-form-item :label="$t('message.adminNode.NodeInfo.hy_up_mbps')">
+              <el-input-number v-model.number="nodeStoreData.dialogData.value.hysteriaInfo.hy_up_mbps" />
+            </el-form-item>
+            <el-form-item :label="$t('message.adminNode.NodeInfo.hy_down_mbps')">
+              <el-input-number v-model.number="nodeStoreData.dialogData.value.hysteriaInfo.hy_down_mbps" />
+            </el-form-item>
+            <el-form-item :label="$t('message.adminNode.NodeInfo.hy_obfs')">
+              <el-select
+                v-model="nodeStoreData.dialogData.value.hysteriaInfo.hy_obfs"
+                filterable
+                default-first-option
+                :reserve-keyword="false"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="(v,k) in state.hy_obfs"
+                  :key="k"
+                  :label="v"
+                  :value="v">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="nodeStoreData.dialogData.value.hysteriaInfo.hy_obfs !==''" :label="$t('message.adminNode.NodeInfo.hy_obfs_password')">
+              <el-input v-model="nodeStoreData.dialogData.value.hysteriaInfo.hy_obfs_password">
+                <template #append>
+                  <el-button @click="setHyObfsPassword()">
+                    <el-icon>
+                      <Refresh />
+                    </el-icon>
+                  </el-button>
+                </template>
+              </el-input>
+            </el-form-item>
             <el-form-item :label="$t('message.adminNode.NodeInfo.sni')">
-              <el-input v-model.number="nodeStoreData.dialogData.value.hysteriaInfo.sni" />
+              <el-input v-model="nodeStoreData.dialogData.value.hysteriaInfo.sni" />
             </el-form-item>
             <el-form-item :label="$t('message.adminNode.NodeInfo.allowInsecure')">
               <el-switch
@@ -640,7 +688,7 @@
                 <el-input v-model="nodeStoreData.dialogData.value.hysteriaInfo.transfer_address" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.transfer_port')">
-                <el-input v-model.number="nodeStoreData.dialogData.value.hysteriaInfo.transfer_port" />
+                <el-input-number v-model="nodeStoreData.dialogData.value.hysteriaInfo.transfer_port" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.node_speed_limit')">
                 <el-input-number v-model.number="nodeStoreData.dialogData.value.hysteriaInfo.node_speed_limit" />
@@ -690,6 +738,7 @@ import { useConstantStore } from "/@/stores/constantStore";
 import { DateStrToTime } from "../../../utils/formatTime";
 import { useI18n } from "vue-i18n";
 import {ElMessage} from "element-plus";
+import { randomString } from "/@/utils/encrypt";
 
 const apiStore = useApiStore();
 const apiStoreData = storeToRefs(apiStore);
@@ -747,7 +796,8 @@ const state = reactive({
   networkArr: ["ws", "tcp", "grpc"],
   typeArr1: ["none", "http"],
   typeArr2: ["none", "srtp", "utp", "wechat-video", "dtls", "wireguard"],
-  fpArr: ["chrome", "firefox", "safari", "ios", "android", "edge", "360", "qq", "random", "randomized"]
+  fpArr: ["chrome", "firefox", "safari", "ios", "android", "edge", "360", "qq", "random", "randomized"],
+  hy_obfs:["","salamander"],
 });
 const access_tree_ref = ref();
 // 打开弹窗
@@ -907,6 +957,12 @@ const setReality = (nodeType: string) => {
     }
   });
 };
+const setHyObfsPassword=()=>{
+  nodeStoreData.dialogData.value.hysteriaInfo.hy_obfs_password = randomString(32)
+}
+const setShadowsocksServerKey=()=>{
+  nodeStoreData.dialogData.value.shadowsocksInfo.server_key = randomString(32)
+}
 const parseUrl = () => {
   nodeStore.parseUrl();
 };
@@ -923,6 +979,17 @@ watch(
     }
     if (nodeStoreData.dialogData.value.vlessInfo.private_key === "" || nodeStoreData.dialogData.value.vlessInfo.private_key === "") {
       setReality(constantStore.NODE_PROTOCOL_VLESS);
+    }
+  },
+  {
+    // deep: true,
+  }
+);
+watch(
+  () => nodeStoreData.dialogData.value.hysteriaInfo.hy_obfs,
+  () => {
+    if (nodeStoreData.dialogData.value.hysteriaInfo.hy_obfs_password === ''){
+      setHyObfsPassword()
     }
   },
   {

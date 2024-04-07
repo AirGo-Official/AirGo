@@ -22,25 +22,25 @@
 <hr/>
 
 <!-- TOC -->
-
 * [AirGo 前后端分离，多用户，多协议代理服务管理系统，简单易用](#airgo-前后端分离多用户多协议代理服务管理系统简单易用)
 * [面板部分功能展示](#面板部分功能展示)
 * [一、部署](#一部署)
   * [1.安装核心：](#1安装核心)
     * [a.直接安装](#a直接安装)
     * [b.使用Docker安装](#b使用docker安装)
-  * [2. 配置ssl（可选）](#2配置ssl可选)
+  * [2.配置ssl（可选）](#2配置ssl可选)
   * [3.部署前端静态资源（可选，但推荐）](#3部署前端静态资源可选但推荐)
-    * [a. 部署到Vercel](#a部署到vercel)
-    * [b. 部署到Nginx、Caddy等](#b部署到nginxcaddy等)
+    * [a.部署到Vercel](#a部署到vercel)
+    * [b.部署到Nginx、Caddy等](#b部署到nginxcaddy等)
   * [4.配置文件说明](#4配置文件说明)
   * [5.启动](#5启动)
 * [二、对接节点](#二对接节点)
-  * [a.XrayR](#axrayr)
-  * [b.Hysteria2](#bhysteria2)
-* [TG频道：https://t.me/Air_Go](https://t.me/Air_Go)
-* [TG群组：https://t.me/AirGo_Group](https://t.me/AirGo_Group)
-
+  * [a.V2bX](#av2bx)
+  * [b.XrayR](#bxrayr)
+  * [c.Hysteria2](#chysteria2)
+* [TG频道：https://t.me/Air_Go](#tg频道-httpstmeairgo)
+* [TG群组：https://t.me/AirGo_Group](#tg群组-httpstmeairgogroup)
+          * [文档上次更新日期：2024.4.7](#文档上次更新日期202447)
 <!-- TOC -->
 
 # 面板部分功能展示
@@ -198,9 +198,45 @@ sqlite:
 
 # 二、对接节点
 
-**现支持XrayR、Hysteria2的对接，暂不支持官方版本，请使用下面的版本：**
+**现支持V2bx、XrayR、Hysteria2的对接，暂不支持官方版本，请使用下面的版本：**
 
-## a.XrayR
+## a.V2bX
+项目地址：[https://github.com/ppoonk/V2bX](https://github.com/ppoonk/V2bX)
+
+- 直接安装
+
+```
+bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/V2bX/main/scripts/install.sh)
+```
+
+- 启动docker命令参考如下：
+
+```
+docker run -tid \
+  -v $PWD/av/config.json:/etc/V2bX/config.json \
+  --name airgo \
+  --restart always \
+  --net=host \
+  --privileged=true \
+  ppoiuty/av:latest
+```
+
+- docker compose参考如下：
+
+```
+version: '3'
+services:
+  AV:
+    container_name: AV
+    image: ppoiuty/av:latest
+    network_mode: "host"
+    restart: "always"
+    privileged: true
+    volumes:
+      - ./config.json:/etc/V2bX/config.json
+```
+
+## b.XrayR
 
 - 安装：
 
@@ -212,7 +248,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/XrayR-for-AirGo/main/sc
 - 启动：使用管理脚本```XrayR```或直接 `systemctl start XrayR`
 - docker仓库：[https://hub.docker.com/repository/docker/ppoiuty/xrayr](https://hub.docker.com/repository/docker/ppoiuty/xrayr)
 
-## b.Hysteria2
+## c.Hysteria2
 
 - 安装：
 
@@ -229,6 +265,6 @@ bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/shy/main/scripts/instal
 
 # TG群组：[https://t.me/AirGo_Group](https://t.me/AirGo_Group)
 
-###### 文档上次更新日期：2024.4.3
+###### 文档上次更新日期：2024.4.7
 
 

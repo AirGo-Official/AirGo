@@ -32,6 +32,7 @@ func init() {
 type TgBotService struct {
 	bot    *tgbotapi.BotAPI
 	cancel context.CancelFunc
+	enable bool
 }
 
 var EmailRegexp = regexp.MustCompile(`\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`)
@@ -44,6 +45,7 @@ func InitTgBotSvc() {
 
 func (ts *TgBotService) TGBotStart() {
 	if global.Server.Notice.BotToken == "" {
+		ts.enable = false //机器人死了
 		return
 	}
 	bot, err := NewTGBot(global.Server.Notice.BotToken)
@@ -53,6 +55,7 @@ func (ts *TgBotService) TGBotStart() {
 	ts.bot = bot
 	ctx, cancel := context.WithCancel(context.Background())
 	ts.cancel = cancel
+	ts.enable = true //机器人存活
 	go ts.TGBotListen(ctx)
 }
 func (ts *TgBotService) TGBotListen(ctx context.Context) {
@@ -106,9 +109,12 @@ func (ts *TgBotService) StartTask() {
 	go func() {
 		for v := range ch {
 			msg := v.(tgbotapi.Chattable)
-			_, err = ts.bot.Send(msg)
-			if err != nil {
-				global.Logrus.Error("Tg bot send msg error:", err)
+			// 判断bot是否存活
+			if ts.enable {
+				_, err = ts.bot.Send(msg)
+				if err != nil {
+					global.Logrus.Error("Tg bot send msg error:", err)
+				}
 			}
 		}
 	}()

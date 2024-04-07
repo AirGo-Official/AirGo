@@ -25,6 +25,7 @@ type Sqlite struct {
 	Path string `mapstructure:"path" yaml:"path"`
 }
 type SystemParams struct {
+	Mode          string `mapstructure:"mode"    yaml:"mode"` //release=正常 dev=开发
 	AdminEmail    string `mapstructure:"admin-email"    yaml:"admin-email"`
 	AdminPassword string `mapstructure:"admin-password" yaml:"admin-password"`
 	HTTPPort      int    `mapstructure:"http-port"      yaml:"http-port"`
