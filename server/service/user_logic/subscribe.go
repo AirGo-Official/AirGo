@@ -376,7 +376,7 @@ func Surge(nodes *[]model.Node) string {
 			proxyGroupProxy = append(proxyGroupProxy, v.Remarks)
 			proxyGroupAuto = append(proxyGroupAuto, v.Remarks)
 			proxyGroupFallback = append(proxyGroupFallback, v.Remarks)
-		case constant.NODE_PROTOCOL_HYSTERIA2:
+		case constant.NODE_PROTOCOL_HYSTERIA2: //hy2协议
 			var nodeItem []string
 			nodeItem = append(nodeItem, v.Remarks+" = "+"hysteria2")
 			nodeItem = append(nodeItem, v.Address)
