@@ -56,7 +56,7 @@ type ClashProxy struct {
 	Network string `yaml:"network,omitempty" json:"network"`
 	Udp     bool   `yaml:"udp,omitempty"     json:"udp"`
 	//vmess参数
-	Alterid int64  `yaml:"alterId,omitempty" json:"alterId"`
+	Alterid int64  `yaml:"alterId" json:"alterId"`
 	Cipher  string `yaml:"cipher,omitempty"  json:"cipher"`
 	//trojan 参数
 	Password string `yaml:"password,omitempty" json:"password"`
