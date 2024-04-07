@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog v-model="state.isShowDialog" width="500px"
-               :show-close="false"
+               :show-close="true"
                destroy-on-close>
       <!--      <div v-html="state.dialogHTML"></div>-->
       <v-md-preview :text="state.dialogHTML"></v-md-preview>
