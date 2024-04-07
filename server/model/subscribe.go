@@ -194,6 +194,7 @@ type General struct {
 	Network_framework        bool   `ini:"network-framework"`
 	Exclude_simple_hostnames bool   `ini:"exclude-simple-hostnames"`
 	Ipv6                     bool   `ini:"ipv6"`
+	//Skip_server_cert_verify  bool   `ini:"skip-server-cert-verify"`
 
 	Test_timeout      int64  `ini:"test-timeout"`
 	Proxy_test_url    string `ini:"proxy-test-url"`
