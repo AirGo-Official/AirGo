@@ -83,7 +83,10 @@ export const useAdminUserStore = defineStore('adminUserStore', {
     async getUserSummary(params:QueryParams,m:number){
       let mm = new Date().getMonth()
       const res = await request(apiStore.adminApi.userSummary,params)
-      if (m === (mm+1)){
+      if (res.data === null){
+        return
+      }
+      if (m === (mm+1)){ //本月=4，则mm=3;mm+1=当前月
         this.userSummary.thisMonth = res.data
       } else {
         this.userSummary.lastMonth = res.data

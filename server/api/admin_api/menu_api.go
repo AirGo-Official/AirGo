@@ -5,22 +5,36 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
+	"github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/response"
 )
 
-// 获取全部动态路由
+// GetAllMenuList
+// @Tags [admin api] menu
+// @Summary 获取全部菜单列表
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/menu/getAllMenuList [get]
 func GetAllMenuList(ctx *gin.Context) {
-	routeList, err := menuService.GetMenuList()
+	routeList, err := service.AdminMenuSvc.GetMenuList()
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("GetMenusByMenuIds error:"+err.Error(), nil, ctx)
 		return
 	}
-	route := menuService.GetMenus(routeList)
+	route := service.AdminMenuSvc.GetMenus(routeList)
 	response.OK("GetAllMenuList success", route, ctx)
 }
 
-// 新建动态路由
+// NewMenu
+// @Tags [admin api] menu
+// @Summary 新建菜单
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Menu true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/menu/newMenu [post]
 func NewMenu(ctx *gin.Context) {
 	var menu model.Menu
 	err := ctx.ShouldBind(&menu)
@@ -30,7 +44,7 @@ func NewMenu(ctx *gin.Context) {
 		return
 	}
 	menu.ID = 0
-	err = menuService.NewMenu(&menu)
+	err = service.AdminMenuSvc.NewMenu(&menu)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("NewMenu error:"+err.Error(), nil, ctx)
@@ -39,7 +53,14 @@ func NewMenu(ctx *gin.Context) {
 	response.OK("NewMenu success", nil, ctx)
 }
 
-// 删除动态路由
+// DelMenu
+// @Tags [admin api] menu
+// @Summary 删除菜单
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Menu true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/menu/delMenu [delete]
 func DelMenu(ctx *gin.Context) {
 	var route model.Menu
 	err := ctx.ShouldBind(&route)
@@ -48,7 +69,7 @@ func DelMenu(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = menuService.DelMenu(&route)
+	err = service.AdminMenuSvc.DelMenu(&route)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("DelMenu error:"+err.Error(), nil, ctx)
@@ -58,7 +79,14 @@ func DelMenu(ctx *gin.Context) {
 
 }
 
-// 修改动态路由
+// UpdateMenu
+// @Tags [admin api] menu
+// @Summary 修改菜单
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Menu true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/menu/updateMenu [post]
 func UpdateMenu(ctx *gin.Context) {
 	var route model.Menu
 	err := ctx.ShouldBind(&route)
@@ -67,7 +95,7 @@ func UpdateMenu(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = menuService.UpdateMenu(&route)
+	err = service.AdminMenuSvc.UpdateMenu(&route)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("UpdateMenu error:"+err.Error(), nil, ctx)

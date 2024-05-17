@@ -15,14 +15,16 @@ export const useTrafficStore = defineStore('trafficStore', {
     },
   }),
   actions: {
-    async getSubTrafficList(){
-      const res = await request(apiStore.userApi.getSubTrafficList)
+    async getSubTrafficList(params:UserTrafficLog){
+      this.subTrafficList = [] as UserTrafficLog[]//清除上一个查询的数据
+      const res = await request(apiStore.userApi.getSubTrafficList,params)
+      if ( res.data === null){
+        return
+      }
       const list:UserTrafficLog[] = res.data
       if (list.length > 0){
        this.trafficHandler(list)
       }
-      return res
-      // this.subTrafficList=res.data
     },
     trafficHandler(list:UserTrafficLog[]){
       this.trafficLineChart.u = []

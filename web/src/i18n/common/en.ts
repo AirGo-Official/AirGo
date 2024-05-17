@@ -35,7 +35,7 @@ export default {
     lastThreeMonths:"Last 3 months",
     month:"month",
 
-    noData:"No data",
+    noData:"no data available",
 
     success:"Success",
     warning:"Warning",

@@ -2,7 +2,7 @@
   <div class="container layout-padding">
     <el-card shadow="hover" class="layout-padding-auto">
       <el-table :data="shopStoreData.orderList.value.data" stripe fit height="100%" style="width: 100%;" @sort-change="sortChange">
-        <el-table-column type="index" :label="$t('message.adminOrder.Order.index')" fixed width="60px"/>
+<!--        <el-table-column type="index" :label="$t('message.adminOrder.Order.index')" fixed width="60px"/>-->
         <el-table-column prop="created_at" :label="$t('message.adminOrder.Order.created_at')" width="150" sortable="custom" fixed>
           <template #default="{row}">
             <el-tag type="info">{{ DateStrToTime(row.created_at) }}</el-tag>
@@ -17,26 +17,30 @@
           </template>
         </el-table-column>
         <el-table-column prop="subject" :label="$t('message.adminOrder.Order.subject')" show-overflow-tooltip width="200" sortable="custom"/>
-        <el-table-column prop="total_amount" :label="$t('message.adminOrder.Order.total_amount')" show-overflow-tooltip width="100" sortable="custom"/>
-        <el-table-column prop="trade_status" :label="$t('message.adminOrder.Order.trade_status')" show-overflow-tooltip sortable="custom" width="100">
-          <template #default="scope">
-            <el-tag type="success" v-if="scope.row.trade_status===constantStore.ORDER_STATUS_TRADE_SUCCESS">{{$t('message.constant.ORDER_STATUS_TRADE_SUCCESS')}}</el-tag>
-            <el-tag type="warning" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_WAIT_BUYER_PAY">{{$t('message.constant.ORDER_STATUS_WAIT_BUYER_PAY')}}</el-tag>
-            <el-tag type="info" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_TRADE_CLOSED">{{$t('message.constant.ORDER_STATUS_TRADE_CLOSED')}}</el-tag>
-            <el-tag type="info" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_TRADE_FINISHED">{{$t('message.constant.ORDER_STATUS_TRADE_FINISHED')}}</el-tag>
-            <el-tag type="info" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_CREATED">{{$t('message.constant.ORDER_STATUS_CREATED')}}</el-tag>
-            <el-tag type="success" v-else-if="scope.row.trade_status===constantStore.ORDER_STATUS_COMPLETED">{{$t('message.constant.ORDER_STATUS_COMPLETED')}}</el-tag>
+        <el-table-column prop="total_amount" :label="$t('message.adminOrder.Order.total_amount')" show-overflow-tooltip width="150" sortable="custom"/>
+        <el-table-column prop="trade_status" :label="$t('message.adminOrder.Order.trade_status')" show-overflow-tooltip sortable="custom" width="150">
+          <template #default="{row}">
+            <el-tag type="success" v-if="row.trade_status===constantStore.ORDER_STATUS_TRADE_SUCCESS">{{$t('message.constant.ORDER_STATUS_TRADE_SUCCESS')}}</el-tag>
+            <el-tag type="warning" v-else-if="row.trade_status===constantStore.ORDER_STATUS_WAIT_BUYER_PAY">{{$t('message.constant.ORDER_STATUS_WAIT_BUYER_PAY')}}</el-tag>
+            <el-tag type="info" v-else-if="row.trade_status===constantStore.ORDER_STATUS_TRADE_CLOSED">{{$t('message.constant.ORDER_STATUS_TRADE_CLOSED')}}</el-tag>
+            <el-tag type="info" v-else-if="row.trade_status===constantStore.ORDER_STATUS_TRADE_FINISHED">{{$t('message.constant.ORDER_STATUS_TRADE_FINISHED')}}</el-tag>
+            <el-tag type="info" v-else-if="row.trade_status===constantStore.ORDER_STATUS_CREATED">{{$t('message.constant.ORDER_STATUS_CREATED')}}</el-tag>
+            <el-tag type="success" v-else-if="row.trade_status===constantStore.ORDER_STATUS_COMPLETED">{{$t('message.constant.ORDER_STATUS_COMPLETED')}}</el-tag>
             <el-tag type="danger" v-else>{{$t('message.constant.ORDER_STATUS_UNKNOWN_STATE')}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('message.common.operate')">
-          <template #default="scope">
-            <el-button size="small" text type="primary"
-                       @click="showOrderInfo(scope.row)">{{$t('message.common.details')}}
+        <el-table-column :label="$t('message.common.operate')" min-width="400">
+          <template #default="{row}">
+            <el-button  text type="primary"
+                       @click="showOrderInfo(row)">{{$t('message.common.details')}}
             </el-button>
-            <el-button v-if="scope.row.trade_status === constantStore.ORDER_STATUS_WAIT_BUYER_PAY || scope.row.trade_status === constantStore.ORDER_STATUS_CREATED"
-                       size="small" text type="primary"
-                       @click="toPay(scope.row)">{{$t('message.adminShop.purchase')}}
+            <el-button v-if="(row.trade_status === constantStore.ORDER_STATUS_WAIT_BUYER_PAY
+                       || row.trade_status === constantStore.ORDER_STATUS_CREATED)
+                       && (getTimeDifference(row.created_at) < constantStore.CACHE_SUBMIT_ORDER_TIMEOUT * 60*1000)"
+
+                    text type="primary"
+                       @click="toPay(row)">
+              <span>{{$t('message.adminShop.purchase')}}<el-countdown class="countdown" :value="orderTimeout(row.created_at)" /></span>
             </el-button>
           </template>
         </el-table-column>
@@ -65,7 +69,7 @@
 import {storeToRefs} from "pinia";
 import { defineAsyncComponent, onBeforeMount, onMounted, reactive, ref } from "vue";
 import {useShopStore} from "/@/stores/user_logic/shopStore";
-import {DateStrToTime} from "/@/utils/formatTime"
+import { DateStrToTime, getTimeDifference } from "/@/utils/formatTime";
 import { useConstantStore } from "/@/stores/constantStore";
 
 const shopStore = useShopStore()
@@ -145,6 +149,10 @@ const openQRDialog = () => {
   //调用子组件打开弹窗
   QRDialogRef.value.openDialog()
 }
+//订单支付倒计时
+const orderTimeout=(strTime:string)=>{
+ return  new Date(strTime).getTime()+constantStore.CACHE_SUBMIT_ORDER_TIMEOUT*1000 * 60
+}
 
 </script>
 <style scoped lang="scss">
@@ -158,6 +166,12 @@ const openQRDialog = () => {
     .el-table {
       flex: 1;
     }
+  }
+}
+.countdown {
+  :deep(.el-statistic__content ) {
+    color: red;
+    font-size: 12px;
   }
 }
 

@@ -6,26 +6,29 @@
 		:collapse="state.isCollapse"
 		:unique-opened="getThemeConfig.isUniqueOpened"
 		:collapse-transition="false"
+		style="width: auto;"
 	>
 		<template v-for="val in menuLists">
+		<div style="margin-top: 5px;">
 			<el-sub-menu :index="val.path" v-if="val.children && val.children.length > 0" :key="val.path">
 				<template #title>
-					<SvgIcon :name="val.meta.icon" />
-					<span>{{ $t(val.meta.title) }}</span>
+					<i :class="val.meta.icon" class="menu-text-icon"></i>
+					<el-text class="menu-text" >{{ $t(val.meta.title) }}</el-text>
 				</template>
-				<SubItem :chil="val.children" />
+				<SubItem :chil="val.children"  />
 			</el-sub-menu>
 			<template v-else>
 				<el-menu-item :index="val.path" :key="val.path">
-					<SvgIcon :name="val.meta.icon" />
+					<i :class="val.meta.icon" class="menu-text-icon"></i>
 					<template #title v-if="!val.meta.isLink || (val.meta.isLink && val.meta.isIframe)">
-						<span>{{ $t(val.meta.title) }}</span>
+						<el-text class="menu-text">{{ $t(val.meta.title) }}</el-text>
 					</template>
 					<template #title v-else>
 						<a class="w100" @click.prevent="onALinkClick(val)">{{ $t(val.meta.title) }}</a>
 					</template>
 				</el-menu-item>
 			</template>
+		</div>
 		</template>
 	</el-menu>
 </template>
@@ -35,7 +38,6 @@ import { defineAsyncComponent, reactive, computed, onMounted, watch } from 'vue'
 import { useRoute, onBeforeRouteUpdate, RouteRecordRaw } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useThemeConfig } from '/@/stores/themeConfig';
-import other from '/@/utils/other';
 
 // 引入组件
 const SubItem = defineAsyncComponent(() => import('/@/layout/navMenu/subItem.vue'));
@@ -74,10 +76,7 @@ const setParentHighlight = (currentRoute: RouteToFrom) => {
 	if (pathSplit.length >= 4 && meta?.isHide) return pathSplit.splice(0, 3).join('/');
 	else return path;
 };
-// 打开外部链接
-const onALinkClick = (val: RouteItem) => {
-	other.handleOpenLink(val);
-};
+
 // 页面加载时
 onMounted(() => {
 	state.defaultActive = setParentHighlight(route);

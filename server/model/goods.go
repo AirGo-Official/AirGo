@@ -24,9 +24,14 @@ type Goods struct {
 	DeliverType string `json:"deliver_type"  gorm:"comment:发货类型，none=不发货，auto=自动发货，manual=手动发货"`
 	DeliverText string `json:"deliver_text"  gorm:"comment:发货内容;type:text"`
 	//订阅参数
-	TotalBandwidth int64 `json:"total_bandwidth"      gorm:"comment:总流量,单位GB"`
-	NodeConnector  int64 `json:"node_connector"       gorm:"comment:可连接客户端数量"`
-	NodeSpeedLimit int64 `json:"node_speed_limit"      gorm:"default:0;comment:限速Mbps（Mbps）"`
+	Price3Month            string `json:"price_3_month"`
+	Price6Month            string `json:"price_6_month"`
+	Price12Month           string `json:"price_12_month"`
+	PriceUnlimitedDuration string `json:"price_unlimited_duration"`
+	EnableTrafficReset     bool   `json:"enable_traffic_reset"`
+	TotalBandwidth         int64  `json:"total_bandwidth"      gorm:"comment:总流量,单位GB"`
+	NodeConnector          int64  `json:"node_connector"       gorm:"comment:可连接客户端数量"`
+	NodeSpeedLimit         int64  `json:"node_speed_limit"     gorm:"default:0;comment:限速Mbps（Mbps）"`
 	//充值参数
 	RechargeAmount string `json:"recharge_amount" gorm:"comment:充值金额"`
 	//关联

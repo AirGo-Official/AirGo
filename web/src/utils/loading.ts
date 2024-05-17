@@ -14,7 +14,7 @@ export const NextLoading = {
         div.setAttribute('class', 'loading-next');
         const htmls = `
 			<div class="loading-next-box">
-				<div class="loading-next-box-warp">
+				<div class="loading-next-box-warp" >
 					<div class="loading-next-box-item"></div>
 					<div class="loading-next-box-item"></div>
 					<div class="loading-next-box-item"></div>
@@ -24,7 +24,14 @@ export const NextLoading = {
 					<div class="loading-next-box-item"></div>
 					<div class="loading-next-box-item"></div>
 					<div class="loading-next-box-item"></div>
+                    <div>
+                          <h3>  </h3>
+                         <h3>loading...</h3>
+                         <h3>tg群组:</h3>
+                         <he><a href="https://t.me/FYLink_Group">https://t.me/FYLink_Group</a></h3>
+                    <div>
 				</div>
+
 			</div>
 		`;
         div.innerHTML = htmls;

@@ -19,6 +19,12 @@ export const useAdminShopStore = defineStore("adminShopStore", {
       is_renew:true,
       des: `<h3 style="color:#00BFFF">新套餐</h3>
 <h3 style="color:#DDA0DD">新套餐</h3>`,
+      //
+      price_3_month:'0.00',
+      price_6_month:'0.00',
+      price_12_month:'0.00',
+      price_unlimited_duration:'0.00',
+      enable_traffic_reset:false,
       goods_type: 'subscribe',
       deliver_type: 'none',
       deliver_text: '',
@@ -83,6 +89,7 @@ export const useAdminShopStore = defineStore("adminShopStore", {
       epay: {
         epay_pid: 0,
         epay_key: '',
+        epay_main_url: '',
         epay_api_url: '',
         epay_return_url: '',
         epay_notify_url: '',
@@ -160,6 +167,7 @@ export const useAdminShopStore = defineStore("adminShopStore", {
         epay: {
           epay_pid: 0,
           epay_key: '',
+          epay_main_url: '',
           epay_api_url: '',
           epay_return_url: '',
           epay_notify_url: '',
@@ -213,7 +221,10 @@ export const useAdminShopStore = defineStore("adminShopStore", {
     async getOrderSummary(params:QueryParams,m:number){
       let mm = new Date().getMonth()
       const res = await request(apiStore.adminApi.orderSummary,params)
-      if (m === (mm+1)){
+      if (res.data === null){
+        return
+      }
+      if (m === (mm+1)){ //本月=4，则mm=3;mm+1=当前月
         this.orderSummary.thisMonth = res.data
       } else {
         this.orderSummary.lastMonth = res.data

@@ -1,19 +1,11 @@
 <template>
   <div>
     <el-dialog v-model="state.isShowDialog" width="90%" destroy-on-close>
-      <el-card>
         <div class="home-container layout-pd">
           <div class="home-card-item" style="height: 200px">
             <div style="height: 100%" ref="homeLineRef"></div>
           </div>
         </div>
-      </el-card>
-<!--      <el-card style="height: 300px">-->
-<!--        <template #header>-->
-<!--          <span>服务信息</span>-->
-<!--        </template>-->
-<!--        <div></div>-->
-<!--      </el-card>-->
     </el-dialog>
   </div>
 
@@ -30,8 +22,6 @@ import { useI18n } from "vue-i18n";
 
 // 定义变量内容
 const homeLineRef = ref();
-const homePieRef = ref();
-const homeBarRef = ref();
 const storesTagsViewRoutes = useTagsViewRoutes();
 const storesThemeConfig = useThemeConfig();
 const { themeConfig } = storeToRefs(storesThemeConfig);
@@ -53,10 +43,13 @@ const state = reactive({
     bgColor: '',
     color: '#303133',
   },
+  customerServiceID:0,
 });
-const openDialog = () => {
+const openDialog = (customerServiceID:number) => {
+  console.log("customerServiceID:",customerServiceID)
+  state.customerServiceID = customerServiceID
   state.isShowDialog = true;
-  getSubTrafficList().then(()=>{
+  trafficStore.getSubTrafficList({id:state.customerServiceID } as UserTrafficLog).then(()=>{
     initLineChart(trafficStoreData.trafficLineChart.value.xAxis,trafficStoreData.trafficLineChart.value.u,trafficStoreData.trafficLineChart.value.d);
   })
 };
@@ -68,9 +61,7 @@ const closeDialog = () => {
 defineExpose({
   openDialog,
 });
-const getSubTrafficList=()=>{
- return  trafficStore.getSubTrafficList()
-}
+
 // 折线图
 const initLineChart = (xAxis:string[],u:number[],d:number[]) => {
   if (!state.global.dispose.some((b: any) => b === state.global.homeChartOne)) state.global.homeChartOne.dispose();
@@ -198,24 +189,6 @@ watch(
   () => isTagsViewCurrenFull.value,
   () => {
     initEchartsResizeFun();
-  }
-);
-// 监听 pinia 中是否开启深色主题
-watch(
-  () => themeConfig.value.isIsDark,
-  (isIsDark) => {
-    nextTick(() => {
-      state.charts.theme = isIsDark ? 'dark' : '';
-      state.charts.bgColor = isIsDark ? 'transparent' : '';
-      state.charts.color = isIsDark ? '#dadada' : '#303133';
-      setTimeout(() => {
-        initLineChart(trafficStoreData.trafficLineChart.value.xAxis,trafficStoreData.trafficLineChart.value.u,trafficStoreData.trafficLineChart.value.d);
-      }, 500);
-    });
-  },
-  {
-    deep: true,
-    immediate: true,
   }
 );
 </script>

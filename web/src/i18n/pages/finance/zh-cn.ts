@@ -1,0 +1,27 @@
+export default {
+	finance:{
+		total_consumption_amount:"总消费",
+		total_commission_amount:"邀请总收益",
+		pending_withdrawal_amount:"待提现收益",
+		total_invitation:"邀请人数",
+		commission_rate:"佣金率",
+		withdraw:"提现到余额",
+		withdraw_threshold:"提现阈值",
+		copy_invitation_link:"复制邀请链接",
+		invitation_code:"邀请码",
+		balance:"余额",
+		title:"标题",
+		amount:"金额",
+		final_amount:"最终金额",
+		//
+		commission:"佣金",
+		created_at:"创建时间",
+		order_user_name:"用户名",
+		subject:"主题",
+		is_withdrew:"提现状态",
+		withdrew:"已提现",
+		not_withdrew:"待提现",
+		//
+		invitation_user:"邀请用户",
+	}
+};

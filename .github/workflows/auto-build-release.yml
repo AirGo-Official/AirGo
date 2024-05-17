@@ -13,19 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [windows, freebsd, openbsd, linux, darwin]
+        goos: [freebsd, openbsd, linux, darwin]
         goarch: [amd64, 386, arm64, arm]
         exclude:
           - goarch: 386
             goos: darwin
           - goarch: arm
             goos: darwin
-
-
-          - goarch: arm
-            goos: windows
-          - goarch: 386
-            goos: windows
 
           - goarch: arm
             goos: freebsd
@@ -40,41 +34,42 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Get version
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.9.0'
 
+      - name: Set version
+        run: |
+          cd ${GITHUB_WORKSPACE}/web
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./src/layout/footer/index.vue
+          cd ${GITHUB_WORKSPACE}/server
+          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./constant/index.go
+
       - name: Build web
         run: |
-          cd web
-          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./src/layout/footer/index.vue
+          cd ${GITHUB_WORKSPACE}/web
           npm install
           npm run build
           rm -rf ../server/web/web
           mv web ../server/web/
 
-      - name: Set version
-        run: |
-          cd server
-          sed -i 's/old-version/${{ steps.get_version.outputs.VERSION }}/g' ./constant/index.go
-
       - name: Build server
-        uses: wangyoucao577/go-release-action@master
+        uses: wangyoucao577/go-release-action@v1
         with:
           github_token: ${{ secrets.ACTION_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          goversion: 1.21.4
+          goversion: 1.22.2
           project_path: server
           binary_name: AirGo
           extra_files: LICENSE server/config.yaml
-          pre_command: export CGO_ENABLED=0
+          pre_command: bash ${GITHUB_WORKSPACE}/server/scripts/pre_command_actions.sh
           build_flags: -trimpath
-          ldflags: -s -w -extldflags -static
+          ldflags: -s -w

@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/ppoonk/AirGo/initialize"
-	"github.com/ppoonk/AirGo/service/admin_logic"
+	"github.com/ppoonk/AirGo/app"
+	"github.com/ppoonk/AirGo/service"
 	"github.com/spf13/cobra"
 )
 
@@ -16,9 +16,24 @@ var resetCmd = &cobra.Command{
 	Use:   "reset",
 	Short: "reset resources",
 	Run: func(cmd *cobra.Command, args []string) {
-		var adminUserService admin_logic.User
-		initialize.InitializeDB(startConfigPath)
-		adminUserService.ResetAdminPassword()
+		reset()
 	},
 	//Args: cobra.MaximumNArgs(1),
+}
+
+func reset() {
+	newApp := app.NewApp()
+
+	newApp.InitConfig(startConfigPath)
+
+	newApp.InitLogrus()
+
+	newApp.InitLocalCache()
+
+	newApp.InitRouter()
+
+	newApp.ConnectDatabase()
+
+	service.AdminUserSvc.ResetAdminPassword()
+
 }

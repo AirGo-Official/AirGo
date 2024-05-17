@@ -2,8 +2,19 @@
   <div style="padding: 15px;">
     <el-card>
       <el-tabs stretch style="height: 100%" @tab-change="tap" v-model="state.currentTapName">
-        <el-tab-pane :label="$t('message.adminServer.tapWebsite')" name="1">
+        <el-tab-pane :label="$t('message.adminServer.tabWebsite')" name="1">
           <el-row style="margin-bottom: 20px">
+            <el-col>
+              <div>
+                <el-icon style="margin-right: 4px" :size="12">
+                  <InfoFilled />
+                </el-icon>
+                {{$t('message.adminServer.Server.website_local_deploy_time')}}
+              </div>
+              <div style="font-size: 20px">{{compileTime}}</div>
+              <el-link type="primary" href="https://raw.githubusercontent.com/AirGo-Official/AirGo/main/version_list.html">{{$t('message.adminServer.Server.web_version_note')}}</el-link>
+
+            </el-col>
             <el-col :span="12">
               <div>
                 <el-icon style="margin-right: 4px" :size="12">
@@ -13,6 +24,7 @@
               </div>
               <div style="font-size: 20px">{{ serverConfig.version.value.currentVersion.version }}</div>
             </el-col>
+            
             <el-col :span="12">
               <div>
                 <el-icon style="margin-right: 4px" :size="12">
@@ -30,7 +42,7 @@
           <el-divider></el-divider>
 
           <el-form :model="serverConfig.serverConfig.value.website" label-position="top">
-            <el-form-item :label="$t('message.adminServer.Server.enable_register')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.enable_register')" >
 
               <el-switch v-model="serverConfig.serverConfig.value.website.enable_register" inline-prompt
                          :active-text="$t('message.common.enable')"
@@ -39,18 +51,35 @@
 
 
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.acceptable_email_suffixes')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.acceptable_email_suffixes')" >
               <el-input v-model="serverConfig.serverConfig.value.website.acceptable_email_suffixes" type="textarea"
                         autosize />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.enable_email_code')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.enable_email_code')" >
               <el-switch v-model="serverConfig.serverConfig.value.website.enable_email_code" inline-prompt
                          :active-text="$t('message.common.enable')"
                          :inactive-text="$t('message.common.disable')"
                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
             </el-form-item>
-            <el-divider></el-divider>
-            <el-form-item :label="$t('message.adminServer.Server.frontend_url')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.enable_base64_captcha')" >
+              <el-switch v-model="serverConfig.serverConfig.value.website.enable_base64_captcha" inline-prompt
+                         :active-text="$t('message.common.enable')"
+                         :inactive-text="$t('message.common.disable')"
+                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+            </el-form-item>
+            <el-form-item :label="$t('message.adminServer.Server.enable_swagger_api')" >
+              <el-switch v-model="serverConfig.serverConfig.value.website.enable_swagger_api" inline-prompt
+                         :active-text="$t('message.common.enable')"
+                         :inactive-text="$t('message.common.disable')"
+                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+            </el-form-item>
+            <el-form-item :label="$t('message.adminServer.Server.enable_assets_api')" >
+              <el-switch v-model="serverConfig.serverConfig.value.website.enable_assets_api" inline-prompt
+                         :active-text="$t('message.common.enable')"
+                         :inactive-text="$t('message.common.disable')"
+                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+            </el-form-item>
+            <el-form-item :label="$t('message.adminServer.Server.frontend_url')" >
               <el-input v-model="serverConfig.serverConfig.value.website.frontend_url" placeholder="http://xxx.com" />
             </el-form-item>
             <el-divider></el-divider>
@@ -59,17 +88,31 @@
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane :label="$t('message.adminServer.tapSubscribe')" name="2">
-          <el-form-item :label="$t('message.adminServer.Server.tek')" class="label">
+        <el-tab-pane :label="$t('message.adminServer.tabSubscribe')" name="2">
+          <el-form-item :label="$t('message.adminServer.Server.tek')" >
             <el-input v-model="serverConfig.serverConfig.value.subscribe.tek" />
           </el-form-item>
-          <el-form-item :label="$t('message.adminServer.Server.sub_name')" class="label">
+          <el-form-item :label="$t('message.adminServer.Server.sub_name')" >
             <el-input v-model="serverConfig.serverConfig.value.subscribe.sub_name" />
           </el-form-item>
-          <el-form-item :label="$t('message.adminServer.Server.backend_url')" class="label">
+          <el-form-item :label="$t('message.adminServer.Server.backend_url')" >
             <el-input v-model="serverConfig.serverConfig.value.subscribe.backend_url" placeholder="http://xxx.com"
                       type="textarea" autosize />
             <span style="color: #9b9da1">*{{ $t("message.adminServer.Server.sub_prefix_msg") }}</span>
+          </el-form-item>
+          <el-form-item :label="$t('message.adminServer.Server.subscribe_domain_bind_request')" >
+            <el-switch v-model="serverConfig.serverConfig.value.subscribe.subscribe_domain_bind_request" inline-prompt
+                       :active-text="$t('message.common.enable')"
+                       :inactive-text="$t('message.common.disable')"
+                       style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+          </el-form-item>
+          <el-form-item :label="$t('message.adminServer.Server.clash_rule')" >
+            <el-input v-model="serverConfig.serverConfig.value.subscribe.clash_rule"
+                      type="textarea" :rows="10" />
+          </el-form-item>
+          <el-form-item :label="$t('message.adminServer.Server.surge_rule')" >
+            <el-input v-model="serverConfig.serverConfig.value.subscribe.surge_rule"
+                      type="textarea" :rows="10" />
           </el-form-item>
           <el-divider></el-divider>
           <el-form-item>
@@ -77,7 +120,7 @@
           </el-form-item>
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapPayment')" name="3">
+        <el-tab-pane :label="$t('message.adminServer.tabPayment')" name="3">
           <div>
             <el-button size="default" type="primary" class="ml10" @click="openPayDialog('add')">
               <el-icon>
@@ -123,30 +166,30 @@
           </div>
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapEmail')" name="4">
+        <el-tab-pane :label="$t('message.adminServer.tabEmail')" name="4">
           <el-form :model="serverConfig.serverConfig.value.email" label-position="top">
-            <el-form-item :label="$t('message.adminServer.Server.email_host')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.email_host')" >
               <el-input v-model="serverConfig.serverConfig.value.email.email_host" placeholder="mail.example.com" />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.email_port')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.email_port')" >
               <el-input v-model.number="serverConfig.serverConfig.value.email.email_port" type="number" />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.email_from')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.email_from')" >
               <el-input v-model="serverConfig.serverConfig.value.email.email_from" placeholder="admin@qq.com" />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.email_from_alias')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.email_from_alias')" >
               <el-input v-model="serverConfig.serverConfig.value.email.email_from_alias" placeholder="admin@qq.com" />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.email_nickname')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.email_nickname')" >
               <el-input v-model="serverConfig.serverConfig.value.email.email_nickname" placeholder="Admin" />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.email_secret')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.email_secret')" >
               <el-input v-model="serverConfig.serverConfig.value.email.email_secret" />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.email_subject')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.email_subject')" >
               <el-input v-model="serverConfig.serverConfig.value.email.email_subject" />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.email_content')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.email_content')" >
               <el-input v-model="serverConfig.serverConfig.value.email.email_content" type="textarea" autosize />
               <el-text style="color: #9b9da1">{{ $t("message.adminServer.emailCodeTip") }}
               </el-text>
@@ -160,9 +203,9 @@
 
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapSecurity')" name="5">
+        <el-tab-pane :label="$t('message.adminServer.tabSecurity')" name="5">
           <el-form :model="serverConfig.serverConfig.value.security" label-position="top">
-            <el-form-item :label="$t('message.adminServer.Server.ip_role_param')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.ip_role_param')" >
               <el-col :span="2">
                 <el-input-number v-model="serverConfig.serverConfig.value.security.rate_limit_params.ip_role_param"
                                  :precision="0" :step="10" :min="0" :max="10000000" />
@@ -175,7 +218,7 @@
               </el-col>
             </el-form-item>
 
-            <el-form-item :label="$t('message.adminServer.Server.visit_param')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.visit_param')" >
               <el-col :span="2">
                 <el-input-number v-model="serverConfig.serverConfig.value.security.rate_limit_params.visit_param"
                                  :precision="0" :step="10" :min="0" :max="10000000" />
@@ -188,13 +231,13 @@
               </el-col>
             </el-form-item>
             <el-divider></el-divider>
-            <el-form-item :label="$t('message.adminServer.Server.signing_key')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.signing_key')" >
               <el-input v-model="serverConfig.serverConfig.value.security.jwt.signing_key" />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.issuer')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.issuer')" >
               <el-input v-model="serverConfig.serverConfig.value.security.jwt.issuer" />
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Server.expires_time')" class="label">
+            <el-form-item :label="$t('message.adminServer.Server.expires_time')" >
               <el-input v-model="serverConfig.serverConfig.value.security.jwt.expires_time" />
             </el-form-item>
             <el-form-item>
@@ -203,13 +246,13 @@
           </el-form>
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapNotice')" name="6">
+        <el-tab-pane :label="$t('message.adminServer.tabNotice')" name="6">
           <div style="margin-bottom: 50px">
             <el-divider content-position="left"><span style="color: var(--el-color-primary) !important">{{ $t("message.adminServer.Server.admin_id") }}</span></el-divider>
             <div>
               <el-form :model="serverConfig.serverConfig.value.notice" label-width="150px"
                        label-position="left">
-                <el-form-item :label="$t('message.adminServer.Server.admin_id')" class="label">
+                <el-form-item :label="$t('message.adminServer.Server.admin_id')" >
                   <el-input v-model="serverConfig.serverConfig.value.notice.admin_id" type="textarea" autosize />
                   <span style="color: #9b9da1">*{{$t('message.adminServer.Server.admin_id_msg')}}</span>
                 </el-form-item>
@@ -222,18 +265,18 @@
             <div>
               <el-form :model="serverConfig.serverConfig.value.notice" label-width="100px"
                        label-position="left">
-                <el-form-item :label="$t('message.adminServer.Server.enable_tg_bot')" class="label">
+                <el-form-item :label="$t('message.adminServer.Server.enable_tg_bot')" >
                   <el-switch v-model="serverConfig.serverConfig.value.notice.enable_tg_bot" inline-prompt
                              :active-text="$t('message.common.enable')"
                              :inactive-text="$t('message.common.disable')"
                              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
                 </el-form-item>
 
-                <el-form-item :label="$t('message.adminServer.Server.bot_token')" class="label">
+                <el-form-item :label="$t('message.adminServer.Server.bot_token')" >
                   <el-input v-model="serverConfig.serverConfig.value.notice.bot_token"
                             placeholder="1234567890:AAAAABBBBBCCCCCDDDDFFFFGGGHHHJJKKLL" />
                 </el-form-item>
-                <el-form-item :label="$t('message.adminServer.Server.tg_socks5')" class="label">
+                <el-form-item :label="$t('message.adminServer.Server.tg_socks5')" >
                   <el-input v-model="serverConfig.serverConfig.value.notice.tg_socks5"
                             placeholder="127.0.0.1:1080" />
                 </el-form-item>
@@ -246,25 +289,25 @@
             <div>
               <el-form :model="serverConfig.serverConfig.value.notice" label-width="150px"
                        label-position="left">
-                <el-form-item :label="$t('message.adminServer.Server.when_node_offline')" class="label">
+                <el-form-item :label="$t('message.adminServer.Server.when_node_offline')" >
                   <el-switch v-model="serverConfig.serverConfig.value.notice.when_node_offline" inline-prompt
                              :active-text="$t('message.common.enable')"
                              :inactive-text="$t('message.common.disable')"
                              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
                 </el-form-item>
-                <el-form-item :label="$t('message.adminServer.Server.when_user_registered')" class="label">
+                <el-form-item :label="$t('message.adminServer.Server.when_user_registered')" >
                   <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_registered" inline-prompt
                              :active-text="$t('message.common.enable')"
                              :inactive-text="$t('message.common.disable')"
                              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
                 </el-form-item>
-                <el-form-item :label="$t('message.adminServer.Server.when_user_purchased')" class="label">
+                <el-form-item :label="$t('message.adminServer.Server.when_user_purchased')" >
                   <el-switch v-model="serverConfig.serverConfig.value.notice.when_user_purchased" inline-prompt
                              :active-text="$t('message.common.enable')"
                              :inactive-text="$t('message.common.disable')"
                              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
                 </el-form-item>
-                <el-form-item :label="$t('message.adminServer.Server.when_new_ticket')" class="label">
+                <el-form-item :label="$t('message.adminServer.Server.when_new_ticket')" >
                   <el-switch v-model="serverConfig.serverConfig.value.notice.when_new_ticket" inline-prompt
                              :active-text="$t('message.common.enable')"
                              :inactive-text="$t('message.common.disable')"
@@ -280,13 +323,13 @@
 
         </el-tab-pane>
 
-        <el-tab-pane :label="$t('message.adminServer.tapMigration')" name="7">
+        <el-tab-pane :label="$t('message.adminServer.tabMigration')" name="7">
           <div style="margin-bottom: 20px">
             <el-alert :title="$t('message.adminServer.migrationTip')" type="warning" effect="dark" />
           </div>
 
           <el-form v-model="state.migrationParams" label-position="top">
-            <el-form-item :label="$t('message.adminServer.Migration.panel_type')" class="label">
+            <el-form-item :label="$t('message.adminServer.Migration.panel_type')" >
               <el-select v-model="state.migrationParams.panel_type" placeholder="Select">
                 <el-option
                   v-for="item in state.panels"
@@ -296,19 +339,19 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Migration.db_address')" class="label">
+            <el-form-item :label="$t('message.adminServer.Migration.db_address')" >
               <el-input v-model="state.migrationParams.db_address"></el-input>
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Migration.db_port')" class="label">
+            <el-form-item :label="$t('message.adminServer.Migration.db_port')" >
               <el-input-number v-model="state.migrationParams.db_port"></el-input-number>
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Migration.db_name')" class="label">
+            <el-form-item :label="$t('message.adminServer.Migration.db_name')" >
               <el-input v-model="state.migrationParams.db_name"></el-input>
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Migration.db_username')" class="label">
+            <el-form-item :label="$t('message.adminServer.Migration.db_username')" >
               <el-input v-model="state.migrationParams.db_username"></el-input>
             </el-form-item>
-            <el-form-item :label="$t('message.adminServer.Migration.db_password')" class="label">
+            <el-form-item :label="$t('message.adminServer.Migration.db_password')" >
               <el-input v-model="state.migrationParams.db_password"></el-input>
             </el-form-item>
             <el-form-item>
@@ -316,6 +359,58 @@
             </el-form-item>
           </el-form>
 
+        </el-tab-pane>
+
+        <el-tab-pane :label="$t('message.adminServer.tabFinance')" name="8">
+          <div>
+            <el-form :model="serverConfig.serverConfig.value.finance" label-width="150px"
+                     label-position="left">
+              <el-form-item :label="$t('message.adminServer.Server.enable_invitation_commission')" >
+                <el-switch v-model="serverConfig.serverConfig.value.finance.enable_invitation_commission" inline-prompt
+                           :active-text="$t('message.common.enable')"
+                           :inactive-text="$t('message.common.disable')"
+                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+              </el-form-item>
+              <el-form-item :label="$t('message.adminServer.Server.commission_rate')" >
+                <el-input-number v-model="serverConfig.serverConfig.value.finance.commission_rate" :min="0" :step="0.01" :max="1"/>
+              </el-form-item>
+              <el-form-item :label="$t('message.adminServer.Server.withdraw_threshold')" >
+                <el-input-number v-model="serverConfig.serverConfig.value.finance.withdraw_threshold" :min="0" :step="1"/>
+              </el-form-item>
+
+              <el-divider></el-divider>
+
+              <el-form-item :label="$t('message.adminServer.Server.enable_lottery')" >
+                <el-switch v-model="serverConfig.serverConfig.value.finance.enable_lottery" inline-prompt
+                           :active-text="$t('message.common.enable')"
+                           :inactive-text="$t('message.common.disable')"
+                           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
+              </el-form-item>
+              <el-form-item :label="$t('message.adminServer.Server.jackpot')" >
+              </el-form-item>
+            </el-form>
+            <el-form :model="serverConfig.serverConfig.value.finance" label-width="100px"
+                     label-position="right">
+              <div v-for="(v,k) in serverConfig.serverConfig.value.finance.jackpot" :key="k">
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item :label="$t('message.adminServer.Server.prize')">
+                      <el-input-number v-model.number="v.balance" :precision="2" :min="0" :step="0.01"></el-input-number>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item :label="$t('message.adminServer.Server.weight')">
+                      <el-input-number v-model.number="v.weight" :precision="0" :min="0" :step="1"></el-input-number>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </div>
+            </el-form>
+            <el-form-item style="margin-top: 20px">
+              <el-button @click="onSubmit()" type="primary">{{ $t("message.common.button_confirm") }}
+              </el-button>
+            </el-form-item>
+          </div>
         </el-tab-pane>
 
       </el-tabs>
@@ -395,6 +490,7 @@ import { useConstantStore } from "/@/stores/constantStore";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { Local } from "/@/utils/storage";
 import { Codemirror } from "vue-codemirror";
+import {apiUrl} from "/@/utils/request"
 
 const apiStore = useApiStore();
 const apiStoreData = storeToRefs(apiStore);
@@ -409,7 +505,6 @@ const userStore = useUserStore();
 const { t } = useI18n();
 const constantStore = useConstantStore();
 const codemirrorRef = ref()
-
 
 const state = reactive({
   currentTapName: "1",
@@ -435,9 +530,8 @@ const state = reactive({
   logContent:'',
   logOptions:{
     tabSize: 2, // 缩进格式
-    // theme: 'rubyblue', // 指定主题，对应主题库 JS 需要提前引入
+    // theme: 'rubyblue',
     lineNumbers: true, // 是否显示行号
-    //指定语言类型,如果需要编辑和显示其他语言,需要import语言js然后修改此配置
     // mode: 'javascript',
     line: true,
     styleActiveLine: true, // 高亮选中行
@@ -532,7 +626,7 @@ const openUpdateDialog = () => {
 
 const SSE = () => {
   state.isShowLogData = true;
-  let url = getApiPrefixAddress() + apiStore.adminApi.updateLatestVersion.path;
+  const url = apiUrl + apiStore.adminApi.updateLatestVersion.path;
   let token = Local.get("token");
   if (window.EventSource) {
     // let sseSource = new EventSource(url, { withCredentials: true });
@@ -584,6 +678,25 @@ onMounted(() => {
   getVersion();                  //获取版本
 });
 
+
+
+</script>
+
+
+<script lang='ts'>        //读取前端本地部署时间
+import versionJSON from "/src/utils/versionJSON.json";    
+import moment from "moment";
+export default {
+  data(){
+      return {
+          compileTime: ''
+      }
+  },
+  mounted(){
+      console.log(versionJSON)
+      this.compileTime = versionJSON
+  }
+}
 </script>
 
 <style lang="scss">
@@ -591,4 +704,8 @@ onMounted(() => {
   font-weight: bolder;
   //font-size: 15px;
 }
+.form-inline .el-input {
+  --el-input-width: 100px;
+}
+
 </style>

@@ -3,7 +3,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Local } from "/@/utils/storage";
 import qs from "qs";
 
-const apiUrl = getApiPrefixAddress()
+export const apiUrl = await getApiPrefixAddress()
 
 // 配置新建一个 axios 实例
 const service: AxiosInstance = axios.create({
@@ -118,21 +118,46 @@ export function request(apiItem: ApiItem, params?: any): Promise<AxiosResponse<a
 /**
  * 获取api前缀地址
  */
-export function getApiPrefixAddress(){
-  let apiUrl = import.meta.env.VITE_API_URL;
-  if (!apiUrl) {
-    apiUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+export async function getApiPrefixAddress() {
+  // @ts-ignore
+  const url: string = window.httpurl
+  if (url) {
+    // @ts-ignore
+    let arr: string[] = window.httpurl.split('|')
+    let apiPre: string = ''
+    const axiosClient = axios.create({
+      timeout: 5000
+    })
+    for (const item of arr) {
+      apiPre = item.trim()
+      try {
+        const res = await axiosClient.get(apiPre + "/api/public/server/getPublicSetting")
+        if (res.data) {
+          console.log("apiPre:", apiPre)
+          break
+        }
+      } catch (err) {}
+    }
+    return apiPre
+  } else {
+    let str = window.location.protocol + "//" + window.location.hostname;
+    if (window.location.port){
+      str+=":"+window.location.port;
+    }
+    return str
   }
-  return apiUrl
 }
 
 /**
  * 需要保持session时用此方法
  */
-export function getCurrentApiPrefixAddress(){
-    return  window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+export function getCurrentAddress(){
+  let str = window.location.protocol + "//" + window.location.hostname;
+  if (window.location.port){
+    str+=":"+window.location.port;
+  }
+  return str
 }
-
 
 
 

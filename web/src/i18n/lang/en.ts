@@ -21,7 +21,8 @@ export default {
     personal: "Personal",
     serverStatus: "Server Status",
     documents: "Documents",
-    ticket: "Ticket"
+    ticket: "Ticket",
+    finance:"Finance Beta",
   },
   staticRoutes: {
     signIn: "signIn",
@@ -47,7 +48,6 @@ export default {
     dropdown4: "401",
     dropdown5: "Log out",
     dropdown6: "Code warehouse",
-    searchPlaceholder: "Menu search: support Chinese, routing path",
     newTitle: "notice",
     newBtn: "All read",
     newGo: "Go to the notification center",
@@ -56,7 +56,9 @@ export default {
     logOutMessage: "This operation will log out. Do you want to continue?",
     logOutConfirm: "determine",
     logOutCancel: "cancel",
-    logOutExit: "Exiting"
+    logOutExit: "Exiting",
+    back:"back",
+
   },
   tagsView: {
     refresh: "refresh",
@@ -71,11 +73,7 @@ export default {
     foundMsg: "You can check the web address first, and then re-enter or give us feedback.",
     foundBtn: "Back to home page"
   },
-  noAccess: {
-    accessTitle: "You are not authorized to operate~",
-    accessMsg: "Contact information: add QQ group discussion 665452019",
-    accessBtn: "Reauthorization"
-  },
+
   layout: {
     //网站设置
     websiteSettings:"Website Settings",
@@ -110,7 +108,6 @@ export default {
     fourTitle: "Interface display",
     fourIsShowLogo: "Sidebar logo",
     fourIsBreadcrumb: "Open breadcrumb",
-    fourIsBreadcrumbIcon: "Open breadcrumb icon",
     fourIsTagsview: "Open tagsview",
     fourIsTagsviewIcon: "Open tagsview Icon",
     fourIsCacheTagsView: "Enable tagsview cache",

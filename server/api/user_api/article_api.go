@@ -5,11 +5,18 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/common_logic"
+	service "github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/response"
 )
 
-// GetArticleList 获取文章
+// GetArticleList
+// @Tags [customer api] article
+// @Summary 获取文章列表
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.QueryParams true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/customer/article/getArticleList [post]
 func GetArticleList(ctx *gin.Context) {
 	var params model.QueryParams
 	err := ctx.ShouldBind(&params)
@@ -19,7 +26,7 @@ func GetArticleList(ctx *gin.Context) {
 		return
 	}
 	params.TableName = "article" //查询article表
-	res, total, err := common_logic.CommonSqlFindWithFieldParams(&params)
+	res, total, err := service.CommonSqlFindWithFieldParams(&params)
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("GetArticleList error:"+err.Error(), nil, ctx)
@@ -29,15 +36,4 @@ func GetArticleList(ctx *gin.Context) {
 		Total: total,
 		Data:  res,
 	}, ctx)
-}
-
-// 获取默认的首页弹窗和自定义内容
-func GetDefaultArticleList(ctx *gin.Context) {
-	data, err := articleService.GetDefaultArticle()
-	if err != nil {
-		global.Logrus.Error(err)
-		response.Fail("GetDefaultArticleList error:"+err.Error(), nil, ctx)
-		return
-	}
-	response.OK("GetDefaultArticleList success", data, ctx)
 }

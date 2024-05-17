@@ -12,7 +12,6 @@ type NodeTrafficLog struct {
 }
 
 // 用户订阅流量统计
-// todo
 type UserTrafficLog struct {
 	CreatedAt time.Time `json:"created_at"`
 	ID        int64     `json:"id"          gorm:"primaryKey"`

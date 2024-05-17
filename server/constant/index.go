@@ -57,7 +57,7 @@ const (
 	ORDER_STATUS_TRADE_CLOSED   = "TRADE_CLOSED"
 	ORDER_STATUS_TRADE_SUCCESS  = "TRADE_SUCCESS"
 	ORDER_STATUS_TRADE_FINISHED = "TRADE_FINISHED"
-	ORDER_STATUS_COMPLETED      = "COMPLETED "
+	ORDER_STATUS_COMPLETED      = "COMPLETED"
 
 	// 支付类型
 	PAY_TYPE_ALIPAY  = "alipay"  // 支付宝alipay
@@ -71,6 +71,20 @@ const (
 	ARTICLE_TYPE_KNOWLEDGE = "knowledge"
 
 	// github
-	AIRGO_GITHUB_API          = "https://api.github.com/repos/ppoonk/AirGo/releases/latest"
-	AIRGO_GITHUB_DOWNLOAD_PRE = "https://github.com/ppoonk/AirGo/releases/download"
+	AIRGO_GITHUB_API          = "https://api.github.com/repos/shuangyu233/AirGo_modify/releases/latest"
+	AIRGO_GITHUB_DOWNLOAD_PRE = "https://github.com/shuangyu233/AirGo_modify/releases/download"
+
+	//finance
+	BALANCE_STATEMENT_TITLE_RECHARGE    = "Recharge"    //充值
+	BALANCE_STATEMENT_TITLE_EXPENDITURE = "Expenditure" //消费
+	BALANCE_STATEMENT_TITLE_WITHDRAW    = "Withdraw"    //提现
+	BALANCE_STATEMENT_TITLE_PRIZE       = "Prize"       //提现
+	BALANCE_STATEMENT_TYPE_PLUS         = "Plus"
+	BALANCE_STATEMENT_TYPE_REDUCE       = "Reduce"
+
+	//节点后端
+	NODE_BACKEND_TASK_TITLE_NODE_STATUS                 = "NODE_STATUS"
+	NODE_BACKEND_TASK_TITLE_NODE_TRAFFIC                = "NODE_TRAFFIC"
+	NODE_BACKEND_TASK_TITLE_UPDATE_CUSTOMER_TRAFFICLOG  = "UPDATE_CUSTOMER_TRAFFICLOG"
+	NODE_BACKEND_TASK_TITLE_UPDATE_CUSTOMER_TRAFFICUSED = "UPDATE_CUSTOMER_TRAFFICUSED"
 )

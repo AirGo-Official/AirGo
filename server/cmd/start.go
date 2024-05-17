@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ppoonk/AirGo/app"
 	"github.com/ppoonk/AirGo/constant"
-	"github.com/ppoonk/AirGo/initialize"
 	"github.com/spf13/cobra"
 )
 
@@ -20,6 +20,27 @@ var startCmd = &cobra.Command{
 	Short: "start AirGo",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("[AirGo version] " + constant.V)
-		initialize.InitializeAll(startConfigPath) //初始化系统资源并启动路由
+		start()
 	},
+}
+
+func start() {
+
+	newApp := app.NewApp()
+
+	newApp.InitConfig(startConfigPath)
+
+	newApp.InitLogrus()
+
+	newApp.InitLocalCache()
+
+	newApp.InitRouter()
+
+	newApp.ConnectDatabase()
+
+	newApp.InitGlobalVariable()
+
+	newApp.InitTasks()
+
+	newApp.Start()
 }

@@ -249,10 +249,12 @@
   font-size: 14px;
 }
 
-/* Dialog 对话框
-------------------------------- */
+
 .el-overlay {
   overflow: hidden;
+  -webkit-backdrop-filter: blur(1.5px);
+  backdrop-filter: blur(1.5px);
+  background-color: rgba(0, 0, 0, 0.301) ;
 
   .el-overlay-dialog {
     display: flex;
@@ -262,19 +264,27 @@
     width: 100%;
     height: 100%;
 
-    .el-dialog {
-      margin: 0 auto !important;
-      position: absolute;
 
-      .el-dialog__body {
-        padding: 20px !important;
-      }
-    }
+  }
+}
+
+/* Dialog 对话框
+------------------------------- */
+
+.el-dialog {
+  margin: 0 auto !important;
+  position: absolute;
+  border-radius: 1vh;
+  box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.250);
+  max-height: 80vh;
+
+  .el-dialog__body {
+    padding: 0.5vh !important;
   }
 }
 
 .el-dialog__body {
-  max-height: calc(90vh - 111px) !important;
+  max-height: 63vh !important;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -362,4 +372,53 @@
     height: 100%;
     overflow: auto;
   }
+}
+
+/*菜单移动端样式*/
+.layout-aside-mobile-mode{
+  -webkit-backdrop-filter: blur(1.5px);
+  backdrop-filter: blur(1.5px);
+  background-color: rgba(0, 0, 0, 0.301) ;
+}
+
+
+
+.menu-text{
+  color: var(--el-text-color-primary);
+  font-size:1em;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+}
+
+.menu-text-icon{
+  margin-left: 0.8em;
+  margin-right: 0.8em;
+  font-size:1.1em;
+
+}
+
+.menu-title{
+  font-size: 1.2em;
+  font-weight: 750;
+  
+}
+
+.memu-logo{
+  width: 2.1em;
+  margin-right: 0.5em;
+}
+
+.item-title{
+  margin-top: 0.5em;
+  font-weight: bolder;
+  font-size: clamp(1.5rem, 2vw, 1.5rem);
+}
+
+.item-card{
+  width: auto;
+  padding: 0px !important;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.300);
+  border-radius: 10px;
+  display: flex;
+  margin-top: 0.8em;
 }

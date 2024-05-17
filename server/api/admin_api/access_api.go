@@ -5,10 +5,18 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/common_logic"
+	"github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/response"
 )
 
+// NewAccessRoutes
+// @Tags [admin api] access
+// @Summary 新建访问控制
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Access true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/access/newAccess [post]
 func NewAccessRoutes(ctx *gin.Context) {
 	var acc model.Access
 	err := ctx.ShouldBind(&acc)
@@ -17,7 +25,7 @@ func NewAccessRoutes(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = common_logic.CommonSqlCreate[model.Access](acc)
+	err = service.CommonSqlCreate[model.Access](acc)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("NewAccessRoutes error:"+err.Error(), nil, ctx)
@@ -27,7 +35,14 @@ func NewAccessRoutes(ctx *gin.Context) {
 
 }
 
-// 修改路由控制
+// UpdateAccessRoutes
+// @Tags [admin api] access
+// @Summary 修改路由控制
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Access true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/access/updateAccess [post]
 func UpdateAccessRoutes(ctx *gin.Context) {
 	var acc model.Access
 	err := ctx.ShouldBind(&acc)
@@ -36,7 +51,7 @@ func UpdateAccessRoutes(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = common_logic.CommonSqlSave[model.Access](acc)
+	err = service.CommonSqlSave[model.Access](acc)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("UpdateAccessRoutes error:"+err.Error(), nil, ctx)
@@ -46,7 +61,14 @@ func UpdateAccessRoutes(ctx *gin.Context) {
 
 }
 
-// 删除路由控制
+// DeleteAccessRoutes
+// @Tags [admin api] access
+// @Summary 删除访问控制
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Access true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/access/deleteAccess [delete]
 func DeleteAccessRoutes(ctx *gin.Context) {
 	var acc model.Access
 	err := ctx.ShouldBind(&acc)
@@ -55,7 +77,7 @@ func DeleteAccessRoutes(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = common_logic.CommonSqlDelete[model.Access](acc)
+	err = service.CommonSqlDelete[model.Access](acc)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("DeleteAccessRoutes error:"+err.Error(), nil, ctx)
@@ -65,7 +87,14 @@ func DeleteAccessRoutes(ctx *gin.Context) {
 
 }
 
-// 查询路由控制列表
+// GetAccessRoutesList
+// @Tags [admin api] access
+// @Summary 查询路由控制列表
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.QueryParams true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/access/getAccessList [post]
 func GetAccessRoutesList(ctx *gin.Context) {
 	var p model.QueryParams
 	err := ctx.ShouldBind(&p)
@@ -74,7 +103,7 @@ func GetAccessRoutesList(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	list, total, err := common_logic.CommonSqlFindWithFieldParams(&p)
+	list, total, err := service.CommonSqlFindWithFieldParams(&p)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetAccessRoutesList error:"+err.Error(), nil, ctx)

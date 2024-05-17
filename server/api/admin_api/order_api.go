@@ -5,12 +5,18 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/common_logic"
-	"github.com/ppoonk/AirGo/service/user_logic"
+	"github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/response"
 )
 
-// 获取全部订单，分页获取
+// GetOrderList
+// @Tags [admin api] order
+// @Summary 获取全部订单，分页获取
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.QueryParams true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/order/getOrderList [post]
 func GetOrderList(ctx *gin.Context) {
 	var params model.QueryParams
 	err := ctx.ShouldBind(&params)
@@ -19,7 +25,7 @@ func GetOrderList(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	res, total, err := common_logic.CommonSqlFindWithFieldParams(&params)
+	res, total, err := service.CommonSqlFindWithFieldParams(&params)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetOrderList error:"+err.Error(), nil, ctx)
@@ -32,11 +38,18 @@ func GetOrderList(ctx *gin.Context) {
 
 }
 
-// 获取订单统计
+// OrderSummary
+// @Tags [admin api] order
+// @Summary 获取订单统计
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.QueryParams true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/order/orderSummary [post]
 func OrderSummary(ctx *gin.Context) {
 	var params model.QueryParams
 	err := ctx.ShouldBind(&params)
-	res, err := orderService.OrderSummary(&params)
+	res, err := service.AdminOrderSvc.OrderSummary(&params)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
@@ -45,7 +58,14 @@ func OrderSummary(ctx *gin.Context) {
 	response.OK("OrderSummary success", res, ctx)
 }
 
-// 更新用户订单
+// UpdateOrder
+// @Tags [admin api] order
+// @Summary 更新用户订单
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Order true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/order/updateOrder [post]
 func UpdateOrder(ctx *gin.Context) {
 	var order model.Order
 	err := ctx.ShouldBind(&order)
@@ -54,17 +74,16 @@ func UpdateOrder(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = orderService.UpdateOrder(&order) //更新数据库状态
+	err = service.AdminOrderSvc.UpdateOrder(&order) //更新数据库状态
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("UpdateOrder error:"+err.Error(), nil, ctx)
 		return
 	}
 	//如果订单状态是 支付成功 或 交易结束，将订单进行处理
-	var userOrderService user_logic.Order
 	if order.TradeStatus == constant.ORDER_STATUS_TRADE_SUCCESS || order.TradeStatus == constant.ORDER_STATUS_TRADE_FINISHED {
-		userOrderService.DeleteOneOrderFromCache(&order) //删除缓存
-		err = userOrderService.PaymentSuccessfullyOrderHandler(&order)
+		service.OrderSvc.DeleteOneOrderFromCache(&order) //删除缓存
+		err = service.OrderSvc.PaymentSuccessfullyOrderHandler(&order)
 		if err != nil {
 			if err != nil {
 				global.Logrus.Error(err)
@@ -73,7 +92,7 @@ func UpdateOrder(ctx *gin.Context) {
 			}
 		}
 	} else {
-		userOrderService.UpdateOneOrderToCache(&order) //更新缓存
+		service.OrderSvc.UpdateOneOrderToCache(&order) //更新缓存
 	}
 	response.OK("UpdateOrder success", nil, ctx)
 }

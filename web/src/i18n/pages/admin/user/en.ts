@@ -18,7 +18,7 @@ export default {
       avatar: "avatar",
       enable: "status",
       invitation_code: "invitation code",
-      referrer_code: "referrer code",
+      referrer_user_id: "referrer ID",
       balance: "balance",
       tg_id: "tg id",
       role_group: "role group",	//角色组

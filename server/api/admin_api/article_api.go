@@ -5,11 +5,18 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/common_logic"
+	"github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/response"
 )
 
-// 新建文章
+// NewArticle
+// @Tags [admin api] article
+// @Summary 新建文章
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Article true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/article/newArticle [post]
 func NewArticle(ctx *gin.Context) {
 	var article model.Article
 	err := ctx.ShouldBind(&article)
@@ -18,7 +25,7 @@ func NewArticle(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = common_logic.CommonSqlCreate[model.Article](article)
+	err = service.CommonSqlCreate[model.Article](article)
 
 	if err != nil {
 		global.Logrus.Error(err)
@@ -28,7 +35,14 @@ func NewArticle(ctx *gin.Context) {
 	response.OK("NewArticle success", nil, ctx)
 }
 
-// 删除文章
+// DeleteArticle
+// @Tags [admin api] article
+// @Summary 删除文章
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Article true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/article/deleteArticle [delete]
 func DeleteArticle(ctx *gin.Context) {
 	var article model.Article
 	err := ctx.ShouldBind(&article)
@@ -37,7 +51,7 @@ func DeleteArticle(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = common_logic.CommonSqlDelete[model.Article, model.Article](article)
+	err = service.CommonSqlDelete[model.Article, model.Article](article)
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("DeleteArticle error:"+err.Error(), nil, ctx)
@@ -46,7 +60,14 @@ func DeleteArticle(ctx *gin.Context) {
 	response.OK("DeleteArticle success", nil, ctx)
 }
 
-// 更新文章
+// UpdateArticle
+// @Tags [admin api] article
+// @Summary 更新文章
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Article true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/article/updateArticle [post]
 func UpdateArticle(ctx *gin.Context) {
 	var article model.Article
 	err := ctx.ShouldBind(&article)
@@ -55,7 +76,7 @@ func UpdateArticle(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = articleService.UpdateArticle(&article)
+	err = service.AdminArticleSvc.UpdateArticle(&article)
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("UpdateArticle error:"+err.Error(), nil, ctx)
@@ -67,7 +88,14 @@ func UpdateArticle(ctx *gin.Context) {
 
 }
 
-// 获取文章
+// GetArticleList
+// @Tags [admin api] article
+// @Summary 获取文章列表
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.QueryParams true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/article/getArticleList [post]
 func GetArticleList(ctx *gin.Context) {
 	var params model.QueryParams
 	err := ctx.ShouldBind(&params)
@@ -77,7 +105,7 @@ func GetArticleList(ctx *gin.Context) {
 		return
 	}
 	params.TableName = "article" //
-	res, total, err := common_logic.CommonSqlFindWithFieldParams(&params)
+	res, total, err := service.CommonSqlFindWithFieldParams(&params)
 	if err != nil {
 		global.Logrus.Error(err)
 		response.Fail("GetArticle error:"+err.Error(), nil, ctx)

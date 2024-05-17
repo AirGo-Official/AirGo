@@ -1,0 +1,3630 @@
+definitions:
+  model.AGNodeStatus:
+    properties:
+      cpu:
+        type: number
+      disk:
+        type: number
+      id:
+        type: integer
+      mem:
+        type: number
+      uptime:
+        type: integer
+    type: object
+  model.AGOnlineUser:
+    properties:
+      nodeID:
+        type: integer
+      userNodeMap:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+    type: object
+  model.AGUserTraffic:
+    properties:
+      id:
+        type: integer
+      user_traffic:
+        items:
+          $ref: '#/definitions/model.AGUserTrafficItem'
+        type: array
+    type: object
+  model.AGUserTrafficItem:
+    properties:
+      download:
+        description: Byte
+        type: integer
+      email:
+        type: string
+      uid:
+        type: integer
+      upload:
+        description: Byte
+        type: integer
+    type: object
+  model.Access:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      route:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.AliPay:
+    properties:
+      alipay_ali_public_key:
+        type: string
+      alipay_app_id:
+        type: string
+      alipay_app_private_key:
+        type: string
+      alipay_encrypt_key:
+        description: alipay 接口内容加密密钥
+        type: string
+      alipay_notify_url:
+        type: string
+    type: object
+  model.AlipayPreCreatePayToFrontend:
+    properties:
+      qr_code:
+        type: string
+    type: object
+  model.Article:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      introduction:
+        type: string
+      status:
+        type: boolean
+      title:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.Base64CaptchaInfo:
+    properties:
+      b64s:
+        description: 响应时存base64数据，请求时存前端看到的验证码。响应，请求共用该结构体
+        type: string
+      id:
+        type: string
+    type: object
+  model.Captcha:
+    properties:
+      img_height:
+        type: integer
+      img_width:
+        type: integer
+      key_long:
+        type: integer
+      open_captcha:
+        type: integer
+      open_captcha_time_out:
+        type: integer
+    type: object
+  model.CasbinInfo:
+    properties:
+      casbinItems:
+        items:
+          $ref: '#/definitions/model.CasbinItem'
+        type: array
+      roleID:
+        description: 权限id
+        type: integer
+    type: object
+  model.CasbinItem:
+    properties:
+      method:
+        description: 方法
+        type: string
+      path:
+        description: 路径
+        type: string
+    type: object
+  model.Coupon:
+    properties:
+      created_at:
+        type: string
+      discount_rate:
+        type: number
+      expired_at:
+        type: string
+      goods:
+        items:
+          $ref: '#/definitions/model.Goods'
+        type: array
+      id:
+        type: integer
+      limit:
+        type: integer
+      min_amount:
+        type: number
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.CustomerService:
+    properties:
+      created_at:
+        type: string
+      des:
+        type: string
+      duration:
+        type: integer
+      goods_id:
+        description: |-
+          OriginalAmount string `json:"original_amount"  gorm:"comment:原始金额"`
+          商品参数-基础参数
+        type: integer
+      goods_type:
+        type: string
+      id:
+        type: integer
+      is_renew:
+        description: 续费参数
+        type: boolean
+      node_connector:
+        type: integer
+      node_speed_limit:
+        type: integer
+      price:
+        type: string
+      renewal_amount:
+        type: string
+      service_end_at:
+        type: string
+      service_start_at:
+        type: string
+      service_status:
+        type: boolean
+      sub_status:
+        type: boolean
+      sub_uuid:
+        type: string
+      subject:
+        type: string
+      total_bandwidth:
+        description: 商品参数-订阅
+        type: integer
+      traffic_reset_day:
+        type: integer
+      updated_at:
+        type: string
+      used_down:
+        type: integer
+      used_up:
+        type: integer
+      user_id:
+        description: 关联用户
+        type: integer
+      user_name:
+        type: string
+    type: object
+  model.DbTableReq:
+    properties:
+      db_name:
+        type: string
+      table_name:
+        type: string
+    type: object
+  model.Email:
+    properties:
+      email_content:
+        type: string
+      email_from:
+        type: string
+      email_from_alias:
+        type: string
+      email_host:
+        type: string
+      email_is_ssl:
+        type: boolean
+      email_nickname:
+        type: string
+      email_port:
+        type: integer
+      email_secret:
+        type: string
+      email_subject:
+        type: string
+    type: object
+  model.EmailRequest:
+    properties:
+      email_type:
+        type: string
+      target_email:
+        maxLength: 40
+        minLength: 4
+        type: string
+    required:
+    - email_type
+    - target_email
+    type: object
+  model.Epay:
+    properties:
+      epay_api_url:
+        description: api地址
+        type: string
+      epay_key:
+        description: 商户密钥
+        type: string
+      epay_notify_url:
+        description: 异步通知地址
+        type: string
+      epay_pid:
+        description: 商户ID
+        type: integer
+      epay_return_url:
+        description: 页面跳转通知地址
+        type: string
+      epay_type:
+        description: "支付方式, alipay\t支付宝 wxpay\t微信支付 qqpay\tQQ钱包 bank\t网银支付"
+        type: string
+    type: object
+  model.EpayPreCreatePay:
+    properties:
+      money:
+        description: "商品金额,如：1.00\t单位：元，最大2位小数"
+        type: string
+      name:
+        description: 商品名称,如超过127个字节会自动截取
+        type: string
+      notify_url:
+        description: 服务器异步通知地址
+        type: string
+      out_trade_no:
+        description: 商户订单号
+        type: string
+      pid:
+        description: 商户ID
+        type: integer
+      return_url:
+        description: 页面跳转通知地址
+        type: string
+      sign:
+        description: 签名字符串，所有参数按照参数名ASCII码从小到大排序（a-z），sign、sign_type、和空值不参与签名！sign
+          = md5 ( a=b&c=d&e=f + KEY ) （注意：+ 为各语言的拼接符，不是字符！），md5结果为小写。
+        type: string
+      sign_type:
+        description: 签名类型
+        type: string
+      type:
+        description: 支付方式
+        type: string
+    type: object
+  model.EpayPreCreatePayToFrontend:
+    properties:
+      epay_api_url:
+        type: string
+      epay_pre_create_pay:
+        $ref: '#/definitions/model.EpayPreCreatePay'
+    type: object
+  model.EpayResultResponse:
+    properties:
+      money:
+        description: 商品金额
+        type: string
+      name:
+        description: 商品名称
+        type: string
+      out_trade_no:
+        description: 商户订单号
+        type: string
+      param:
+        description: 业务扩展参数
+        type: string
+      pid:
+        description: 商户ID
+        type: integer
+      sign:
+        description: 签名字符串，所有参数按照参数名ASCII码从小到大排序（a-z），sign、sign_type、和空值不参与签名！sign
+          = md5 ( a=b&c=d&e=f + KEY ) （注意：+ 为各语言的拼接符，不是字符！），md5结果为小写。
+        type: string
+      sign_type:
+        description: 签名类型
+        type: string
+      trade_no:
+        description: 易支付订单号
+        type: string
+      trade_status:
+        description: 支付状态
+        type: string
+      type:
+        description: 支付方式
+        type: string
+    type: object
+  model.FieldParamsItem:
+    properties:
+      condition:
+        description: = > < <> like
+        type: string
+      condition_value:
+        type: string
+      field:
+        type: string
+      field_type:
+        type: string
+      operator:
+        description: AND OR
+        type: string
+    type: object
+  model.Finance:
+    properties:
+      commission_rate:
+        description: 佣金率, 范围 0~1, 佣金 = 订单金额 * 佣金率 ( 100.50 * 0.50 )
+        type: number
+      enable_invitation_commission:
+        description: 是否开启邀请佣金
+        type: boolean
+      enable_lottery:
+        description: 是否开启每日打卡抽奖
+        type: boolean
+      jackpot:
+        description: 奖池
+        items:
+          $ref: '#/definitions/model.JackpotItem'
+        type: array
+      withdraw_threshold:
+        description: 提取到余额的阈值
+        type: number
+    type: object
+  model.Goods:
+    properties:
+      coupon:
+        items:
+          $ref: '#/definitions/model.Coupon'
+        type: array
+      cover_image:
+        type: string
+      created_at:
+        type: string
+      deliver_text:
+        type: string
+      deliver_type:
+        type: string
+      des:
+        type: string
+      enable_traffic_reset:
+        type: boolean
+      goods_order:
+        description: 基础参数
+        type: integer
+      goods_type:
+        type: string
+      id:
+        type: integer
+      is_renew:
+        type: boolean
+      is_sale:
+        type: boolean
+      is_show:
+        type: boolean
+      node_connector:
+        type: integer
+      node_speed_limit:
+        type: integer
+      nodes:
+        description: 关联
+        items:
+          $ref: '#/definitions/model.Node'
+        type: array
+      price:
+        description: todo 前端修改
+        type: string
+      price_3_month:
+        description: 订阅参数
+        type: string
+      price_6_month:
+        type: string
+      price_12_month:
+        type: string
+      price_unlimited_duration:
+        type: string
+      quota:
+        type: integer
+      recharge_amount:
+        description: 充值参数
+        type: string
+      stock:
+        type: integer
+      subject:
+        type: string
+      total_bandwidth:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  model.JWT:
+    properties:
+      buffer_time:
+        type: string
+      expires_time:
+        type: string
+      issuer:
+        type: string
+      signing_key:
+        type: string
+    type: object
+  model.JackpotItem:
+    properties:
+      balance:
+        type: number
+      weight:
+        type: integer
+    type: object
+  model.Menu:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/model.Menu'
+        type: array
+      component:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      meta:
+        $ref: '#/definitions/model.Meta'
+      name:
+        type: string
+      parent_id:
+        type: integer
+      path:
+        type: string
+      remarks:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/model.Role'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  model.Meta:
+    properties:
+      icon:
+        type: string
+      isAffix:
+        type: boolean
+      isHide:
+        type: boolean
+      isIframe:
+        type: boolean
+      isKeepAlive:
+        type: boolean
+      isLink:
+        type: string
+      title:
+        type: string
+    type: object
+  model.Migration:
+    properties:
+      db_address:
+        type: string
+      db_name:
+        type: string
+      db_password:
+        type: string
+      db_port:
+        type: integer
+      db_username:
+        type: string
+      panel_type:
+        description: v2board, sspanel
+        type: string
+    required:
+    - db_address
+    - db_name
+    - db_password
+    - db_port
+    - db_username
+    - panel_type
+    type: object
+  model.Node:
+    properties:
+      access:
+        description: 访问控制
+        items:
+          $ref: '#/definitions/model.Access'
+        type: array
+      address:
+        type: string
+      aid:
+        type: integer
+      allowInsecure:
+        type: boolean
+      alpn:
+        type: string
+      created_at:
+        type: string
+      dest:
+        type: string
+      enabled:
+        type: boolean
+      encryption:
+        type: string
+      flow:
+        type: string
+      fp:
+        type: string
+      goods:
+        description: 关联参数
+        items:
+          $ref: '#/definitions/model.Goods'
+        type: array
+      host:
+        type: string
+      hy_down_mbps:
+        type: integer
+      hy_obfs:
+        type: string
+      hy_obfs_password:
+        type: string
+      hy_ports:
+        type: string
+      hy_up_mbps:
+        type: integer
+      id:
+        type: integer
+      mode:
+        type: string
+      network:
+        type: string
+      node_order:
+        type: integer
+      node_speed_limit:
+        type: integer
+      node_type:
+        type: string
+      path:
+        type: string
+      pbk:
+        type: string
+      port:
+        type: integer
+      private_key:
+        type: string
+      protocol:
+        description: 一些协议参数
+        type: string
+      remarks:
+        description: 基础参数
+        type: string
+      scy:
+        type: string
+      security:
+        type: string
+      server_key:
+        type: string
+      service_name:
+        type: string
+      sid:
+        type: string
+      sni:
+        type: string
+      spx:
+        type: string
+      total_down:
+        description: Byte
+        type: integer
+      total_up:
+        description: 已用上行/已用下行，统计节点流量时使用
+        type: integer
+      traffic_rate:
+        type: number
+      transfer_address:
+        description: 中转参数
+        type: string
+      transfer_node_id:
+        type: integer
+      transfer_port:
+        type: integer
+      type:
+        type: string
+      updated_at:
+        type: string
+      uuid:
+        description: 共享节点需要的uuid;订阅下发是实际的用户uuid
+        type: string
+      v:
+        type: string
+    type: object
+  model.NodeSharedReq:
+    properties:
+      url:
+        type: string
+    type: object
+  model.Notice:
+    properties:
+      admin_id:
+        type: string
+      bot_token:
+        type: string
+      enable_email:
+        type: boolean
+      enable_tg_bot:
+        type: boolean
+      enable_web_mail:
+        type: boolean
+      tg_socks5:
+        type: string
+      when_new_ticket:
+        type: boolean
+      when_node_offline:
+        type: boolean
+      when_user_purchased:
+        type: boolean
+      when_user_registered:
+        type: boolean
+    type: object
+  model.Order:
+    properties:
+      balance_amount:
+        type: string
+      buyer_logon_id:
+        type: string
+      buyer_pay_amount:
+        type: string
+      coupon_amount:
+        type: string
+      coupon_id:
+        type: integer
+      coupon_name:
+        type: string
+      created_at:
+        type: string
+      customer_service_id:
+        description: 服务参数
+        type: integer
+      deliver_text:
+        type: string
+      deliver_type:
+        type: string
+      des:
+        type: string
+      duration:
+        type: integer
+      goods_id:
+        description: 商品参数
+        type: integer
+      goods_type:
+        type: string
+      id:
+        type: integer
+      order_remarks:
+        type: string
+      order_type:
+        type: string
+      original_amount:
+        type: string
+      out_trade_no:
+        type: string
+      pay_id:
+        description: 支付参数
+        type: integer
+      pay_info:
+        allOf:
+        - $ref: '#/definitions/model.PreCreatePayToFrontend'
+        description: 支付信息，epay，alipay等"
+      pay_type:
+        type: string
+      price:
+        type: string
+      subject:
+        type: string
+      total_amount:
+        type: string
+      trade_no:
+        type: string
+      trade_status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        description: 关联用户
+        type: integer
+      user_name:
+        type: string
+    type: object
+  model.Pagination:
+    properties:
+      order_by:
+        type: string
+      page_num:
+        type: integer
+      page_size:
+        type: integer
+    type: object
+  model.Pay:
+    properties:
+      alipay:
+        $ref: '#/definitions/model.AliPay'
+      created_at:
+        type: string
+      epay:
+        $ref: '#/definitions/model.Epay'
+      id:
+        type: integer
+      name:
+        description: 别名
+        type: string
+      pay_logo_url:
+        description: logo url
+        type: string
+      pay_type:
+        description: 支付类型：alipay epay balance
+        type: string
+      status:
+        description: true:启用
+        type: boolean
+      updated_at:
+        type: string
+    type: object
+  model.PreCreatePayToFrontend:
+    properties:
+      alipay_info:
+        $ref: '#/definitions/model.AlipayPreCreatePayToFrontend'
+      epay_info:
+        $ref: '#/definitions/model.EpayPreCreatePayToFrontend'
+    type: object
+  model.PushCustomerServiceRequest:
+    properties:
+      customer_service_id:
+        type: integer
+      to_user_name:
+        type: string
+    type: object
+  model.QueryParams:
+    properties:
+      field_params_list:
+        items:
+          $ref: '#/definitions/model.FieldParamsItem'
+        type: array
+      pagination:
+        allOf:
+        - $ref: '#/definitions/model.Pagination'
+        description: 分页参数
+      table_name:
+        type: string
+    required:
+    - table_name
+    type: object
+  model.RateLimitParams:
+    properties:
+      ip_role_param:
+        type: integer
+      visit_param:
+        type: integer
+    type: object
+  model.Role:
+    properties:
+      casbins:
+        items:
+          $ref: '#/definitions/model.CasbinItem'
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      menus:
+        items:
+          $ref: '#/definitions/model.Menu'
+        type: array
+      role_name:
+        type: string
+      status:
+        type: boolean
+      updated_at:
+        type: string
+      user_group:
+        items:
+          $ref: '#/definitions/model.User'
+        type: array
+    type: object
+  model.Security:
+    properties:
+      captcha:
+        $ref: '#/definitions/model.Captcha'
+      jwt:
+        $ref: '#/definitions/model.JWT'
+      rate_limit_params:
+        $ref: '#/definitions/model.RateLimitParams'
+    type: object
+  model.Server:
+    properties:
+      created_at:
+        type: string
+      email:
+        $ref: '#/definitions/model.Email'
+      finance:
+        $ref: '#/definitions/model.Finance'
+      id:
+        type: integer
+      notice:
+        $ref: '#/definitions/model.Notice'
+      security:
+        $ref: '#/definitions/model.Security'
+      subscribe:
+        $ref: '#/definitions/model.Subscribe'
+      updated_at:
+        type: string
+      website:
+        $ref: '#/definitions/model.Website'
+    type: object
+  model.Subscribe:
+    properties:
+      backend_url:
+        type: string
+      clash_rule:
+        type: string
+      sub_name:
+        type: string
+      subscribe_domain_bind_request:
+        type: boolean
+      surge_rule:
+        type: string
+      tek:
+        type: string
+    type: object
+  model.Theme:
+    properties:
+      animation:
+        type: string
+      columnsAsideLayout:
+        type: string
+      columnsAsideStyle:
+        type: string
+      columnsMenuBar:
+        description: 分栏设置
+        type: string
+      columnsMenuBarColor:
+        type: string
+      created_at:
+        description: 是否开启布局配置抽屉
+        type: string
+      globalComponentSize:
+        type: string
+      globalI18n:
+        type: string
+      globalTitle:
+        description: |-
+          全局网站标题 / 副标题
+          网站主标题（菜单导航、浏览器当前网页标题）
+        type: string
+      globalViceTitle:
+        type: string
+      globalViceTitleMsg:
+        type: string
+      id:
+        type: integer
+      isBreadcrumb:
+        type: boolean
+      isCacheTagsView:
+        type: boolean
+      isClassicSplitMenu:
+        type: boolean
+      isCollapse:
+        description: 界面设置
+        type: boolean
+      isColumnsMenuBarColorGradual:
+        type: boolean
+      isColumnsMenuHoverPreload:
+        type: boolean
+      isDrawer:
+        type: boolean
+      isFixedHeader:
+        type: boolean
+      isFixedHeaderChange:
+        type: boolean
+      isFooter:
+        type: boolean
+      isGrayscale:
+        type: boolean
+      isInvert:
+        type: boolean
+      isIsDark:
+        type: boolean
+      isLockScreen:
+        type: boolean
+      isMenuBarColorGradual:
+        type: boolean
+      isShareTagsView:
+        type: boolean
+      isShowLogo:
+        description: 界面显示
+        type: boolean
+      isShowLogoChange:
+        type: boolean
+      isSortableTagsView:
+        type: boolean
+      isTagsview:
+        type: boolean
+      isTagsviewIcon:
+        type: boolean
+      isTopBarColorGradual:
+        type: boolean
+      isUniqueOpened:
+        type: boolean
+      isWartermark:
+        type: boolean
+      layout:
+        description: |-
+          布局切换
+          注意：为了演示，切换布局时，颜色会被还原成默认，代码位置：/@/layout/navBars/breadcrumb/setings.vue
+          中的 `initSetLayoutChange(设置布局切换，重置主题样式)` 方法
+          布局切换：可选值"<defaults|classic|transverse|columns>"，默认 defaults
+        type: string
+      lockScreenTime:
+        type: integer
+      logo_link:
+        type: string
+      menuBar:
+        description: 菜单设置
+        type: string
+      menuBarActiveColor:
+        type: string
+      menuBarColor:
+        type: string
+      primary:
+        description: 全局主题
+        type: string
+      tagsStyle:
+        description: |-
+          其它设置
+          Tagsview 风格：可选值"<tags-style-one|tags-style-four|tags-style-five>"，默认 tags-style-five
+          定义的值与 `/src/layout/navBars/tagsView/tagsView.vue` 中的 class 同名
+        type: string
+      topBar:
+        description: 顶栏设置
+        type: string
+      topBarColor:
+        type: string
+      updated_at:
+        type: string
+      wartermarkText:
+        type: string
+    type: object
+  model.Ticket:
+    properties:
+      created_at:
+        type: string
+      details:
+        type: string
+      id:
+        type: integer
+      status:
+        description: TicketProcessing TicketClosed
+        type: string
+      ticket_message:
+        description: 一对多关联
+        items:
+          $ref: '#/definitions/model.TicketMessage'
+        type: array
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  model.TicketMessage:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_admin:
+        type: boolean
+      message:
+        type: string
+      ticket_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  model.User:
+    properties:
+      avatar:
+        type: string
+      balance:
+        type: number
+      created_at:
+        type: string
+      enable:
+        type: boolean
+      enable_email:
+        type: boolean
+      enable_tg_bot:
+        description: 通知参数
+        type: boolean
+      enable_web_mail:
+        type: boolean
+      id:
+        type: integer
+      invitation_code:
+        type: string
+      nick_name:
+        type: string
+      orders:
+        description: 订单，has many
+        items:
+          $ref: '#/definitions/model.Order'
+        type: array
+      password:
+        type: string
+      referrer_user_id:
+        type: integer
+      role_group:
+        description: 关联参数
+        items:
+          $ref: '#/definitions/model.Role'
+        type: array
+      tg_id:
+        type: integer
+      updated_at:
+        type: string
+      user_name:
+        type: string
+      when_balance_changed:
+        type: boolean
+      when_purchased:
+        type: boolean
+      when_service_almost_expired:
+        type: boolean
+    type: object
+  model.UserChangeAvatarRequest:
+    properties:
+      avatar:
+        type: string
+    type: object
+  model.UserChangePasswordRequest:
+    properties:
+      email_code:
+        type: string
+      password:
+        description: 密码
+        maxLength: 20
+        minLength: 4
+        type: string
+      re_password:
+        description: 密码
+        maxLength: 20
+        minLength: 4
+        type: string
+    required:
+    - password
+    - re_password
+    type: object
+  model.UserLoginRequest:
+    properties:
+      email_code:
+        description: 邮箱验证码
+        type: string
+      password:
+        description: 密码
+        maxLength: 20
+        minLength: 4
+        type: string
+      user_name:
+        description: 用户名
+        maxLength: 40
+        minLength: 4
+        type: string
+    required:
+    - password
+    - user_name
+    type: object
+  model.UserRegister:
+    properties:
+      base64_captcha:
+        $ref: '#/definitions/model.Base64CaptchaInfo'
+      email_code:
+        description: 邮箱验证码
+        type: string
+      email_suffix:
+        description: 邮箱后缀
+        maxLength: 40
+        type: string
+      password:
+        description: 密码
+        maxLength: 20
+        minLength: 4
+        type: string
+      re_password:
+        description: 密码
+        maxLength: 20
+        minLength: 4
+        type: string
+      referrer_code:
+        type: string
+      user_name:
+        description: 用户名
+        maxLength: 40
+        minLength: 4
+        type: string
+    required:
+    - email_suffix
+    - password
+    - re_password
+    - user_name
+    type: object
+  model.Website:
+    properties:
+      acceptable_email_suffixes:
+        type: string
+      enable_assets_api:
+        type: boolean
+      enable_base64_captcha:
+        type: boolean
+      enable_email_code:
+        type: boolean
+      enable_login_email_code:
+        type: boolean
+      enable_register:
+        type: boolean
+      enable_swagger_api:
+        type: boolean
+      frontend_url:
+        type: string
+      is_multipoint:
+        type: boolean
+    type: object
+  response.ResponseStruct:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+info:
+  contact:
+    url: https://github.com/ppoonk/AirGo
+  description: AirGo前后分离,多用户代理面板
+  license:
+    name: GPL v3.0
+    url: https://github.com/ppoonk/AirGo/blob/main/LICENSE
+  title: AirGo
+paths:
+  /api/admin/access/deleteAccess:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Access'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除访问控制
+      tags:
+      - '[admin api] access'
+  /api/admin/access/getAccessList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 查询路由控制列表
+      tags:
+      - '[admin api] access'
+  /api/admin/access/newAccess:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Access'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建访问控制
+      tags:
+      - '[admin api] access'
+  /api/admin/access/updateAccess:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Access'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 修改路由控制
+      tags:
+      - '[admin api] access'
+  /api/admin/article/deleteArticle:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Article'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除文章
+      tags:
+      - '[admin api] article'
+  /api/admin/article/getArticleList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取文章列表
+      tags:
+      - '[admin api] article'
+  /api/admin/article/newArticle:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Article'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建文章
+      tags:
+      - '[admin api] article'
+  /api/admin/article/updateArticle:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Article'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新文章
+      tags:
+      - '[admin api] article'
+  /api/admin/coupon/deleteCoupon:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Coupon'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除折扣
+      tags:
+      - '[admin api] coupon'
+  /api/admin/coupon/getCouponList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取折扣列表
+      tags:
+      - '[admin api] coupon'
+  /api/admin/coupon/newCoupon:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Coupon'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建折扣
+      tags:
+      - '[admin api] coupon'
+  /api/admin/coupon/updateCoupon:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Coupon'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新折扣
+      tags:
+      - '[admin api] coupon'
+  /api/admin/customerService/deleteCustomerService:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.CustomerService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除客户服务
+      tags:
+      - '[admin api] customer service'
+  /api/admin/customerService/getCustomerServiceList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.CustomerService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取用户服务列表
+      tags:
+      - '[admin api] customer service'
+  /api/admin/customerService/updateCustomerService:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.CustomerService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新客户服务
+      tags:
+      - '[admin api] customer service'
+  /api/admin/menu/delMenu:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Menu'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除菜单
+      tags:
+      - '[admin api] menu'
+  /api/admin/menu/getAllMenuList:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取全部菜单列表
+      tags:
+      - '[admin api] menu'
+  /api/admin/menu/newMenu:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Menu'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建菜单
+      tags:
+      - '[admin api] menu'
+  /api/admin/menu/updateMenu:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Menu'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 修改菜单
+      tags:
+      - '[admin api] menu'
+  /api/admin/migration/migrationData:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Migration'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 数据迁移
+      tags:
+      - '[admin api] migration'
+  /api/admin/node/createx25519:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: reality x25519
+      tags:
+      - '[admin api] node'
+  /api/admin/node/deleteNode:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除节点
+      tags:
+      - '[admin api] node'
+  /api/admin/node/getNodeList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取节点列表
+      tags:
+      - '[admin api] node'
+  /api/admin/node/getNodeListWithTraffic:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取节点列表，带流量信息
+      tags:
+      - '[admin api] node'
+  /api/admin/node/getNodeServerStatus:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取节点服务器状态
+      tags:
+      - '[admin api] node'
+  /api/admin/node/newNode:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建节点
+      tags:
+      - '[admin api] node'
+  /api/admin/node/newNodeShared:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/model.Node'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新增共享节点
+      tags:
+      - '[admin api] node'
+  /api/admin/node/nodeSort:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/model.Node'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 节点排序
+      tags:
+      - '[admin api] node'
+  /api/admin/node/parseUrl:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.NodeSharedReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 解析
+      tags:
+      - '[admin api] node'
+  /api/admin/node/updateNode:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Node'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新节点
+      tags:
+      - '[admin api] node'
+  /api/admin/order/getOrderList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取全部订单，分页获取
+      tags:
+      - '[admin api] order'
+  /api/admin/order/orderSummary:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取订单统计
+      tags:
+      - '[admin api] order'
+  /api/admin/order/updateOrder:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新用户订单
+      tags:
+      - '[admin api] order'
+  /api/admin/pay/deletePay:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Pay'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除支付
+      tags:
+      - '[admin api] pay'
+  /api/admin/pay/getPayList:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取全部支付列表
+      tags:
+      - '[admin api] pay'
+  /api/admin/pay/newPay:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Pay'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建支付
+      tags:
+      - '[admin api] pay'
+  /api/admin/pay/updatePay:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Pay'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 修改支付
+      tags:
+      - '[admin api] pay'
+  /api/admin/report/getColumn:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.DbTableReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取字段名,类型值
+      tags:
+      - '[admin api] report'
+  /api/admin/report/getTables:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.DbTableReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取数据库的所有表名
+      tags:
+      - '[admin api] report'
+  /api/admin/report/reportSubmit:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取报表
+      tags:
+      - '[admin api] report'
+  /api/admin/role/delRole:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Role'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除角色
+      tags:
+      - '[admin api] role'
+  /api/admin/role/getAllPolicy:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取全部权限
+      tags:
+      - '[admin api] role'
+  /api/admin/role/getPolicyByID:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.CasbinInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取权限列表ByRoleId
+      tags:
+      - '[admin api] role'
+  /api/admin/role/getRoleList:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取角色列表
+      tags:
+      - '[admin api] role'
+  /api/admin/role/newRole:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Role'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建角色
+      tags:
+      - '[admin api] role'
+  /api/admin/role/updateRole:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Role'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 修改角色信息
+      tags:
+      - '[admin api] role'
+  /api/admin/server/getCurrentVersion:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取当前版本
+      tags:
+      - '[admin api] server'
+  /api/admin/server/getLatestVersion:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取最新版本
+      tags:
+      - '[admin api] server'
+  /api/admin/server/getSetting:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取系统设置
+      tags:
+      - '[admin api] server'
+  /api/admin/server/updateLatestVersion:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 升级最新版本
+      tags:
+      - '[admin api] server'
+  /api/admin/server/updateSetting:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Server'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新系统设置
+      tags:
+      - '[admin api] server'
+  /api/admin/server/updateThemeConfig:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Theme'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新主题
+      tags:
+      - '[admin api] server'
+  /api/admin/shop/deleteGoods:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Goods'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除商品
+      tags:
+      - '[admin api] shop'
+  /api/admin/shop/getGoodsList:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 查询全部商品
+      tags:
+      - '[admin api] shop'
+  /api/admin/shop/goodsSort:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/model.Goods'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 商品排序
+      tags:
+      - '[admin api] shop'
+  /api/admin/shop/newGoods:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Goods'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建商品
+      tags:
+      - '[admin api] shop'
+  /api/admin/shop/updateGoods:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Goods'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新商品
+      tags:
+      - '[admin api] shop'
+  /api/admin/ticket/deleteTicket:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除工单
+      tags:
+      - '[admin api] ticket'
+  /api/admin/ticket/firstTicket:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取工单
+      tags:
+      - '[admin api] ticket'
+  /api/admin/ticket/getTicketList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取工单列表
+      tags:
+      - '[admin api] ticket'
+  /api/admin/ticket/sendTicketMessage:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.TicketMessage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 发送工单消息
+      tags:
+      - '[admin api] ticket'
+  /api/admin/ticket/updateTicket:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新工单
+      tags:
+      - '[admin api] ticket'
+  /api/admin/user/deleteUser:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除用户
+      tags:
+      - '[admin api] user'
+  /api/admin/user/getUserlist:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取用户列表
+      tags:
+      - '[admin api] user'
+  /api/admin/user/newUser:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建用户
+      tags:
+      - '[admin api] user'
+  /api/admin/user/updateUser:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 编辑用户信息
+      tags:
+      - '[admin api] user'
+  /api/admin/user/userSummary:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 用户统计
+      tags:
+      - '[admin api] user'
+  /api/customer/article/getArticleList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取文章列表
+      tags:
+      - '[customer api] article'
+  /api/customer/customerService/deleteCustomerService:
+    delete:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.CustomerService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 删除服务
+      tags:
+      - '[customer api] customer service'
+  /api/customer/customerService/getCustomerServiceList:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取服务列表
+      tags:
+      - '[customer api] customer service'
+  /api/customer/customerService/pushCustomerService:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.PushCustomerServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: push
+      tags:
+      - '[customer api] customer service'
+  /api/customer/customerService/resetSubscribeUUID:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.CustomerService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 重置订阅uuid
+      tags:
+      - '[customer api] customer service'
+  /api/customer/finance/getBalanceStatementList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取余额流水
+      tags:
+      - '[customer api] finance'
+  /api/customer/finance/getCommissionStatementList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取佣金流水
+      tags:
+      - '[customer api] finance'
+  /api/customer/finance/getCommissionSummary:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取佣金统计
+      tags:
+      - '[customer api] finance'
+  /api/customer/finance/getInvitationUserList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取邀请人数
+      tags:
+      - '[customer api] finance'
+  /api/customer/finance/withdrawToBalance:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 提现
+      tags:
+      - '[customer api] finance'
+  /api/customer/menu/getMenuList:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取用户菜单
+      tags:
+      - '[customer api] menu'
+  /api/customer/order/getOrderInfo:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常:code=0；错误:code=1 异常:code=10
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取订单详情
+      tags:
+      - '[customer api] order'
+  /api/customer/order/getOrderInfoWaitPay:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取待付款订单）
+      tags:
+      - '[customer api] order'
+  /api/customer/order/getOrderList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取用户订单
+      tags:
+      - '[customer api] order'
+  /api/customer/order/preCreateOrder:
+    post:
+      description: duratip默认为订购时长，当 -1 时代表不限时
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 订单预创建，生成系统订单（提交订单）
+      tags:
+      - '[customer api] order'
+  /api/customer/pay/getEnabledPayList:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取已激活支付列表
+      tags:
+      - '[customer api] pay'
+  /api/customer/shop/getEnabledGoodsList:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 商品类型
+        in: query
+        name: goods_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 查询已启用商品列表
+      tags:
+      - '[customer api] shop'
+  /api/customer/shop/purchase:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 支付主逻辑
+      tags:
+      - '[customer api] shop'
+  /api/customer/ticket/firstTicket:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取工单
+      tags:
+      - '[customer api] ticket'
+  /api/customer/ticket/getUserTicketList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.QueryParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取工单列表
+      tags:
+      - '[customer api] ticket'
+  /api/customer/ticket/newTicket:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 新建工单
+      tags:
+      - '[customer api] ticket'
+  /api/customer/ticket/sendTicketMessage:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.TicketMessage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 发送工单消息
+      tags:
+      - '[customer api] ticket'
+  /api/customer/ticket/updateUserTicket:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 更新工单
+      tags:
+      - '[customer api] ticket'
+  /api/customer/traffic/getSubTrafficList:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.CustomerService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取订阅流量记录
+      tags:
+      - '[customer api] traffic'
+  /api/customer/user/changeUserAvatar:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserChangeAvatarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 修改头像
+      tags:
+      - '[customer api] user'
+  /api/customer/user/changeUserPassword:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 修改密码
+      tags:
+      - '[customer api] user'
+  /api/customer/user/clockIn:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 打卡
+      tags:
+      - '[customer api] user'
+  /api/customer/user/getUserInfo:
+    get:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取自身信息
+      tags:
+      - '[customer api] user'
+  /api/customer/user/setUserNotice:
+    post:
+      parameters:
+      - description: Bearer 用户token
+        in: header
+        name: Authorization
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 设置用户通知
+      tags:
+      - '[customer api] user'
+  /api/public/airgo/node/AGReportNodeStatus:
+    post:
+      parameters:
+      - description: 节点密钥
+        in: query
+        name: key
+        required: true
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.AGNodeStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "304":
+          description: 数据和上次一致
+        "400":
+          description: 请求错误
+      summary: 上报节点状态
+      tags:
+      - '[public api] node'
+  /api/public/airgo/node/getNodeInfo:
+    get:
+      parameters:
+      - description: 节点ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 节点密钥
+        in: query
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.Node'
+        "304":
+          description: 数据和上次一致
+        "400":
+          description: 请求错误
+      summary: 获取节点配置信息
+      tags:
+      - '[public api] node'
+  /api/public/airgo/user/AGGetUserlist:
+    get:
+      parameters:
+      - description: 节点ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 节点密钥
+        in: query
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "304":
+          description: 数据和上次一致
+        "400":
+          description: 请求错误
+      summary: 获取用户列表
+      tags:
+      - '[public api] node'
+  /api/public/airgo/user/AGReportNodeOnlineUsers:
+    post:
+      parameters:
+      - description: 节点密钥
+        in: query
+        name: key
+        required: true
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.AGOnlineUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "304":
+          description: 数据和上次一致
+        "400":
+          description: 请求错误
+      summary: 上报在线用户
+      tags:
+      - '[public api] node'
+  /api/public/airgo/user/AGReportUserTraffic:
+    post:
+      parameters:
+      - description: 节点密钥
+        in: query
+        name: key
+        required: true
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.AGUserTraffic'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "304":
+          description: 数据和上次一致
+        "400":
+          description: 请求错误
+      summary: 上报用户流量
+      tags:
+      - '[public api] node'
+  /api/public/article/getDefaultArticleList:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取默认的首页弹窗和自定义内容
+      tags:
+      - '[public api] article'
+  /api/public/code/getBase64Captcha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取图片验证码
+      tags:
+      - '[public api] code'
+  /api/public/code/getEmailCode:
+    post:
+      parameters:
+      - description: email_type可选值：EMAIL_TYPE_USER_REGISTER EMAIL_TYPE_USER_RESETPWD
+          EMAIL_TYPE_TEST
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.EmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取邮箱验证码
+      tags:
+      - '[public api] code'
+  /api/public/server/getPublicSetting:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取公共系统设置
+      tags:
+      - '[public api] server'
+  /api/public/server/getThemeConfig:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 获取主题
+      tags:
+      - '[public api] server'
+  /api/public/shop/alipayNotify:
+    post:
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: 请求错误
+      summary: 支付宝异步回调
+      tags:
+      - '[public api] shop'
+  /api/public/shop/epayNotify:
+    get:
+      parameters:
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.EpayResultResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+      summary: 易支付异步回调
+      tags:
+      - '[public api] shop'
+  /api/public/sub/{id}/{name}:
+    get:
+      parameters:
+      - description: 订阅id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 自定义订阅名称
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: 客户端类型
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: string
+      summary: 获取订阅
+      tags:
+      - '[public api] sub'
+  /api/public/user/login:
+    post:
+      parameters:
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 用户登录
+      tags:
+      - '[public api] user'
+  /api/public/user/register:
+    post:
+      parameters:
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserRegister'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 用户注册
+      tags:
+      - '[public api] user'
+  /api/public/user/resetUserPassword:
+    post:
+      parameters:
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功；正常：业务代码 code=0；错误：业务代码code=1
+          schema:
+            $ref: '#/definitions/response.ResponseStruct'
+      summary: 重置密码
+      tags:
+      - '[public api] user'
+swagger: "2.0"

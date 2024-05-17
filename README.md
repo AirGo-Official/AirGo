@@ -1,3 +1,4 @@
+
 <img width="200px" src="https://telegraph-image.pages.dev/file/c48a2f45ebf102dd66131.png" align="left"/>
 
 # AirGo 前后端分离，多用户，多协议代理服务管理系统，简单易用
@@ -12,36 +13,56 @@
 
 <hr/>
 
-支持：vless，vmess，shadowsocks，hysteria2
+Supported protocols：Vless，Vmess，shadowsocks，Hysteria2
 
-更多说明请移步：[wiki](https://github.com/ppoonk/AirGo/wiki)
 
 <div style="color: darkgray">AirGo, front and rear end separation, multi user, multi protocol proxy service management system, simple and easy to use.</div>
 <div style="color: darkgray">support: vless，vmess，shadowsocks，hysteria2</div>
 
 <hr/>
 
+
+<hr/>
+
 <!-- TOC -->
 * [AirGo 前后端分离，多用户，多协议代理服务管理系统，简单易用](#airgo-前后端分离多用户多协议代理服务管理系统简单易用)
 * [面板部分功能展示](#面板部分功能展示)
-* [一、部署](#一部署)
-  * [1.安装核心：](#1安装核心)
-    * [a.直接安装](#a直接安装)
-    * [b.使用Docker安装](#b使用docker安装)
-  * [2.配置ssl（可选）](#2配置ssl可选)
-  * [3.部署前端静态资源（可选，但推荐）](#3部署前端静态资源可选但推荐)
-    * [a.部署到Vercel](#a部署到vercel)
-    * [b.部署到Nginx、Caddy等](#b部署到nginxcaddy等)
-  * [4.配置文件说明](#4配置文件说明)
-  * [5.启动](#5启动)
-* [二、对接节点](#二对接节点)
-  * [a.V2bX](#av2bx)
-  * [b.XrayR](#bxrayr)
-  * [c.Hysteria2](#chysteria2)
-* [TG频道：https://t.me/Air_Go](#tg频道-httpstmeairgo)
-* [TG群组：https://t.me/AirGo_Group](#tg群组-httpstmeairgogroup)
-          * [文档上次更新日期：2024.4.7](#文档上次更新日期202447)
+* [目录：](#目录)
+* [1 部署-前后端不分离](#1-部署-前后端不分离)
+  * [1-1 直接安装](#1-1-直接安装)
+  * [1-2 使用Docker安装](#1-2-使用docker安装)
+* [2 部署-前后端分离](#2-部署-前后端分离)
+  * [2-1 后端](#2-1-后端)
+    * [2-1-1 直接安装](#2-1-1-直接安装)
+    * [2-1-2 docker 安装](#2-1-2-docker-安装)
+  * [2-2 前端](#2-2-前端)
+    * [2-2-1 部署到 Vercel 等云平台](#2-2-1-部署到-vercel-等云平台)
+    * [2-2-2 部署到 Nginx、Caddy、OpenResty 等 Web 应用服务器](#2-2-2-部署到-nginxcaddyopenresty-等-web-应用服务器)
+* [3 配置ssl（可选）](#3-配置ssl可选)
+  * [3-1 给前端设置ssl证书](#3-1-给前端设置ssl证书)
+  * [3-2 给后端设置ssl证书](#3-2-给后端设置ssl证书)
+* [4 配置文件说明](#4-配置文件说明)
+* [5 对接节点](#5-对接节点)
+  * [5-1 V2bX](#5-1-v2bx)
+    * [5-1-1 直接安装 V2bX](#5-1-1-直接安装-v2bx)
+    * [5-1-2 docker 安装 V2bX](#5-1-2-docker-安装-v2bx)
+  * [5-2 XrayR](#5-2-xrayr)
+    * [5-2-1 直接安装 XrayR](#5-2-1-直接安装-xrayr)
+    * [5-2-2 docker 安装 XrayR](#5-2-2-docker-安装-xrayr)
+* [6 更新面板](#6-更新面板)
+  * [6-1 更新后端](#6-1-更新后端)
+  * [6-2 更新前端](#6-2-更新前端)
+* [7 命令行](#7-命令行)
+* [8 更多说明](#8-更多说明)
 <!-- TOC -->
+
+<br>
+
+>TG频道：[https://t.me/Air_Go](https://t.me/Air_Go)
+TG群组：[https://t.me/AirGo_Group](https://t.me/AirGo_Group)
+文档上次更新日期：2024.4.8
+
+<br>
 
 # 面板部分功能展示
 
@@ -62,26 +83,25 @@
     <td> <img src="https://github.com/ppoonk/AirGo/raw/main/assets/image/7.png">
 </table>
 
-# 一、部署
+# 目录：
 
-## 1.安装核心：
+# 1 部署-前后端不分离
 
-- **安装方式分为：直接安装（支持前后端分离）、使用docker安装**
+## 1-1 直接安装
 
-### a.直接安装
-
-- 使用Ubuntu、Debian、Centos等Linux系统，执行以下命令，然后根据提示安装
+- 安装核心，使用Ubuntu、Debian、Centos等Linux系统，执行以下命令，然后根据提示安装
 
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/AirGo/main/server/scripts/install.sh)
 ```
 
-- 安装完成后 请参考配置文件说明 修改配置文件
-- 管理脚本命令：```AirGo```
+- 修改配置文件，配置文件目录 `/usr/local/AirGo/config.yaml`，首次安装，会根据配置文件config.yaml自动初始化数据，请务必修改管理员账号和密码
+- 启动核心，`systemctl start AirGo`
+- 浏览器访问：`http://ip:port`，其中端口为配置文件设定的值
 
-### b.使用Docker安装
+## 1-2 使用Docker安装
 
-- 在合适的目录新建配置文件，例如：/$PWD/air/config.yaml，配置文件内容如下：
+- 在合适的目录新建配置文件，例如：/$PWD/air/config.yaml，配置文件内容如下。首次安装，会根据配置文件config.yaml自动初始化数据，请务必修改管理员账号和密码
 
 ```
 system:
@@ -103,7 +123,6 @@ sqlite:
   path: ./air.db
 ```
 
-- 根据自己的需求，修改配置文件（关于配置文件 请见配置文件说明）
 - 启动docker命令参考如下：
 
 ```
@@ -117,7 +136,7 @@ docker run -tid \
   ppoiuty/airgo:latest
 ```
 
-docker compose参考如下：
+- docker compose参考如下：
 
 ```
 version: '3'
@@ -135,35 +154,84 @@ services:
       - ./config.yaml:/air/config.yaml
 ```
 
-## 2.配置ssl（可选）
+- 浏览器访问：`http://ip:port`，其中端口为配置文件设定的值
 
-- 为了网站的传输中的安全，可选择申请ssl证书
-- 可通过管理脚本中acme.sh申请脚本进行证书申请（通过DNS TXT记录手动模式申请，无80和443端口也可申请证书
-- 如果您已经拥有证书，只需要复制在安装目录（/usr/local/AirGo/）下，将其重命名为 `air.cer`，`air.key`即可
 
-## 3.部署前端静态资源（可选，但推荐）
+# 2 部署-前后端分离
 
-- **支持部署到Vercel、Nginx、Caddy等**
+## 2-1 后端
 
-### a.部署到Vercel
+### 2-1-1 直接安装
+```
+bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/AirGo/main/server/scripts/install.sh)
+```
 
-- fork本项目，修改`./web/.env`的`VITE_API_URL`字段为自己的后端地址（由于vercel的限制，请填https接口地址）
+- 修改配置文件，配置文件目录 `/usr/local/AirGo/config.yaml`，首次安装，会根据配置文件config.yaml自动初始化数据，请务必修改管理员账号和密码
+- 启动核心，`systemctl start AirGo`
+
+### 2-1-2 docker 安装
+- 提前准备好配置文件 config.yaml，参考 [config.yaml](https://github.com/ppoonk/AirGo/blob/main/server/config.yaml),首次安装，会根据配置文件config.yaml自动初始化数据，请务必修改管理员账号和密码
+- 启动docker命令参考如下：
+
+```
+docker run -tid \
+  -v $PWD/air/config.yaml:/air/config.yaml \
+  -p 80:80 \
+  -p 443:443 \
+  --name airgo \
+  --restart always \
+  --privileged=true \
+  ppoiuty/airgo:latest
+```
+
+- docker compose参考如下：
+
+```
+version: '3'
+services:
+  airgo:
+    container_name: airgo
+    image: ppoiuty/airgo:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: "always"
+    privileged: true
+    volumes:
+      - ./config.yaml:/air/config.yaml
+```
+## 2-2 前端
+
+### 2-2-1 部署到 Vercel 等云平台
+- fork本项目，修改`./web/index.html`的`window.httpurl`字段为自己的后端地址，，可以设置多个，以英文符号 `|` 分割。由于vercel的限制，请填https接口地址
 - 登录[Vercel](https://vercel.com)，Add New Project，参考下图配置，注意红圈内的设置！
   ![image](https://telegraph-image.pages.dev/file/afe97f45857b988ebd005.png)
 - 部署成功后，自定义域名即可（域名解析到76.76.21.21)
 
-### b.部署到Nginx、Caddy等
+### 2-2-2 部署到 Nginx、Caddy、OpenResty 等 Web 应用服务器
 
-推荐使用 `github codespaces`编译，这不会在您电脑上安装额外的依赖
-
-- fork本项目，修改`./web/.env`的`VITE_API_URL`字段为自己的后端地址
+- 下载 release 中编译好的静态资源的 `AirGo-web.zip`
+- 修改`./web/index.html`的`window.httpurl`字段为自己的后端地址，可以设置多个，以英文符号 `|` 分割
 - 在 项目/web/ 下，执行  `npm i && npm run build`
 - 打包后的静态资源文件夹为 web，将web文件夹上传到服务器合适位置。新建网站（纯静态），网站位置选择该web文件夹
 
-## 4.配置文件说明
+# 3 配置ssl（可选）
+
+## 3-1 给前端设置ssl证书
+
+通过 `宝塔面板(bt.cn)`，`1panel(1panel.cn)` 等可直接申请、导入证书
+
+## 3-2 给后端设置ssl证书
+
+- 1、通过 `宝塔面板(bt.cn)`，`1panel(1panel.cn)`，先申请或导入证书，再开启反向代理
+- 2、如果您已经拥有证书，只需要复制在安装目录（/usr/local/AirGo/）下，将其重命名为 `air.cer`，`air.key`，然后重启 AirGo
+
+
+# 4 配置文件说明
 
 ```
 system:
+  mode: release                //模式，默认为 release。如果为 dev，即开发模式。控制台会输出更多信息
   admin-email: admin@oicq.com  //管理员账号，初始化之前需要修改！
   admin-password: adminadmin   //管理员密码，初始化之前需要修改！
   http-port: 8899              //核心监听端口
@@ -172,49 +240,38 @@ system:
 mysql:
   address: xxx.com             //mysql数据库地址
   port: 3306                   //mysql数据库端口
-  config: charset=utf8mb4&parseTime=True&loc=Local //保持默认即可
   db-name: xxx                 //mysql数据库名称
   username: xxx                //mysql数据库用户名
   password: xxx                //mysql数据库密码
+  config: charset=utf8mb4&parseTime=True&loc=Local //保持默认即可
   max-idle-conns: 10
   max-open-conns: 100
 sqlite:
   path: ./air.db               //sqlite数据库文件名
 ```
 
-## 5.启动
+# 5 对接节点
 
-**注意！如果首次安装，启动核心时，会根据配置文件config.yaml自动初始化数据。务必修改配置文件！**
+**现支持V2bx、XrayR，暂不支持官方版本，请使用下面的版本：**
 
-- 直接安装可使用管理脚本```AirGo```启动核心，也可以使用 `systemctl start AirGo`启动核心
-- Docker请使用Docker的方式启动
+## 5-1 V2bX
 
-**需注意：**
-
-- 关于网站访问地址：
-  - 前后端不分离：网站访问地址的端口和配置文件 config.yaml 中的端口保持一致。例如config.yaml中端口为8888，则浏览器需要访问 http(s)://example.com:8888
-  - 前后端分离：网站访问地址为Vercel或者Nginx（Caddy）设置的地址
-- **请务必注意：如需设置CDN，非特殊情况请勿打开CDN的缓存选项，可能会导致CDN缓存并展现给不符合用户权限的网页！**
-
-# 二、对接节点
-
-**现支持V2bx、XrayR、Hysteria2的对接，暂不支持官方版本，请使用下面的版本：**
-
-## a.V2bX
-项目地址：[https://github.com/ppoonk/V2bX](https://github.com/ppoonk/V2bX)
-
-- 直接安装
+### 5-1-1 直接安装 V2bX
 
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/V2bX/main/scripts/install.sh)
 ```
+- 安装完成后请根据需要在```/etc/V2bX/config.json```中修改配置文件
+- 启动：使用管理脚本```AV```或直接 `systemctl start AV`
 
+### 5-1-2 docker 安装 V2bX
+- 提前准备好配置文件 config.json，参考 [config.json](https://github.com/ppoonk/V2bX/blob/main/config.json)
 - 启动docker命令参考如下：
 
 ```
 docker run -tid \
   -v $PWD/av/config.json:/etc/V2bX/config.json \
-  --name airgo \
+  --name av \
   --restart always \
   --net=host \
   --privileged=true \
@@ -236,9 +293,11 @@ services:
       - ./config.json:/etc/V2bX/config.json
 ```
 
-## b.XrayR
+## 5-2 XrayR
 
-- 安装：
+
+
+### 5-2-1 直接安装 XrayR
 
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/XrayR-for-AirGo/main/scripts/manage.sh)
@@ -246,25 +305,65 @@ bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/XrayR-for-AirGo/main/sc
 
 - 安装完成后请根据需要在```/usr/local/XrayR/config.yml```中修改配置文件
 - 启动：使用管理脚本```XrayR```或直接 `systemctl start XrayR`
-- docker仓库：[https://hub.docker.com/repository/docker/ppoiuty/xrayr](https://hub.docker.com/repository/docker/ppoiuty/xrayr)
 
-## c.Hysteria2
+### 5-2-2 docker 安装 XrayR
 
-- 安装：
+- 提前准备好配置文件 config.yml，参考 [config.yml](https://github.com/ppoonk/XrayR-for-AirGo/blob/main/config.yml)
+
+- 启动docker命令参考如下：
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/shy/main/scripts/install.sh)
+docker run -tid \
+  -v $PWD/xrayr/config.yml:/etc/XrayR/config.yml \
+  --name xrayr \
+  --restart always \
+  --net=host \
+  --privileged=true \
+  ppoiuty/xrayr:latest
 ```
 
-- 安装完成后请根据需要在```/usr/local/shy/config.yml```中修改配置文件
-- 启动：使用管理脚本```shy```或直接`systemctl start shy`
+- docker compose参考如下：
 
----
+```
+version: '3'
+services:
+  xrayr:
+    container_name: xrayr
+    image: ppoiuty/xrayr:latest
+    network_mode: "host"
+    restart: "always"
+    privileged: true
+    volumes:
+      - ./config.yml:/etc/XrayR/config.yml
+```
 
-# TG频道：[https://t.me/Air_Go](https://t.me/Air_Go)
+# 6 更新面板
+更新时，请检查 `前端版本` 和 `后端核心版本`，它们处在不同位置并且版本号保持一致，如图：
+![](https://github.com/ppoonk/AirGo/raw/main/assets/image/8.png)
 
-# TG群组：[https://t.me/AirGo_Group](https://t.me/AirGo_Group)
+## 6-1 更新后端
 
-###### 文档上次更新日期：2024.4.7
+- 方式1: 下载新的二进制文件，替换旧的，然后执行 ./AirGo update 完成更新
+- 方式2: 在版本 `v0.2.5`之后，通过`面板-管理员-系统`，可以点击 `升级按钮`完成更新
+- 说明：更新核心后，角色绑定的菜单和casbin权限(api权限)会设置为当前核心的默认值
 
+
+## 6-2 更新前端
+
+按照 [2-1 前端](#2-1-前端)重新部署即可
+
+
+# 7 命令行
+
+```
+./AirGo help                    获取帮助
+./AirGo reset --resetAdmin      重置admin password
+./AirGo start                   启动AirGo, 指定配置文件路径：./AirGo start --config path2/config.yaml
+./AirGo update                  更新数据库相关AirGo数据
+./AirGo version                 查看AirGo的当前版本
+```
+
+# 8 更多说明
+
+[点击查看更多](https://github.com/ppoonk/AirGo/wiki/Wiki)
 

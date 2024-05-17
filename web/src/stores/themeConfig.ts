@@ -1,7 +1,8 @@
-import {defineStore, storeToRefs} from 'pinia';
-import {Local,Session} from "/@/utils/storage";
+import {defineStore} from 'pinia';
+import {Session} from "/@/utils/storage";
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
+
 
 export const useThemeConfig = defineStore('themeStore', {
     state: (): ThemeConfigState => ({
@@ -18,7 +19,7 @@ export const useThemeConfig = defineStore('themeStore', {
             primary: '#F9A43D',
             // 是否开启深色模式
             isIsDark: false,
-
+            
             /**
              * 顶栏设置
              */
@@ -83,15 +84,13 @@ export const useThemeConfig = defineStore('themeStore', {
             // 是否开启 Breadcrumb，强制经典、横向布局不显示
             isBreadcrumb: true,
             // 是否开启 Tagsview
-            isTagsview: true,
-            // 是否开启 Breadcrumb 图标
-            isBreadcrumbIcon: false,
+            isTagsview: false,
             // 是否开启 Tagsview 图标
             isTagsviewIcon: false,
             // 是否开启 TagsView 缓存
-            isCacheTagsView: true,
+            isCacheTagsView: false,
             // 是否开启 TagsView 拖拽
-            isSortableTagsView: true,
+            isSortableTagsView: false,
             // 是否开启 TagsView 共用
             isShareTagsView: false,
             // 是否开启 Footer 底部版权信息
@@ -143,8 +142,8 @@ export const useThemeConfig = defineStore('themeStore', {
             globalViceTitleMsg: '',
             // 默认初始语言，可选值"<zh-cn|en|zh-tw>"，默认 zh-cn
             globalI18n: 'zh-cn',
-            // 默认全局组件大小，可选值"<large|'default'|small>"，默认 'large'
-            globalComponentSize: 'large',
+            // 默认全局组件大小，可选值"<large|'default'|small>"，默认 'default'
+            globalComponentSize: 'default',
         },
     }),
     actions: {
@@ -160,7 +159,7 @@ export const useThemeConfig = defineStore('themeStore', {
                 const apiStore = useApiStore()
                 const res = await request(apiStore.publicApi.getThemeConfig)
                 this.themeConfig = res.data
-                Session.set('themeConfig', this.themeConfig)
+                // Session.set('themeConfig', this.themeConfig) //关闭缓存
             }
         },
         //设置主题

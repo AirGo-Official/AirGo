@@ -1,20 +1,23 @@
 <template>
-  <div>
-    <div class="home-card-item" v-for="(v,k) in articleStoreData.articleList.value.data" :key="k">
-      <el-card class="box-card" @click="showArticle(v)">
-        <template #header>
+  <div style="">
+    <!--<h2 style="margin: 2vh;color: var(--el-text-color-primary);">文档中心</h2>-->
+    <el-card style="margin: 2vh;border-radius: 1vh" >
+      <h2 style="margin-bottom: 2vh;">{{ $t("message.documents.documents_list") }}</h2>
+    <el-scrollbar style="height: 65vh;" >
+    <el-row :gutter="20" align="top">
+      <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12"class="mb15" v-for="(v,k) in articleStoreData.articleList.value.data" :key="k">
+       <el-card class="box-card" @click="showArticle(v)" style="border-radius: 1vh;margin: 0.5vh;">
           <div class="card-header">
             <span style="font-size: 20px;font-weight: bolder">{{v.title}}</span>
             <span style="color: #9b9da1">{{DateStrToTime(v.created_at)}}</span>
           </div>
-        </template>
-        <div>
           <div class="head-box">
             <div>{{v.introduction}}</div>
           </div>
-        </div>
       </el-card>
-    </div>
+      </el-col>
+    </el-row>
+    </el-scrollbar>
     <el-pagination background
                    class="mt15"
                    layout="total, sizes, prev, pager, next, jumper"
@@ -25,6 +28,8 @@
                    @size-change="onHandleSizeChange"
                    @current-change="onHandleCurrentChange">
     </el-pagination>
+  </el-card>
+
   </div>
 </template>
 

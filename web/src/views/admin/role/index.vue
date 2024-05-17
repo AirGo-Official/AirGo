@@ -25,7 +25,7 @@
             <el-button size="small" text type="primary"
                        @click="onOpenEditRole('edit', scope.row)">{{$t('message.common.modify')}}
             </el-button>
-            <el-button size="small" text type="primary"
+            <el-button size="small" text type="danger"
                        @click="deleteRole(scope.row)">{{$t('message.common.delete')}}
             </el-button>
           </template>

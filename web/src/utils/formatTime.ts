@@ -19,6 +19,19 @@ export function DateStrHandler(strTime: string) {
 }
 
 /**
+ * 某个时间与当前时间的相差的毫秒数
+ * @param startTime
+ * @param endTime
+ * @constructor
+ */
+export function getTimeDifference(startTime: string) {
+    const start = new Date(startTime)
+    const end = new Date()
+    return  end.getTime() - start.getTime();//时间差的毫秒数
+}
+
+
+/**
  * 获取某个月的时间范围
  * @param n,n=0当月，n=1上月
  * @constructor
@@ -238,14 +251,14 @@ export function formatPast(param: string | Date, format: string = 'YYYY-mm-dd'):
  */
 export function formatAxis(param: Date): string {
     let hour: number = new Date(param).getHours();
-    if (hour < 6) return '凌晨好';
-    else if (hour < 9) return '早上好';
-    else if (hour < 12) return '上午好';
-    else if (hour < 14) return '中午好';
-    else if (hour < 17) return '下午好';
-    else if (hour < 19) return '傍晚好';
-    else if (hour < 22) return '晚上好';
-    else return '夜里好';
+    if (hour < 6) return '凌晨好= =';
+    else if (hour < 9) return '早上好٩(๑´0`๑)۶ ';
+    else if (hour < 12) return '上午好‍(｀・ω・´) ';
+    else if (hour < 14) return '中午好‍(°∀°)ﾉ ';
+    else if (hour < 17) return '下午好‍("▔□▔)/ ';
+    else if (hour < 19) return '傍晚好‍（￣▽￣） ';
+    else if (hour < 22) return '晚上好♪（＾∀＾●）ﾉ ';
+    else return '夜里好‍_(:з」∠)_ ';
 }
 
 // 获取指定格式时间

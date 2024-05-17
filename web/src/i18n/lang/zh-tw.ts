@@ -20,7 +20,8 @@ export default {
 		personal: "個人資訊",
 		serverStatus: "節點狀態",
 		documents: "檔案",
-		ticket: "工單"
+		ticket: "工單",
+		finance:"財務中心 Beta",
 	},
 	staticRoutes: {
 		signIn: '登入',
@@ -46,7 +47,6 @@ export default {
 		dropdown4: '401',
 		dropdown5: '登出',
 		dropdown6: '程式碼倉庫',
-		searchPlaceholder: '選單蒐索：支援中文、路由路徑',
 		newTitle: '通知',
 		newBtn: '全部已讀',
 		newGo: '前往通知中心',
@@ -56,6 +56,8 @@ export default {
 		logOutConfirm: '確定',
 		logOutCancel: '取消',
 		logOutExit: '退出中',
+		back:"返回",
+
 	},
 	tagsView: {
 		refresh: '重繪',
@@ -70,11 +72,7 @@ export default {
 		foundMsg: '您可以先檢查網址，然後重新輸入或給我們迴響問題。',
 		foundBtn: '返回首頁',
 	},
-	noAccess: {
-		accessTitle: '您未被授權，沒有操作許可權~',
-		accessMsg: '聯繫方式：加QQ群探討665452019',
-		accessBtn: '重新授權',
-	},
+
 	layout: {
 		configTitle: '佈局配寘',
 		oneTitle: '全域主題',
@@ -102,7 +100,6 @@ export default {
 		fourTitle: '介面顯示',
 		fourIsShowLogo: '側邊欄 Logo',
 		fourIsBreadcrumb: '開啟 Breadcrumb',
-		fourIsBreadcrumbIcon: '開啟 Breadcrumb 圖標',
 		fourIsTagsview: '開啟 Tagsview',
 		fourIsTagsviewIcon: '開啟 Tagsview 圖標',
 		fourIsCacheTagsView: '開啟 TagsView 緩存',

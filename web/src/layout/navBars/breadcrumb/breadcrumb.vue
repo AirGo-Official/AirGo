@@ -1,25 +1,19 @@
 <template>
   <div v-if="isShowBreadcrumb" class="layout-navbars-breadcrumb">
-    <SvgIcon
-        class="layout-navbars-breadcrumb-icon"
-        :name="themeConfig.isCollapse ? 'ele-Expand' : 'ele-Fold'"
-        :size="16"
-        @click="onThemeConfigChange"
-    />
-    <el-breadcrumb class="layout-navbars-breadcrumb-hide">
+    <div class="layout-memu-bottom-display" style="margin:1.8vh 0 1.8vh 1.8vh; font-size: 1.3rem;color: var(--next-bg-topBarColor);font-weight: 600;display: none;">
+    <i class="ri-menu-line" @click="onThemeConfigChange"></i></div>
+
+    <el-breadcrumb>
       <transition-group name="breadcrumb">
-        <el-breadcrumb-item v-for="(v, k) in state.breadcrumbList"
+        <el-breadcrumb-item class="layout-breadcrumb-mobile" style="font-size: 1.4rem;margin-left: 1.6em;" v-for="(v, k) in state.breadcrumbList"
                             :key="!v.meta.tagsViewName ? v.meta.title : v.meta.tagsViewName">
 					<span v-if="k === state.breadcrumbList.length - 1" class="layout-navbars-breadcrumb-span">
-						<SvgIcon :name="v.meta.icon" class="layout-navbars-breadcrumb-iconfont"
-                     v-if="themeConfig.isBreadcrumbIcon"/>
+
 <!--						<div v-if="!v.meta.tagsViewName">{{ $t(v.meta.title) }}</div>-->
 <!--						<div v-else>{{ v.meta.tagsViewName }}</div>-->
-						<div >{{ $t(v.meta.title) }}</div>
+						<div style="font-weight: 600;color: var(--el-text-color-primary) !important;">{{ $t(v.meta.title) }}</div>
 					</span>
-          <a v-else @click.prevent="onBreadcrumbClick(v)">
-            <SvgIcon :name="v.meta.icon" class="layout-navbars-breadcrumb-iconfont"
-                     v-if="themeConfig.isBreadcrumbIcon"/>
+          <a v-else>
             {{ $t(v.meta.title) }}
           </a>
         </el-breadcrumb-item>
@@ -58,12 +52,7 @@ const isShowBreadcrumb = computed(() => {
   if (layout === 'classic' || layout === 'transverse') return false;
   else return isBreadcrumb ? true : false;
 });
-// 面包屑点击时
-const onBreadcrumbClick = (v: RouteItem) => {
-  const {redirect, path} = v;
-  if (redirect) router.push(redirect);
-  else router.push(path);
-};
+
 // 展开/收起左侧菜单点击
 const onThemeConfigChange = () => {
   themeConfig.value.isCollapse = !themeConfig.value.isCollapse;
@@ -97,8 +86,14 @@ const initRouteSplit = (path: string) => {
   state.routeSplitIndex = 1;
   getBreadcrumbList(routesListSate.value.routesList);
   if (route.name === 'home' || (route.name === 'notFound' && state.breadcrumbList.length > 1)) state.breadcrumbList.shift();
-  if (state.breadcrumbList.length > 0)
-    state.breadcrumbList[state.breadcrumbList.length - 1].meta.tagsViewName = other.setTagsViewNameI18n(<RouteToFrom>route);
+  if (route.name === 'shop' || (route.name === 'notFound' && state.breadcrumbList.length > 1)) state.breadcrumbList.shift();
+  if (route.name === 'myOrder' || (route.name === 'notFound' && state.breadcrumbList.length > 1)) state.breadcrumbList.shift();
+  if (route.name === 'personal' || (route.name === 'notFound' && state.breadcrumbList.length > 1)) state.breadcrumbList.shift();
+  if (route.name === 'documents' || (route.name === 'notFound' && state.breadcrumbList.length > 1)) state.breadcrumbList.shift();
+  if (route.name === 'ticket' || (route.name === 'notFound' && state.breadcrumbList.length > 1)) state.breadcrumbList.shift();
+  if (route.name === 'finance' || (route.name === 'notFound' && state.breadcrumbList.length > 1)) state.breadcrumbList.shift();
+
+
 };
 // 页面加载时
 onMounted(() => {
@@ -117,18 +112,7 @@ onBeforeRouteUpdate((to) => {
   display: flex;
   align-items: center;
 
-  .layout-navbars-breadcrumb-icon {
-    cursor: pointer;
-    font-size: 18px;
-    color: var(--next-bg-topBarColor);
-    height: 100%;
-    width: 40px;
-    opacity: 0.8;
 
-    &:hover {
-      opacity: 1;
-    }
-  }
 
   .layout-navbars-breadcrumb-span {
     display: flex;
@@ -137,7 +121,6 @@ onBeforeRouteUpdate((to) => {
   }
 
   .layout-navbars-breadcrumb-iconfont {
-    font-size: 14px;
     margin-right: 5px;
   }
 

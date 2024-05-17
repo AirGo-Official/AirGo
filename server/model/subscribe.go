@@ -30,8 +30,8 @@ type ClashYaml struct {
 	Secret             string            `yaml:"secret"`
 	Proxies            []ClashProxy      `yaml:"proxies"`
 	ProxyGroups        []ClashProxyGroup `yaml:"proxy-groups"`
-	RuleProviders      RuleProviders     `yaml:"rule-providers"`
-	Rules              []string          `yaml:"rules"`
+	//RuleProviders      RuleProviders     `yaml:"rule-providers"`
+	//Rules              []string          `yaml:"rules"`
 }
 type RuleProviders struct {
 	CN    RuleProvidersItem `yaml:"cn"`
@@ -213,14 +213,12 @@ type Proxy struct {
 	ProxyText string `ini:"ProxyText"`
 }
 type ProxyGroup struct {
-	Proxy    []string `ini:"Proxy"`
+	//Proxy    []string `ini:"Proxy"`
+	Proxy    []string `ini:"AirGo-PROXY"` //分流组名字使用自定义的订阅名，更新订阅时会被替换
 	Auto     []string `ini:"auto"`
 	Fallback []string `ini:"fallback"`
 }
 type Rule struct {
+	ProxyGroup
 	RuleText string `ini:"RuleText"`
-}
-
-type test struct {
-	name int `json:"name,omitempty"`
 }

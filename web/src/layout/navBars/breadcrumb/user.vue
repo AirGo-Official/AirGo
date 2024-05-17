@@ -1,12 +1,20 @@
 <template>
   <div class="layout-navbars-breadcrumb-user pr15" :style="{ flex: layoutUserFlexNum }">
     <!--    深色模式切换-->
-    <el-switch v-model="getThemeConfig.isIsDark" @change="onAddDarkChange" size="default" inline-prompt active-text="Dark" inactive-text="Light"></el-switch>
+    
+    <el-switch  style="margin-right: 0.5em;" v-model="getThemeConfig.isIsDark" @change="onAddDarkChange" size="large" inline-prompt active-text="Dark" inactive-text="Light">
+      <template #active-action>
+      <span class="custom-active-action"><i class="ri-moon-line"></i></span>
+      </template>
+      <template #inactive-action>
+      <span class="custom-inactive-action"><i class="ri-sun-line"></i></span>
+    </template>
+    </el-switch>
     <!--    组件大小切换-->
-    <el-dropdown :show-timeout="70" :hide-timeout="50" trigger="click" @command="onComponentSizeChange">
-      <div class="layout-navbars-breadcrumb-user-icon">
-        <i class="iconfont icon-ziti" :title="$t('message.user.title0')"></i>
-      </div>
+    <el-dropdown  :show-timeout="70" :hide-timeout="50" trigger="click" @command="onComponentSizeChange">
+       <div class="layout-navbars-breadcrumb-user-icon">
+        <i style="font-size: 1.2rem; font-weight: 600;" class="ri-font-size-2" :title="$t('message.user.title0')"></i>
+      </div> 
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item command="large" :disabled="state.disabledSize === 'large'">
@@ -23,12 +31,8 @@
     </el-dropdown>
     <!--    语言切换-->
     <el-dropdown :show-timeout="70" :hide-timeout="50" trigger="click" @command="onLanguageChange">
-      <div class="layout-navbars-breadcrumb-user-icon">
-        <i
-          class="iconfont"
-          :class="state.disabledI18n === 'en' ? 'icon-fuhao-yingwen' : 'icon-fuhao-zhongwen'"
-          :title="$t('message.user.title1')"
-        ></i>
+      <div class="layout-navbars-breadcrumb-user-icon" style="font-size: 1.2rem;font-weight: 600;">
+      <svg preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" width="1.2em" height="1.2em" data-v-12008bb2=""><path fill="currentColor" d="m18.5 10l4.4 11h-2.155l-1.201-3h-4.09l-1.199 3h-2.154L16.5 10h2zM10 2v2h6v2h-1.968a18.222 18.222 0 0 1-3.62 6.301a14.864 14.864 0 0 0 2.336 1.707l-.751 1.878A17.015 17.015 0 0 1 9 13.725a16.676 16.676 0 0 1-6.201 3.548l-.536-1.929a14.7 14.7 0 0 0 5.327-3.042A18.078 18.078 0 0 1 4.767 8h2.24A16.032 16.032 0 0 0 9 10.877a16.165 16.165 0 0 0 2.91-4.876L2 6V4h6V2h2zm7.5 10.885L16.253 16h2.492L17.5 12.885z"></path></svg>
       </div>
       <template #dropdown>
         <el-dropdown-menu>
@@ -45,22 +49,23 @@
     <!--      </el-icon>-->
     <!--    </div>-->
     <!--    布局设置-->
-    <div v-if="userInfos.id===1" class="layout-navbars-breadcrumb-user-icon" @click="onLayoutSetingClick">
-      <i class="icon-skin iconfont" :title="$t('message.user.title3')"></i>
+    <div v-if="userInfos.id===1" class="layout-navbars-breadcrumb-user-icon" @click="onLayoutSetingClick" style="font-size: 1.2rem;font-weight: 600;">
+      <i class="ri-t-shirt-2-line" :title="$t('message.user.title3')"></i>
     </div>
-    <!--    全屏-->
+    <!--    全屏
     <div class="layout-navbars-breadcrumb-user-icon mr10" @click="onScreenfullClick">
       <i
         class="iconfont"
         :title="state.isScreenfull ? $t('message.user.title6') : $t('message.user.title5')"
         :class="!state.isScreenfull ? 'icon-fullscreen' : 'icon-tuichuquanping'"
       ></i>
-    </div>
+    </div>-->
     <!--    个人头像-->
-    <el-dropdown :show-timeout="70" :hide-timeout="50" @command="onHandleCommandClick">
+    <el-dropdown style="margin-left: 1em;" :show-timeout="70" :hide-timeout="50" @command="onHandleCommandClick">
 			<span class="layout-navbars-breadcrumb-user-link">
+        
 				<img :src="userInfos.avatar" class="layout-navbars-breadcrumb-user-link-photo mr5" />
-				{{ userInfos.user_name }}
+				<div class="layout-navbars-username-hide">{{ userInfos.user_name }}</div>
 				<el-icon class="el-icon--right">
 					<ele-ArrowDown />
 				</el-icon>
@@ -106,7 +111,7 @@ const { locale, t } = useI18n();
 const state = reactive({
   isScreenfull: false,
   disabledI18n: "zh-cn",
-  disabledSize: "large"
+  disabledSize: "default"
 });
 
 // 获取布局配置信息
@@ -193,10 +198,7 @@ const onHandleCommandClick = (path: string) => {
     router.push(path);
   }
 };
-// 菜单搜索点击
-const onSearchClick = () => {
-  searchRef.value.openSearch();
-};
+
 // 组件大小改变
 const onComponentSizeChange = (size: string) => {
   Session.remove("themeConfig");

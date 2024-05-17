@@ -9,7 +9,7 @@ export default {
     resultText2:"请尽快完成支付",
     resultText3:"支付遇到问题",
     resultText4:"前往支付宝",
-    resultText5:"前往易支付",
+    resultText5:"前往支付",
     resultText6:"请求超时，请稍后检查我的订单，有无订单记录",
     Goods:{
       index:"序号",
@@ -21,6 +21,10 @@ export default {
       cover_image:"封面图片",//封面图片
       des: "商品描述",     //商品描述
       price: "价格",  // 商品价格
+      price_3_month:"3个月的价格",
+      price_6_month:"6个月的价格",
+      price_12_month:"12个月的价格",
+      price_unlimited_duration:"不限时的价格",
       is_show: "是否显示", //是否显示
       is_sale: "是否售卖",//是否售卖
       is_renew: "是否可续费",//是否可续费
@@ -30,6 +34,7 @@ export default {
       deliver_type: "发货类型",  //发货类型，none=不发货，auto=自动发货，manual=手动发货
       deliver_text: "发货内容",  //发货内容;type:text
       //订阅参数
+      enable_traffic_reset:"自动重置流量",
       total_bandwidth: "总流量", //总流量
       node_connector: "节点连接数", //可连接客户端数量
       node_speed_limit: "限速",// 限速Mbps（Mbps）

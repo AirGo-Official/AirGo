@@ -32,6 +32,7 @@ export const useApiStore = defineStore("apiStore", {
             // customerService
             getCustomerServiceList:{path: adminApiPre + "/customerService/getCustomerServiceList", method: "post"} as ApiItem,
             updateCustomerService:{path: adminApiPre + "/customerService/updateCustomerService", method: "post"} as ApiItem,
+            deleteCustomerService:{path: adminApiPre + "/customerService/deleteCustomerService", method: "delete"} as ApiItem,
 
             //menu
             newMenu:{path: adminApiPre + "/menu/newMenu", method: "post"} as ApiItem,
@@ -41,7 +42,7 @@ export const useApiStore = defineStore("apiStore", {
 
             // role
             newRole:{path: adminApiPre + "/role/newRole", method: "post"} as ApiItem,
-            getRoleList:{path: adminApiPre + "/role/getRoleList", method: "post"} as ApiItem,
+            getRoleList:{path: adminApiPre + "/role/getRoleList", method: "get"} as ApiItem,
             updateRole:{path: adminApiPre + "/role/updateRole", method: "post"} as ApiItem,
             delRole:{path: adminApiPre + "/role/delRole", method: "delete"} as ApiItem,
             getAllPolicy:{path: adminApiPre + "/role/getAllPolicy", method: "get"} as ApiItem,
@@ -128,13 +129,14 @@ export const useApiStore = defineStore("apiStore", {
             getUserInfo:{path: userApiPre + "/user/getUserInfo", method: "get"} as ApiItem,
             changeUserPassword:{path: userApiPre + "/user/changeUserPassword", method: "post"} as ApiItem,
             changeUserAvatar:{path: userApiPre + "/user/changeUserAvatar", method: "post"} as ApiItem,
-            clockin:{path: userApiPre + "/user/clockin", method: "get"} as ApiItem,
+            clockIn:{path: userApiPre + "/user/clockIn", method: "get"} as ApiItem,
             setUserNotice:{path: userApiPre + "/user/setUserNotice", method: "post"} as ApiItem,
 
             // customerService
             getCustomerServiceList:{path: userApiPre + "/customerService/getCustomerServiceList", method: "get"} as ApiItem,
             resetSubscribeUUID:{path: userApiPre + "/customerService/resetSubscribeUUID", method: "post"} as ApiItem,
             pushCustomerService:{path: userApiPre + "/customerService/pushCustomerService", method: "post"} as ApiItem,
+            deleteCustomerService:{path: userApiPre + "/customerService/deleteCustomerService", method: "delete"} as ApiItem,
 
             // menu
             getMenuList:{path: userApiPre + "/menu/getMenuList", method: "get"} as ApiItem,
@@ -162,7 +164,13 @@ export const useApiStore = defineStore("apiStore", {
             sendTicketMessage:{path: userApiPre + "/ticket/sendTicketMessage", method: "post"} as ApiItem,
             firstTicket:{path: userApiPre + "/ticket/firstTicket", method: "post"} as ApiItem,
             //traffic
-            getSubTrafficList:{path: userApiPre + "/traffic/getSubTrafficList", method: "get"} as ApiItem,
+            getSubTrafficList:{path: userApiPre + "/traffic/getSubTrafficList", method: "post"} as ApiItem,
+            //finance
+            getBalanceStatementList:{path: userApiPre + "/finance/getBalanceStatementList", method: "post"} as ApiItem,
+            getCommissionStatementList:{path: userApiPre + "/finance/getCommissionStatementList", method: "post"} as ApiItem,
+            getInvitationUserList:{path: userApiPre + "/finance/getInvitationUserList", method: "post"} as ApiItem,
+            withdrawToBalance:{path: userApiPre + "/finance/withdrawToBalance", method: "get"} as ApiItem,
+            getCommissionSummary:{path: userApiPre + "/finance/getCommissionSummary", method: "get"} as ApiItem,
         },
     }),
     actions: {

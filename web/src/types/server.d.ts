@@ -8,11 +8,15 @@ declare interface Server {
     email: Email;
     security: Security;
     notice: Notice;
+    finance: Finance
 }
 declare interface Subscribe{
     backend_url: string;
     sub_name: string;
     tek: string;
+    subscribe_domain_bind_request:boolean
+    surge_rule:string
+    clash_rule:string
 }
 declare interface Notice {
     enable_tg_bot:boolean
@@ -41,13 +45,13 @@ declare interface Jwt {
 
 declare interface Website {
     enable_register: boolean;
-    enable_email_code: boolean;
-    enable_login_email_code: boolean;
+    enable_email_code: boolean; //是否开启注册email 验证码
+    enable_login_email_code: boolean; //是否开启登录email 验证码
     acceptable_email_suffixes: string;
     is_multipoint: boolean;
     frontend_url: string;
-    api_prefix: string;
-    enabled_clock_in: boolean
+    enable_swagger_api:boolean
+    enable_assets_api:boolean
 }
 
 declare interface Captcha {
@@ -73,4 +77,16 @@ declare interface RateLimitParams {
     ip_role_param: number;
     visit_param: number;
 
+}
+declare interface Finance {
+    enable_invitation_commission:boolean
+    commission_rate:number //佣金率, 范围 0~1, 佣金 = 订单金额 * 佣金率 ( 100.50 * 0.50 )
+    withdraw_threshold:number //提取到余额的阈值
+    enable_lottery:boolean
+    jackpot:JackpotItem[]
+}
+
+declare interface JackpotItem {
+    balance:number
+    weight:number
 }

@@ -7,12 +7,19 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/admin_logic"
-	"github.com/ppoonk/AirGo/service/common_logic"
+	"github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/response"
 	"strings"
 )
 
+// NewTicket
+// @Tags [customer api] ticket
+// @Summary 新建工单
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Ticket true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/customer/ticket/newTicket [post]
 func NewTicket(ctx *gin.Context) {
 	var ticket model.Ticket
 	err := ctx.ShouldBind(&ticket)
@@ -26,7 +33,7 @@ func NewTicket(ctx *gin.Context) {
 	}
 	uID, _ := api.GetUserIDFromGinContext(ctx)
 	ticket.UserID = uID
-	err = ticketService.NewTicket(&ticket)
+	err = service.TicketSvc.NewTicket(&ticket)
 	if err != nil {
 		response.Fail("NewTicket error:"+err.Error(), nil, ctx)
 		return
@@ -36,13 +43,13 @@ func NewTicket(ctx *gin.Context) {
 		if !global.Server.Notice.WhenNewTicket {
 			return
 		}
-		user, err := userService.FirstUser(&model.User{ID: uID})
+		user, err := service.UserSvc.FirstUser(&model.User{ID: uID})
 		if err != nil {
 			return
 		}
-		msg := admin_logic.MessageInfo{
+		msg := service.MessageInfo{
 			UserID:      uID,
-			MessageType: admin_logic.MESSAGE_TYPE_USER,
+			MessageType: service.MESSAGE_TYPE_USER,
 			User:        user,
 			Message: strings.Join([]string{
 				"【新工单提醒】",
@@ -52,11 +59,20 @@ func NewTicket(ctx *gin.Context) {
 				fmt.Sprintf("工单详情：%s\n", ticket.Details),
 			}, "\n"),
 		}
-		admin_logic.PushMessageSvc.PushMessage(&msg)
+		service.PushMessageSvc.PushMessage(&msg)
 	})
 	response.OK("NewTicket success", nil, ctx)
 
 }
+
+// UpdateUserTicket
+// @Tags [customer api] ticket
+// @Summary 更新工单
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Ticket true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/customer/ticket/updateUserTicket [post]
 func UpdateUserTicket(ctx *gin.Context) {
 	var ticket model.Ticket
 	err := ctx.ShouldBind(&ticket)
@@ -66,13 +82,22 @@ func UpdateUserTicket(ctx *gin.Context) {
 	}
 	uID, _ := api.GetUserIDFromGinContext(ctx)
 	ticket.UserID = uID
-	err = ticketService.UpdateUserTicket(&ticket)
+	err = service.TicketSvc.UpdateUserTicket(&ticket)
 	if err != nil {
 		response.Fail("UpdateTicket error:"+err.Error(), nil, ctx)
 		return
 	}
 	response.OK("UpdateTicket success", nil, ctx)
 }
+
+// GetUserTicketList
+// @Tags [customer api] ticket
+// @Summary 获取工单列表
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.QueryParams true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/customer/ticket/getUserTicketList [post]
 func GetUserTicketList(ctx *gin.Context) {
 	var params model.QueryParams
 	err := ctx.ShouldBind(&params)
@@ -88,7 +113,7 @@ func GetUserTicketList(ctx *gin.Context) {
 		Condition:      "=",
 		ConditionValue: fmt.Sprintf("%d", uID),
 	})
-	data, total, err := common_logic.CommonSqlFindWithFieldParams(&params)
+	data, total, err := service.CommonSqlFindWithFieldParams(&params)
 	if err != nil {
 		response.Fail("GetUserTicketList error:"+err.Error(), nil, ctx)
 		return
@@ -98,6 +123,15 @@ func GetUserTicketList(ctx *gin.Context) {
 		Data:  data,
 	}, ctx)
 }
+
+// SendTicketMessage
+// @Tags [customer api] ticket
+// @Summary 发送工单消息
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.TicketMessage true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/customer/ticket/sendTicketMessage [post]
 func SendTicketMessage(ctx *gin.Context) {
 	var msg model.TicketMessage
 	err := ctx.ShouldBind(&msg)
@@ -111,18 +145,27 @@ func SendTicketMessage(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR, nil, ctx)
 		return
 	}
-	_, err = ticketService.FirstTicket(&model.Ticket{ID: msg.TicketID, UserID: uID})
+	_, err = service.TicketSvc.FirstTicket(&model.Ticket{ID: msg.TicketID, UserID: uID})
 	if err != nil {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
-	err = ticketService.NewTicketMessage(&msg)
+	err = service.TicketSvc.NewTicketMessage(&msg)
 	if err != nil {
 		response.Fail(err.Error(), nil, ctx)
 		return
 	}
 	response.OK("SEND_TICKET_MESSAGE success", nil, ctx)
 }
+
+// FirstTicket
+// @Tags [customer api] ticket
+// @Summary 获取工单
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Ticket true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/customer/ticket/firstTicket [post]
 func FirstTicket(ctx *gin.Context) {
 	var params model.Ticket
 	err := ctx.ShouldBind(&params)
@@ -135,7 +178,7 @@ func FirstTicket(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR, nil, ctx)
 		return
 	}
-	ticket, err := ticketService.FirstTicket(&model.Ticket{ID: params.ID, UserID: uID})
+	ticket, err := service.TicketSvc.FirstTicket(&model.Ticket{ID: params.ID, UserID: uID})
 
 	if err != nil {
 		response.Fail("FirstTicket error:"+err.Error(), nil, ctx)

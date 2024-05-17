@@ -17,7 +17,7 @@ type User struct {
 	Avatar         string     `json:"avatar"       gorm:"comment:用户头像"`
 	Enable         bool       `json:"enable"       gorm:"default:true;comment:用户是否被启用 true启用 false冻结"`
 	InvitationCode string     `json:"invitation_code" gorm:"comment:我的邀请码"`
-	ReferrerCode   string     `json:"referrer_code"   gorm:"comment:推荐人码"`
+	ReferrerUserID int64      `json:"referrer_user_id"   gorm:"comment:推荐人user id"`
 	Balance        float64    `json:"balance"         gorm:"default:0;comment:余额"`
 	TgID           int64      `json:"tg_id"           gorm:"comment:tg id"`
 	//关联参数

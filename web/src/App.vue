@@ -5,10 +5,14 @@
     <CloseFull v-if="!themeConfig.isLockScreen"/>
 
   </el-config-provider>
+  
 </template>
+<style>
+
+</style>
 
 <script setup lang="ts" name="app">
-import {computed, defineAsyncComponent, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watch} from 'vue';
+import {computed, defineAsyncComponent, nextTick, onBeforeMount, onMounted, onUnmounted, ref} from 'vue';
 import {useRoute} from 'vue-router';
 import {storeToRefs} from 'pinia';
 import {useTagsViewRoutes} from '/@/stores/tagsViewRoutes';
@@ -16,10 +20,11 @@ import {useThemeConfig} from '/@/stores/themeConfig';
 import other from '/@/utils/other';
 import {Local, Session} from '/@/utils/storage';
 import mittBus from '/@/utils/mitt';
-import setIntroduction from '/@/utils/setIconfont';
 import {useUserStore} from "/@/stores/user_logic/userStore";
 import { usePublicStore } from "/@/stores/publicStore";
 import { useI18n } from 'vue-i18n';
+import echarts from 'echarts'
+
 
 // 引入组件
 const Setings = defineAsyncComponent(() => import('/@/layout/navBars/breadcrumb/setings.vue'));
@@ -49,12 +54,7 @@ const getGlobalI18n = computed(() => {
   return messages.value[locale.value];
 });
 //设置初始化，防止刷新时恢复默认
-onBeforeMount(() => {
-  // 设置批量第三方 icon 图标
-  setIntroduction.cssCdn();
-  // 设置批量第三方 js
-  setIntroduction.jsCdn();
-});
+
 
 //组件被挂载之前,获取布局配置,公共配置,
 onBeforeMount(() => {
@@ -83,14 +83,5 @@ onUnmounted(() => {
   mittBus.off('openSetingsDrawer', () => {
   });
 });
-// 监听路由的变化，设置网站标题
-// watch(
-//     () => route.path,
-//     () => {
-//       other.useTitle();
-//     },
-//     {
-//       deep: true,
-//     }
-// );
+
 </script>

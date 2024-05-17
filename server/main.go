@@ -5,7 +5,7 @@ import (
 )
 
 // @title AirGo
-// @description AirGo前后分离多用户代理面板
+// @description AirGo前后分离,多用户代理面板
 // @contact.url https://github.com/ppoonk/AirGo
 // @license.name GPL v3.0
 // @license.url https://github.com/ppoonk/AirGo/blob/main/LICENSE

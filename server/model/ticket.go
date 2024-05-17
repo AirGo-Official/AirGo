@@ -25,3 +25,9 @@ type TicketMessage struct {
 	IsAdmin   bool      `json:"is_admin"     gorm:"comment:是否管理员"`
 	Message   string    `json:"message"      gorm:"comment:消息"`
 }
+
+// 工单状态统计
+type TicketStatistics struct {
+	Total       int64 `json:"total"`
+	TotalActive int64 `json:"total_amount"`
+}

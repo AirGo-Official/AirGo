@@ -39,7 +39,7 @@ func EtagHandler(data any, ctx *gin.Context) {
 	var md5, str string
 	b, err := json.Marshal(data)
 	if err != nil {
-		ctx.AbortWithStatus(404)
+		ctx.AbortWithStatus(400)
 		return
 	}
 	str = string(b)

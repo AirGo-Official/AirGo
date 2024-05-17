@@ -39,7 +39,7 @@ export function TelecomRSAEncrypt(str: string){
 
 
 // 随机字符串,不包含大写字母
-export function randomString(length:number) {
+export function randomStringNoUpper(length:number) {
     // const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const chars = '123456789abcdefghijklmnopqrstuvwxyz';
     let result = '';
@@ -47,10 +47,14 @@ export function randomString(length:number) {
     return result;
 }
 // 随机字符串,包含大写字母
-export function randomStringNew(length:number) {
-    const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+export function randomStringWithUpper(length:number) {
+    const chars = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let result = '';
     for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
 }
 
+//随机邀请码，以用户id开头
+export function randomInvitation(userID:number,length:number) {
+    return userID+randomStringWithUpper(length)
+}

@@ -1,5 +1,6 @@
 <template>
 	<div class="home-container layout-pd">
+    <!--    第一行-->
 		<el-row :gutter="15" class="home-card-one mb15">
 			<el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
 				<div class="home-card-item flex">
@@ -54,22 +55,27 @@
         </div>
       </el-col>
 		</el-row>
+    <!--    第二行-->
 		<el-row :gutter="15" class="home-card-two mb15">
+      <!--      左边柱状图-->
       <el-col :xs="24" :sm="14" :md="14" :lg="16" :xl="16" class="home-media">
         <div class="home-card-item">
           <div style="height: 100%" ref="homeBarRef"></div>
         </div>
       </el-col>
+      <!--      左边饼图-->
 			<el-col :xs="24" :sm="10" :md="10" :lg="8" :xl="8" class="home-media">
 				<div class="home-card-item">
 					<div style="height: 100%" ref="homePieRef"></div>
 				</div>
 			</el-col>
 		</el-row>
+    <!--    第三行-->
     <el-row :gutter="15" class="home-card-two mb15">
+      <!--      节点流量柱状图-->
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="home-media">
-        <div class="home-card-item">
-          <div style="height: 100%" ref="homeBarForNodeTrafficRef"></div>
+        <div class="home-card-item" :style="{height: state.nodeTrafficBarChartHeight1}">
+          <div :style="{height: state.nodeTrafficBarChartHeight2}" ref="homeBarForNodeTrafficRef"></div>
         </div>
       </el-col>
     </el-row>
@@ -114,7 +120,6 @@ const state = reactive({
 		homeChartOne: null,
 		homeChartTwo: null,
 		homeCharThree: null,
-    homeCharFour: null,
 		dispose: [null, '', undefined],
 	} as any,
 	myCharts: [] as EmptyArrayType,
@@ -167,11 +172,13 @@ const state = reactive({
     data:[0,0,0],
     value:[] as any[],
   },
+  nodeTrafficBarChartHeight1:'500px',//根据数据动态改变
+  nodeTrafficBarChartHeight2:'400px',//根据数据动态改变
 
 });
 //请求数据
 const getData=()=>{
-  const m = new Date().getMonth();
+  const m = new Date().getMonth(); //本月=4，则m=3;m+1=当前月
   shopStore.getOrderSummary(state.queryParamsThisMonth,m+1).then(()=>{
     userStore.getUserSummary(state.queryParamsThisMonth,m+1).then(()=>{
       dataHandler()
@@ -192,30 +199,36 @@ const dataHandler=()=>{
   state.orderIncome.thisMonth.today_order_total = temp.order_total
   state.orderIncome.thisMonth.today_income_total = temp.income_total
   //
-  shopStoreData.orderSummary.value.thisMonth.forEach((item)=>{
-    state.orderIncome.thisMonth.order_total+=item.order_total
-    state.orderIncome.thisMonth.income_total+=item.income_total
+  if (shopStoreData.orderSummary.value.thisMonth.length > 0){
+    shopStoreData.orderSummary.value.thisMonth.forEach((item)=>{
+      state.orderIncome.thisMonth.order_total+=item.order_total
+      state.orderIncome.thisMonth.income_total+=item.income_total
 
-    state.barChart.xAxis_data.push(DateStrHandler(item.date))
-    state.barChart.series_order_total_thisMonth.push(item.order_total)
-    state.barChart.series_income_total_thisMonth.push(item.income_total)
+      state.barChart.xAxis_data.push(DateStrHandler(item.date))
+      state.barChart.series_order_total_thisMonth.push(item.order_total)
+      state.barChart.series_income_total_thisMonth.push(item.income_total)
 
-    //顺序和饼图中 var getname 一致
-    state.pieChart.data[0]+=item.general_total
-    state.pieChart.data[1]+=item.subscribe_total
-    state.pieChart.data[2]+=item.recharge_total
-  })
+      //顺序和饼图中 var getname 一致
+      state.pieChart.data[0]+=item.general_total
+      state.pieChart.data[1]+=item.subscribe_total
+      state.pieChart.data[2]+=item.recharge_total
+    })
+  }
   //
   state.pieChart.value = countPercentage(state.pieChart.data)
   //
-  userStoreData.userSummary.value.thisMonth.forEach((item)=>{
-    state.barChart.series_user_register_total_thisMonth.push(item.register_total)
-  })
+  if (userStoreData.userSummary.value.thisMonth.length >0) {
+    userStoreData.userSummary.value.thisMonth.forEach((item)=>{
+      state.barChart.series_user_register_total_thisMonth.push(item.register_total)
+    })
+  }
   //
-  nodeStoreData.nodeListWithTraffic.value.data.forEach((item)=>{
-    state.barChartForNodeTraffic.yAxis_data.push(item.remarks)
-    state.barChartForNodeTraffic.series_node_traffic.push((item.total_up+item.total_down)/ 1024 / 1024 / 1024)
-  })
+  if (nodeStoreData.nodeListWithTraffic.value.data.length > 0){
+    nodeStoreData.nodeListWithTraffic.value.data.forEach((item)=>{
+      state.barChartForNodeTraffic.yAxis_data.push(item.remarks)
+      state.barChartForNodeTraffic.series_node_traffic.push((item.total_up+item.total_down)/ 1024 / 1024 / 1024)
+    })
+  }
 }
 //计算数组所占百分比
 function countPercentage(data:any[]){
@@ -228,7 +241,7 @@ function countPercentage(data:any[]){
   return resultArray;
 }
 
-// 饼图
+// 第二行右边饼图
 const initPieChart = () => {
 	if (!state.global.dispose.some((b: any) => b === state.global.homeChartTwo)) state.global.homeChartTwo.dispose();
 	state.global.homeChartTwo = markRaw(echarts.init(homePieRef.value, state.charts.theme));
@@ -313,10 +326,10 @@ const initPieChart = () => {
 	state.global.homeChartTwo.setOption(option);
 	state.myCharts.push(state.global.homeChartTwo);
 };
-// 柱状图
+// 第二行左边柱状图
 const initBarChart = () => {
-	if (!state.global.dispose.some((b: any) => b === state.global.homeCharThree)) state.global.homeCharThree.dispose();
-	state.global.homeCharThree = markRaw(echarts.init(homeBarRef.value, state.charts.theme));
+	if (!state.global.dispose.some((b: any) => b === state.global.homeCharOne)) state.global.homeCharOne.dispose();
+	state.global.homeCharOne = markRaw(echarts.init(homeBarRef.value, state.charts.theme));
 	const option = {
 		backgroundColor: state.charts.bgColor,
 		title: {
@@ -428,14 +441,15 @@ const initBarChart = () => {
 			},
 		],
 	};
-	state.global.homeCharThree.setOption(option);
-	state.myCharts.push(state.global.homeCharThree);
+	state.global.homeCharOne.setOption(option);
+	state.myCharts.push(state.global.homeCharOne);
 };
 
 
+// 第三行节点流量柱状图
 const initBarChartForNodeTraffic = () => {
-  if (!state.global.dispose.some((b: any) => b === state.global.homeCharFour)) state.global.homeCharFour.dispose();
-  state.global.homeCharFour = markRaw(echarts.init(homeBarForNodeTrafficRef.value, state.charts.theme));
+  if (!state.global.dispose.some((b: any) => b === state.global.homeCharThree)) state.global.homeCharThree.dispose();
+  state.global.homeCharThree = markRaw(echarts.init(homeBarForNodeTrafficRef.value, state.charts.theme));
   const option = {
     backgroundColor: state.charts.bgColor,
     title: {
@@ -486,8 +500,11 @@ const initBarChartForNodeTraffic = () => {
       },
     ],
   };
-  state.global.homeCharFour.setOption(option);
-  state.myCharts.push(state.global.homeCharFour);
+  state.nodeTrafficBarChartHeight1 = (40*state.barChartForNodeTraffic.yAxis_data.length+100) + 'px'
+  state.nodeTrafficBarChartHeight2 = (40*state.barChartForNodeTraffic.yAxis_data.length) + 'px'
+  state.global.homeCharThree.setOption(option);
+  state.myCharts.push(state.global.homeCharThree);
+  state.myCharts[2].resize({height: state.nodeTrafficBarChartHeight2})
 };
 
 

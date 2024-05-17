@@ -3,11 +3,11 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/ppoonk/AirGo/api/user_api"
-	"github.com/ppoonk/AirGo/middleware"
+	middleware "github.com/ppoonk/AirGo/router/middleware"
 )
 
-func InitUserRouter(RouterGroup *gin.RouterGroup) {
-	customerRouter := RouterGroup.Group("/customer")
+func (g *GinRouter) InitUserRouter(r *gin.RouterGroup) {
+	customerRouter := r.Group("/customer")
 	customerRouter.Use(middleware.RateLimitIP(), middleware.ParseJwt(), middleware.Casbin(), middleware.RateLimitVisit())
 	//user
 	userRouter := customerRouter.Group("/user")
@@ -15,7 +15,7 @@ func InitUserRouter(RouterGroup *gin.RouterGroup) {
 		userRouter.GET("/getUserInfo", user_api.GetUserInfo)                //获取自身信息
 		userRouter.POST("/changeUserPassword", user_api.ChangeUserPassword) //修改密码
 		userRouter.POST("/changeUserAvatar", user_api.ChangeUserAvatar)     //修改头像
-		userRouter.GET("/clockin", user_api.ClockIn)                        //打卡
+		userRouter.GET("/clockIn", user_api.ClockIn)                        //打卡
 		userRouter.POST("/setUserNotice", user_api.SetUserNotice)           //设置通知
 	}
 	// customer
@@ -24,6 +24,7 @@ func InitUserRouter(RouterGroup *gin.RouterGroup) {
 		customerServiceRouter.GET("/getCustomerServiceList", user_api.GetCustomerServiceList)
 		customerServiceRouter.POST("/resetSubscribeUUID", user_api.ResetSubscribeUUID)
 		customerServiceRouter.POST("/pushCustomerService", user_api.PushCustomerService)
+		customerServiceRouter.DELETE("/deleteCustomerService", user_api.DeleteCustomerService)
 	}
 	// menu
 	menuRouter := customerRouter.Group("/menu")
@@ -33,13 +34,13 @@ func InitUserRouter(RouterGroup *gin.RouterGroup) {
 	// shop
 	shopRouter := customerRouter.Group("/shop")
 	{
-		shopRouter.POST("/preCreatePay", user_api.PreCreateOrder)            //交易预创建(提交订单)
 		shopRouter.POST("/purchase", user_api.Purchase)                      //支付
 		shopRouter.GET("/getEnabledGoodsList", user_api.GetEnabledGoodsList) //查询全部已启用商品
 	}
 	// order
 	orderRouter := customerRouter.Group("/order")
 	{
+		orderRouter.POST("/preCreateOrder", user_api.PreCreateOrder)           //交易预创建(提交订单)
 		orderRouter.POST("/getOrderInfo", user_api.GetOrderInfo)               //获取订单详情(下单时）
 		orderRouter.POST("/getOrderList", user_api.GetOrderList)               //获取订单
 		orderRouter.POST("/getOrderInfoWaitPay", user_api.GetOrderInfoWaitPay) //获取待支付订单
@@ -66,6 +67,16 @@ func InitUserRouter(RouterGroup *gin.RouterGroup) {
 	//traffic
 	trafficRouter := customerRouter.Group("/traffic")
 	{
-		trafficRouter.GET("/getSubTrafficList", user_api.GetSubTrafficList)
+		trafficRouter.POST("/getSubTrafficList", user_api.GetSubTrafficList)
+	}
+	//finance
+	financeRouter := customerRouter.Group("/finance")
+	{
+		financeRouter.POST("/getBalanceStatementList", user_api.GetBalanceStatementList)
+		financeRouter.POST("/getCommissionStatementList", user_api.GetCommissionStatementList)
+		financeRouter.POST("/getInvitationUserList", user_api.GetInvitationUserList)
+		financeRouter.GET("/withdrawToBalance", user_api.WithdrawToBalance)
+		financeRouter.GET("/getCommissionSummary", user_api.GetCommissionSummary)
+
 	}
 }

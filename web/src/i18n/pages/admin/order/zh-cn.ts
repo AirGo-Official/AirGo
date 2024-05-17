@@ -34,7 +34,7 @@ export default {
       customer_service_id:"服务id",
       //支付参数
       pay_id: "支付id",   //支付方式id
-      pay_type: "支付类型", //支付方式，alipay,epay
+      pay_type: "支付方式", //支付方式，alipay,epay
       coupon_id: "折扣码id",
       coupon_name: "折扣码内容",
       // pay_info: "", //支付信息，epay，alipay等

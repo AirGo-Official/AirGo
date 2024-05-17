@@ -38,13 +38,16 @@ export const useAdminServerStore = defineStore("serverAdminStore", {
                 acceptable_email_suffixes: '',
                 is_multipoint: true,
                 frontend_url: '',
-                api_prefix: '',
-                enabled_clock_in: true,
+                enable_swagger_api:false,
+                enable_assets_api:false,
             } as Website,
             subscribe:{
                 backend_url: '',
                 sub_name: '',
                 tek: '',
+                subscribe_domain_bind_request:false,
+                surge_rule:'',
+                clash_rule:'',
             } as Subscribe,
             email: {
                 email_from: '',
@@ -69,6 +72,13 @@ export const useAdminServerStore = defineStore("serverAdminStore", {
                 when_node_offline:false,
                 when_new_ticket:false,
             } as Notice,
+            finance: {
+                enable_invitation_commission:false,
+                commission_rate:0, //佣金率, 范围 0~1, 佣金 = 订单金额 * 佣金率 ( 100.50 * 0.50 )
+                withdraw_threshold:0, //提取到余额的阈值
+                enable_lottery:false,
+                jackpot:[] as JackpotItem[],
+            } as Finance,
 
         } as Server,
         version:{

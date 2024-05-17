@@ -18,7 +18,7 @@ export default {
       avatar: "头像",
       enable: "状态",
       invitation_code: "邀请码",
-      referrer_code: "推荐人的邀请码",
+      referrer_user_id: "推荐人ID",
       balance: "余额",
       tg_id: "tg id",
       role_group: "角色组",	//角色组

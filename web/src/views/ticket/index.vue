@@ -1,6 +1,9 @@
 <template>
   <div class="container layout-padding">
-    <el-card shadow="hover" class="layout-padding-auto">
+    <el-card style="border-radius:10px;margin-left: 0.2em;margin-right: 0.2em;margin-bottom: 1em;">
+      <h3><i class="ri-list-unordered" style="margin-right: 2vh;"></i>{{ $t("message.ticket.total_ticket") }} : {{ ticketStoreData.userTicketList.value.total }}</h3>
+    </el-card>
+    <el-card shadow="hover" class="layout-padding-auto" style="border-radius:10px;margin-left: 0.2em;margin-right: 0.2em;margin-bottom: 1em;">
       <div class="mb15">
         <el-button size="default" type="success" class="ml10" @click="openTicketDialog">
           <el-icon>
@@ -9,29 +12,32 @@
           {{$t('message.adminTicket.addTicket')}}
         </el-button>
       </div>
+      
       <el-table :data="ticketStoreData.userTicketList.value.data" stripe @sort-change="sortChange" height="100%">
-        <el-table-column type="index" :label="$t('message.adminTicket.Ticket.index')" width="60" fixed/>
-        <el-table-column prop="title" :label="$t('message.adminTicket.Ticket.title')" show-overflow-tooltip width="300"
-                         sortable="custom"></el-table-column>
-        <el-table-column prop="created_at" :label="$t('message.adminTicket.Ticket.created_at')" show-overflow-tooltip width="200"
-                         sortable="custom">
-          <template #default="scope">
-            {{ DateStrToTime(scope.row.created_at) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" :label="$t('message.adminTicket.Ticket.status')" show-overflow-tooltip width="200"
+        <el-table-column type="index" :label="$t('message.adminTicket.Ticket.index')" width="55" fixed/>
+        <el-table-column prop="title" :label="$t('message.adminTicket.Ticket.title')"  show-overflow-tooltip 
+                         sortable="custom" ></el-table-column>  
+        <el-table-column prop="status" :label="$t('message.adminTicket.Ticket.status')"   show-overflow-tooltip width="130" max-width="200" fit
                          sortable="custom">
           <template #default="scope">
             <el-button v-if="scope.row.status === constantStore.TICKET_PROCESSING" type="success">{{$t('message.constant.TICKET_PROCESSING')}}</el-button>
             <el-button v-else type="info">{{$t('message.constant.TICKET_CLOSED')}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('message.common.operate')">
+        <el-table-column :label="$t('message.common.operate') "width="150"  >
           <template #default="scope">
-            <el-button size="small" text type="primary" :disabled="scope.row.status === constantStore.TICKET_CLOSED" @click="toChat(scope.row)">{{$t('message.common.reply')}}</el-button>
-            <el-button size="small" text type="primary" :disabled="scope.row.status === constantStore.TICKET_CLOSED" @click="closeTicket(scope.row)">{{$t('message.common.close')}}</el-button>
+            <el-button size="small" type="primary" :disabled="scope.row.status === constantStore.TICKET_CLOSED" @click="toChat(scope.row)" >{{$t('message.common.reply')}}</el-button>
+            <el-button size="small" type="primary" :disabled="scope.row.status === constantStore.TICKET_CLOSED" @click="closeTicket(scope.row)">{{$t('message.common.close')}}</el-button>
           </template>
         </el-table-column>
+        <el-table-column prop="created_at" :label="$t('message.adminTicket.Ticket.created_at')" width="150" show-overflow-tooltip 
+                         sortable="custom">
+          <template #default="scope">
+            {{ DateStrToTime(scope.row.created_at) }}
+          </template>
+        </el-table-column>
+
+
       </el-table>
       <el-pagination
           background

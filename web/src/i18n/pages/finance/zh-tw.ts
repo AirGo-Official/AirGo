@@ -1,0 +1,27 @@
+export default {
+	finance:{
+		total_consumption_amount:"總消費",
+		total_commission_amount:"邀請總收益",
+		pending_withdrawal_amount:"待提現收益",
+		total_invitation:"邀請人數",
+		commission_rate:"傭金率",
+		withdraw:"提現到餘額",
+		withdraw_threshold:"提現閾值",
+		copy_invitation_link:"複製邀請連結",
+		invitation_code:"邀請碼",
+		balance:"餘額",
+		title:"標題",
+		amount:"金額",
+		final_amount:"最終金額",
+		//
+		commission:"傭金",
+		created_at:"創建時間",
+		order_user_name:"用戶名",
+		subject:"主題",
+		is_withdrew:"提現狀態",
+		withdrew:"已提現",
+		not_withdrew:"待提現",
+		//
+		invitation_user:"邀請用戶",
+	}
+};

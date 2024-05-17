@@ -18,9 +18,13 @@ export const usePublicStore = defineStore('publicStore', {
             enable_email_code: false,       //是否开启注册邮箱验证码
             enable_login_email_code: false, //是否开启登录邮箱验证码
             acceptable_email_suffixes: '', //可接受的邮箱后缀
-            rebate_rate: 0,                  //佣金率
             backend_url: '',                 //
             enabled_clock_in: true,           //是否开启打卡
+            commission_rate:0,                //佣金率, 范围 0~1, 佣金 = 订单金额 * 佣金率 ( 100.50 * 0.50 )
+            withdraw_threshold:0,            //提取到余额的阈值
+            enable_lottery:false,
+            jackpot:[] as JackpotItem[],
+            sub_name:'',
         } ,
         acceptable_email_suffixes_arr: [] as string[],    //可接受的邮箱后缀数组
 
@@ -41,7 +45,7 @@ export const usePublicStore = defineStore('publicStore', {
                 const res = await request(apiStoreData.publicApi.value.getPublicSetting)
                 this.publicSetting = res.data
                 this.acceptable_email_suffixes_arr = this.publicSetting.acceptable_email_suffixes.split("\n")
-                Session.set('publicSetting',this.publicSetting)
+                // Session.set('publicSetting',this.publicSetting) //关闭缓存
             }
         },
         //发送验证码

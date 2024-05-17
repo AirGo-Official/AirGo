@@ -47,7 +47,7 @@ export const useUserStore = defineStore('userStore', {
             avatar: '',
             enable: true,
             invitation_code: '',
-            referrer_code: '',
+            referrer_user_id: 0,
             balance: 0,
             role_group: [] as RoleInfo[],	//角色组
             orders: [],      //订单
@@ -100,6 +100,8 @@ export const useUserStore = defineStore('userStore', {
         async setUserNotice() {
             return  request(apiStore.userApi.setUserNotice, this.userInfos)
         },
-
+        async clockIn(){
+            return  await request(apiStore.userApi.clockIn)
+        }
     },
 });

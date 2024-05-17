@@ -4,6 +4,9 @@ export default {
     notification_setting:"通知设置",
     security_setting:"安全设置",
     financial_management:"财务管理",
+    message_setting:"通知设置",
+    push_setting:"推送",
+    account_setting:"账户设置",
     login_password:"登录密码",
     balance:"用户余额",
     nickname:"昵称",
@@ -13,5 +16,7 @@ export default {
     confirm_password:"确认密码",
     modify_avatar:"修改头像",
     avatar_link:"头像链接",
+    lottery:"签到抽奖",
+    congratulations:"恭喜中奖!",
   }
 }

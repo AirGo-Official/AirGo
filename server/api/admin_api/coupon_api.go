@@ -5,13 +5,18 @@ import (
 	"github.com/ppoonk/AirGo/constant"
 	"github.com/ppoonk/AirGo/global"
 	"github.com/ppoonk/AirGo/model"
-	"github.com/ppoonk/AirGo/service/admin_logic"
+	"github.com/ppoonk/AirGo/service"
 	"github.com/ppoonk/AirGo/utils/response"
 )
 
-var couponService admin_logic.Coupon
-
-// 新建折扣
+// NewCoupon
+// @Tags [admin api] coupon
+// @Summary 新建折扣
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Coupon true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/coupon/newCoupon [post]
 func NewCoupon(ctx *gin.Context) {
 	var coupon model.Coupon
 	err := ctx.ShouldBind(&coupon)
@@ -20,7 +25,7 @@ func NewCoupon(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = couponService.NewCoupon(&coupon)
+	err = service.AdminCouponSvc.NewCoupon(&coupon)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("NewCoupon error:"+err.Error(), nil, ctx)
@@ -29,7 +34,14 @@ func NewCoupon(ctx *gin.Context) {
 	response.OK("NewCoupon success", nil, ctx)
 }
 
-// 删除折扣
+// DeleteCoupon
+// @Tags [admin api] coupon
+// @Summary 删除折扣
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Coupon true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/coupon/deleteCoupon [delete]
 func DeleteCoupon(ctx *gin.Context) {
 	var coupon model.Coupon
 	err := ctx.ShouldBind(&coupon)
@@ -38,7 +50,7 @@ func DeleteCoupon(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = couponService.DeleteCoupon(&coupon)
+	err = service.AdminCouponSvc.DeleteCoupon(&coupon)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("DeleteCoupon error:"+err.Error(), nil, ctx)
@@ -47,7 +59,14 @@ func DeleteCoupon(ctx *gin.Context) {
 	response.OK("DeleteCoupon success", nil, ctx)
 }
 
-// 更新折扣
+// UpdateCoupon
+// @Tags [admin api] coupon
+// @Summary 更新折扣
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Param data body model.Coupon true "参数"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/coupon/updateCoupon [post]
 func UpdateCoupon(ctx *gin.Context) {
 	var coupon model.Coupon
 	err := ctx.ShouldBind(&coupon)
@@ -56,7 +75,7 @@ func UpdateCoupon(ctx *gin.Context) {
 		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
 		return
 	}
-	err = couponService.UpdateCoupon(&coupon)
+	err = service.AdminCouponSvc.UpdateCoupon(&coupon)
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("UpdateCoupon error:"+err.Error(), nil, ctx)
@@ -65,9 +84,15 @@ func UpdateCoupon(ctx *gin.Context) {
 	response.OK("UpdateCoupon success", nil, ctx)
 }
 
-// 获取折扣列表
+// GetCouponList
+// @Tags [admin api] coupon
+// @Summary 获取折扣列表
+// @Produce json
+// @Param Authorization header string false "Bearer 用户token"
+// @Success 200 {object} response.ResponseStruct "请求成功；正常：业务代码 code=0；错误：业务代码code=1"
+// @Router /api/admin/coupon/getCouponList [post]
 func GetCouponList(ctx *gin.Context) {
-	res, err := couponService.GetCouponList()
+	res, err := service.AdminCouponSvc.GetCouponList()
 	if err != nil {
 		global.Logrus.Error(err.Error())
 		response.Fail("GetCouponList error:"+err.Error(), nil, ctx)

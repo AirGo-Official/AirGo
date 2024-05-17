@@ -63,6 +63,8 @@ declare type RouteItem<T = any> = {
 
 // 声明路由 to from
 declare interface RouteToFrom<T = any> extends RouteItem {
+    [x: string]: { [key: string]: any; } | undefined;
+    queryParams: any;
     path?: string;
     children?: T[];
 }

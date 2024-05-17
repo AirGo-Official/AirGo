@@ -46,7 +46,6 @@ type Theme struct {
 	IsShowLogoChange   bool   `json:"isShowLogoChange"   gorm:"default:false;comment:初始化变量，用于 el-scrollbar 的高度更新，请勿删除"`
 	IsBreadcrumb       bool   `json:"isBreadcrumb"        gorm:"default:true;comment:是否开启 Breadcrumb 强制经典、横向布局不显示"`
 	IsTagsview         bool   `json:"isTagsview"          gorm:"default:true;comment:是否开启 Tagsview"`
-	IsBreadcrumbIcon   bool   `json:"isBreadcrumbIcon"   gorm:"default:true;comment:是否开启 Breadcrumb 图标"`
 	IsTagsviewIcon     bool   `json:"isTagsviewIcon"     gorm:"default:true;comment:是否开启 Tagsview 图标"`
 	IsCacheTagsView    bool   `json:"isCacheTagsView"   gorm:"default:true;comment:是否开启 TagsView 缓存"`
 	IsSortableTagsView bool   `json:"isSortableTagsView" gorm:"default:true;comment:是否开启 TagsView 拖拽"`
