@@ -5,11 +5,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"github.com/dustin/go-humanize"
-	"github.com/gin-gonic/gin"
-	"github.com/go-resty/resty/v2"
-	"github.com/ppoonk/AirGo/utils/response"
-	"golang.org/x/net/context"
 	"io"
 	"io/fs"
 	"net"
@@ -18,6 +13,12 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/AirGo-Official/AirGo/utils/response"
+	"github.com/dustin/go-humanize"
+	"github.com/gin-gonic/gin"
+	"github.com/go-resty/resty/v2"
+	"golang.org/x/net/context"
 )
 
 // socks5 http.Client

@@ -40,7 +40,7 @@
             <el-button size="small" text type="primary"
                        @click="onOpenDialog('edit', scope.row)">{{$t('message.common.modify')}}
             </el-button>
-            <el-button :disabled="scope.row.id === 1 || scope.row.id === 2" size="small" text type="primary"
+            <el-button :disabled="scope.row.id === 1 || scope.row.id === 2" size="small" text type="danger"
                        @click="deleteArticle(scope.row)">{{$t('message.common.delete')}}
             </el-button>
           </template>

@@ -2,17 +2,18 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"github.com/ppoonk/AirGo/constant"
-	"github.com/ppoonk/AirGo/global"
-	"github.com/ppoonk/AirGo/utils/encrypt_plugin"
-	"github.com/ppoonk/AirGo/utils/response"
-	"github.com/ppoonk/AirGo/utils/websocket_plugin"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/AirGo-Official/AirGo/constant"
+	"github.com/AirGo-Official/AirGo/global"
+	"github.com/AirGo-Official/AirGo/utils/encrypt_plugin"
+	"github.com/AirGo-Official/AirGo/utils/response"
+	"github.com/AirGo-Official/AirGo/utils/websocket_plugin"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 // gin.Context中获取user id
@@ -39,7 +40,7 @@ func EtagHandler(data any, ctx *gin.Context) {
 	var md5, str string
 	b, err := json.Marshal(data)
 	if err != nil {
-		ctx.AbortWithStatus(404)
+		ctx.AbortWithStatus(400)
 		return
 	}
 	str = string(b)

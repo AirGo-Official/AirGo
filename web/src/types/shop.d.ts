@@ -17,6 +17,11 @@ declare interface Goods {
   deliver_text: string;  //发货内容;type:text
 
   //订阅参数
+  price_3_month:string
+  price_6_month:string
+  price_12_month:string
+  price_unlimited_duration:string
+  enable_traffic_reset:boolean
   total_bandwidth: number; //总流量
   node_connector: number; //可连接客户端数量
   node_speed_limit: number;// 限速Mbps（Mbps）

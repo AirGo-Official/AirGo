@@ -33,7 +33,7 @@
             <el-button size="small" text type="primary"
                        @click="onOpenEditMenu('edit', scope.row)">{{$t('message.common.modify')}}
             </el-button>
-            <el-button size="small" text type="primary" @click="onTableRowDel(scope.row)">{{$t('message.common.delete')}}</el-button>
+            <el-button size="small" text type="danger" @click="onTableRowDel(scope.row)">{{$t('message.common.delete')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -45,7 +45,7 @@
 <script setup lang="ts" name="systemMenu">
 import {defineAsyncComponent, onMounted, reactive, ref} from 'vue';
 import {RouteRecordRaw} from 'vue-router';
-import {ElMessage, ElMessageBox} from 'element-plus';
+import {ElMessageBox} from 'element-plus';
 import {storeToRefs} from 'pinia';
 import { useAdminMenuStore } from "/@/stores/admin_logic/menuStore";
 import { useI18n } from "vue-i18n";

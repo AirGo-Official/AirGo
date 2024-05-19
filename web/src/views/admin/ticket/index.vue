@@ -58,7 +58,7 @@ import { useRouter } from "vue-router";
 import { useAdminUserStore } from "/@/stores/admin_logic/userStore";
 import { Session } from "/@/utils/storage"
 import { useConstantStore } from "/@/stores/constantStore";
-import { getApiPrefixAddress, getCurrentApiPrefixAddress } from "/@/utils/request";
+import { getCurrentAddress } from "/@/utils/request";
 import { useApiStore } from "/@/stores/apiStore";
 const ticketStore = useAdminTicketStore()
 const ticketStoreData = storeToRefs(ticketStore)
@@ -90,7 +90,7 @@ const state = reactive({
 const openChat=(row:Ticket)=>{
   Session.set('ticketUserID',row.user_id)
   Session.set('ticketID',row.id)
-  let url = getCurrentApiPrefixAddress()
+  let url = getCurrentAddress()
   window.open(url+'/#/static/ticketToChat',"_blank")
 }
 //关闭工单

@@ -8,10 +8,10 @@ system:
 mysql:
   address: 192.168.0.92
   port: 3306
-  config: charset=utf8mb4&parseTime=True&loc=Local
   db-name: airgo-dev
-  username: admin
-  password: poiuty890
+  username: xxxxxx
+  password: xxxxxx
+  config: charset=utf8mb4&parseTime=True&loc=Local
   max-idle-conns: 10
   max-open-conns: 100
 sqlite:

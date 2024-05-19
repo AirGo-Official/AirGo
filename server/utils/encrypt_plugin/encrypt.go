@@ -121,17 +121,6 @@ func RandomString(n int) string {
 	return string(randomStr)
 }
 
-// 随机数，n为 位数,去除大写字母和0
-func RandomString2(n int) string {
-	var defaultLetters = []rune("abcdefghijklmnopqrstuvwxyz123456789")
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	randomStr := make([]rune, n)
-	for i := range randomStr {
-		randomStr[i] = defaultLetters[r.Intn(len(defaultLetters))]
-	}
-	return string(randomStr)
-}
-
 // 随机数字
 func RandomNumber(start, end int) int {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -233,12 +222,6 @@ func ExecuteX25519(str string) (string, string, error) {
 	privateKeyStr = base64.RawURLEncoding.EncodeToString(privateKey)
 out:
 	return publicKeyStr, privateKeyStr, err
-}
-
-func RandomBase64(n int) string {
-	b := make([]byte, n)
-	rand.Read(b)
-	return base64.StdEncoding.EncodeToString(b)
 }
 
 func JsonMarshal(data any) (string, error) {

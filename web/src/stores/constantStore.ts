@@ -9,6 +9,8 @@ export const useConstantStore = defineStore('constantStore', {
     ORDER_TYPE_NEW:"New",
     ORDER_TYPE_RENEW:"Renew",
     ORDER_TYPE_DESTROYED:"Destroyed",
+    //订单默认超时时间
+    CACHE_SUBMIT_ORDER_TIMEOUT  : 10,    //Minute
     // 订单状态
     ORDER_STATUS_CREATED        : "CREATED",
     ORDER_STATUS_WAIT_BUYER_PAY : "WAIT_BUYER_PAY",
@@ -49,6 +51,13 @@ export const useConstantStore = defineStore('constantStore', {
     ARTICLE_TYPE_DIALOG    : "dialog",
     ARTICLE_TYPE_NOTICE    : "notice",
     ARTICLE_TYPE_KNOWLEDGE : "knowledge",
+
+    //finance
+    BALANCE_STATEMENT_TITLE_RECHARGE    : "Recharge",
+    BALANCE_STATEMENT_TITLE_EXPENDITURE : "Expenditure",
+    BALANCE_STATEMENT_TITLE_WITHDRAW    : "Withdraw",
+    BALANCE_STATEMENT_TYPE_PLUS         : "Plus",
+    BALANCE_STATEMENT_TYPE_REDUCE       : "Reduce",
 
     //业务代码
     RESPONSE_ERROR   : 1,  //code=1，不能正常获取请求数据

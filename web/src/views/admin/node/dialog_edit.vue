@@ -738,7 +738,7 @@ import { useConstantStore } from "/@/stores/constantStore";
 import { DateStrToTime } from "../../../utils/formatTime";
 import { useI18n } from "vue-i18n";
 import {ElMessage} from "element-plus";
-import { randomString } from "/@/utils/encrypt";
+import { randomStringNoUpper } from "/@/utils/encrypt";
 
 const apiStore = useApiStore();
 const apiStoreData = storeToRefs(apiStore);
@@ -958,10 +958,10 @@ const setReality = (nodeType: string) => {
   });
 };
 const setHyObfsPassword=()=>{
-  nodeStoreData.dialogData.value.hysteriaInfo.hy_obfs_password = randomString(32)
+  nodeStoreData.dialogData.value.hysteriaInfo.hy_obfs_password = randomStringNoUpper(32)
 }
 const setShadowsocksServerKey=()=>{
-  nodeStoreData.dialogData.value.shadowsocksInfo.server_key = randomString(32)
+  nodeStoreData.dialogData.value.shadowsocksInfo.server_key = randomStringNoUpper(32)
 }
 const parseUrl = () => {
   nodeStore.parseUrl();

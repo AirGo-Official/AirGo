@@ -37,8 +37,8 @@
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item :label="$t('message.adminUser.SysUser.referrer_code') ">
-          <el-input v-model="userStoreData.currentUser.value.referrer_code"></el-input>
+        <el-form-item :label="$t('message.adminUser.SysUser.referrer_user_id') ">
+          <el-input-number v-model.number="userStoreData.currentUser.value.referrer_user_id"></el-input-number>
         </el-form-item>
 
       </el-form>
@@ -58,7 +58,7 @@ import { reactive, ref } from "vue";
 
 import { storeToRefs } from "pinia";
 import { useAdminRoleStore } from "/@/stores/admin_logic/roleStore";
-import { randomStringNew } from "/@/utils/encrypt";
+import { randomStringWithUpper } from "/@/utils/encrypt";
 import { useAdminShopStore } from "/@/stores/admin_logic/shopStore";
 import { useAdminUserStore } from "/@/stores/admin_logic/userStore";
 import { DateStrToTime } from "/@/utils/formatTime";
@@ -124,7 +124,7 @@ const onSubmit = () => {
 
 //重置邀请码
 const resetInvitationCode = () => {
-  userStoreData.currentUser.value.invitation_code = randomStringNew(8);
+  userStoreData.currentUser.value.invitation_code = randomStringWithUpper(8);
 };
 // 暴露变量
 defineExpose({

@@ -9,7 +9,7 @@ export default {
     resultText2:"Please complete payment as soon as possible",
     resultText3:"Please complete the payment as soon as possible",
     resultText4:"Go to Alipay",
-    resultText5:"Go to EPay",
+    resultText5:"Go to Pay",
     resultText6:"Request timeout, please check my order later for any order records",
     Goods:{
       index:"index",
@@ -21,6 +21,10 @@ export default {
       subject: "subject",       // 标题
       des: "des",     //商品描述
       price: "price",  // 商品价格
+      price_3_month:"price for 3 months",
+      price_6_month:"price for 6 months",
+      price_12_month:"price for 12 months",
+      price_unlimited_duration:"price for unlimited",
       is_show: "is show", //是否显示
       is_sale: "is sale",//是否售卖，是否上架
       is_renew: "is renew",//是否可续费
@@ -30,6 +34,7 @@ export default {
       deliver_type: "deliver type",  //发货类型，none=不发货，auto=自动发货，manual=手动发货
       deliver_text: "deliver text",  //发货内容;type:text
       //订阅参数
+      enable_traffic_reset:"enable traffic reset",
       total_bandwidth: "total bandwidth", //总流量
       node_connector: "node connector", //可连接客户端数量
       node_speed_limit: "node speed limit",// 限速Mbps（Mbps）

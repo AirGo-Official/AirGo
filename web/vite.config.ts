@@ -38,6 +38,7 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
 			}
 		},
 		build: {
+			target: "esnext",
 			outDir: 'web',
 			chunkSizeWarningLimit: 1500,
 			rollupOptions: {

@@ -16,9 +16,16 @@
 /* 页面宽度小于768px
 ------------------------------- */
 @media screen and (max-width: $sm) {
-  // Breadcrumb 面包屑
-  .layout-navbars-breadcrumb-hide {
+  // 用户名称
+  .layout-navbars-username-hide {
     display: none;
+  }
+  .layout-memu-bottom-display{
+    display:block !important;
+  }
+  .layout-breadcrumb-mobile{
+    font-size: 1.2rem !important;
+    margin-left: 0.6em !important;
   }
   // 外链视图
   .layout-view-link {

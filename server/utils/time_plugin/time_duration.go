@@ -33,3 +33,10 @@ func GetFirstToTodayForMonth() (start time.Time, end time.Time) {
 	today := time.Now()
 	return time.Date(today.Year(), today.Month(), 1, 0, 0, 0, 0, today.Location()), time.Date(today.Year(), today.Month(), today.Day()+1, 0, 0, -1, 0, today.Location())
 }
+
+// 距离第二天零点的时间间隔
+func GetTimeIntervalBetweenNowAndMidnightTheNextDay() time.Duration {
+	now := time.Now()
+	zeroTime := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
+	return zeroTime.Sub(now)
+}

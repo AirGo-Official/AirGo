@@ -1,12 +1,13 @@
 package logrus_plugin
 
 import (
-	"github.com/ppoonk/AirGo/global"
 	"io"
 	"log"
 	"os"
 	"path"
 	"time"
+
+	"github.com/AirGo-Official/AirGo/global"
 
 	"github.com/sirupsen/logrus"
 )

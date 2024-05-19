@@ -26,7 +26,7 @@
             <el-table-column :label="$t('message.common.operate')">
               <template #default="scope">
                 <el-button text type="primary" @click="openDialog('edit',scope.row)">{{$t('message.common.modify')}}</el-button>
-                <el-button text type="primary" @click="deleteCoupon(scope.row)">{{$t('message.common.delete')}}</el-button>
+                <el-button text type="danger" @click="deleteCoupon(scope.row)">{{$t('message.common.delete')}}</el-button>
               </template>
             </el-table-column>
           </el-table>

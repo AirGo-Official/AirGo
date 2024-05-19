@@ -1,8 +1,9 @@
 package response
 
 import (
-	"github.com/ppoonk/AirGo/constant"
 	"net/http"
+
+	"github.com/AirGo-Official/AirGo/constant"
 
 	"github.com/gin-gonic/gin"
 )

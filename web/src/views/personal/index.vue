@@ -1,9 +1,9 @@
 <template>
   <div class="personal layout-pd">
-    <el-row>
+    <el-row gutter="20">
       <!-- 个人信息 -->
       <el-col :xs="24" :sm="24">
-        <el-card shadow="hover" :header="$t('message.personal.personal_information')">
+        <el-card shadow="hover">
           <div class="personal-user">
             <div class="personal-user-left">
               <div class="h400 personal-user-left-upload" @click="state.isShowChangeAvatarDialog = true">
@@ -24,13 +24,18 @@
               </el-row>
             </div>
           </div>
+          <div>
+            <el-button type="primary" :disabled="!publicStoreData.publicSetting.value.enable_lottery" @click="lottery">{{ $t("message.personal.lottery") }}</el-button>
+          </div>
         </el-card>
       </el-col>
-      <el-col :span="24">
-        <el-card shadow="hover" class="mt15 personal-edit" :header="$t('message.personal.notification_setting')">
-          <el-divider content-position="left"><span>{{ $t("message.adminServer.Server.push_method") }}</span>
+      <el-col :xs="24" :sm="12">
+        <el-card shadow="hover" class="mt15 personal-edit">
+          <div class="personal-edit-title">{{$t('message.personal.message_setting')}}</div>
+          <el-divider content-position="left"><span>{{ $t("message.personal.push_setting") }}</span>
           </el-divider>
-          <el-form :model="userInfos" label-width="150px"
+          <el-text class="mx-1">{{ $t("message.adminServer.Server.push_method") }} :</el-text>
+          <el-form :model="userInfos" label-width="100px"
                    label-position="left">
             <el-form-item :label="$t('message.adminServer.Server.enable_tg_bot')" class="label">
               <el-switch v-model="userInfos.enable_tg_bot" inline-prompt
@@ -62,16 +67,16 @@
                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"></el-switch>
             </el-form-item>
             <el-form-item style="margin-top: 20px">
-              <el-button @click="onSubmitForNotice()" type="primary">{{ $t("message.common.button_confirm") }}
+              <el-button @click="onSubmitForNotice()" type="primary" style="margin-left: auto">{{ $t("message.common.button_confirm") }}
               </el-button>
             </el-form-item>
 
           </el-form>
         </el-card>
       </el-col>
-      <el-col :span="24">
-        <el-card shadow="hover" class="mt15 personal-edit" :header="$t('message.personal.security_setting')">
-          <div class="personal-edit-title">{{$t('message.personal.login_password')}}</div>
+      <el-col :xs="24" :sm="12">
+        <el-card shadow="hover" class="mt15 personal-edit">
+          <div class="personal-edit-title">{{$t('message.personal.account_setting')}}</div>
           <div class="personal-edit-safe-box">
             <div class="personal-edit-safe-item">
               <div class="personal-edit-safe-item-left">
@@ -84,21 +89,9 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="24">
-        <el-card shadow="hover" class="mt15 personal-edit" :header="$t('message.personal.financial_management')">
-          <div class="personal-edit-title">{{$t('message.personal.balance')}}</div>
-          <div class="personal-edit-safe-box">
-            <div class="personal-edit-safe-item">
-              <div class="personal-edit-safe-item-left">
-                <div class="personal-edit-safe-item-left-value">¥{{ userInfos.balance }}</div>
-              </div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
     </el-row>
-    <el-dialog v-model="state.isShowChangePasswordDialog" :title="$t('message.personal.change_password')" width="500px">
-      <el-form size="default" label-position="top">
+    <el-dialog v-model="state.isShowChangePasswordDialog" :title="$t('message.personal.change_password')" width="500px" destroy-on-close>
+      <el-form size="default" label-position="left">
         <el-form-item :label="$t('message.personal.new_password')">
           <el-input v-model="registerData.password":placeholder="$t('message.personal.please_enter_password')" clearable></el-input>
         </el-form-item>
@@ -112,9 +105,9 @@
 					<el-button type="primary" @click="changePassword" size="default">{{$t('message.common.button_confirm')}}</el-button>
 				</span>
       </template>
-    </el-dialog>
-    <el-dialog v-model="state.isShowChangeAvatarDialog" :title="$t('message.personal.modify_avatar')" width="500px">
-      <el-form size="default" label-position="top">
+    </el-dialog >
+    <el-dialog v-model="state.isShowChangeAvatarDialog" :title="$t('message.personal.modify_avatar')" width="500px" destroy-on-close>
+      <el-form size="default" label-position="left">
         <el-form-item :label="$t('message.personal.avatar_link')">
           <el-input v-model="userAvatar.avatar"></el-input>
         </el-form-item>
@@ -126,20 +119,36 @@
 				</span>
       </template>
     </el-dialog>
+
+    <div class="dialog">
+      <el-dialog  v-model="state.isShowLotteryDialog" destroy-on-close width="350px">
+        <LuckyWheel
+          ref="myLuckyRef"
+          width="300px"
+          height="300px"
+          :prizes="state.lotteryData.prizes"
+          :blocks="state.lotteryData.blocks"
+          :buttons="state.lotteryData.buttons"
+          @start="startCallback"
+          @end="endCallback"
+        />
+      </el-dialog>
+    </div>
+
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onMounted, reactive, ref } from "vue";
+import { computed, reactive,ref } from "vue";
 import { formatAxis } from "/@/utils/formatTime";
-import * as imageConversion from "image-conversion";
 import { useUserStore } from "/@/stores/user_logic/userStore";
 import { storeToRefs } from "pinia";
-import { useAdminServerStore } from "/@/stores/admin_logic/serverStore";
 import { useApiStore } from "/@/stores/apiStore";
-import { request } from "/@/utils/request";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { usePublicStore } from "/@/stores/publicStore";
+import { useI18n } from "vue-i18n";
+import giftIcon  from "/@/assets/icon/gift.svg"
 
 const userStore = useUserStore();
 const { userInfos, registerData, userAvatar } = storeToRefs(userStore);
@@ -147,26 +156,70 @@ const { userInfos, registerData, userAvatar } = storeToRefs(userStore);
 const publicStore = usePublicStore();
 const publicStoreData = storeToRefs(publicStore);
 const apiStore = useApiStore();
+const myLuckyRef = ref()
+const {t} = useI18n()
+
+
 
 const state = reactive({
-  url: "",
   isShowChangePasswordDialog: false,
-  isShowChangeAvatarDialog: false
+  isShowChangeAvatarDialog: false,
+  isShowLotteryDialog:false,
+  lotteryData:{
+    blocks: [{ padding: '13px', background: '#617df2' }],
+    prizes: [
+      { background: '#e9e8fe', imgs: [{ src: '', width: '20%', top: '40%' }], fonts:[{ text: '0000', top: '10%' }]}
+    ],
+    buttons: [{
+      radius: '35%',
+      background: '#8a9bf3',
+      pointer: true,
+      fonts: [{ text: 'Go', top: '-10px' }]
+    }],
+  },
+  prizeImg:{
+    src: giftIcon,
+    width: '20%',
+    top: '40%'
+  },
 });
+//设置奖池
+const setJackpot=()=>{
+  state.lotteryData.prizes = []
+  publicStoreData.publicSetting.value.jackpot.forEach((value: JackpotItem, index: number, array: JackpotItem[])=>{
+    let background = '#e9e8fe'
+    if(index%2 === 0){
+      background = '#b8c5f2'
+    }
+    state.lotteryData.prizes.push({imgs: [state.prizeImg], fonts: [{ text: '+ '+value.balance.toString(), top: '10%' }],  background: background })
+  })
+}
+
+//开始抽奖
+const startCallback =() =>{
+  // 调用抽奖组件的play方法开始游戏
+  userStore.clockIn().then((res)=>{
+    myLuckyRef.value.play()
+    const index = res.data.data //res.data 格式： {"total":1,"data":1}
+    myLuckyRef.value.stop(index)
+    userStore.getUserInfo()
+  }).then(()=>{
+
+  })
+}
+// 抽奖结束会触发end回调
+const endCallback =(prize:any)=> {
+  state.isShowLotteryDialog = false
+  ElMessageBox.alert(t('message.personal.balance')+prize.fonts[0].text, t('message.personal.congratulations'), {
+    confirmButtonText: 'OK',
+  })
+}
+
 // 当前时间提示语
 const currentTime = computed(() => {
   return formatAxis(new Date());
 });
 
-//打卡
-const clockin = () => {
-  //是否开启打卡
-};
-
-//获取当前url
-const getUrl = () => {
-  state.url = window.location.host;
-};
 
 const changePassword = () => {
   userStore.changePassword().then(() => {
@@ -182,15 +235,17 @@ const changeAvatar = () => {
   });
   state.isShowChangeAvatarDialog = false;
 };
+
+const lottery=()=>{
+  state.isShowLotteryDialog = true
+  setJackpot()
+}
 const onSubmitForNotice = () => {
   userStore.setUserNotice().then((res) => {
     ElMessage.success(res.msg);
   });
 };
 
-onMounted(() => {
-  getUrl(); //获取邀请url
-});
 </script>
 
 <style scoped lang="scss">
@@ -384,5 +439,24 @@ onMounted(() => {
       }
     }
   }
+  .center {
+    text-align:center;
+    display:flex;justify-content: center; align-items:center;
+  }
 }
+
+.dialog {
+  :deep(.el-dialog) {
+    box-shadow: 0 0px 0px rgb(0 0 0 / 0%);
+    background: transparent;
+    //.el-dialog__body {
+    //  padding: 0 !important;
+    //}
+    //.el-dialog__header {
+    //  display: none !important;
+    //}
+  }
+}
+
 </style>
+

@@ -40,7 +40,7 @@
       </el-input>
     </el-form-item>
     <!--    base64验证码-->
-    <el-form-item prop="b64s">
+    <el-form-item prop="b64s" v-if="publicStoreData.publicSetting.value.enable_base64_captcha">
       <el-col :span="10" style="display: flex;align-items: center">
         <el-input text :placeholder="$t('message.login.placeholder1')" v-model="registerData.base64_captcha.b64s" clearable autocomplete="off">
           <template #prefix>

@@ -4,7 +4,7 @@ declare interface ThemeConfigState {
         created_at: string;
         updated_at: string;
         id: number;
-
+        [bg:string];
         isDrawer: boolean;
         primary: string;
         topBar: string;
@@ -30,7 +30,6 @@ declare interface ThemeConfigState {
         isShowLogoChange: boolean;
         isBreadcrumb: boolean;
         isTagsview: boolean;
-        isBreadcrumbIcon: boolean;
         isTagsviewIcon: boolean;
         isCacheTagsView: boolean;
         isSortableTagsView: boolean;

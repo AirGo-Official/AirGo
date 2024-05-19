@@ -3,7 +3,7 @@ export default {
     query:"査詢",
     modify_order:"修改訂單",
     submitOrder:"提交訂單",
-    orderDetails:"訂單詳情",
+    orderDetails:"订单详情",
     Order: {
       index:"序號",
       created_at: "創建時間",

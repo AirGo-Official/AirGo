@@ -52,7 +52,7 @@ const props = defineProps({
 // 定义变量内容
 const stores = useMenuStore();
 const storesThemeConfig = useThemeConfig();
-const { routesList } = storeToRefs(stores);
+const routesList = storeToRefs(stores);
 const { themeConfig } = storeToRefs(storesThemeConfig);
 const route = useRoute();
 const state = reactive({

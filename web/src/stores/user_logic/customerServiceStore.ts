@@ -1,7 +1,6 @@
 import {defineStore, storeToRefs} from 'pinia';
 import {request} from "/@/utils/request";
 import {useApiStore} from "/@/stores/apiStore";
-import { DateStrHandler } from "/@/utils/formatTime";
 const apiStore = useApiStore()
 
 
@@ -22,5 +21,8 @@ export const useCustomerServiceStore = defineStore('customerService', {
     async resetSubscribeUUID(params:CustomerService){
       return request(apiStore.userApi.resetSubscribeUUID,params)
     },
+    async deleteCustomerService(params:CustomerService){
+      return request(apiStore.userApi.deleteCustomerService,params)
+    }
   }
 })

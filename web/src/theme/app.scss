@@ -38,6 +38,8 @@ body,
   background-color: var(--next-bg-main-color);
   font-size: 14px;
   position: relative;
+  overflow: hidden;
+
 }
 /* 主布局样式
 ------------------------------- */
@@ -73,6 +75,8 @@ body,
   .layout-header {
     padding: 0 !important;
     height: auto !important;
+
+    
   }
 
   .layout-main {
@@ -165,12 +169,12 @@ body,
     position: fixed;
     top: 0;
     left: -180px;
-    width: 180px;
+    width: clamp(17rem, 2vw, 22rem);
     z-index: 9999999;
   }
 
   .layout-aside-mobile-close {
-    left: -220px;
+    left: -240px;
     transition: all 0.3s cubic-bezier(0.39, 0.58, 0.57, 1);
   }
 
@@ -186,7 +190,6 @@ body,
     bottom: 0;
     left: 0;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999998;
     animation: error-img 0.3s;
   }
@@ -363,3 +366,18 @@ body,
     padding-left: #{$i}px !important;
   }
 }
+
+.el-card{
+  border-radius: 1vh;
+
+
+
+}
+
+.--el-card-border-color{
+  color: transparent;
+}
+
+
+
+

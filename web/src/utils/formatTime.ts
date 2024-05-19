@@ -19,6 +19,19 @@ export function DateStrHandler(strTime: string) {
 }
 
 /**
+ * 某个时间与当前时间的相差的毫秒数
+ * @param startTime
+ * @param endTime
+ * @constructor
+ */
+export function getTimeDifference(startTime: string) {
+    const start = new Date(startTime)
+    const end = new Date()
+    return  end.getTime() - start.getTime();//时间差的毫秒数
+}
+
+
+/**
  * 获取某个月的时间范围
  * @param n,n=0当月，n=1上月
  * @constructor

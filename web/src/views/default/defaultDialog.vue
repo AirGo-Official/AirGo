@@ -1,8 +1,8 @@
 <template>
   <div>
-    <el-dialog v-model="state.isShowDialog" width="500px"
+    <el-dialog v-model="state.isShowDialog" width="35em"
                :show-close="true"
-               destroy-on-close>
+               destroy-on-close style="border-radius: 1vh;" >
       <!--      <div v-html="state.dialogHTML"></div>-->
       <v-md-preview :text="state.dialogHTML"></v-md-preview>
     </el-dialog>

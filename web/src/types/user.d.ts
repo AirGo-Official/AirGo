@@ -9,7 +9,7 @@ declare interface SysUser {
     avatar: string;
     enable: boolean;
     invitation_code: string;
-    referrer_code: string;
+    referrer_user_id: number;
     balance: number;
     tg_id: number
     role_group: RoleInfo[];	//角色组

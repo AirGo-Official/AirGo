@@ -14,6 +14,7 @@ type Server struct {
 	Security  Security  `json:"security" gorm:"embedded"`
 	Notice    Notice    `json:"notice"   gorm:"embedded"`
 	Subscribe Subscribe `json:"subscribe" gorm:"embedded"`
+	Finance   Finance   `json:"finance"   gorm:"embedded"`
 }
 type Notice struct {
 	EnableTGBot          bool               `json:"enable_tg_bot"`
@@ -38,7 +39,7 @@ type Email struct {
 	EmailPort      int64  `json:"email_port"     gorm:"comment:端口"`
 	EmailIsSSL     bool   `json:"email_is_ssl"   gorm:"comment:是否SSL"`
 	EmailNickname  string `json:"email_nickname" gorm:"comment:昵称"`
-	EmailSubject   string `json:"email_subject"  gorm:"comment:邮件主题;default:hello!"`
+	EmailSubject   string `json:"email_subject"  gorm:"comment:邮件主题"`
 	EmailContent   string `json:"email_content"  gorm:"comment:邮件内容;type:text"`
 }
 type Security struct {
@@ -48,46 +49,64 @@ type Security struct {
 }
 
 type Captcha struct {
-	KeyLong            int64 `json:"key_long"        gorm:"default:6;comment:验证码长度"`
-	ImgWidth           int64 `json:"img_width"       gorm:"default:240;comment:验证码宽度"`
-	ImgHeight          int64 `json:"img_height"      gorm:"default:80;comment:验证码高度"`
-	OpenCaptcha        int64 `json:"open_captcha"    gorm:"default:2"`
-	OpenCaptchaTimeOut int64 `json:"open_captcha_time_out" gorm:"default:300;comment:验证码超时时间，单位：s(秒)"`
+	KeyLong            int64 `json:"key_long"        gorm:"comment:验证码长度"`
+	ImgWidth           int64 `json:"img_width"       gorm:"comment:验证码宽度"`
+	ImgHeight          int64 `json:"img_height"      gorm:"comment:验证码高度"`
+	OpenCaptcha        int64 `json:"open_captcha"`
+	OpenCaptchaTimeOut int64 `json:"open_captcha_time_out" gorm:"comment:验证码超时时间，单位：s(秒)"`
 }
 type JWT struct {
-	SigningKey  string `json:"signing_key"  gorm:"default:AirGo;comment:jwt签名"`
-	ExpiresTime string `json:"expires_time" gorm:"default:30d;comment:过期时间"`
-	BufferTime  string `json:"buffer_time"  gorm:"default:1d;comment:缓冲时间"`
-	Issuer      string `json:"issuer"       gorm:"default:AirGo;comment:签发者"`
+	SigningKey  string `json:"signing_key"  gorm:"comment:jwt签名"`
+	ExpiresTime string `json:"expires_time" gorm:"comment:过期时间"`
+	BufferTime  string `json:"buffer_time"  gorm:"comment:缓冲时间"`
+	Issuer      string `json:"issuer"       gorm:"comment:签发者"`
 }
 
 // RateLimitParams 限流参数
 type RateLimitParams struct {
-	IPRoleParam int64 `json:"ip_role_param" gorm:"default:600"`
-	VisitParam  int64 `json:"visit_param"   gorm:"default:600"`
+	IPRoleParam int64 `json:"ip_role_param"`
+	VisitParam  int64 `json:"visit_param"`
 }
 type Website struct {
-	EnableRegister          bool   `json:"enable_register"           gorm:"default:true;comment:是否开启注册"`
+	EnableRegister          bool   `json:"enable_register"           gorm:"comment:是否开启注册"`
 	AcceptableEmailSuffixes string `json:"acceptable_email_suffixes" gorm:"comment:可接受的邮箱后缀"`
-	EnableEmailCode         bool   `json:"enable_email_code"         gorm:"default:false;comment:是否开启注册email 验证码"`
-	EnableLoginEmailCode    bool   `json:"enable_login_email_code"   gorm:"default:false;comment:是否开启登录email 验证码"`
-	IsMultipoint            bool   `json:"is_multipoint"     gorm:"default:true;comment:是否多点登录"`
-	FrontendUrl             string `json:"frontend_url"      gorm:"comment:官网地址"`
-	EnabledClockIn          bool   `json:"enabled_clock_in"  gorm:"default:true;comment:是否开启打卡"`
+	EnableBase64Captcha     bool   `json:"enable_base64_captcha"     gorm:"comment:是否开启注册图片验证码"`
+	EnableEmailCode         bool   `json:"enable_email_code"         gorm:"comment:是否开启注册email 验证码"`
+	EnableLoginEmailCode    bool   `json:"enable_login_email_code"   gorm:"comment:是否开启登录email 验证码"`
+	IsMultipoint            bool   `json:"is_multipoint"      gorm:"comment:是否多点登录"`
+	FrontendUrl             string `json:"frontend_url"       gorm:"comment:官网地址"`
+	EnableSwaggerApi        bool   `json:"enable_swagger_api" gorm:"comment:swagger api"`
+	EnableAssetsApi         bool   `json:"enable_assets_api"  gorm:"comment:assets api"`
 }
 
 type Subscribe struct {
-	BackendUrl string `json:"backend_url"       gorm:"comment:后端地址"`
-	SubName    string `json:"sub_name"          gorm:"default:AirGo;comment:订阅名称"`
-	TEK        string `json:"tek"               gorm:"default:airgo;comment:前后端通信密钥"`
+	BackendUrl                 string `json:"backend_url"       gorm:"comment:后端地址"`
+	SubscribeDomainBindRequest bool   `json:"subscribe_domain_bind_request" gorm:"comment:订阅域名只接受更新订阅的请求"`
+	SubName                    string `json:"sub_name"          gorm:"comment:订阅名称"`
+	TEK                        string `json:"tek"               gorm:"comment:前后端通信密钥"`
+	SurgeRule                  string `json:"surge_rule"        gorm:"comment:Surge 规则;type:text"`
+	ClashRule                  string `json:"clash_rule"        gorm:"comment:Clash 规则;type:text"`
+}
+type Finance struct {
+	EnableInvitationCommission bool    `json:"enable_invitation_commission"` //是否开启邀请佣金
+	CommissionRate             float64 `json:"commission_rate"`              //佣金率, 范围 0~1, 佣金 = 订单金额 * 佣金率 ( 100.50 * 0.50 )
+	WithdrawThreshold          float64 `json:"withdraw_threshold"`           //提取到余额的阈值
+
+	EnableLottery bool    `json:"enable_lottery"` //是否开启每日打卡抽奖
+	Jackpot       Jackpot `json:"jackpot"`        //奖池
 }
 
 // 公共配置参数
 type PublicSystem struct {
-	EnableRegister          bool   `json:"enable_register"`           // 是否开启注册
-	AcceptableEmailSuffixes string `json:"acceptable_email_suffixes"` // 可接受的邮箱后缀
-	EnableEmailCode         bool   `json:"enable_email_code"`         // 是否开启注册email 验证码
-	EnableLoginEmailCode    bool   `json:"enable_login_email_code"`   // 是否开启登录email 验证码
-	BackendUrl              string `json:"backend_url"`               // 后端地址
-	EnabledClockIn          bool   `json:"enabled_clock_in"`          // 是否开启打卡
+	EnableRegister          bool    `json:"enable_register"`           // 是否开启注册
+	AcceptableEmailSuffixes string  `json:"acceptable_email_suffixes"` // 可接受的邮箱后缀
+	EnableBase64Captcha     bool    `json:"enable_base64_captcha"`     // 是否开启注册图片验证码
+	EnableEmailCode         bool    `json:"enable_email_code"`         // 是否开启注册email 验证码
+	EnableLoginEmailCode    bool    `json:"enable_login_email_code"`   // 是否开启登录email 验证码
+	BackendUrl              string  `json:"backend_url"`               // 后端地址
+	CommissionRate          float64 `json:"commission_rate"`           // 佣金率, 范围 0~1, 佣金 = 订单金额 * 佣金率 ( 100.50 * 0.50 )
+	WithdrawThreshold       float64 `json:"withdraw_threshold"`        // 提取到余额的阈值
+	EnableLottery           bool    `json:"enable_lottery"`            //是否开启每日打卡抽奖
+	Jackpot                 Jackpot `json:"jackpot"`                   //奖池
+	SubName                 string  `json:"sub_name"`                  //订阅名称
 }

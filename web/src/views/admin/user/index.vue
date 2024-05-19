@@ -72,7 +72,7 @@
             <el-button size="small" text type="primary" @click="openEditDialog('edit', scope.row)">
               {{ $t("message.common.modify") }}
             </el-button>
-            <el-button size="small" text type="primary" @click="deleteUser(scope.row)">
+            <el-button size="small" text type="danger" @click="deleteUser(scope.row)">
               {{ $t("message.common.delete") }}
             </el-button>
           </template>

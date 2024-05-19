@@ -1,11 +1,11 @@
 <template>
   <div class="system-menu-dialog-container">
     <el-dialog :title="state.dialog.title" v-model="state.dialog.isShowDialog" width="769px" destroy-on-close>
-      <el-form ref="menuDialogFormRef" :model="menuStoreData.currentMenu.value" size="default" label-width="80px" label-position="top">
-            <el-form-item :label="$t('message.adminMenu.Route.parent_menu')">
+      <el-form ref="menuDialogFormRef" :model="menuStoreData.currentMenu.value" size="default" value-width="80px" value-position="top">
+            <el-form-item :value="$t('message.adminMenu.Route.parent_menu')">
               <el-cascader :options="menuStoreData.allMenuList.value"
                            @change="changeCheckMenu"
-                           :props="{ checkStrictly: true, value: 'id', label: 'name' }"
+                           :props="{ checkStrictly: true, value: 'id', lable: 'name' }"
                            clearable class="w100">
                 <template #default="{ node, data }">
                   <span>{{ $t(data.meta.title) }}</span>
@@ -14,42 +14,42 @@
               </el-cascader>
             </el-form-item>
 
-            <el-form-item :label="$t('message.adminMenu.Route.parent_id')">
+            <el-form-item :value="$t('message.adminMenu.Route.parent_id')">
               <el-input v-model="menuStoreData.currentMenu.value.parent_id"></el-input>
             </el-form-item>
 
-            <el-form-item :label="$t('message.adminMenu.Route.remarks')">
+            <el-form-item :value="$t('message.adminMenu.Route.remarks')">
               <el-input v-model="menuStoreData.currentMenu.value.remarks"></el-input>
             </el-form-item>
 
-            <el-form-item :label="$t('message.adminMenu.Route.title')">
+            <el-form-item :value="$t('message.adminMenu.Route.title')">
               <el-input v-model="menuStoreData.currentMenu.value.meta.title"
                         clearable></el-input>
             </el-form-item>
           <template v-if="true">
-              <el-form-item :label="$t('message.adminMenu.Route.name')">
+              <el-form-item :value="$t('message.adminMenu.Route.name')">
                 <el-input v-model="menuStoreData.currentMenu.value.name" clearable></el-input>
               </el-form-item>
-              <el-form-item :label="$t('message.adminMenu.Route.path')">
+              <el-form-item :value="$t('message.adminMenu.Route.path')">
                 <el-input v-model="menuStoreData.currentMenu.value.path" clearable></el-input>
               </el-form-item>
-              <el-form-item :label="$t('message.adminMenu.Route.icon')">
+              <el-form-item :value="$t('message.adminMenu.Route.icon')">
                 <IconSelector  v-model="menuStoreData.currentMenu.value.meta.icon"/>
               </el-form-item>
-              <el-form-item :label="$t('message.adminMenu.Route.component')">
+              <el-form-item :value="$t('message.adminMenu.Route.component')">
                 <el-input v-model="menuStoreData.currentMenu.value.component"  clearable></el-input>
               </el-form-item>
-              <el-form-item :label="$t('message.adminMenu.Route.isLink')">
+              <el-form-item :value="$t('message.adminMenu.Route.isLink')">
                 <el-input v-model="menuStoreData.currentMenu.value.meta.isLink"
                           clearable>
                 </el-input>
               </el-form-item>
           </template>
           <template v-if="true">
-              <el-form-item :label="$t('message.adminMenu.Route.isIframe')">
+              <el-form-item :value="$t('message.adminMenu.Route.isIframe')">
                 <el-radio-group v-model="menuStoreData.currentMenu.value.meta.isIframe">
-                  <el-radio :label="true">{{$t('message.common.yes')}}</el-radio>
-                  <el-radio :label="false">{{$t('message.common.no')}}</el-radio>
+                  <el-radio :value="true">{{$t('message.common.yes')}}</el-radio>
+                  <el-radio :value="false">{{$t('message.common.no')}}</el-radio>
                 </el-radio-group>
               </el-form-item>
 

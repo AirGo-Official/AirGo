@@ -106,7 +106,7 @@
             <el-button size="small" text type="primary"
                        @click="openNodeDialog('edit', scope.row)">{{ $t("message.common.modify") }}
             </el-button>
-            <el-button size="small" text type="primary"
+            <el-button size="small" text type="danger"
                        @click="onRowDel(scope.row)">{{ $t("message.common.delete") }}
             </el-button>
           </template>

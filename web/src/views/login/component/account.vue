@@ -91,18 +91,14 @@
       <!--    语言切换-->
       <el-dropdown :show-timeout="70" :hide-timeout="50" trigger="click" @command="onLanguageChange">
         <div>
-          <i
-            style="font-size: 30px"
-            class="iconfont"
-            :class="state.disabledI18n === 'en' ? 'icon-fuhao-yingwen' : 'icon-fuhao-zhongwen'"
-            :title="$t('message.user.title1')"
-          ></i>
+            <i style="font-size: 25px; color:white;          text-shadow: #000000 0px 0 3px;" class="ri-global-line"></i>
         </div>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item command="zh-cn" :disabled="state.disabledI18n === 'zh-cn'">简体中文</el-dropdown-item>
-            <el-dropdown-item command="en" :disabled="state.disabledI18n === 'en'">English</el-dropdown-item>
             <el-dropdown-item command="zh-tw" :disabled="state.disabledI18n === 'zh-tw'">繁體中文</el-dropdown-item>
+            <el-dropdown-item command="en" :disabled="state.disabledI18n === 'en'">English</el-dropdown-item>
+
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -300,4 +296,6 @@ const onLanguageChange = (lang: string) => {
   .login-content-resetPassword {
     width: 100%;
   }
-}</style>
+
+}
+</style>
