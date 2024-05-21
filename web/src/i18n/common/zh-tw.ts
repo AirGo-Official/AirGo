@@ -30,10 +30,12 @@ export default {
     startDate:"開始日期",
     endDate:"結束日期",
     to:"至",
+    up:"起",
     lastWeek:"上周",
     lastMonth:"上月",
     lastThreeMonths:"最近3個月",
     month:"月",
+    no_time_limit:"不限時",
 
     noData:"暫無數據",
 

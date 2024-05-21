@@ -25,6 +25,11 @@ export default {
       price_6_month:"price for 6 months",
       price_12_month:"price for 12 months",
       price_unlimited_duration:"price for unlimited",
+      mouth_paid:"Monthly payment",
+      mouth3_paid:"Quarterly payment",
+      mouth6_paid:"Paid half yearly",
+      mouth12_paid:"Annual fee",
+      unlimit_paid:"Unlimited time (traffic package)",
       is_show: "is show", //是否显示
       is_sale: "is sale",//是否售卖，是否上架
       is_renew: "is renew",//是否可续费
@@ -53,6 +58,7 @@ export default {
       status: "status",
       alipay: "alipay",
       epay: "epay",
+      pay_option:"Pay options",
     },
     Alipay:{
       alipay_app_id: "alipay app id",

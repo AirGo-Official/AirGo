@@ -30,6 +30,8 @@ export default {
       subject: "subject",
       price: "price",
       duration: "duration", //购买时长(单位：月)
+      price_inform:"Price detail",
+      buy_option:"Buy option",
       // 服务参数
       customer_service_id:"customer service id",
       //支付参数

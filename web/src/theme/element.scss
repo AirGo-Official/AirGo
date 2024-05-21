@@ -28,6 +28,7 @@
 /* Form 表单
 ------------------------------- */
 .el-form {
+
   // 用于修改弹窗时表单内容间隔太大问题，如系统设置的新增菜单弹窗里的表单内容
   .el-form-item:last-of-type {
     margin-bottom: 0 !important;
@@ -141,6 +142,7 @@
 
 // 水平菜单、横向菜单折叠背景色
 .el-popper.is-pure.is-light {
+
   // 水平菜单
   .el-menu--vertical {
     background: var(--next-bg-menuBar);
@@ -226,7 +228,8 @@
 /* Dropdown 下拉菜单
 ------------------------------- */
 .el-dropdown-menu {
-  list-style: none !important; /*修复 Dropdown 下拉菜单样式问题 2022.03.04*/
+  list-style: none !important;
+  /*修复 Dropdown 下拉菜单样式问题 2022.03.04*/
 }
 
 .el-dropdown-menu .el-dropdown-menu__item {
@@ -254,7 +257,7 @@
   overflow: hidden;
   -webkit-backdrop-filter: blur(1.5px);
   backdrop-filter: blur(1.5px);
-  background-color: rgba(0, 0, 0, 0.301) ;
+  background-color: rgba(0, 0, 0, 0.301);
 
   .el-overlay-dialog {
     display: flex;
@@ -375,50 +378,71 @@
 }
 
 /*菜单移动端样式*/
-.layout-aside-mobile-mode{
+.layout-aside-mobile-mode {
   -webkit-backdrop-filter: blur(1.5px);
   backdrop-filter: blur(1.5px);
-  background-color: rgba(0, 0, 0, 0.301) ;
+  background-color: rgba(0, 0, 0, 0.301);
 }
 
 
 
-.menu-text{
+.menu-text {
   color: var(--el-text-color-primary);
-  font-size:1em;
+  font-size: 1em;
   font-weight: 650;
   letter-spacing: 0.1em;
 }
 
-.menu-text-icon{
+.menu-text-icon {
   margin-left: 0.8em;
   margin-right: 0.8em;
-  font-size:1.1em;
+  font-size: 1.1em;
 
 }
 
-.menu-title{
+.menu-title {
   font-size: 1.2em;
   font-weight: 750;
-  
+
 }
 
-.memu-logo{
+.memu-logo {
   width: 2.1em;
   margin-right: 0.5em;
 }
 
-.item-title{
-  margin-top: 0.5em;
+.item-title {
+  margin-top: 0.25em !important;
+  margin: 0.5em;
   font-weight: bolder;
-  font-size: clamp(1.5rem, 2vw, 1.5rem);
+  font-size: clamp(1.13rem, 2vw, 1.5rem);
+  word-break: break-all;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; //控制行数
+  -webkit-box-orient: vertical;
+
 }
 
-.item-card{
-  width: auto;
-  padding: 0px !important;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.300);
+.item-card {
+  .el-card__body {
+    padding: 0px !important;
+  }
+
+  min-height:31vh;
   border-radius: 10px;
-  display: flex;
-  margin-top: 0.8em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.item-price {
+  bottom: 0.8em;
+  margin: 0.5em;
+  margin-bottom: 0.8em;
+}
+.purchase-card{
+  .el-card__body {
+    padding-top: 0.5em;
+  }
 }

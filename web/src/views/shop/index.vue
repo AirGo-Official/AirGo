@@ -3,7 +3,7 @@
     <div class="home-card-one mb15">
       <el-radio-group v-model="state.goods_type" @change="getAllEnabledGoods">
         <el-radio-button :label="constantStore.GOODS_TYPE_SUBSCRIBE">
-          <el-icon style="height: 100%"><Promotion /></el-icon>
+          <el-icon><Promotion /></el-icon>
           {{ $t("message.constant.GOODS_TYPE_SUBSCRIBE") }}
         </el-radio-button>
         <el-radio-button :label="constantStore.GOODS_TYPE_GENERAL">
@@ -19,26 +19,25 @@
     <div>
       <div v-if="shopStoreData.goodsList.value.length > 0" style="border-radius: 1vh" class="layout-padding-auto">
         <el-row :gutter="20" align="top" >
-          <el-col :xs="{span: 12 , push: 0}" :sm="12" :md="8" :lg="5" :xl="4"
+          <el-col :xs="{span: 12 , push: 0}" :sm="8" :md="8" :lg="4" :xl="5"
                   v-for="(v, k) in shopStoreData.goodsList.value"
                   :key="k" @click="showGoodsDetails(v)">
-              <el-card style="margin-bottom: 3vh;border-radius:10px">
-                <div style="width:auto;">
-                  <el-image style="border-radius:5px" :src="v.cover_image"  fit="cover">
+              <el-card class="item-card">
+                <div>
+                  <el-image :src="v.cover_image"  fit="cover">
                     <template #error>
                       <div class="image-slot">
-                        <i class="ri-signal-wifi-error-line"></i>
-                     </div>
+                        <i style="font-size: xx-large;" class="ri-image-line"></i>                     </div>
                     </template>
                   </el-image>
                 </div>
                 <div>
                   <div class="item-title">{{ v.subject }}</div>
-                  <div style="text-align: right;margin-right: 0.5em;font-size: 1.4em">
-                      <span style="color: red">￥</span>
-                      <span style="color: red;">{{ v.price }}</span>
+                  <div class="item-price">
+                      <span style="color: #FF5349;">￥</span>
+                      <span v-if="v.price != ''"><span style="color: #FF5349;font-size:x-large;">{{ v.price }}</span><span style="color: var(--el-text-color-primary);"> /{{ $t("message.common.month") }}  {{ $t("message.common.up") }}</span></span>
+                      <span v-if="v.price === ''"><span style="color: #FF5349;font-size:x-large;">{{ v.price_unlimited_duration }}</span> /{{ $t("message.common.no_time_limit") }}</span>
                   </div>
-                  <br>
                 </div>
               </el-card>
 
@@ -57,10 +56,12 @@
                         lazy
                         style="height: 20vh; border-radius: 1vh;"
                         fit="cover"
-                        :preview-src-list="[shopStoreData.currentGoods.value.cover_image]">
+                        :preview-src-list="[shopStoreData.currentGoods.value.cover_image]"
+                        title="点击查看大图"
+                        >
                 <template #error>
                   <div class="image-slot">
-                    <i class="ri-signal-wifi-error-line"></i>
+                    <i style="font-size: xx-large;" class="ri-image-line"></i>
                   </div>
                 </template>
               </el-image>
@@ -81,11 +82,9 @@
                 <el-descriptions-item :label="$t('message.adminShop.Goods.total_bandwidth')">
                   {{ shopStoreData.currentGoods.value.total_bandwidth }}GB
                 </el-descriptions-item>
-                <el-descriptions-item :label="$t('message.adminShop.Goods.node_connector')">
-                  {{ shopStoreData.currentGoods.value.node_connector }}
-                </el-descriptions-item>
                 <el-descriptions-item :label="$t('message.adminShop.Goods.node_speed_limit')">
-                  {{ shopStoreData.currentGoods.value.node_speed_limit }}
+                  <div v-if="shopStoreData.currentGoods.value.node_speed_limit === 0">不限速</div>
+                  <div v-if="shopStoreData.currentGoods.value.node_speed_limit > 0">{{ shopStoreData.currentGoods.value.node_speed_limit }} Mbps</div>
                 </el-descriptions-item>
               </div>
               <div v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_RECHARGE">
@@ -97,10 +96,7 @@
              <!--商品信息tag标签-->
             <div style="margin-top: 10px;margin-bottom: 10px ;text-align: end;">
                 <!--商品类型-->
-              <el-tag size="small" v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE
-              && shopStoreData.currentGoods.value.enable_traffic_reset">
-                 {{$t("message.adminShop.Goods.enable_traffic_reset")}}
-              </el-tag>
+
                <el-tag size="small" v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE">
                 {{ $t("message.adminShop.Goods.goods_type") }}: {{ $t("message.constant.GOODS_TYPE_SUBSCRIBE") }}
                </el-tag>
@@ -114,22 +110,33 @@
                <el-tag size="small" type="warning">{{ $t("message.adminShop.Goods.quota") }}: {{ shopStoreData.currentGoods.value.quota
                 }} / {{ $t("message.adminShop.Goods.stock") }}: {{ shopStoreData.currentGoods.value.stock }}
                </el-tag>         
-                <div>                <!--发货类型 none（订阅）不做额外显示-->
+                <div style="margin-top: 10px;">                <!--发货类型 none（订阅）不做额外显示-->
                  <el-tag size="small" v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_AUTO">
                  {{ $t("message.adminShop.Goods.deliver_type") }}: {{ $t("message.constant.DELIVER_TYPE_AUTO") }}
                   </el-tag>
                  <el-tag size="small" v-if="shopStoreData.currentGoods.value.deliver_type === constantStore.DELIVER_TYPE_MANUAL">
                  {{ $t("message.adminShop.Goods.deliver_type") }}: {{ $t("message.constant.DELIVER_TYPE_MANUAL") }}
                  </el-tag>
+                 <el-tag size="small" v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE
+              && shopStoreData.currentGoods.value.enable_traffic_reset">
+                 {{$t("message.adminShop.Goods.enable_traffic_reset")}}
+              </el-tag>
                 </div>
+                
                </div>
 
             <div style="margin-top: 10px;text-align: end;">
                 <span>
-                  <span style="color: red;">￥</span>
-                  <span style="color: red;font-size: 30px;">{{ shopStoreData.currentGoods.value.price }}</span>
+                  <span style="color: red;font-size:x-large;">￥</span>
+                  <!--需要判断是否为不限时、是否为订阅类商品-->
+                  <span v-if="shopStoreData.currentGoods.value.price != ''" style="color: red;font-size:x-large;"> {{ shopStoreData.currentGoods.value.price }}</span>
+                      <span v-if="shopStoreData.currentGoods.value.price === ''" style="color: red;font-size:x-large;"> {{ shopStoreData.currentGoods.value.price_unlimited_duration }}</span>
                   <span
-                    v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE"> / {{ $t("message.common.month") }}</span>
+                    v-if="shopStoreData.currentGoods.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE">
+                    <span v-if="shopStoreData.currentGoods.value.price != ''" style="color: red;"> / {{ $t("message.common.month") }}  {{ $t("message.common.up") }}</span>
+                    <span v-if="shopStoreData.currentGoods.value.price === ''" style="color: red;"> /{{ $t("message.common.no_time_limit") }}</span>
+                    
+                    </span>
                 </span>
             </div>
           </el-card>
@@ -172,6 +179,7 @@ import { useRouter } from "vue-router";
 import { useShopStore } from "/@/stores/user_logic/shopStore";
 import { storeToRefs } from "pinia";
 import { useConstantStore } from "/@/stores/constantStore";
+import { el } from "element-plus/es/locale";
 
 const shopStore = useShopStore();
 const shopStoreData = storeToRefs(shopStore);

@@ -60,7 +60,7 @@ Supported protocols：Vless，Vmess，shadowsocks，Hysteria2
 
 >TG频道：[https://t.me/AirGo_Channel](https://t.me/AirGo_Channel)
 TG群组：[https://t.me/AirGo_Group](https://t.me/AirGo_Group)
-文档上次更新日期：2024.5.19
+文档上次更新日期：2024.5.21
 
 <br>
 
@@ -170,7 +170,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/AirGo-Official/AirGo/main/serv
 - 启动核心，`systemctl start AirGo`
 
 ### 2-1-2 docker 安装
-- 提前准备好配置文件 config.yaml，参考 [config.yaml](https://github.com/shuangyu233/AirGo_Modify/blob/main/server/config.yaml),首次安装，会根据配置文件config.yaml自动初始化数据，请务必修改管理员账号和密码
+- 提前准备好配置文件 config.yaml，参考 [config.yaml](https://github.com/AirGo-Official/AirGo/blob/main/server/config.yaml),首次安装，会根据配置文件config.yaml自动初始化数据，请务必修改管理员账号和密码
 - 启动docker命令参考如下：
 
 ```

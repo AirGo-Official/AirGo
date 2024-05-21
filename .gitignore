@@ -8,3 +8,4 @@ web/web
 
 server/air.db
 server/web/web
+.vscode/launch.json

@@ -8,12 +8,12 @@
       destroy-on-close>
       <!--      1、现实进度条-->
       <el-steps :active="state.active" process-status="wait" finish-status="success">
-        <el-step :title="$t('message.adminShop.selectGoods')">
+        <el-step :title="$t('message.adminOrder.orderDetails')">
           <template #icon>
             <i style="font-size: 2.4em;" class="ri-number-1"></i>
           </template>
         </el-step>
-        <el-step :title="$t('message.adminOrder.orderDetails')">
+        <el-step :title="$t('message.adminShop.PayInfo.pay_option')">
           <template #icon>
             <i style="font-size: 2.4em;" class="ri-number-2"></i>
           </template>
@@ -66,14 +66,16 @@
                         lazy
                         style="height: 20vh; border-radius: 1vh;"
                         fit="cover"
-                        :preview-src-list="[shopStoreData.currentGoods.value.cover_image]">
+                        :preview-src-list="[shopStoreData.currentGoods.value.cover_image]"
+                        title="点击查看大图"
+                        >
                 <template #error>
                   <div class="image-slot">
-                    <i class="ri-signal-wifi-error-line"></i>
+                    <i style="font-size: xx-large;" class="ri-image-line"></i>
                   </div>
                 </template>
               </el-image>
-              <div class="item-title">
+              <div style="margin: 1em !important;font-size: 1.3em;" class="item-title">
                   {{ shopStoreData.currentGoods.value.subject }}
                 </div>
             </div>    
@@ -84,25 +86,26 @@
           </el-row>
         </div>
         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-          <el-card v-if="state.active === 1
+        <el-card class="purchase-card" v-if="state.active === 1"
+             style="border-radius:10px;">
+             
+          <div v-if="shopStoreData.currentOrder.value.order_type === constantStore.ORDER_TYPE_NEW">
+            <el-divider content-position="left">{{ $t("message.adminOrder.Order.buy_option") }}</el-divider>
+
+            <el-tag style="margin-bottom: 1.3em;" type="primary">{{ $t("message.adminOrder.Order.duration") }}</el-tag>
+                <div v-if="state.active === 1
           && shopStoreData.currentOrder.value.order_type === constantStore.ORDER_TYPE_NEW
-          && shopStoreData.currentOrder.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE"
-                   style="border-radius:10px;padding: 10px;margin-top: 0.8em;">
-                <div style="margin-bottom: 20px;font-size: 20px" size="large" type="primary">{{ $t("message.adminOrder.Order.duration") }}</div>
-                <div>
-                    <el-radio-group v-model.number="shopStoreData.currentOrder.value.duration" size="small" @change="getOrderInfo">
-                      <el-radio v-if="shopStoreData.currentGoods.value.price" class="mb15" :value="1" border>单月</el-radio>
-                      <el-radio v-if="shopStoreData.currentGoods.value.price_3_month" class="mb15" :value="3" border>3个月</el-radio>
-                      <el-radio v-if="shopStoreData.currentGoods.value.price_6_month" class="mb15" :value="6"  border>6个月</el-radio>
-                      <el-radio v-if="shopStoreData.currentGoods.value.price_12_month" class="mb15" :value="12"  border>12个月</el-radio>
-                      <el-radio v-if="shopStoreData.currentGoods.value.price_unlimited_duration" class="mb15" :value="-1"  border>不限时</el-radio>
+          && shopStoreData.currentOrder.value.goods_type === constantStore.GOODS_TYPE_SUBSCRIBE">
+                    <el-radio-group v-model.number="shopStoreData.currentOrder.value.duration"  @change="getOrderInfo">
+                      <el-radio v-if="shopStoreData.currentGoods.value.price" class="mb15" :value="1" border>月付</el-radio>
+                      <el-radio v-if="shopStoreData.currentGoods.value.price_3_month" class="mb15" :value="3" border>季付</el-radio>
+                      <el-radio v-if="shopStoreData.currentGoods.value.price_6_month" class="mb15" :value="6"  border>半年付</el-radio>
+                      <el-radio v-if="shopStoreData.currentGoods.value.price_12_month" class="mb15" :value="12"  border>年付</el-radio>
+                      <el-radio v-if="shopStoreData.currentGoods.value.price_unlimited_duration" class="mb15" :value="-1"  border>不限时（流量包）</el-radio>
                     </el-radio-group>
                 </div>
-          </el-card>
-        <el-card v-if="state.active === 1"
-             style="border-radius:10px;padding: 10px;margin-top: 0.8em;">
-          <div v-if="shopStoreData.currentOrder.value.order_type === constantStore.ORDER_TYPE_NEW">
-            <div class="card-text" v-if="shopStoreData.currentOrder.value.goods_type !== constantStore.GOODS_TYPE_RECHARGE" >
+            <div v-if="shopStoreData.currentOrder.value.goods_type !== constantStore.GOODS_TYPE_RECHARGE" >
+              <el-tag style="margin-top: 1.3em ;margin-bottom: 1.3em;">{{$t('message.adminShop.coupon')}}</el-tag>
               <el-input v-model="shopStoreData.currentOrder.value.coupon_name"
                         :placeholder="$t('message.adminShop.Coupon.name')" size="default"
                         >
@@ -118,6 +121,8 @@
                 </template>
               </el-input>
             </div>
+            <el-divider content-position="left">{{ $t("message.adminOrder.Order.price_inform") }}</el-divider>
+
             <div class="card-text">
               <el-tag class="card-text-left" type="primary">{{ $t("message.adminOrder.Order.price") }}</el-tag>
               <el-text class="card-text-right">{{ shopStoreData.currentOrder.value.price }}</el-text>
@@ -159,8 +164,7 @@
       <div v-if="state.active === 2"
            v-loading="state.isShowLoading"
            element-loading-text="Loading..."
-           element-loading-background="rgba(122, 122, 122, 0.8)"
-           style="border-radius:10px;padding: 10px;margin-top: 10px">
+           style="border-radius:10px;padding: 10px;margin-top: 10px;min-height: 100px;">
         <div style="margin-bottom: 20px"
              v-if="state.active === 2 || state.active === 3">
         </div>
@@ -189,8 +193,7 @@
       <div v-if="state.active === 3"
            v-loading="state.isShowLoading"
            element-loading-text="Loading..."
-           element-loading-background="rgba(122, 122, 122, 0.8)"
-           style="border-radius:10px;padding: 10px;margin-top: 10px">
+           style="border-radius:10px;padding: 10px;margin-top: 10px;min-height: 100px;">
         <div>
           <el-result icon="success" :title="$t('message.adminShop.resultText1')" v-if="state.result === 1"></el-result>
           <el-result icon="warning" :title="$t('message.adminShop.resultText2')" v-else-if="state.result === 2">
@@ -273,7 +276,6 @@ import { DateStrToTime } from "/@/utils/formatTime";
 import { useI18n } from "vue-i18n";
 import { useCustomerServiceStore } from "/@/stores/user_logic/customerServiceStore";
 import { useUserStore } from "/@/stores/user_logic/userStore";
-// import { isMobile } from "/@/utils/other";
 
 const shopStore = useShopStore();
 const shopStoreData = storeToRefs(shopStore);

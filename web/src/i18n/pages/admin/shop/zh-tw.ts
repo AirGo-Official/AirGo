@@ -25,6 +25,11 @@ export default {
       price_6_month:"6個月的價格",
       price_12_month:"12個月的價格",
       price_unlimited_duration:"不限時的價格",
+      mouth_paid:"月付",
+      mouth3_paid:"季付",
+      mouth6_paid:"半年付",
+      mouth12_paid:"年付",
+      unlimit_paid:"不限時（流量包）",
       is_show: "是否顯示", //是否显示
       is_sale: "是否售賣",//是否售卖
       is_renew: "是否可續費",//是否可续费
@@ -53,6 +58,8 @@ export default {
       status: "狀態",
       alipay: "alipay",
       epay: "epay",
+      pay_option:"支付選項",
+
     },
     Alipay:{
       alipay_app_id: "支付寶appID",

@@ -17,7 +17,7 @@
         <el-image :src="shopStoreData.currentGoods.value.cover_image" style="height: 100px">
           <template #error>
             <div class="image-slot">
-              <i class="ri-signal-wifi-error-line"></i>
+              <i style="font-size: xx-large;" class="ri-image-line"></i>
             </div>
           </template>
         </el-image>

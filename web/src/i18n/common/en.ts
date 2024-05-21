@@ -30,12 +30,15 @@ export default {
     startDate:"Start date",
     endDate:"End date",
     to:"to",
+    up:"up",
     lastWeek:"Last week",
     lastMonth:"Last month",
     lastThreeMonths:"Last 3 months",
     month:"month",
+    no_time_limit:"No time limit",
 
-    noData:"No data",
+
+    noData:"no data available",
 
     success:"Success",
     warning:"Warning",
