@@ -53,8 +53,9 @@ func (c *AdminCustomerService) GetCustomerServiceListAlmostExpired() (*[]model.C
 	var list []model.CustomerService
 	//到期前3天
 	d := time.Now()
-	date := time.Date(d.Year(), d.Month(), d.Day() - 3, d.Hour(), d.Minute(), d.Second(), 0, d.Location())
-	err := global.DB.Model(&model.CustomerService{}).Where("service_end_at < ?", date).Find(&list).Error
+	date1 := time.Date(d.Year(), d.Month(), d.Day() - 3, d.Hour(), d.Minute(), d.Second(), 0, d.Location())
+	date2 := time.Date(d.Year(), d.Month(), d.Day(), d.Hour(), d.Minute(), d.Second(), 0, d.Location())
+	err := global.DB.Model(&model.CustomerService{}).Where("service_end_at > ? AND service_end_at < ?", date1, date2).Find(&list).Error
 	return &list, err
 }
 

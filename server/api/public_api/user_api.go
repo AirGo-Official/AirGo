@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AirGo-Official/AirGo/constant"
 	"github.com/AirGo-Official/AirGo/global"
 	"github.com/AirGo-Official/AirGo/model"
 	"github.com/AirGo-Official/AirGo/service"
@@ -24,25 +23,25 @@ import (
 // @Router /api/public/user/register [post]
 func Register(ctx *gin.Context) {
 	if !global.Server.Website.EnableRegister {
-		response.Fail("Registration closed", nil, ctx)
+		response.Fail("暂停注册", nil, ctx)
 		return
 	}
 	var u model.UserRegister
 	err := ctx.ShouldBind(&u)
 	if err != nil {
 		global.Logrus.Error(err.Error())
-		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
+		response.Fail("请求参数错误", nil, ctx)
 		return
 	}
 	//判断邮箱后缀，目前注册时用户名和邮箱后缀是分开的，如：user_name = 123, email_suffix = @qq.com
 	ok := other_plugin.In(u.EmailSuffix, strings.Fields(global.Server.Website.AcceptableEmailSuffixes))
 	if !ok {
-		response.Fail("The suffix name of this email is not supported!", nil, ctx)
+		response.Fail("不支持该邮箱类型", nil, ctx)
 	}
 	//处理base64Captcha
 	if global.Server.Website.EnableBase64Captcha {
 		if !service.CaptchaSvc.Base64CaptchaStore.Verify(u.Base64Captcha.ID, u.Base64Captcha.B64s, true) {
-			response.Fail("Base64Captcha Verification code error,please try again!", nil, ctx) //验证错校验失败会清除store中的value，需要前端重新获取
+			response.Fail("验证码输入错误,请重试", nil, ctx) //验证错校验失败会清除store中的value，需要前端重新获取
 			return
 		}
 	}
@@ -50,11 +49,11 @@ func Register(ctx *gin.Context) {
 	if global.Server.Website.EnableEmailCode {
 		ok, err = service.UserSvc.VerifyEmailWhenRegister(u)
 		if err != nil {
-			response.Fail(err.Error(), nil, ctx)
+			response.Fail("服务内部错误,请稍后重试", nil, ctx)
 			return
 		}
 		if !ok {
-			response.Fail("Email Verification code error,please try again!", nil, ctx)
+			response.Fail("邮箱验证码输入错误,请重试", nil, ctx)
 			return
 		}
 	}
@@ -81,10 +80,14 @@ func Register(ctx *gin.Context) {
 			newUser.ReferrerUserID = referrerUser.ID
 		}
 	}
-	err = service.UserSvc.Register(newUser)
+	code, err := service.UserSvc.Register(newUser)
 	if err != nil {
 		global.Logrus.Error(err.Error())
-		response.Fail("Register error:"+err.Error(), nil, ctx)
+		if code == 1 { // 用户已存在
+			response.Fail("用户已存在", nil, ctx)
+		} else if code == 2 { // 服务内部错误
+			response.Fail("服务内部错误,请稍后重试", nil, ctx)
+		}
 		return
 	}
 	// 推送通知
@@ -104,7 +107,7 @@ func Register(ctx *gin.Context) {
 			}
 		})
 	}
-	response.OK("Register success", nil, ctx)
+	response.OK("注册成功", nil, ctx)
 }
 
 // Login
@@ -119,19 +122,19 @@ func Login(c *gin.Context) {
 	err := c.ShouldBind(&l)
 	if err != nil {
 		global.Logrus.Error(err.Error())
-		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, c)
+		response.Fail("请求参数错误", nil, c)
 		return
 	}
 	//查询用户并校验有效性
 	user, err := service.UserSvc.Login(&l)
 	if err != nil {
 		global.Logrus.Error(err.Error())
-		response.Fail("Login error:"+err.Error(), nil, c)
+		response.Fail("账户或密码输入错误,请重试", nil, c)
 		return
 	}
 	//签发jwt
 	token, err := service.UserSvc.GetUserToken(user)
-	response.OK("Login success", gin.H{
+	response.OK("登录成功", gin.H{
 		"user":  user,
 		"token": token,
 	}, c)
@@ -149,27 +152,27 @@ func ResetUserPassword(ctx *gin.Context) {
 	err := ctx.ShouldBind(&u)
 	if err != nil {
 		global.Logrus.Error(err)
-		response.Fail(constant.ERROR_REQUEST_PARAMETER_PARSING_ERROR+err.Error(), nil, ctx)
+		response.Fail("请求参数错误", nil, ctx)
 		return
 	}
 	//校验邮箱验证码
 	ok, err := service.UserSvc.VerifyEmailWhenResetPassword(u)
 	if err != nil {
-		response.Fail(err.Error(), nil, ctx)
+		response.Fail("服务内部错误,请重试", nil, ctx)
 		return
 	}
 	if !ok {
-		response.Fail("Email Verification code error,please try again!", nil, ctx)
+		response.Fail("邮箱验证码输入错误,请重试", nil, ctx)
 		return
 	}
 
 	err = service.UserSvc.UpdateUser(&model.User{UserName: u.UserName}, map[string]any{"password": encrypt_plugin.BcryptEncode(u.Password)})
 	if err != nil {
 		global.Logrus.Error(err)
-		response.Fail("ResetUserPassword error:"+err.Error(), nil, ctx)
+		response.Fail("重置密码失败,请重试", nil, ctx)
 		return
 	}
 	// TODO 使该用户token失效
-	response.OK("ResetUserPassword success", nil, ctx)
+	response.OK("重置密码成功", nil, ctx)
 
 }

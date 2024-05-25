@@ -25,17 +25,17 @@ type User struct{}
 var UserSvc *User
 
 // 注册
-func (us *User) Register(userParams *model.User) error {
+func (us *User) Register(userParams *model.User) (int, error) {
 	//判断是否存在
 	var user model.User
 	err := global.DB.Where(&model.User{UserName: userParams.UserName}).First(&user).Error
 	if err == nil {
-		return errors.New("User already exists")
+		return 1, errors.New("User already exists")
 	} else if err == gorm.ErrRecordNotFound {
 
-		return us.CreateUser(userParams)
+		return 0, us.CreateUser(userParams)
 	} else {
-		return err
+		return 2, err
 	}
 }
 
