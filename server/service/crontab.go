@@ -101,7 +101,7 @@ func customerServiceAlmostExpired() {
 	if err != nil {
 		return
 	}
-	messageMap := make(map[int64]MessageInfo, 0)
+	messageArray := make([]MessageInfo, 0)
 	f := func(msg MessageInfo, v model.CustomerService) MessageInfo {
 		msg.Message += strings.Join([]string{
 			"-------------------------------------",
@@ -122,31 +122,26 @@ func customerServiceAlmostExpired() {
 		}
 		return msg
 	}
-
 	for _, v := range *list {
-		if msg, ok := messageMap[v.UserID]; ok {
-			messageMap[v.UserID] = f(msg, v)
-		} else {
-			user, err := AdminUserSvc.FirstUser(&model.User{ID: v.UserID})
-			if err != nil {
-				continue
-			}
-			if !user.WhenServiceAlmostExpired {
-				continue
-			}
-			msg = MessageInfo{
-				UserID:      v.UserID,
-				MessageType: MESSAGE_TYPE_USER,
-				User:        user,
-				Message: strings.Join([]string{
-					"【服务到期提醒】",
-					fmt.Sprintf("时间：%s\n", time.Now().Format("2006-01-02 15:04:05")),
-				}, "\n"),
-			}
-			messageMap[v.UserID] = f(msg, v)
+		user, err := AdminUserSvc.FirstUser(&model.User{ID: v.UserID})
+		if err != nil {
+			continue
 		}
+		if !user.WhenServiceAlmostExpired {
+			continue
+		}
+		msg := MessageInfo{
+			UserID:      v.UserID,
+			MessageType: MESSAGE_TYPE_USER,
+			User:        user,
+			Message: strings.Join([]string{
+				"【服务到期提醒】",
+				fmt.Sprintf("时间：%s\n", time.Now().Format("2006-01-02 15:04:05")),
+			}, "\n"),
+		}
+		messageArray = append(messageArray, f(msg, v))
 	}
-	for _, v := range messageMap {
+	for _, v := range messageArray {
 		PushMessageSvc.PushMessage(&v)
 	}
 }
