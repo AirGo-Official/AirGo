@@ -207,9 +207,9 @@ func AGReportUserTraffic(ctx *gin.Context) {
 		ctx.AbortWithStatus(400)
 		return
 	}
-	if node.TrafficRate < 0 {
-		node.TrafficRate = 1
-	}
+	// if node.TrafficRate < 0 {
+	// 	node.TrafficRate = 1
+	// }
 	// 处理流量统计
 	var customerServerIDs []int64
 	var customerServiceArr []model.CustomerService
