@@ -173,16 +173,20 @@ func nodeOffline() {
 	if len(*list) == 0 {
 		return
 	}
+	count := 0
 	for _, v := range *list {
 		if !v.Status {
 			text = append(text, fmt.Sprintf("id: %d name: %s", v.ID, v.Name))
+			count++
 		}
 	}
-	for k, _ := range global.Server.Notice.AdminIDCache {
-		PushMessageSvc.PushMessage(&MessageInfo{
-			MessageType: MESSAGE_TYPE_ADMIN,
-			UserID:      k,
-			Message:     strings.Join(text, "\n"),
-		})
+	if count > 0 {
+		for k, _ := range global.Server.Notice.AdminIDCache {
+			PushMessageSvc.PushMessage(&MessageInfo{
+				MessageType: MESSAGE_TYPE_ADMIN,
+				UserID:      k,
+				Message:     strings.Join(text, "\n"),
+			})
+		}
 	}
 }
