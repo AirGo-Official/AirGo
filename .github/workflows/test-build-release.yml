@@ -1,0 +1,40 @@
+name: test build release
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build web
+        run: |
+          cd ${GITHUB_WORKSPACE}/web
+          npm install
+          npm run build
+          rm -rf ../server/web/web
+          mv web ../server/web/
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.2'
+
+      - name: Build server
+        run: |
+         cd ${GITHUB_WORKSPACE}/server
+          go build -o AirGo_test
+          mkdir release
+          cp AirGo_test release/
+
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+          name: AirGo_test
+          path: server/release

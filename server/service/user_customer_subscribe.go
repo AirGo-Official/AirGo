@@ -17,43 +17,27 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (string, string) {
+func (c *CustomerService) GetSubscribeNodeList(cs *model.CustomerService) *[]model.Node {
 	var nodeArr []model.Node
-	// 查找用户服务
-	subUUID, err := uuid.FromString(uuidStr)
-	if err != nil {
-		return "", ""
-	}
-	cs, err := CustomerServiceSvc.FirstCustomerService(&model.CustomerService{SubUUID: subUUID})
-	if err != nil {
-		return "", ""
-	}
 	//根据goodsID 查找具体的节点
 	var goods model.Goods
-	err = global.DB.
+	err := global.DB.
 		Where(&model.Goods{ID: cs.GoodsID}).
 		Preload("Nodes", "enabled = 1 ORDER BY node_order ASC").
 		Find(&goods).
 		Error
-	// 计算剩余天数，流量
-	var expiredTime, headerInfo string;
-	if cs.ServiceEndAt == nil {
-		expiredTime = "不限时"
-		headerInfo = fmt.Sprintf("upload=%d;download=%d;total=%d;expire=%s",
-			cs.UsedUp, cs.UsedDown, cs.TotalBandwidth, "N/A")
-	} else {
-		expiredTime = cs.ServiceEndAt.Format("2006-01-02 15:04:05")
-		headerInfo = fmt.Sprintf("upload=%d;download=%d;total=%d;expire=%d",
-			cs.UsedUp, cs.UsedDown, cs.TotalBandwidth, cs.ServiceEndAt.Unix())
+	if err != nil {
+		return nil
 	}
+	// 计算剩余天数，流量
+	expiredTime := cs.ServiceEndAt.Format("2006-01-02 15:04:05")
 	expiredBd1 := (float64(cs.TotalBandwidth - cs.UsedUp - cs.UsedDown)) / 1024 / 1024 / 1024
 	expiredBd2 := strconv.FormatFloat(expiredBd1, 'f', 2, 64)
-	// 处理header参数
 
 	var firstNode, secondNode model.Node
 	if len(goods.Nodes) > 0 {
 		firstNode = goods.Nodes[0]
-		firstNode.Remarks = cs.Subject + "到期时间:" + expiredTime
+		firstNode.Remarks = "到期时间:" + expiredTime
 
 		secondNode = goods.Nodes[0]
 		secondNode.Remarks = "剩余流量:" + expiredBd2 + "GB"
@@ -81,12 +65,10 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 		}
 
 	}
-
-	// 判断订阅是否有效，服务是否有效
+	// 判断订阅是否有效，服务是否有效 TODO 优化
 	if !cs.ServiceStatus {
-		nodeArr = append(goods.Nodes, firstNode, secondNode)
-		//fmt.Println("goto subHandler")
-		goto subHandler
+		nodeArr = append(nodeArr, firstNode, secondNode)
+		return &nodeArr
 	}
 
 	//插入计算剩余天数，流量
@@ -94,6 +76,7 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 	copy(goods.Nodes[2:], goods.Nodes[0:])
 	goods.Nodes[0] = firstNode
 	goods.Nodes[1] = secondNode
+
 	//最后处理一些参数
 	for k, _ := range goods.Nodes {
 		switch goods.Nodes[k].NodeType {
@@ -113,26 +96,47 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 		}
 		nodeArr = append(nodeArr, goods.Nodes[k])
 	}
-subHandler:
+	return &nodeArr
+}
+
+func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (node, header string) {
+
+	// 查找用户服务
+	subUUID, err := uuid.FromString(uuidStr)
+	if err != nil {
+		return "", ""
+	}
+	cs, err := CustomerServiceSvc.FirstCustomerService(&model.CustomerService{SubUUID: subUUID})
+	if err != nil {
+		return "", ""
+	} // 处理header参数
+	headerInfo := fmt.Sprintf("upload=%d;download=%d;total=%d;expire=%d",
+		cs.UsedUp, cs.UsedDown, cs.TotalBandwidth, cs.ServiceEndAt.Unix())
+	//根据goodsID 查找具体的节点
+	nodeArr := c.GetSubscribeNodeList(cs)
+	if nodeArr == nil {
+		return "", ""
+	}
+
 	//根据clientType生成不同客户端订阅
 	switch clientType {
 	case "v2rayNG", "V2rayU", "V2Box":
-		return v2rayNG(&nodeArr), headerInfo
+		return v2rayNG(nodeArr), headerInfo
 
 	case "v2rayN", "NekoBox":
-		return NekoBox(&nodeArr), headerInfo
+		return NekoBox(nodeArr), headerInfo
 
 	case "Clash":
-		return ClashMeta(&nodeArr), headerInfo
+		return ClashMeta(nodeArr), headerInfo
 
 	case "Shadowrocket":
-		return Shadowrocket(&nodeArr), headerInfo
+		return Shadowrocket(nodeArr), headerInfo
 
 	case "Surge":
-		return Surge(&nodeArr), headerInfo
+		return Surge(nodeArr), headerInfo
 
 	case "Quantumult":
-		return Quantumult(&nodeArr), headerInfo
+		return Quantumult(nodeArr), headerInfo
 
 	default:
 		return "", headerInfo

@@ -1,0 +1,39 @@
+name: Auto build release only web
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.9.0'
+
+      - name: Build web
+        run: |
+          cd ${GITHUB_WORKSPACE}/web
+          npm install
+          npm run build
+          zip  AirGo-web-${{ steps.get_version.outputs.VERSION }}.zip web
+
+      - name: Upload web to release
+        uses: svenstaro/upload-release-action@v2
+        if: github.event_name == 'release'
+        with:
+          repo_token: ${{ secrets.ACTION_TOKEN }}
+          file: web/*-${{ steps.get_version.outputs.VERSION }}.zip
+          tag: ${{ github.ref }}
+          file_glob: true
