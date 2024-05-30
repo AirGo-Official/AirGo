@@ -323,7 +323,7 @@
                   <el-input-number v-model.number="nodeStoreData.dialogData.value.vlessInfo.node_speed_limit" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.traffic_rate')">
-                  <el-input-number v-model.number="nodeStoreData.dialogData.value.vlessInfo.traffic_rate" />
+                  <el-input-number :controls="true" :step="0.1" v-model.number="nodeStoreData.dialogData.value.vlessInfo.traffic_rate" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.access')">
                   <el-tree ref="access_tree_ref" node-key="id"
@@ -487,7 +487,7 @@
                   <el-input-number  v-model.number="nodeStoreData.dialogData.value.vmessInfo.node_speed_limit" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.traffic_rate')">
-                  <el-input-number v-model.number="nodeStoreData.dialogData.value.vmessInfo.traffic_rate" />
+                  <el-input-number :controls="true" :step="0.1" v-model.number="nodeStoreData.dialogData.value.vmessInfo.traffic_rate" />
                 </el-form-item>
                 <el-form-item :label="$t('message.adminNode.NodeInfo.access')">
                   <el-tree ref="access_tree_ref" node-key="id"
@@ -596,7 +596,7 @@
                           v-model.number="nodeStoreData.dialogData.value.shadowsocksInfo.node_speed_limit" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.traffic_rate')">
-                <el-input-number v-model.number="nodeStoreData.dialogData.value.shadowsocksInfo.traffic_rate" />
+                <el-input-number :controls="true" :step="0.1" v-model.number="nodeStoreData.dialogData.value.shadowsocksInfo.traffic_rate" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.access')">
                 <el-tree ref="access_tree_ref" node-key="id"
@@ -694,7 +694,7 @@
                 <el-input-number v-model.number="nodeStoreData.dialogData.value.hysteriaInfo.node_speed_limit" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.traffic_rate')">
-                <el-input-number v-model.number="nodeStoreData.dialogData.value.hysteriaInfo.traffic_rate" />
+                <el-input-number :controls="true" :step="0.1" v-model.number="nodeStoreData.dialogData.value.hysteriaInfo.traffic_rate" />
               </el-form-item>
               <el-form-item :label="$t('message.adminNode.NodeInfo.access')">
                 <el-tree ref="access_tree_ref" node-key="id"

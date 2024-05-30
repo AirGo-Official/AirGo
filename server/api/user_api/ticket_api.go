@@ -48,19 +48,21 @@ func NewTicket(ctx *gin.Context) {
 		if err != nil {
 			return
 		}
-		msg := service.MessageInfo{
-			UserID:      uID,
-			MessageType: service.MESSAGE_TYPE_USER,
-			User:        user,
-			Message: strings.Join([]string{
-				"【新工单提醒】",
-				fmt.Sprintf("用户ID：%d", user.ID),
-				fmt.Sprintf("用户名：%s", user.UserName),
-				fmt.Sprintf("工单标题：%s", ticket.Title),
-				fmt.Sprintf("工单详情：%s\n", ticket.Details),
-			}, "\n"),
+
+		for k, _ := range global.Server.Notice.AdminIDCache {
+			var msg = service.MessageInfo{
+				MessageType: service.MESSAGE_TYPE_ADMIN,
+				UserID:      k,
+				Message: strings.Join([]string{
+					"【新工单提醒】",
+					fmt.Sprintf("用户ID：%d", user.ID),
+					fmt.Sprintf("用户名：%s", user.UserName),
+					fmt.Sprintf("工单标题：%s", ticket.Title),
+					fmt.Sprintf("工单详情：%s\n", ticket.Details),
+				}, "\n"),
+			}
+			service.PushMessageSvc.PushMessage(&msg)
 		}
-		service.PushMessageSvc.PushMessage(&msg)
 	})
 	response.OK("NewTicket success", nil, ctx)
 

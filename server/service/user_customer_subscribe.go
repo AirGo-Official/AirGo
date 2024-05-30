@@ -36,16 +36,24 @@ func (c *CustomerService) GetSubscribe(uuidStr string, clientType string) (strin
 		Find(&goods).
 		Error
 	// 计算剩余天数，流量
-	expiredTime := cs.ServiceEndAt.Format("2006-01-02 15:04:05")
+	var expiredTime, headerInfo string;
+	if cs.ServiceEndAt == nil {
+		expiredTime = "不限时"
+		headerInfo = fmt.Sprintf("upload=%d;download=%d;total=%d;expire=%s",
+			cs.UsedUp, cs.UsedDown, cs.TotalBandwidth, "N/A")
+	} else {
+		expiredTime = cs.ServiceEndAt.Format("2006-01-02 15:04:05")
+		headerInfo = fmt.Sprintf("upload=%d;download=%d;total=%d;expire=%d",
+			cs.UsedUp, cs.UsedDown, cs.TotalBandwidth, cs.ServiceEndAt.Unix())
+	}
 	expiredBd1 := (float64(cs.TotalBandwidth - cs.UsedUp - cs.UsedDown)) / 1024 / 1024 / 1024
 	expiredBd2 := strconv.FormatFloat(expiredBd1, 'f', 2, 64)
 	// 处理header参数
-	headerInfo := fmt.Sprintf("upload=%d;download=%d;total=%d;expire=%d",
-		cs.UsedUp, cs.UsedDown, cs.TotalBandwidth, cs.ServiceEndAt.Unix())
+
 	var firstNode, secondNode model.Node
 	if len(goods.Nodes) > 0 {
 		firstNode = goods.Nodes[0]
-		firstNode.Remarks = "到期时间:" + expiredTime
+		firstNode.Remarks = cs.Subject + "到期时间:" + expiredTime
 
 		secondNode = goods.Nodes[0]
 		secondNode.Remarks = "剩余流量:" + expiredBd2 + "GB"

@@ -53,8 +53,9 @@ func (c *AdminCustomerService) GetCustomerServiceListAlmostExpired() (*[]model.C
 	var list []model.CustomerService
 	//到期前3天
 	d := time.Now()
-	date := time.Date(d.Year(), d.Month(), d.Day()+10, d.Hour(), d.Minute(), d.Second(), 0, d.Location())
-	err := global.DB.Model(&model.CustomerService{}).Where("service_end_at < ?", date).Find(&list).Error
+	date1 := time.Date(d.Year(), d.Month(), d.Day() - 3, d.Hour(), d.Minute(), d.Second(), 0, d.Location())
+	date2 := time.Date(d.Year(), d.Month(), d.Day(), d.Hour(), d.Minute(), d.Second(), 0, d.Location())
+	err := global.DB.Model(&model.CustomerService{}).Where("service_end_at > ? AND service_end_at < ?", date1, date2).Find(&list).Error
 	return &list, err
 }
 
@@ -62,7 +63,7 @@ func (c *AdminCustomerService) GetCustomerServiceListAlmostExpired() (*[]model.C
 func (c *AdminCustomerService) TrafficReset() error {
 	return global.DB.Transaction(func(tx *gorm.DB) error {
 		day := time.Now().Day()
-		return tx.Exec("UPDATE customer_service SET used_up = 0, used_down = 0, sub_status = 1 WHERE traffic_reset_day = ? AND service_status = 1", day).Error
+		return tx.Exec("UPDATE customer_service SET used_up = 0, used_down = 0, sub_status = 1 WHERE traffic_reset_day = ? AND service_status = 1 AND service_end_at IS NOT NULL", day).Error
 	})
 }
 
