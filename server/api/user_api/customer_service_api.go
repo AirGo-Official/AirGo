@@ -9,6 +9,7 @@ import (
 	"github.com/AirGo-Official/AirGo/utils/response"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
+	"strconv"
 )
 
 // GetCustomerServiceList
@@ -127,4 +128,52 @@ func PushCustomerService(ctx *gin.Context) {
 		return
 	}
 	response.OK("Success", nil, ctx)
+}
+func GetCustomerService(ctx *gin.Context) {
+	id := ctx.Query("id")
+	if id == "" {
+		ctx.AbortWithStatus(400)
+		return
+	}
+	idInt, _ := strconv.Atoi(id)
+	uID, ok := api.GetUserIDFromGinContext(ctx)
+	if !ok {
+		ctx.AbortWithStatus(400)
+		return
+	}
+	cs, err := service.CustomerServiceSvc.FirstCustomerService(&model.CustomerService{
+		ID:     int64(idInt),
+		UserID: uID,
+	})
+	if err != nil {
+		ctx.AbortWithStatus(400)
+		return
+	}
+	response.OK("GetCustomerService success", cs, ctx)
+
+}
+
+func GetSubscribeNodeList(ctx *gin.Context) {
+	id := ctx.Query("id")
+	if id == "" {
+		ctx.AbortWithStatus(400)
+		return
+	}
+	idInt, _ := strconv.Atoi(id)
+	uID, ok := api.GetUserIDFromGinContext(ctx)
+	if !ok {
+		ctx.AbortWithStatus(400)
+		return
+	}
+	cs, err := service.CustomerServiceSvc.FirstCustomerService(&model.CustomerService{
+		ID:     int64(idInt),
+		UserID: uID,
+	})
+	if err != nil {
+		ctx.AbortWithStatus(400)
+		return
+	}
+	nodeArr := service.CustomerServiceSvc.GetSubscribeNodeList(cs)
+	response.OK("GetSubscribeNodeList success", nodeArr, ctx)
+
 }

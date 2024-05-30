@@ -7,5 +7,4 @@ web/web
 .run
 
 server/air.db
-server/web/web
 .vscode/launch.json
