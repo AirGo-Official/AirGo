@@ -231,7 +231,7 @@ import giftIcon from "/@/assets/icon/gift-bag.svg";
 import peoplePlusIcon from "/@/assets/icon/people-plus.svg";
 import incomeOneIcon from "/@/assets/icon/income-one.svg";
 import redEnvelopesIcon from "/@/assets/icon/red-envelopes.svg";
-import { getCurrentAddress, request } from "/@/utils/request";
+import { getCurrentAddress } from "/@/utils/request";
 import {DateStrToTime} from "/@/utils/formatTime";
 
 

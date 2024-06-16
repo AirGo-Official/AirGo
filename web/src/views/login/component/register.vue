@@ -89,20 +89,13 @@ import type {FormInstance, FormRules} from 'element-plus'
 import {ElMessage} from 'element-plus';
 import {useUserStore} from "/@/stores/user_logic/userStore";
 import {storeToRefs} from 'pinia';
-import {useRouter} from 'vue-router';
-import {useThemeConfig} from '/@/stores/themeConfig';
-import {useAdminServerStore} from "/@/stores/admin_logic/serverStore";
 import {usePublicStore} from "/@/stores/publicStore";
 import {Local} from "/@/utils/storage";
 import { useConstantStore } from "/@/stores/constantStore";
 import { useI18n } from "vue-i18n";
 const constantStore = useConstantStore()
 const userStore = useUserStore()
-const {registerData, loginData} = storeToRefs(userStore)
-const router = useRouter();
-const storesThemeConfig = useThemeConfig();
-const {themeConfig} = storeToRefs(storesThemeConfig);
-const serverStore = useAdminServerStore()
+const {registerData} = storeToRefs(userStore)
 const publicStore = usePublicStore()
 const publicStoreData = storeToRefs(publicStore)
 const {t} = useI18n()

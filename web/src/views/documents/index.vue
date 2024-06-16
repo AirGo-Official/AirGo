@@ -35,13 +35,10 @@
 
 <script setup lang="ts">
 import {onMounted, reactive} from "vue";
-import {useApiStore} from "/@/stores/apiStore";
 import {storeToRefs} from "pinia";
 import {useArticleStore} from "/@/stores/user_logic/articleStore";
 import {DateStrToTime} from "../../utils/formatTime";
-import {useRoute, useRouter} from "vue-router";
-const apiStore = useApiStore()
-const apiStoreData = storeToRefs(apiStore)
+import {useRouter} from "vue-router";
 const articleStore = useArticleStore()
 const articleStoreData = storeToRefs(articleStore)
 const router = useRouter()

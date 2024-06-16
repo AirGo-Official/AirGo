@@ -5,7 +5,7 @@ import pinia from '/@/stores/index';
 import {storeToRefs} from 'pinia';
 import {useKeepALiveNames} from '/@/stores/keepAliveNames';
 import {useMenuStore} from '/@/stores/menuStore';
-import {useThemeConfig} from '/@/stores/themeConfig';
+//import {useThemeConfig} from '/@/stores/themeConfig';
 import {Session, Local} from '/@/utils/storage';
 import {staticRoutes, notFoundAndNoPower} from '/@/router/route';
 //import { initFrontEndControlRoutes } from '/@/router/frontEnd';
@@ -21,9 +21,9 @@ import {initBackEndControlRoutes} from '/@/router/backEnd';
  */
 
 // 读取 `/src/stores/themeConfig.ts` 是否开启后端控制路由配置
-const storesThemeConfig = useThemeConfig(pinia);
-const {themeConfig} = storeToRefs(storesThemeConfig);
-const {isRequestRoutes} = themeConfig.value;
+//const storesThemeConfig = useThemeConfig(pinia);
+//const {themeConfig} = storeToRefs(storesThemeConfig);
+//const {isRequestRoutes} = themeConfig.value;
 
 /**
  * 创建一个可以被 Vue 应用程序使用的路由实例

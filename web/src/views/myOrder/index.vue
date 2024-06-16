@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
 import {storeToRefs} from "pinia";
-import { defineAsyncComponent, onBeforeMount, onMounted, reactive, ref } from "vue";
+import { defineAsyncComponent, onMounted, reactive, ref } from "vue";
 import {useShopStore} from "/@/stores/user_logic/shopStore";
 import { DateStrToTime, getTimeDifference } from "/@/utils/formatTime";
 import { useConstantStore } from "/@/stores/constantStore";

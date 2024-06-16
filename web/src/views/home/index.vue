@@ -195,7 +195,6 @@
 
 <script setup lang="ts">
 import {onMounted, reactive, ref, defineAsyncComponent, computed} from "vue";
-import {useApiStore} from "/@/stores/apiStore";
 import {DateStrToTime} from "/@/utils/formatTime";
 import commonFunction from "/@/utils/commonFunction";
 import {usePublicStore} from "/@/stores/publicStore";
@@ -211,7 +210,7 @@ import {useArticleStore} from "/@/stores/user_logic/articleStore";
 import {formatAxis} from "/@/utils/formatTime";
 import {useUserStore} from "/@/stores/user_logic/userStore";
 import {useFinanceStore} from "/@/stores/user_logic/financeStore";
-import {getCurrentAddress, request} from "/@/utils/request";
+import {getCurrentAddress} from "/@/utils/request";
 import {useTicketStore} from "/@/stores/user_logic/ticketStore";
 import logo_shadowrocket from "/@/assets/img/logo-shadowrocket.jpeg"
 import logo_clash_meta from "/@/assets/img/logo-clash-meta.png"
@@ -225,13 +224,12 @@ const articleStore = useArticleStore()
 const constantStore = useConstantStore()
 const shopStore = useShopStore()
 const shopStoreData = storeToRefs(shopStore)
-const apiStore = useApiStore();
 const publicStore = usePublicStore();
 const publicStoreData = storeToRefs(publicStore);
 const customerServiceStore = useCustomerServiceStore();
 const customerServiceStoreData = storeToRefs(customerServiceStore);
 const ticketStore = useTicketStore()
-const ticketStoreData = storeToRefs(ticketStore)
+//const ticketStoreData = storeToRefs(ticketStore)
 const userStore = useUserStore();
 const {userInfos,} = storeToRefs(userStore);
 const financeStore = useFinanceStore()
@@ -281,7 +279,7 @@ const state_invite = reactive({
 });
 
 
-const state_ticket = reactive({
+/*const state_ticket = reactive({
   isShowTicketDialog: false,
   queryParams: {
     table_name: 'ticket',
@@ -292,8 +290,7 @@ const state_ticket = reactive({
       page_num: 1, page_size: 30, order_by: 'id DESC',
     } as Pagination,//分页参数
   },
-
-})
+})*/
 
 const customColors = [
   {color: "#9af56c", percentage: 20},
@@ -331,9 +328,9 @@ const getCommissionSummary = () => {
   financeStore.getCommissionSummary()
 }
 
-const getUserTicketList = () => {
+/*const getUserTicketList = () => {
   ticketStore.getUserTicketList(state_ticket.queryParams)
-}
+}*/
 
 const openSubDialog = (subUUID: string) => {
   state.isShowSubDialog = true;

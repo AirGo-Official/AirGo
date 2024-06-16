@@ -44,7 +44,7 @@ import {storeToRefs} from 'pinia';
 import {useThemeConfig} from '/@/stores/themeConfig';
 import {NextLoading} from '/@/utils/loading';
 import {useRoute} from "vue-router";
-import { Local, Session } from "/@/utils/storage";
+import { Session } from "/@/utils/storage";
 
 // 引入组件
 const Account = defineAsyncComponent(() => import('/@/views/login/component/account.vue'));
