@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog v-model="state.isShowDialog" width="90%" destroy-on-close>
+    <el-dialog v-model="state.isShowDialog" width="90%" destroy-on-close :title="$t('message.home.button_details')">
         <div class="home-container layout-pd">
           <div class="home-card-item" style="height: 200px">
             <div style="height: 100%" ref="homeLineRef"></div>
@@ -15,7 +15,6 @@
 import { reactive, onMounted, ref, watch, nextTick, onActivated, markRaw } from 'vue';
 import * as echarts from 'echarts';
 import { storeToRefs } from 'pinia';
-import { useThemeConfig } from '/@/stores/themeConfig';
 import { useTagsViewRoutes } from '/@/stores/tagsViewRoutes';
 import { useTrafficStore } from "/@/stores/user_logic/trafficStore";
 import { useI18n } from "vue-i18n";
@@ -23,8 +22,6 @@ import { useI18n } from "vue-i18n";
 // 定义变量内容
 const homeLineRef = ref();
 const storesTagsViewRoutes = useTagsViewRoutes();
-const storesThemeConfig = useThemeConfig();
-const { themeConfig } = storeToRefs(storesThemeConfig);
 const { isTagsViewCurrenFull } = storeToRefs(storesTagsViewRoutes);
 const trafficStore = useTrafficStore()
 const trafficStoreData = storeToRefs(trafficStore)
@@ -53,9 +50,6 @@ const openDialog = (customerServiceID:number) => {
     initLineChart(trafficStoreData.trafficLineChart.value.xAxis,trafficStoreData.trafficLineChart.value.u,trafficStoreData.trafficLineChart.value.d);
   })
 };
-const closeDialog = () => {
-  state.isShowDialog = false;
-};
 
 // 暴露变量
 defineExpose({
@@ -71,7 +65,6 @@ const initLineChart = (xAxis:string[],u:number[],d:number[]) => {
     title: {
       text: t('message.home.traffic_log'),
       x: 'left',
-      textStyle: { fontSize: '15', color: state.charts.color },
     },
     grid: { top: 70, right: 20, bottom: 30, left: 30 },
     tooltip: { trigger: 'axis' },
@@ -81,9 +74,7 @@ const initLineChart = (xAxis:string[],u:number[],d:number[]) => {
         show: true,
         interval: 0,//使x轴横坐标全部显示
         rotate: 20,
-        textStyle: {//x轴字体样式
-          fontSize: 8,
-        },
+
       },
       data: xAxis,
     },
