@@ -47,3 +47,6 @@ app.use(pinia).use(i18n).use(router).use(ElementPlus).use(VueMarkdownEditor).use
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) { //Element Plus 常用的图标集合
     app.component(key, component)
 }
+
+import preReClick from '/@/utils/btnAntiShake';     //引入操作(按钮)防抖
+app.use(preReClick);

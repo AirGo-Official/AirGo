@@ -44,7 +44,9 @@
         <el-button class="login-content-code"
                    type="primary"
                    :disabled="state.isCountDown || loginData.user_name === ''"
-                   @click="onGetEmailCode">
+                   @click="onGetEmailCode"
+                   v-preReClick
+                   >
           {{ state.isCountDown ? `$t('message.login.retry'):${state.countDownTime}s` : $t('message.login.codeText') }}
         </el-button>
       </el-col>
@@ -55,7 +57,9 @@
         <el-button v-if="!state.enableResetPassword"
                    type="primary"
                    class="login-content-submit"
-                   @click="submitForm(ruleFormRef)">
+                   @click="submitForm(ruleFormRef)"
+                   v-preReClick
+                   >
           <span>{{$t('message.login.signIn')}}</span>
         </el-button>
       </el-col>
@@ -72,7 +76,9 @@
         <el-button v-if="state.enableResetPassword"
                    @click="onSubmitResetPassword"
                    class="login-content-resetPassword"
-                   type="danger">
+                   type="danger"
+                   v-preReClick
+                   >
           <span>{{$t('message.login.resetPassword')}}</span>
         </el-button>
       </el-col>

@@ -52,7 +52,7 @@
       </el-col>
       <el-col :span="4"></el-col>
       <el-col :span="10">
-        <img :src="publicStore.base64CaptchaData.b64s" @click="refreshCaptcha"/>
+        <img :src="publicStore.base64CaptchaData.b64s" @click="refreshCaptcha" v-preReClick/>
       </el-col>
 
     </el-form-item>
@@ -69,14 +69,14 @@
       </el-col>
       <el-col :span="1"></el-col>
       <el-col :span="10">
-        <el-button class="login-content-code" type="primary" :disabled="state.isCountDown" @click="onGetEmailCode">
+        <el-button class="login-content-code" type="primary" :disabled="state.isCountDown" @click="onGetEmailCode" v-preReClick>
           {{ state.isCountDown ? `${t('message.login.retry')}:${state.countDownTime}s` : $t('message.login.codeText') }}
         </el-button>
       </el-col>
     </el-form-item>
 
     <el-form-item>
-      <el-button @click="submitForm(ruleFormRef)" round type="primary" v-waves class="login-content-submit">
+      <el-button @click="submitForm(ruleFormRef)" round type="primary" v-waves class="login-content-submit" v-preReClick>
         <span>{{$t('message.login.register')}}</span>
       </el-button>
     </el-form-item>

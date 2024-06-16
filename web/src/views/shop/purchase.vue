@@ -115,7 +115,7 @@
                   </el-icon>
                 </template>
                 <template #append>
-                  <el-button size="small" @click="getOrderInfo">
+                  <el-button size="small" @click="getOrderInfo" v-preReClick>
                     {{ $t("message.common.button_confirm") }}
                   </el-button>
                 </template>
@@ -144,13 +144,14 @@
         </el-col>
       </div>
 
+        <!--弹窗底部按钮-->
         <template #footer>
            <div v-if="state.active === 1">
-            <el-button type="primary" @click="nextSubmitOrder">{{ $t("message.adminOrder.submitOrder") }}</el-button>
+            <el-button type="primary" @click="nextSubmitOrder" v-preReClick>{{ $t("message.adminOrder.submitOrder") }}</el-button>
           </div>
           <div v-if="state.active === 2">
             <el-button color="blue" @click="closeDialog">{{ $t("message.common.button_cancel") }}</el-button>
-            <el-button color="blue" @click="nextPurchase" :disabled="!shopStoreData.currentOrder.value.pay_id">
+            <el-button color="blue" @click="nextPurchase" :disabled="!shopStoreData.currentOrder.value.pay_id" v-preReClick>
               {{ $t("message.adminShop.purchase") }}
             </el-button>
           </div>
@@ -209,7 +210,7 @@
                 <el-link type="primary" :href="state.alipayUrl" target="_blank">{{ state.alipayUrl }}</el-link>
               </div>
               <div v-else-if="state.showPayInfo === 2">
-                <el-button type="primary" round size="large"  @Click="reject_epay" >{{ $t("message.adminShop.resultText5") }}
+                <el-button type="primary" round size="large" v-preReClick @Click="reject_epay" >{{ $t("message.adminShop.resultText5") }}
                 </el-button>
               </div>
             </template>
