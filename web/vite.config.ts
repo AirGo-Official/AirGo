@@ -4,6 +4,9 @@ import { defineConfig, loadEnv, ConfigEnv } from 'vite';
 import vueSetupExtend from 'vite-plugin-vue-setup-extend-plus';
 import viteCompression from 'vite-plugin-compression';
 import { buildConfig } from './src/utils/build';
+import legacy from '@vitejs/plugin-legacy' 
+import topLevelAwait from 'vite-plugin-top-level-await'
+
 
 const pathResolve = (dir: string) => {
 	return resolve(__dirname, '.', dir);
@@ -16,7 +19,15 @@ const alias: Record<string, string> = {
 const viteConfig = defineConfig((mode: ConfigEnv) => {
 	const env = loadEnv(mode.mode, process.cwd());
 	return {
-		plugins: [vue(), vueSetupExtend(), viteCompression(), JSON.parse(env.VITE_OPEN_CDN) ? buildConfig.cdn() : null],
+		plugins: [vue(), vueSetupExtend(), viteCompression(), JSON.parse(env.VITE_OPEN_CDN) ? buildConfig.cdn() : null ,    legacy({ 
+			targets: ['Chrome 64'], 
+			modernPolyfills: true 
+			  }),topLevelAwait({
+				// The export name of top-level await promise for each chunk module
+				promiseExportName: '__tla',
+				// The function to generate import names of top-level await promise in each chunk module
+				promiseImportName: i => `__tla_${i}`
+			  })],
 		root: process.cwd(),
 		resolve: { alias },
 		base: mode.command === 'serve' ? './' : env.VITE_PUBLIC_PATH,
@@ -38,7 +49,7 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
 			}
 		},
 		build: {
-			target: "esnext",
+			target: ['ios11', 'Chrome 64'],
 			outDir: 'web',
 			chunkSizeWarningLimit: 1500,
 			rollupOptions: {
